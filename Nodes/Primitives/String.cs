@@ -31,6 +31,11 @@ public struct String : INode
 #endif
 
     /* Public methods. */
+    public override readonly string ToString()
+    {
+        return "string: " + value;
+    }
+
     public readonly string Serialize()
     {
         return '"' + value.Replace("\"", "\"\"") + '"';

@@ -51,6 +51,11 @@ public struct Color : INode
 #endif
 
     /* Public methods. */
+    public override readonly string ToString()
+    {
+        return $"color: ({r},{g},{b},{a})";
+    }
+
     public readonly string Serialize()
     {
         if (a == 255)

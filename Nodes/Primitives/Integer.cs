@@ -37,6 +37,11 @@ public struct Integer : INode
     public static implicit operator ulong(Integer node) => (ulong)node.value;
 
     /* Public methods. */
+    public override readonly string ToString()
+    {
+        return "int: " + value;
+    }
+
     public readonly string Serialize()
     {
         return value.ToString(CultureInfo.InvariantCulture);

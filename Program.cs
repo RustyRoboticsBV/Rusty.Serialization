@@ -11,4 +11,9 @@ Console.WriteLine(Float.Deserialize("010.01000").Serialize());
 
 Character character = 'A';
 Console.WriteLine(character.Serialize());
-Console.WriteLine(Character.Deserialize("''").Serialize());
+
+List list = new INode[] { (Integer)0, (Character)'A', (Float)0.125790 };
+List nestedList = new INode[] { list, Color.Deserialize("#AABBCC"), (Rusty.Serialization.Nodes.String)"\"Text\".", (Rusty.Serialization.Nodes.Boolean)true };
+Console.WriteLine(nestedList);
+Console.WriteLine(list.Serialize());
+Console.WriteLine(List.Deserialize(nestedList.Serialize()));

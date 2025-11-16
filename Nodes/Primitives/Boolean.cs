@@ -22,6 +22,11 @@ public struct Boolean : INode
     public static implicit operator bool(Boolean node) => node.value;
 
     /* Public methods. */
+    public override readonly string ToString()
+    {
+        return "bool: " + value;
+    }
+
     public readonly string Serialize()
     {
         return value ? "true" : "false";

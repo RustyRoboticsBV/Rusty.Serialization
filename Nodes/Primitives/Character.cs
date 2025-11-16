@@ -23,6 +23,11 @@ public struct Character : INode
     public static implicit operator char(Character node) => node.value;
 
     /* Public methods. */
+    public override readonly string ToString()
+    {
+        return "char: " + value;
+    }
+
     public readonly string Serialize()
     {
         if (value == '\'')

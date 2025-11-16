@@ -27,6 +27,11 @@ public struct Float : INode
     public static implicit operator decimal(Float node) => node.value;
 
     /* Public methods. */
+    public override readonly string ToString()
+    {
+        return "float: " + value;
+    }
+
     public readonly string Serialize()
     {
         string text = value.ToString(CultureInfo.InvariantCulture);
