@@ -1,8 +1,14 @@
-﻿using Rusty.Serialization;
+﻿using Rusty.Serialization.Nodes;
 using System;
 
-Vector4 f4 = "[1,2,3,4]";
-Console.WriteLine(f4.Value);
+Integer integer = 10;
+Console.WriteLine(integer.Serialize());
 
-Projection pro = "[[1,2,3,4],[1,2,3,4],[1,2,3,4],[1,2,3,4]]";
-Console.WriteLine(pro.Value);
+//Float real = -1234567890123456789.01234;
+Float real = 0.000000000000000000000000000000000000001;
+Console.WriteLine(real.Serialize());
+Console.WriteLine(Float.Deserialize("010.01000").Serialize());
+
+Character character = 'A';
+Console.WriteLine(character.Serialize());
+Console.WriteLine(Character.Deserialize("''").Serialize());
