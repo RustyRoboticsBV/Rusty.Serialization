@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Rusty.Serialization.Nodes;
 
 using SysList = System.Collections.Generic.List<INode>;
+using StrList = System.Collections.Generic.List<string>;
 #if GODOT
 using GdList = Godot.Collections.Array<INode>;
-using static System.Net.Mime.MediaTypeNames;
 #endif
 
 /// <summary>
@@ -23,6 +24,8 @@ public struct List : INode
     {
         this.elements = elements;
     }
+
+    public List(IList<INode> list) : this(list.ToArray()) { }
 
     /* Conversion operators. */
     public static implicit operator List(INode[] elements) => new(elements);
@@ -61,17 +64,28 @@ public struct List : INode
         try
         {
             // Enforce square brackets.
-            if (trimmed.StartsWith('[') & trimmed.EndsWith(']'))
+            if (!trimmed.StartsWith('[') || !trimmed.EndsWith(']'))
+                throw new Exception("Missing square brackets.");
+
+            // Get text between square brackets and trim it.
+            string contents = trimmed.Substring(1, trimmed.Length - 2);
+
+            // Split into terms.
+            StrList terms = ParseUtility.Split(contents);
+
+            // Create child nodes.
+            INode[] nodes = new INode[terms.Count];
+            for (int i = 0; i < terms.Count; i++)
             {
-                string contents = trimmed.Substring(1, trimmed.Length - 2);
-                return new(ParseUtility.Parse(contents).ToArray());
+                nodes[i] = ParseUtility.ParseValue(terms[i]);
             }
-            else
-                throw new Exception();
+
+            // Create list node.
+            return new(nodes);
         }
         catch
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a list.");
+            throw new ArgumentException($"Could not parse string '{text}' as a elements.");
         }
     }
 }

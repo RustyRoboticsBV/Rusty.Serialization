@@ -17,6 +17,15 @@ public struct Integer : INode
         this.value = value;
     }
 
+    public Integer(sbyte value) : this((decimal)value) { }
+    public Integer(byte value) : this((decimal)value) { }
+    public Integer(short value) : this((decimal)value) { }
+    public Integer(ushort value) : this((decimal)value) { }
+    public Integer(int value) : this((decimal)value) { }
+    public Integer(uint value) : this((decimal)value) { }
+    public Integer(long value) : this((decimal)value) { }
+    public Integer(ulong value) : this((decimal)value) { }
+
     /* Conversion operators. */
     public static implicit operator Integer(sbyte value) => new(value);
     public static implicit operator Integer(byte value) => new(value);

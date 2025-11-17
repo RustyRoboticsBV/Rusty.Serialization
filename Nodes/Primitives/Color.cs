@@ -3,8 +3,7 @@ using System.Globalization;
 using SysColor = System.Drawing.Color;
 #if GODOT
 using GdColor = Godot.Color;
-#endif
-#if UNITY_5_OR_NEWER
+#elif UNITY_5_OR_NEWER
 using UColor = UnityEngine.Color;
 using UColor32 = UnityEngine.Color32;
 #endif
@@ -31,21 +30,27 @@ public struct Color : INode
         this.a = a;
     }
 
-    /* Conversion operators. */
-    public static implicit operator Color(SysColor value) => new(value.R, value.G, value.B, value.A);
+    public Color(SysColor color) : this(color.R, color.G, color.B, color.A) { }
 #if GODOT
-    public static implicit operator Color(GdColor value) => new((byte)value.R8, (byte)value.G8, (byte)value.B8, (byte)value.A8);
+    public Color(GdColor color) : this((byte)color.R8, (byte)color.G8, (byte)color.B8, (byte)color.A8) { }
+#elif UNITY_5_OR_NEWER
+    public Color(UColor32 color) : this(value.r, value.g, value.b, value.a) { }
+    public Color(UColor color) : this((UColor32)color) { }
 #endif
-#if UNITY_5_OR_NEWER
-    public static implicit operator Color(UColor32 value) => new(value.r, value.g, value.b, value.a);
-    public static implicit operator Color(UColor value) => (UColor32)value;
+
+    /* Conversion operators. */
+    public static implicit operator Color(SysColor value) => new(value);
+#if GODOT
+    public static implicit operator Color(GdColor value) => new(value);
+#elif UNITY_5_OR_NEWER
+    public static implicit operator Color(UColor32 value) => new(value);
+    public static implicit operator Color(UColor value) => new(value);
 #endif
 
     public static implicit operator SysColor(Color value) => SysColor.FromArgb(value.a, value.r, value.g, value.b);
 #if GODOT
     public static implicit operator GdColor(Color node) => new(node.r / 255f, node.g / 255f, node.b / 255f, node.a / 255f);
-#endif
-#if UNITY_5_OR_NEWER
+#elif UNITY_5_OR_NEWER
     public static implicit operator UColor32(Color value) => new(value.r, value.g, value.b, value.a);
     public static implicit operator UColor(Color value) => (UColor32)this;
 #endif

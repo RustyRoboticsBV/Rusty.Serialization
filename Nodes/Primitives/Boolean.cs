@@ -11,7 +11,7 @@ public struct Boolean : INode
     private readonly bool value;
 
     /* Constructors. */
-    private Boolean(bool value)
+    public Boolean(bool value)
     {
         this.value = value;
     }

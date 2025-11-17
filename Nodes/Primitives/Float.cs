@@ -12,7 +12,9 @@ public struct Float : INode
     private readonly decimal value;
 
     /* Constructors. */
-    private Float(decimal value)
+    public Float(float value) : this((decimal)value) { }
+    public Float(double value) : this((decimal)value) { }
+    public Float(decimal value)
     {
         this.value = value;
     }

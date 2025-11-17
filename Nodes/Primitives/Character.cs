@@ -12,7 +12,7 @@ public struct Character : INode
     private readonly char value;
 
     /* Constructors. */
-    private Character(char value)
+    public Character(char value)
     {
         this.value = value;
     }

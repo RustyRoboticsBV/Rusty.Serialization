@@ -16,4 +16,23 @@ List list = new INode[] { (Integer)0, (Character)'A', (Float)0.125790 };
 List nestedList = new INode[] { list, Color.Deserialize("#AABBCC"), (Rusty.Serialization.Nodes.String)"\"Text\".", (Rusty.Serialization.Nodes.Boolean)true };
 Console.WriteLine(nestedList);
 Console.WriteLine(list.Serialize());
-Console.WriteLine(List.Deserialize(nestedList.Serialize()));
+
+var obj = ObjectConversionUtility.Convert(new Test(), "test", "a", "b", "c", "d", "e", "f", "g", "h");
+Console.WriteLine(obj);
+Console.WriteLine(obj.Serialize());
+
+class Test
+{
+    public bool a = true;
+    public int b = 10;
+    public float c = 1.234f;
+    public char d = '"';
+    public string e = "Text";
+    public Godot.Color f = Godot.Colors.Red;
+    public int[] g = [1, 2, 3,];
+    public System.Collections.Generic.Dictionary<char, string> h = new System.Collections.Generic.Dictionary<char, string> {
+        { 'a', "AAA" },
+        { 'b', "BBB" },
+        { 'c', "CCC" }
+    };
+}

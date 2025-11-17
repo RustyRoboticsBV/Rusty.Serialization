@@ -1,5 +1,4 @@
-﻿using Godot;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -7,21 +6,25 @@ namespace Rusty.Serialization.Nodes;
 
 internal static class ParseUtility
 {
+    /* Public methods. */
     /// <summary>
-    /// Takes a comma-delimited string and parses it into a list of serializer node hierarchies.
+    /// Takes a delimited string and parses it into a list of strings.
     /// </summary>
-    public static List<INode> Parse(string text)
+    public static List<string> Split(string text, char delimiter = ',')
     {
         // Handle null.
         if (text == null)
             throw new ArgumentException("Cannot parse null.");
+
+        // Remove trailing whitespace.
+        text = text.Trim();
 
         // Handle empty list.
         if (text.Length == 0)
             return [];
 
         // Parse text.
-        List<INode> result = new();
+        List<string> result = new();
         bool inChar = false;
         bool inString = false;
         int depth = 0;
@@ -52,10 +55,10 @@ internal static class ParseUtility
             else if (c == '\'')
                 inChar = true;
 
-            else if (c == ',' && depth == 0)
+            else if (c == delimiter && depth == 0)
             {
                 string segment = text.Substring(start, i - start).Trim();
-                result.Add(Deserialize(segment));
+                result.Add(segment);
                 start = i + 1;
             }
 
@@ -80,15 +83,15 @@ internal static class ParseUtility
         }
 
         string final = text.Substring(start).Trim();
-        result.Add(Deserialize(final));
+        result.Add(final);
 
         return result;
     }
 
     /// <summary>
-    /// Parse a trimmed string and return a serializer node.
+    /// Parse a trimmed string and return a serializer node of the appropriate type.
     /// </summary>
-    private static INode Deserialize(string text)
+    public static INode ParseValue(string text)
     {
         if (text == null)
             throw new ArgumentException("Cannot parse null.");
@@ -102,9 +105,9 @@ internal static class ParseUtility
         else if (text.StartsWith('[') && text.EndsWith(']'))
             return List.Deserialize(text);
         else if (text.StartsWith('{') && text.EndsWith('}'))
-        { return null; /* TODO: dictionaries */ }
+            return Dictionary.Deserialize(text);
         else if (text.StartsWith('<') && text.EndsWith('>'))
-        { return null; /* TODO: objects */ }
+            return Object.Deserialize(text);
         else if (text.ToLower() == "true" || text.ToLower() == "false")
             return Boolean.Deserialize(text);
         else if (decimal.TryParse(text, CultureInfo.InvariantCulture, out decimal d))

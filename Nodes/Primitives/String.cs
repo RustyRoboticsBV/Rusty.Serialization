@@ -14,7 +14,7 @@ public struct String : INode
     private readonly string value;
 
     /* Constructors. */
-    private String(string value)
+    public String(string value)
     {
         this.value = value;
     }
