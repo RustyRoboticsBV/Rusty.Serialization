@@ -6,21 +6,19 @@ namespace Rusty.Serialization.Nodes;
 /// <summary>
 /// A character serializer node.
 /// </summary>
-public struct Character : INode
+public readonly struct CharNode : INode
 {
     /* Fields. */
     private readonly char value;
 
+    /* Public properties. */
+    public readonly char Value => value;
+
     /* Constructors. */
-    public Character(char value)
+    public CharNode(char value)
     {
         this.value = value;
     }
-
-    /* Conversion operators. */
-    public static implicit operator Character(char value) => new(value);
-
-    public static implicit operator char(Character node) => node.value;
 
     /* Public methods. */
     public override readonly string ToString()
@@ -36,7 +34,7 @@ public struct Character : INode
             return $"'{value.ToString(CultureInfo.InvariantCulture)}'";
     }
 
-    public static Character Deserialize(string text)
+    public static CharNode Deserialize(string text)
     {
         string trimmed = text?.Trim();
         if (trimmed != null)

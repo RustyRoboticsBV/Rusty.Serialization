@@ -1,34 +1,23 @@
-﻿#if GODOT
-using System;
-using StringName = Godot.StringName;
-#endif
+﻿using System;
 
 namespace Rusty.Serialization.Nodes;
 
 /// <summary>
-/// A text serializer node.
+/// A string serializer node.
 /// </summary>
-public struct String : INode
+public readonly struct StringNode : INode
 {
     /* Fields. */
     private readonly string value;
 
+    /* Public properties. */
+    public readonly string Value => value;
+
     /* Constructors. */
-    public String(string value)
+    public StringNode(string value)
     {
         this.value = value;
     }
-
-    /* Conversion operators. */
-    public static implicit operator String(string value) => new(value);
-#if GODOT
-    public static implicit operator String(StringName value) => new(value);
-#endif
-
-    public static implicit operator string(String node) => node.value;
-#if GODOT
-    public static implicit operator StringName(String value) => new(value);
-#endif
 
     /* Public methods. */
     public override readonly string ToString()
@@ -41,7 +30,7 @@ public struct String : INode
         return '"' + value.Replace("\"", "\"\"") + '"';
     }
 
-    public static String Deserialize(string text)
+    public static StringNode Deserialize(string text)
     {
         string trimmed = text?.Trim();
         if (trimmed != null && trimmed.StartsWith('"') && trimmed.EndsWith('"'))

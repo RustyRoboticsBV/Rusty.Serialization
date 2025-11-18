@@ -4,52 +4,22 @@ using System.Linq;
 
 namespace Rusty.Serialization.Nodes;
 
-using SysDict = Dictionary<INode, INode>;
-#if GODOT
-using GdDict = Godot.Collections.Dictionary<INode, INode>;
-#endif
-
 /// <summary>
 /// A dictionary serializer node.
 /// </summary>
-public struct Dictionary : INode
+public readonly struct DictNode : INode
 {
     /* Fields. */
     private readonly KeyValuePair<INode, INode>[] pairs;
 
+    /* Public properties. */
+    public readonly ReadOnlySpan<KeyValuePair<INode, INode>> Pairs => pairs;
+
     /* Constructors. */
-    public Dictionary(KeyValuePair<INode, INode>[] pairs)
+    public DictNode(KeyValuePair<INode, INode>[] pairs)
     {
         this.pairs = pairs ?? [];
     }
-
-    public Dictionary(IDictionary<INode, INode> dict)
-    {
-        pairs = new KeyValuePair<INode, INode>[dict.Count];
-        int index = 0;
-        foreach (var pair in dict)
-        {
-            pairs[index] = pair;
-            index++;
-        }
-    }
-
-    /* Conversion operators. */
-    public static implicit operator Dictionary(SysDict dict) => new(dict);
-#if GODOT
-    public static implicit operator Dictionary(GdDict dict) => new(dict);
-#endif
-
-    public static implicit operator SysDict(Dictionary node) => new(node.pairs);
-#if GODOT
-    public static implicit operator GdDict(Dictionary node)
-    {
-        var dict = new GdDict();
-        foreach (var pair in node.pairs)
-            dict[pair.Key] = pair.Value;
-        return dict;
-    }
-#endif
 
     /* Public methods. */
     public override readonly string ToString()
@@ -77,7 +47,7 @@ public struct Dictionary : INode
         )) + "}";
     }
 
-    public static Dictionary Deserialize(string text)
+    public static DictNode Deserialize(string text)
     {
         string trimmed = text?.Trim() ?? throw new ArgumentException("Cannot parse null.");
 
@@ -108,7 +78,7 @@ public struct Dictionary : INode
                 pairs[i] = new(key, value);
             }
 
-            return new Dictionary(pairs);
+            return new DictNode(pairs);
 
         }
         catch

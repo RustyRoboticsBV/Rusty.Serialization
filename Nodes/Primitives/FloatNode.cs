@@ -6,27 +6,19 @@ namespace Rusty.Serialization.Nodes;
 /// <summary>
 /// A real number serializer node.
 /// </summary>
-public struct Float : INode
+public readonly struct FloatNode : INode
 {
     /* Fields. */
     private readonly decimal value;
 
+    /* Public properties. */
+    public readonly decimal Value => value;
+
     /* Constructors. */
-    public Float(float value) : this((decimal)value) { }
-    public Float(double value) : this((decimal)value) { }
-    public Float(decimal value)
+    public FloatNode(decimal value)
     {
         this.value = value;
     }
-
-    /* Conversion operators. */
-    public static implicit operator Float(float value) => new((decimal)value);
-    public static implicit operator Float(double value) => new((decimal)value);
-    public static implicit operator Float(decimal value) => new(value);
-
-    public static implicit operator float(Float node) => (float)node.value;
-    public static implicit operator double(Float node) => (double)node.value;
-    public static implicit operator decimal(Float node) => node.value;
 
     /* Public methods. */
     public override readonly string ToString()
@@ -48,7 +40,7 @@ public struct Float : INode
         return text;
     }
 
-    public static Float Deserialize(string text)
+    public static FloatNode Deserialize(string text)
     {
         try
         {

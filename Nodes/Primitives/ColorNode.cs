@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Globalization;
-using SysColor = System.Drawing.Color;
-#if GODOT
-using GdColor = Godot.Color;
-#elif UNITY_5_OR_NEWER
-using UColor = UnityEngine.Color;
-using UColor32 = UnityEngine.Color32;
-#endif
 
 namespace Rusty.Serialization.Nodes;
 
 /// <summary>
 /// A color serializer node.
 /// </summary>
-public struct Color : INode
+public struct ColorNode : INode
 {
     /* Fields. */
     private readonly byte r;
@@ -21,39 +14,20 @@ public struct Color : INode
     private readonly byte b;
     private readonly byte a;
 
+    /* Public properties. */
+    public readonly byte R => r;
+    public readonly byte G => g;
+    public readonly byte B => b;
+    public readonly byte A => a;
+
     /* Constructors. */
-    private Color(byte r, byte g, byte b, byte a)
+    public ColorNode(byte r, byte g, byte b, byte a)
     {
         this.r = r;
         this.g = g;
         this.b = b;
         this.a = a;
     }
-
-    public Color(SysColor color) : this(color.R, color.G, color.B, color.A) { }
-#if GODOT
-    public Color(GdColor color) : this((byte)color.R8, (byte)color.G8, (byte)color.B8, (byte)color.A8) { }
-#elif UNITY_5_OR_NEWER
-    public Color(UColor32 color) : this(value.r, value.g, value.b, value.a) { }
-    public Color(UColor color) : this((UColor32)color) { }
-#endif
-
-    /* Conversion operators. */
-    public static implicit operator Color(SysColor value) => new(value);
-#if GODOT
-    public static implicit operator Color(GdColor value) => new(value);
-#elif UNITY_5_OR_NEWER
-    public static implicit operator Color(UColor32 value) => new(value);
-    public static implicit operator Color(UColor value) => new(value);
-#endif
-
-    public static implicit operator SysColor(Color value) => SysColor.FromArgb(value.a, value.r, value.g, value.b);
-#if GODOT
-    public static implicit operator GdColor(Color node) => new(node.r / 255f, node.g / 255f, node.b / 255f, node.a / 255f);
-#elif UNITY_5_OR_NEWER
-    public static implicit operator UColor32(Color value) => new(value.r, value.g, value.b, value.a);
-    public static implicit operator UColor(Color value) => (UColor32)this;
-#endif
 
     /* Public methods. */
     public override readonly string ToString()
@@ -69,7 +43,7 @@ public struct Color : INode
             return $"#{r:X2}{g:X2}{b:X2}{a:X2}";
     }
 
-    public static Color Deserialize(string text)
+    public static ColorNode Deserialize(string text)
     {
         try
         {

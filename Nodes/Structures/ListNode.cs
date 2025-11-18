@@ -5,48 +5,30 @@ using System.Linq;
 
 namespace Rusty.Serialization.Nodes;
 
-using SysList = System.Collections.Generic.List<INode>;
-using StrList = System.Collections.Generic.List<string>;
-#if GODOT
-using GdList = Godot.Collections.Array<INode>;
-#endif
-
 /// <summary>
 /// A list serializer node.
 /// </summary>
-public struct List : INode
+public readonly struct ListNode : INode
 {
     /* Fields. */
     private readonly INode[] elements;
 
+    /* Public properties. */
+    public readonly ReadOnlySpan<INode> Elements => elements;
+
     /* Constructors. */
-    private List(INode[] elements)
+    public ListNode(INode[] elements)
     {
         this.elements = elements;
     }
 
-    public List(IList<INode> list) : this(list.ToArray()) { }
-
-    /* Conversion operators. */
-    public static implicit operator List(INode[] elements) => new(elements);
-    public static implicit operator List(SysList elements) => new([.. elements]);
-#if GODOT
-    public static implicit operator List(GdList elements) => new([.. elements]);
-#endif
-
-    public static implicit operator INode[](List node) => node.elements;
-    public static implicit operator SysList(List node) => [.. node.elements];
-#if GODOT
-    public static implicit operator GdList(List node) => [.. node.elements];
-#endif
-
     /* Public methods. */
     public override readonly string ToString()
     {
-        string str = "array: ";
+        string str = "list: ";
         for (int i = 0; i < elements.Length; i++)
         {
-            str += "\n-" + elements[i].ToString().Replace("\n", "\n ");
+            str += "\n- " + elements[i].ToString().Replace("\n", "\n  ");
         }
         return str;
     }
@@ -56,7 +38,7 @@ public struct List : INode
         return "[" + string.Join(",", elements.Select(e => e.Serialize())) + "]";
     }
 
-    public static List Deserialize(string text)
+    public static ListNode Deserialize(string text)
     {
         // Trim trailing whitespaces.
         string trimmed = text?.Trim();
@@ -71,7 +53,7 @@ public struct List : INode
             string contents = trimmed.Substring(1, trimmed.Length - 2);
 
             // Split into terms.
-            StrList terms = ParseUtility.Split(contents);
+            List<string> terms = ParseUtility.Split(contents);
 
             // Create child nodes.
             INode[] nodes = new INode[terms.Count];

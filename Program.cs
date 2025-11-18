@@ -1,38 +1,23 @@
-﻿using Rusty.Serialization.Nodes;
+﻿using Rusty.Serialization;
+using Rusty.Serialization.GodotEngine;
 using System;
 
-Integer integer = 10;
-Console.WriteLine(integer.Serialize());
+Registry context = new();
 
-//Float real = -1234567890123456789.01234;
-Float real = 0.000000000000000000000000000000000000001;
-Console.WriteLine(real.Serialize());
-Console.WriteLine(Float.Deserialize("010.01000").Serialize());
+Console.WriteLine(new BoolSerializer().Serialize(true, context).Serialize());
+Console.WriteLine(new IntSerializer().Serialize(123, context).Serialize());
+Console.WriteLine(new FloatSerializer().Serialize(123.456f, context).Serialize());
+Console.WriteLine(new CharSerializer().Serialize('a', context).Serialize());
+Console.WriteLine(new StringSerializer().Serialize("ABC DEF", context).Serialize());
+#if GODOT
+Console.WriteLine(new ColorSerializer().Serialize(Godot.Colors.Red, context).Serialize());
+#endif
+Console.WriteLine(new StringSerializer().Serialize(null, context).Serialize());
+Console.WriteLine(new Rusty.Serialization.ArraySerializer<int>().Serialize([1, 2, 3], context).Serialize());
 
-Character character = 'A';
-Console.WriteLine(character.Serialize());
 
-List list = new INode[] { (Integer)0, (Character)'A', (Float)0.125790 };
-List nestedList = new INode[] { list, Color.Deserialize("#AABBCC"), (Rusty.Serialization.Nodes.String)"\"Text\".", (Rusty.Serialization.Nodes.Boolean)true };
-Console.WriteLine(nestedList);
-Console.WriteLine(list.Serialize());
-
-var obj = ObjectConversionUtility.Convert(new Test(), "test", "a", "b", "c", "d", "e", "f", "g", "h");
-Console.WriteLine(obj);
-Console.WriteLine(obj.Serialize());
-
-class Test
-{
-    public bool a = true;
-    public int b = 10;
-    public float c = 1.234f;
-    public char d = '"';
-    public string e = "Text";
-    public Godot.Color f = Godot.Colors.Red;
-    public int[] g = [1, 2, 3,];
-    public System.Collections.Generic.Dictionary<char, string> h = new System.Collections.Generic.Dictionary<char, string> {
-        { 'a', "AAA" },
-        { 'b', "BBB" },
-        { 'c', "CCC" }
-    };
-}
+Console.WriteLine("a");
+Registry registry = new();
+ObjectSerializer<TestClass> serializer = new("test", null);
+Console.WriteLine("b");
+Console.WriteLine(serializer.Serialize(new TestClass(), registry).Serialize());

@@ -5,21 +5,19 @@ namespace Rusty.Serialization.Nodes;
 /// <summary>
 /// A boolean serializer node.
 /// </summary>
-public struct Boolean : INode
+public readonly struct BoolNode : INode
 {
     /* Fields. */
     private readonly bool value;
 
+    /* Public properties. */
+    public readonly bool Value => value;
+
     /* Constructors. */
-    public Boolean(bool value)
+    public BoolNode(bool value)
     {
         this.value = value;
     }
-
-    /* Conversion operators. */
-    public static implicit operator Boolean(bool value) => new(value);
-
-    public static implicit operator bool(Boolean node) => node.value;
 
     /* Public methods. */
     public override readonly string ToString()
@@ -32,7 +30,7 @@ public struct Boolean : INode
         return value ? "true" : "false";
     }
 
-    public static Boolean Deserialize(string text)
+    public static BoolNode Deserialize(string text)
     {
         try
         {

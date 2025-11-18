@@ -7,14 +7,18 @@ namespace Rusty.Serialization.Nodes;
 /// <summary>
 /// An object serializer node.
 /// </summary>
-public struct Object : INode
+public readonly struct ObjectNode : INode
 {
     /* Fields. */
     private readonly string typeName;
     private readonly KeyValuePair<string, INode>[] members;
 
+    /* Public properties. */
+    public readonly string TypeName => typeName;
+    public readonly ReadOnlySpan<KeyValuePair<string, INode>> Members => members;
+
     /* Constructors. */
-    public Object(string typeName, KeyValuePair<string, INode>[] members)
+    public ObjectNode(string typeName, KeyValuePair<string, INode>[] members)
     {
         this.typeName = typeName ?? string.Empty;
         this.members = members ?? [];
@@ -37,7 +41,7 @@ public struct Object : INode
     public readonly string Serialize()
     {
         // Add type name string.
-        string typeSerialized = ((String)typeName).Serialize();
+        string typeSerialized = new StringNode(typeName).Serialize();
 
         // Handle empty objects.
         if (members.Length == 0)
@@ -45,8 +49,8 @@ public struct Object : INode
 
         // Add members.
         string body = string.Join(",",
-            members.Select(kv =>
-                ((String)kv.Key).Serialize() + ":" + kv.Value.Serialize()
+            members.Select(pair =>
+                new StringNode(pair.Key).Serialize() + ":" + pair.Value.Serialize()
             )
         );
 
@@ -54,7 +58,7 @@ public struct Object : INode
         return $"<{typeSerialized},{body}>";
     }
 
-    public static Object Deserialize(string text)
+    public static ObjectNode Deserialize(string text)
     {
         string trimmed = text?.Trim();
 
@@ -80,14 +84,14 @@ public struct Object : INode
             // First term must be a quoted string for the type name.
             string first = terms[0].Trim();
             INode firstNode = ParseUtility.ParseValue(first);
-            if (!(firstNode is String firstStr))
+            if (!(firstNode is StringNode firstStr))
                 throw new Exception("Type name was not a string.");
 
-            string typeName = (string)firstStr;
+            string typeName = firstStr.Value;
 
             // Handle empty member list.
             if (terms.Count == 1)
-                return new Object(typeName, Array.Empty<KeyValuePair<string, INode>>());
+                return new ObjectNode(typeName, Array.Empty<KeyValuePair<string, INode>>());
 
             // Handle key:value pairs.
             var pairs = new KeyValuePair<string, INode>[terms.Count - 1];
@@ -104,9 +108,9 @@ public struct Object : INode
 
                 // Parse key.
                 INode keyNode = ParseUtility.ParseValue(keyText);
-                if (!(keyNode is String keyStrNode))
+                if (!(keyNode is StringNode keyStrNode))
                     throw new Exception($"Member name not a string.");
-                string key = (string)keyStrNode;
+                string key = keyStrNode.Value;
 
                 // Parse value.
                 INode valueNode = ParseUtility.ParseValue(valText);
@@ -115,7 +119,7 @@ public struct Object : INode
                 pairs[i - 1] = new KeyValuePair<string, INode>(key, valueNode);
             }
 
-            return new Object(typeName, pairs);
+            return new ObjectNode(typeName, pairs);
         }
         catch
         {
