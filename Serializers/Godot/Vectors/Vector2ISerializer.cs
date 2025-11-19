@@ -21,19 +21,19 @@ public readonly struct Vector2ISerializer : ISerializer<Vector2I>
         if (node is ListNode list)
         {
             if (list.Elements.Length != 2)
-                throw new ArgumentException("Cannot deserialize array node as Vector2 (wrong number of elements).");
+                throw new ArgumentException("Cannot deserialize list node as Vector2 (wrong number of elements).");
 
             int x = 0;
             if (list.Elements[0] is IntNode xNode)
                 x = (int)xNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector2 (x is not an int).");
+                throw new ArgumentException("Cannot deserialize list node as Vector2 (x is not an int).");
 
             int y = 0;
             if (list.Elements[1] is IntNode yNode)
                 y = (int)yNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector2 (y is not an int).");
+                throw new ArgumentException("Cannot deserialize list node as Vector2 (y is not an int).");
 
             return new(x, y);
         }

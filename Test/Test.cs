@@ -39,6 +39,13 @@ public sealed class Test
     public Godot.Vector4I vector4i = new(1, 2, 3, 4);
     public Godot.Quaternion quaternion = Godot.Quaternion.Identity;
     public Godot.Plane plane = Godot.Plane.PlaneXY;
+    public Godot.Rect2 rect2 = new(1, 2, 3, 4);
+    public Godot.Rect2I rect2i = new(1, 2, 3, 4);
+    public Godot.Aabb aabb = new(1, 2, 3, 4, 5, 6);
+    public Godot.Transform2D transform2d = new(1, 2, 3, 4, 5, 6);
+    public Godot.Basis basis = new(1, 2, 3, 4, 5, 6, 7, 8, 9);
+    public Godot.Transform3D transform3d = new(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+    public Godot.Projection projection = new(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 #endif
 
     // Dictionaries.

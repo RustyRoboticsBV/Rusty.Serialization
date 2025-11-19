@@ -9,6 +9,7 @@ test.@float = 987.321f;
 test.@char = 'C';
 test.@string = "A\"B\"C";
 test.array = [5, 7, 9, 11];
+test.dictionary = new() { { 'C', "CCC" }, { 'D', "DDD" } };
 
 Registry registry = new();
 ObjectSerializer<Test> serializer = new("test", null);
@@ -17,3 +18,5 @@ Test deserialized = serializer.Deserialize(ObjectNode.Deserialize(serialized), r
 string reserialized = serializer.Serialize(deserialized, registry).Serialize();
 Console.WriteLine(serialized);
 Console.WriteLine(reserialized);
+
+Console.WriteLine("Are the objects equal: " + (serialized == reserialized));

@@ -12,63 +12,96 @@ public sealed class Registry
     /* Fields. */
     private Dictionary<Type, Type> serializerTypes = new();
     private Dictionary<Type, ISerializer> serializerInstances = new();
-    private readonly List<Type> order;
+    private List<Type> order = new();
 
     /* Constructors. */
-    public Registry(IEnumerable<Type> serializers = null)
+    public Registry(IEnumerable<(Type, Type)> serializers = null)
     {
-        order = serializers?.ToList() ?? new();
-
         // Add built-in primitive serializers.
-        serializerTypes[typeof(bool)] = typeof(BoolSerializer);
+        AddSerializer<bool, BoolSerializer>();
 
-        serializerTypes[typeof(sbyte)] = typeof(SbyteSerializer);
-        serializerTypes[typeof(byte)] = typeof(ByteSerializer);
-        serializerTypes[typeof(short)] = typeof(ShortSerializer);
-        serializerTypes[typeof(ushort)] = typeof(UshortSerializer);
-        serializerTypes[typeof(int)] = typeof(IntSerializer);
-        serializerTypes[typeof(uint)] = typeof(UintSerializer);
-        serializerTypes[typeof(long)] = typeof(LongSerializer);
-        serializerTypes[typeof(ulong)] = typeof(UlongSerializer);
+        AddSerializer<sbyte, SbyteSerializer>();
+        AddSerializer<byte, ByteSerializer>();
+        AddSerializer<short, ShortSerializer>();
+        AddSerializer<ushort, UshortSerializer>();
+        AddSerializer<int, IntSerializer>();
+        AddSerializer<uint, UintSerializer>();
+        AddSerializer<long, LongSerializer>();
+        AddSerializer<ulong, UlongSerializer>();
 
-        serializerTypes[typeof(float)] = typeof(FloatSerializer);
-        serializerTypes[typeof(double)] = typeof(DoubleSerializer);
-        serializerTypes[typeof(decimal)] = typeof(DecimalSerializer);
+        AddSerializer<float, FloatSerializer>();
+        AddSerializer<double, DoubleSerializer>();
+        AddSerializer<decimal, DecimalSerializer>();
 
-        serializerTypes[typeof(char)] = typeof(CharSerializer);
+        AddSerializer<char, CharSerializer>();
 
-        serializerTypes[typeof(string)] = typeof(StringSerializer);
+        AddSerializer<string, StringSerializer>();
 
         // Add built-in collection serializers.
-        serializerTypes[typeof(Array)] = typeof(ArraySerializer<>);
-        serializerTypes[typeof(List<>)] = typeof(ListSerializer<>);
+        AddSerializer(typeof(Array), typeof(ArraySerializer<>));
+        AddSerializer(typeof(List<>),  typeof(ListSerializer<>));
 
-        serializerTypes[typeof(Dictionary<,>)] = typeof(DictionarySerializer<,>);
+        AddSerializer(typeof(Dictionary<,>), typeof(DictionarySerializer<,>));
 
         // Add Godot serializers.
 #if GODOT
-        serializerTypes[typeof(Godot.StringName)] = typeof(GodotEngine.StringNameSerializer);
-        serializerTypes[typeof(Godot.Vector2)] = typeof(GodotEngine.Vector2Serializer);
-        serializerTypes[typeof(Godot.Vector3)] = typeof(GodotEngine.Vector3Serializer);
-        serializerTypes[typeof(Godot.Vector4)] = typeof(GodotEngine.Vector4Serializer);
-        serializerTypes[typeof(Godot.Vector2I)] = typeof(GodotEngine.Vector2ISerializer);
-        serializerTypes[typeof(Godot.Vector3I)] = typeof(GodotEngine.Vector3ISerializer);
-        serializerTypes[typeof(Godot.Vector4I)] = typeof(GodotEngine.Vector4ISerializer);
-        serializerTypes[typeof(Godot.Quaternion)] = typeof(GodotEngine.QuaternionSerializer);
-        serializerTypes[typeof(Godot.Plane)] = typeof(GodotEngine.PlaneSerializer);
-        serializerTypes[typeof(Godot.Color)] = typeof(GodotEngine.ColorSerializer);
-        serializerTypes[typeof(Godot.Collections.Array<>)] = typeof(GodotEngine.ArraySerializer<>);
-        serializerTypes[typeof(Godot.Collections.Dictionary<,>)] = typeof(GodotEngine.DictionarySerializer<,>);
+        AddSerializer<Godot.StringName, GodotEngine.StringNameSerializer>();
+        AddSerializer<Godot.NodePath, GodotEngine.NodePathSerializer>();
+
+        AddSerializer<Godot.Vector2, GodotEngine.Vector2Serializer>();
+        AddSerializer<Godot.Vector3, GodotEngine.Vector3Serializer>();
+        AddSerializer<Godot.Vector4, GodotEngine.Vector4Serializer>();
+        AddSerializer<Godot.Vector2I, GodotEngine.Vector2ISerializer>();
+        AddSerializer<Godot.Vector3I, GodotEngine.Vector3ISerializer>();
+        AddSerializer<Godot.Vector4I, GodotEngine.Vector4ISerializer>();
+
+        AddSerializer<Godot.Quaternion, GodotEngine.QuaternionSerializer>();
+        AddSerializer<Godot.Plane, GodotEngine.PlaneSerializer>();
+
+        AddSerializer<Godot.Rect2, GodotEngine.Rect2Serializer>();
+        AddSerializer<Godot.Rect2I, GodotEngine.Rect2ISerializer>();
+        AddSerializer<Godot.Aabb, GodotEngine.AabbSerializer>();
+
+        AddSerializer<Godot.Transform2D, GodotEngine.Transform2DSerializer>();
+        AddSerializer<Godot.Basis, GodotEngine.BasisSerializer>();
+        AddSerializer<Godot.Transform3D, GodotEngine.Transform3DSerializer>();
+        AddSerializer<Godot.Projection, GodotEngine.ProjectionSerializer>();
+
+        AddSerializer<Godot.Color, GodotEngine.ColorSerializer>();
+
+        AddSerializer(typeof(Godot.Collections.Array<>), typeof(GodotEngine.ArraySerializer<>));
+        AddSerializer(typeof(Godot.Collections.Dictionary<,>), typeof(GodotEngine.DictionarySerializer<,>));
 #endif
 
         // Add Unity serializers.
 #if UNITY_5_OR_NEWER
-        serializerTypes[typeof(UnityEngine.Color)] = typeof(Unity.ColorSerializer);
-        serializerTypes[typeof(UnityEngine.Color32)] = typeof(Unity.Color32Serializer);
+        AddSerializer<UnityEngine.Color, Unity.ColorSerializer>();
+        AddSerializer<UnityEngine.Color32, Unity.Color32Serializer>();
 #endif
     }
 
     /* Public methods. */
+    /// <summary>
+    /// Add a serializer for some type.
+    /// </summary>
+    public void AddSerializer<TargetT, SerializerT>()
+        where SerializerT : ISerializer
+    {
+        AddSerializer(typeof(TargetT), typeof(SerializerT));
+    }
+
+    /// <summary>
+    /// Add a serializer for some type.
+    /// </summary>
+    public void AddSerializer(Type targetType, Type serializerType)
+    {
+        if (serializerType.GetInterface(nameof(ISerializer)) == null)
+            throw new ArgumentException($"The type '{serializerType}' does not implement {nameof(ISerializer)}.");
+
+        serializerTypes[targetType] = serializerType;
+        order.Add(targetType);
+    }
+
     /// <summary>
     /// Try to get a serializer for some type.
     /// </summary>

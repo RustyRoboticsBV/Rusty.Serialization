@@ -21,25 +21,25 @@ public readonly struct Vector3Serializer : ISerializer<Vector3>
         if (node is ListNode list)
         {
             if (list.Elements.Length != 3)
-                throw new ArgumentException("Cannot deserialize array node as Vector3 (wrong number of elements).");
+                throw new ArgumentException("Cannot deserialize list node as Vector3 (wrong number of elements).");
 
             float x = 0;
             if (list.Elements[0] is FloatNode xNode)
                 x = (float)xNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector3 (x is not @bool float).");
+                throw new ArgumentException("Cannot deserialize list node as Vector3 (x is not a float).");
 
             float y = 0;
             if (list.Elements[1] is FloatNode yNode)
                 y = (float)yNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector3 (y is not @bool float).");
+                throw new ArgumentException("Cannot deserialize list node as Vector3 (y is not a float).");
 
             float z = 0;
             if (list.Elements[2] is FloatNode zNode)
                 z = (float)zNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector3 (z is not @bool float).");
+                throw new ArgumentException("Cannot deserialize list node as Vector3 (z is not a float).");
 
             return new(x, y, z);
         }
