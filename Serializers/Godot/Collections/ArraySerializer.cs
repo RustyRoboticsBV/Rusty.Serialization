@@ -3,7 +3,7 @@ using System;
 using Godot.Collections;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.Serializers.GodotEngine;
+namespace Rusty.Serialization.Serializers.Gd;
 
 /// <summary>
 /// A list serializer.

@@ -45,32 +45,32 @@ public sealed class Registry
 
         // Add Godot serializers.
 #if GODOT
-        AddSerializer<Godot.StringName, GodotEngine.StringNameSerializer>();
-        AddSerializer<Godot.NodePath, GodotEngine.NodePathSerializer>();
+        AddSerializer<Godot.StringName, Gd.StringNameSerializer>();
+        AddSerializer<Godot.NodePath, Gd.NodePathSerializer>();
 
-        AddSerializer<Godot.Vector2, GodotEngine.Vector2Serializer>();
-        AddSerializer<Godot.Vector3, GodotEngine.Vector3Serializer>();
-        AddSerializer<Godot.Vector4, GodotEngine.Vector4Serializer>();
-        AddSerializer<Godot.Vector2I, GodotEngine.Vector2ISerializer>();
-        AddSerializer<Godot.Vector3I, GodotEngine.Vector3ISerializer>();
-        AddSerializer<Godot.Vector4I, GodotEngine.Vector4ISerializer>();
+        AddSerializer<Godot.Vector2, Gd.Vector2Serializer>();
+        AddSerializer<Godot.Vector3, Gd.Vector3Serializer>();
+        AddSerializer<Godot.Vector4, Gd.Vector4Serializer>();
+        AddSerializer<Godot.Vector2I, Gd.Vector2ISerializer>();
+        AddSerializer<Godot.Vector3I, Gd.Vector3ISerializer>();
+        AddSerializer<Godot.Vector4I, Gd.Vector4ISerializer>();
 
-        AddSerializer<Godot.Quaternion, GodotEngine.QuaternionSerializer>();
-        AddSerializer<Godot.Plane, GodotEngine.PlaneSerializer>();
+        AddSerializer<Godot.Quaternion, Gd.QuaternionSerializer>();
+        AddSerializer<Godot.Plane, Gd.PlaneSerializer>();
 
-        AddSerializer<Godot.Rect2, GodotEngine.Rect2Serializer>();
-        AddSerializer<Godot.Rect2I, GodotEngine.Rect2ISerializer>();
-        AddSerializer<Godot.Aabb, GodotEngine.AabbSerializer>();
+        AddSerializer<Godot.Rect2, Gd.Rect2Serializer>();
+        AddSerializer<Godot.Rect2I, Gd.Rect2ISerializer>();
+        AddSerializer<Godot.Aabb, Gd.AabbSerializer>();
 
-        AddSerializer<Godot.Transform2D, GodotEngine.Transform2DSerializer>();
-        AddSerializer<Godot.Basis, GodotEngine.BasisSerializer>();
-        AddSerializer<Godot.Transform3D, GodotEngine.Transform3DSerializer>();
-        AddSerializer<Godot.Projection, GodotEngine.ProjectionSerializer>();
+        AddSerializer<Godot.Transform2D, Gd.Transform2DSerializer>();
+        AddSerializer<Godot.Basis, Gd.BasisSerializer>();
+        AddSerializer<Godot.Transform3D, Gd.Transform3DSerializer>();
+        AddSerializer<Godot.Projection, Gd.ProjectionSerializer>();
 
-        AddSerializer<Godot.Color, GodotEngine.ColorSerializer>();
+        AddSerializer<Godot.Color, Gd.ColorSerializer>();
 
-        AddSerializer(typeof(Godot.Collections.Array<>), typeof(GodotEngine.ArraySerializer<>));
-        AddSerializer(typeof(Godot.Collections.Dictionary<,>), typeof(GodotEngine.DictionarySerializer<,>));
+        AddSerializer(typeof(Godot.Collections.Array<>), typeof(Gd.ArraySerializer<>));
+        AddSerializer(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionarySerializer<,>));
 #endif
 
         // Add Unity serializers.
