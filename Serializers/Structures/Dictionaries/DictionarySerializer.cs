@@ -5,7 +5,7 @@ using Rusty.Serialization.Nodes;
 namespace Rusty.Serialization;
 
 /// <summary>
-/// A list serializer.
+/// A dictionary serializer.
 /// </summary>
 public readonly struct DictionarySerializer<KeyT, ValueT> : ISerializer<Dictionary<KeyT, ValueT>>
 {

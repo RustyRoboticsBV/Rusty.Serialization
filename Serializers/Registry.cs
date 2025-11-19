@@ -45,6 +45,13 @@ public sealed class Registry
         serializerTypes[typeof(Dictionary<,>)] = typeof(DictionarySerializer<,>);
 
 #if GODOT
+        serializerTypes[typeof(Godot.Vector2)] = typeof(GodotEngine.Vector2Serializer);
+        serializerTypes[typeof(Godot.Vector3)] = typeof(GodotEngine.Vector3Serializer);
+        serializerTypes[typeof(Godot.Vector4)] = typeof(GodotEngine.Vector4Serializer);
+        serializerTypes[typeof(Godot.Vector2I)] = typeof(GodotEngine.Vector2ISerializer);
+        serializerTypes[typeof(Godot.Vector3I)] = typeof(GodotEngine.Vector3ISerializer);
+        serializerTypes[typeof(Godot.Vector4I)] = typeof(GodotEngine.Vector4ISerializer);
+        serializerTypes[typeof(Godot.Quaternion)] = typeof(GodotEngine.QuaternionSerializer);
         serializerTypes[typeof(Godot.Color)] = typeof(GodotEngine.ColorSerializer);
         serializerTypes[typeof(Godot.Collections.Array<>)] = typeof(GodotEngine.ArraySerializer<>);
         serializerTypes[typeof(Godot.Collections.Dictionary<,>)] = typeof(GodotEngine.DictionarySerializer<,>);
@@ -85,8 +92,6 @@ public sealed class Registry
     /// </summary>
     private ISerializer ResolveSerializer(Type type)
     {
-        System.Console.WriteLine("Source targetType: " + type);
-
         // Fast path: check instances.
         if (serializerInstances.TryGetValue(type, out ISerializer instance))
             return instance;
@@ -130,7 +135,6 @@ public sealed class Registry
 
     private ISerializer CreateInstance(Type targetType, Type serializerType)
     {
-        System.Console.WriteLine("Found match " + serializerType);
         // Case 1: serializer is NOT generic.
         if (!serializerType.IsGenericTypeDefinition)
             return (ISerializer)Activator.CreateInstance(serializerType);

@@ -27,6 +27,15 @@ public sealed class TestClass
 #endif
     public int[] g1 = [1, 2, 3, 4, 5];
     public List<float> g2 = [1.1f, 2.2f, 3.3f, 4.4f, 5.5f];
+#if GODOT
+    public Godot.Vector2 g31 = new(1.1f, 2.2f);
+    public Godot.Vector3 g32 = new(1.1f, 2.2f, 3.3f);
+    public Godot.Vector4 g33 = new(1.1f, 2.2f, 3.3f, 4.4f);
+    public Godot.Vector2I g41 = new(1, 2);
+    public Godot.Vector3I g42 = new(1, 2, 3);
+    public Godot.Vector4I g43 = new(1, 2, 3, 4);
+    public Godot.Quaternion g5 = Godot.Quaternion.Identity;
+#endif
     public Dictionary<char, string> h = new Dictionary<char, string>()
     {
         { 'a', "AAA" },
