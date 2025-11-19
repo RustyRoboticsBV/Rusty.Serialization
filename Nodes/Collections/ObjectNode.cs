@@ -123,7 +123,7 @@ public readonly struct ObjectNode : INode
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"Could not parse string '{text}' as an object. " + ex.Message);
+            throw new ArgumentException($"Could not parse string '{text}' as an object.\n" + ex.Message);
         }
     }
 }

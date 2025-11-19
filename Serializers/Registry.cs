@@ -39,7 +39,7 @@ public sealed class Registry
 
         // Add built-in collection serializers.
         AddSerializer(typeof(Array), typeof(ArraySerializer<>));
-        AddSerializer(typeof(List<>),  typeof(ListSerializer<>));
+        AddSerializer(typeof(List<>), typeof(ListSerializer<>));
 
         AddSerializer(typeof(Dictionary<,>), typeof(DictionarySerializer<,>));
 
@@ -172,7 +172,11 @@ public sealed class Registry
                 return serializerInstances[type] = CreateInstance(type, serializer);
         }
 
-        // Case 5: default class/struct serialization.
+        // Case 5: enum serialization.
+        if (type.IsEnum)
+            return serializerInstances[type] = CreateAutoEnumSerializer(type);
+
+        // Case 6: default class/struct serialization.
         if ((type.IsClass && !type.IsAbstract) || (type.IsValueType && !type.IsPrimitive && !type.IsEnum))
             return serializerInstances[type] = CreateAutoObjectSerializer(type);
 
@@ -209,6 +213,17 @@ public sealed class Registry
         );
     }
 
+    private ISerializer CreateAutoEnumSerializer(Type targetType)
+    {
+        // Create ObjectSerializer<T> closed generic.
+        Type serializerType = typeof(EnumSerializer<>).MakeGenericType(targetType);
+
+        // Construct instance.
+        ISerializer instance = (ISerializer)Activator.CreateInstance(serializerType, (TypeName)targetType.FullName);
+
+        return instance;
+    }
+
     private ISerializer CreateAutoObjectSerializer(Type targetType)
     {
         // Create ObjectSerializer<T> closed generic.
@@ -219,5 +234,4 @@ public sealed class Registry
 
         return instance;
     }
-
 }

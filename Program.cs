@@ -11,6 +11,7 @@ test.@char = 'C';
 test.@string = "A\"B\"C";
 test.array = [5, 7, 9, 11];
 test.dictionary = new() { { 'C', "CCC" }, { 'D', "DDD" } };
+test.@enum = Test.Enum.B;
 
 Registry registry = new();
 ObjectSerializer<Test> serializer = new("test", null);

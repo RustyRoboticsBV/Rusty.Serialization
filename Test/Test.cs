@@ -27,6 +27,10 @@ public sealed class Test
     public UnityEngine.Color32 color32 = Color.red;
 #endif
 
+    // Enums.
+    public enum Enum { A, B, C };
+    public Enum @enum = Enum.A;
+
     // Lists.
     public int[] array = [1, 2, 3, 4, 5];
     public List<float> list = [1.1f, 2.2f, 3.3f, 4.4f, 5.5f];

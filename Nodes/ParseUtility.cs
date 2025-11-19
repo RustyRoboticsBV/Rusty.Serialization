@@ -66,15 +66,15 @@ internal static class ParseUtility
             {
                 switch (c)
                 {
+                    case '(':
                     case '[':
                     case '{':
-                    //case '(':
                     case '<':
                         depth++;
                         break;
+                    case ')':
                     case ']':
                     case '}':
-                    //case ')':
                     case '>':
                         depth--;
                         break;
@@ -102,6 +102,8 @@ internal static class ParseUtility
             return CharNode.Deserialize(text);
         else if (text.StartsWith('"') && text.EndsWith('"'))
             return StringNode.Deserialize(text);
+        else if (text.StartsWith('(') && text.EndsWith(')'))
+            return EnumNode.Deserialize(text);
         else if (text.StartsWith('[') && text.EndsWith(']'))
             return ListNode.Deserialize(text);
         else if (text.StartsWith('{') && text.EndsWith('}'))
