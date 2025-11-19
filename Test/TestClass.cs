@@ -35,6 +35,7 @@ public sealed class TestClass
     public Godot.Vector3I g42 = new(1, 2, 3);
     public Godot.Vector4I g43 = new(1, 2, 3, 4);
     public Godot.Quaternion g5 = Godot.Quaternion.Identity;
+    public Godot.Plane g6 = Godot.Plane.PlaneXY;
 #endif
     public Dictionary<char, string> h = new Dictionary<char, string>()
     {

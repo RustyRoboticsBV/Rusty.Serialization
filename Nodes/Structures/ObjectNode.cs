@@ -121,9 +121,9 @@ public readonly struct ObjectNode : INode
 
             return new ObjectNode(typeName, pairs);
         }
-        catch
+        catch (Exception ex)
         {
-            throw new ArgumentException($"Could not parse string '{text}' as an object.");
+            throw new ArgumentException($"Could not parse string '{text}' as an object. " + ex.Message);
         }
     }
 }

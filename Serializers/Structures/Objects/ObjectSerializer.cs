@@ -21,8 +21,6 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
     {
         this.typeCode = typeCode ?? typeof(T).Name;
         members = GetMembers(memberNames) ?? [];
-
-        System.Console.WriteLine(members);
     }
 
     /* Public methods. */

@@ -36,7 +36,7 @@ internal static class ParseUtility
 
             if (inString)
             {
-                if (c == '"')
+                if (!inChar && c == '"')
                 {
                     bool isDoubled = i + 1 < text.Length && text[i + 1] == '"';
                     if (isDoubled)
@@ -49,7 +49,7 @@ internal static class ParseUtility
             else if (inChar && c == '\'')
                 inChar = false;
 
-            else if (c == '"')
+            else if (!inChar && c == '"')
                 inString = true;
 
             else if (c == '\'')

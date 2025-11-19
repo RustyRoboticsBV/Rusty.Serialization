@@ -45,6 +45,7 @@ public sealed class Registry
         serializerTypes[typeof(Dictionary<,>)] = typeof(DictionarySerializer<,>);
 
 #if GODOT
+        serializerTypes[typeof(Godot.StringName)] = typeof(GodotEngine.StringNameSerializer);
         serializerTypes[typeof(Godot.Vector2)] = typeof(GodotEngine.Vector2Serializer);
         serializerTypes[typeof(Godot.Vector3)] = typeof(GodotEngine.Vector3Serializer);
         serializerTypes[typeof(Godot.Vector4)] = typeof(GodotEngine.Vector4Serializer);
@@ -52,6 +53,7 @@ public sealed class Registry
         serializerTypes[typeof(Godot.Vector3I)] = typeof(GodotEngine.Vector3ISerializer);
         serializerTypes[typeof(Godot.Vector4I)] = typeof(GodotEngine.Vector4ISerializer);
         serializerTypes[typeof(Godot.Quaternion)] = typeof(GodotEngine.QuaternionSerializer);
+        serializerTypes[typeof(Godot.Plane)] = typeof(GodotEngine.PlaneSerializer);
         serializerTypes[typeof(Godot.Color)] = typeof(GodotEngine.ColorSerializer);
         serializerTypes[typeof(Godot.Collections.Array<>)] = typeof(GodotEngine.ArraySerializer<>);
         serializerTypes[typeof(Godot.Collections.Dictionary<,>)] = typeof(GodotEngine.DictionarySerializer<,>);
