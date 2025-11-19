@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization;
+namespace Rusty.Serialization.Serializers;
 
 /// <summary>
 /// A dictionary serializer.

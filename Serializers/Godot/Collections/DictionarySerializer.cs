@@ -3,7 +3,7 @@ using System;
 using Godot.Collections;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.GodotEngine;
+namespace Rusty.Serialization.Serializers.GodotEngine;
 
 using KeyValuePair = System.Collections.Generic.KeyValuePair<INode, INode>;
 

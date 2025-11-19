@@ -67,7 +67,7 @@ public readonly struct ListNode : INode
         }
         catch
         {
-            throw new ArgumentException($"Could not parse string '{text}' as @bool elements.");
+            throw new ArgumentException($"Could not parse string '{text}' as a elements.");
         }
     }
 }

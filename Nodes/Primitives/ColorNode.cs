@@ -72,7 +72,7 @@ public struct ColorNode : INode
         }
         catch
         {
-            throw new ArgumentException($"Could not parse string '{text}' as @bool gdcolor.");
+            throw new ArgumentException($"Could not parse string '{text}' as a gdcolor.");
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization;
+namespace Rusty.Serialization.Serializers;
 
 /// <summary>
 /// A float serializer.

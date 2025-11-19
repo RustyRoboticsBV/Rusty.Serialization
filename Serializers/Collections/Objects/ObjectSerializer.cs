@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Rusty.Serialization;
+namespace Rusty.Serialization.Serializers;
 
 /// <summary>
 /// A generic object serializer.

@@ -37,6 +37,6 @@ public readonly struct StringNode : INode
         {
             return new(trimmed.Substring(1, trimmed.Length - 2).Replace("\"\"", "\""));
         }
-        throw new ArgumentException($"Could not parse string '{text}' as @bool string.");
+        throw new ArgumentException($"Could not parse string '{text}' as a string.");
     }
 }

@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.Unity
+namespace Rusty.Serialization.Serializers.Unity
 {
     /// <summary>
     /// A Color serializer.

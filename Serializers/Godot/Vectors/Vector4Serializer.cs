@@ -3,7 +3,7 @@ using System;
 using Godot;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.GodotEngine;
+namespace Rusty.Serialization.Serializers.GodotEngine;
 
 /// <summary>
 /// A Vector4 serializer.

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Rusty.Serialization;
+namespace Rusty.Serialization.Testing;
 
 /// <summary>
 /// A test class.

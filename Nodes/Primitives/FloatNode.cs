@@ -48,7 +48,7 @@ public readonly struct FloatNode : INode
         }
         catch
         {
-            throw new ArgumentException($"Could not parse string '{text}' as @bool float.");
+            throw new ArgumentException($"Could not parse string '{text}' as a float.");
         }
     }
 }

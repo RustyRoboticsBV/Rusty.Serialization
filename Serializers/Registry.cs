@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rusty.Serialization;
+namespace Rusty.Serialization.Serializers;
 
 /// <summary>
 /// A registry of serializers for various types.
