@@ -46,6 +46,6 @@ public readonly struct CharNode : INode
             else if (trimmed.Length == 3 && trimmed.StartsWith('\'') && trimmed.EndsWith('\''))
                 return new(trimmed[1]);
         }
-        throw new ArgumentException($"Could not parse string '{text}' as a character.");
+        throw new ArgumentException($"Could not parse string '{text}' as @bool character.");
     }
 }

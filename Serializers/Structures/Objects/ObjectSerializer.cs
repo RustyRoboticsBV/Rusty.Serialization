@@ -10,7 +10,7 @@ namespace Rusty.Serialization;
 /// A generic object serializer.
 /// </summary>
 public readonly struct ObjectSerializer<T> : ISerializer<T>
-    where T : class, new()
+    where T : new()
 {
     /* Fields. */
     private readonly string typeCode;
@@ -19,8 +19,13 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
     /* Constructors. */
     public ObjectSerializer(string typeCode = null, params string[] memberNames)
     {
-        this.typeCode = typeCode ?? typeof(T).Name;
-        members = GetMembers(memberNames) ?? [];
+        Type type = typeof(T);
+        
+        // Store type code (default to full class name, without the namespace).
+        this.typeCode = typeCode ?? type.FullName.Replace(type.Namespace + ".", "");
+
+        // Get members.
+        members = GetMembers(memberNames);
     }
 
     /* Public methods. */
@@ -48,12 +53,40 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
 
     public T Deserialize(INode node, Registry context)
     {
-        if (node is NullNode @null)
-            return null;
+        if (node is NullNode @null && typeof(T).IsClass)
+            return default;
         else if (node is ObjectNode obj)
         {
             T instance = new();
-            // TODO
+
+            // Collect member INodes as dictionary.
+            var dict = new Dictionary<string, INode>(obj.Members.Length);
+            for (int i = 0; i < obj.Members.Length; i++)
+            {
+                dict[obj.Members[i].Key] = obj.Members[i].Value;
+            }
+
+            // Deserialize members.
+            foreach (var member in members)
+            {
+                if (dict.TryGetValue(member.Name, out INode valueNode))
+                {
+                    // Get serializer for the member type
+                    Type memberType = member switch
+                    {
+                        FieldInfo f => f.FieldType,
+                        PropertyInfo p => p.PropertyType,
+                        _ => throw new InvalidOperationException($"Unsupported member type '{member.MemberType}'.")
+                    };
+
+                    ISerializer serializer = context.GetSerializer(memberType);
+
+                    object value = serializer.Deserialize(valueNode, context);
+
+                    SetValue(instance, member, value);
+                }
+            }
+
             return instance;
 
         }

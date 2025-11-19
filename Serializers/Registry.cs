@@ -10,8 +10,8 @@ namespace Rusty.Serialization;
 public sealed class Registry
 {
     /* Fields. */
-    private readonly Dictionary<Type, Type> serializerTypes = new();
-    private readonly Dictionary<Type, ISerializer> serializerInstances = new();
+    private Dictionary<Type, Type> serializerTypes = new();
+    private Dictionary<Type, ISerializer> serializerInstances = new();
     private readonly List<Type> order;
 
     /* Constructors. */
@@ -19,7 +19,7 @@ public sealed class Registry
     {
         order = serializers?.ToList() ?? new();
 
-        // Add built-in serializers.
+        // Add built-in primitive serializers.
         serializerTypes[typeof(bool)] = typeof(BoolSerializer);
 
         serializerTypes[typeof(sbyte)] = typeof(SbyteSerializer);
@@ -39,11 +39,13 @@ public sealed class Registry
 
         serializerTypes[typeof(string)] = typeof(StringSerializer);
 
+        // Add built-in collection serializers.
         serializerTypes[typeof(Array)] = typeof(ArraySerializer<>);
         serializerTypes[typeof(List<>)] = typeof(ListSerializer<>);
 
         serializerTypes[typeof(Dictionary<,>)] = typeof(DictionarySerializer<,>);
 
+        // Add Godot serializers.
 #if GODOT
         serializerTypes[typeof(Godot.StringName)] = typeof(GodotEngine.StringNameSerializer);
         serializerTypes[typeof(Godot.Vector2)] = typeof(GodotEngine.Vector2Serializer);
@@ -57,6 +59,12 @@ public sealed class Registry
         serializerTypes[typeof(Godot.Color)] = typeof(GodotEngine.ColorSerializer);
         serializerTypes[typeof(Godot.Collections.Array<>)] = typeof(GodotEngine.ArraySerializer<>);
         serializerTypes[typeof(Godot.Collections.Dictionary<,>)] = typeof(GodotEngine.DictionarySerializer<,>);
+#endif
+
+        // Add Unity serializers.
+#if UNITY_5_OR_NEWER
+        serializerTypes[typeof(UnityEngine.Color)] = typeof(Unity.ColorSerializer);
+        serializerTypes[typeof(UnityEngine.Color32)] = typeof(Unity.Color32Serializer);
 #endif
     }
 
@@ -84,7 +92,7 @@ public sealed class Registry
             return serializer;
 
         // Else, throw exception.
-        throw new ArgumentException($"No serializer for targetType '{type}' could be found.");
+        throw new ArgumentException($"No serializerType for targetType '{type}' could be found.");
 
     }
 
@@ -131,6 +139,11 @@ public sealed class Registry
                 return serializerInstances[type] = CreateInstance(type, serializer);
         }
 
+        // Case 5: default class/struct serialization.
+        if ((type.IsClass && !type.IsAbstract) || (type.IsValueType && !type.IsPrimitive && !type.IsEnum))
+            return serializerInstances[type] = CreateAutoObjectSerializer(type);
+
+
         // No serializer found.
         return serializerInstances[type] = null;
     }
@@ -162,4 +175,16 @@ public sealed class Registry
             $"Serializer targetType '{serializerType}' is generic, but target targetType '{targetType}' cannot supply targetType arguments."
         );
     }
+
+    private ISerializer CreateAutoObjectSerializer(Type targetType)
+    {
+        // Create ObjectSerializer<T> closed generic.
+        Type serializerType = typeof(ObjectSerializer<>).MakeGenericType(targetType);
+
+        // Construct instance.
+        ISerializer instance = (ISerializer)Activator.CreateInstance(serializerType, [null, null]);
+
+        return instance;
+    }
+
 }

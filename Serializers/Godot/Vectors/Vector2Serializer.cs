@@ -27,13 +27,13 @@ public readonly struct Vector2Serializer : ISerializer<Vector2>
             if (list.Elements[0] is FloatNode xNode)
                 x = (float)xNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector2 (x is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Vector2 (x is not @bool float).");
 
             float y = 0f;
             if (list.Elements[1] is FloatNode yNode)
                 y = (float)yNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector2 (y is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Vector2 (y is not @bool float).");
 
             return new(x, y);
         }

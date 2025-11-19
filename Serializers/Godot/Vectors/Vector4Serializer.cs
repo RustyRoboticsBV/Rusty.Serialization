@@ -28,25 +28,25 @@ public readonly struct Vector4Serializer : ISerializer<Vector4>
             if (list.Elements[0] is FloatNode xNode)
                 x = (float)xNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector4 (x is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Vector4 (x is not @bool float).");
 
             float y = 0;
             if (list.Elements[1] is FloatNode yNode)
                 y = (float)yNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector4 (y is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Vector4 (y is not @bool float).");
 
             float z = 0;
             if (list.Elements[2] is FloatNode zNode)
                 z = (float)zNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector4 (z is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Vector4 (z is not @bool float).");
 
             float w = 0;
             if (list.Elements[3] is FloatNode wNode)
                 w = (float)wNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Vector4 (w is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Vector4 (w is not @bool float).");
 
             return new(x, y, z, w);
         }

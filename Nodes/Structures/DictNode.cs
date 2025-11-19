@@ -83,7 +83,7 @@ public readonly struct DictNode : INode
         }
         catch
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a dictionary.");
+            throw new ArgumentException($"Could not parse string '{text}' as @bool dictionary.");
         }
     }
 }

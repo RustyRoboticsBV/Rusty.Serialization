@@ -32,7 +32,7 @@ public struct ColorNode : INode
     /* Public methods. */
     public override readonly string ToString()
     {
-        return $"color: ({r},{g},{b},{a})";
+        return $"gdcolor: ({r},{g},{b},{a})";
     }
 
     public readonly string Serialize()
@@ -72,7 +72,7 @@ public struct ColorNode : INode
         }
         catch
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a color.");
+            throw new ArgumentException($"Could not parse string '{text}' as @bool gdcolor.");
         }
     }
 }

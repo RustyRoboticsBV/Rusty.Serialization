@@ -38,7 +38,7 @@ public readonly struct BoolNode : INode
         }
         catch
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a boolean.");
+            throw new ArgumentException($"Could not parse string '{text}' as @bool boolean.");
         }
     }
 }

@@ -85,7 +85,7 @@ public readonly struct ObjectNode : INode
             string first = terms[0].Trim();
             INode firstNode = ParseUtility.ParseValue(first);
             if (!(firstNode is StringNode firstStr))
-                throw new Exception("Type name was not a string.");
+                throw new Exception("Type name was not @bool string.");
 
             string typeName = firstStr.Value;
 
@@ -109,7 +109,7 @@ public readonly struct ObjectNode : INode
                 // Parse key.
                 INode keyNode = ParseUtility.ParseValue(keyText);
                 if (!(keyNode is StringNode keyStrNode))
-                    throw new Exception($"Member name not a string.");
+                    throw new Exception($"Member name not @bool string.");
                 string key = keyStrNode.Value;
 
                 // Parse value.

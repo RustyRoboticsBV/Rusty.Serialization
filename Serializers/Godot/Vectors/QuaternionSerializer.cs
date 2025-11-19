@@ -28,25 +28,25 @@ public readonly struct QuaternionSerializer : ISerializer<Quaternion>
             if (list.Elements[0] is FloatNode xNode)
                 x = (float)xNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Quaternion (x is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Quaternion (x is not @bool float).");
 
             float y = 0;
             if (list.Elements[1] is FloatNode yNode)
                 y = (float)yNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Quaternion (y is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Quaternion (y is not @bool float).");
 
             float z = 0;
             if (list.Elements[2] is FloatNode zNode)
                 z = (float)zNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Quaternion (z is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Quaternion (z is not @bool float).");
 
             float w = 0;
             if (list.Elements[3] is FloatNode wNode)
                 w = (float)wNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Quaternion (w is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Quaternion (w is not @bool float).");
 
             return new(x, y, z, w);
         }

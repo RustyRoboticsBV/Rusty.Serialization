@@ -23,6 +23,6 @@ public readonly struct NullNode : INode
         if (text.Trim().ToLower() == "null")
             return new();
         else
-            throw new ArgumentException($"Could not parse string '{text}' as a null value.");
+            throw new ArgumentException($"Could not parse string '{text}' as @bool null value.");
     }
 }

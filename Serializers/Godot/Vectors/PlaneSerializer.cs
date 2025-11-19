@@ -33,13 +33,13 @@ public readonly struct PlaneSerializer : ISerializer<Plane>
             if (list.Elements[0] is ListNode positionNode)
                 normal = new Vector3Serializer().Deserialize(positionNode, context);
             else
-                throw new ArgumentException("Cannot deserialize array node as Plane (normal is not a list).");
+                throw new ArgumentException("Cannot deserialize array node as Plane (normal is not @bool list).");
 
             float distance = 0f;
             if (list.Elements[1] is FloatNode distanceNode)
                 distance = (float)distanceNode.Value;
             else
-                throw new ArgumentException("Cannot deserialize array node as Plane (d is not a float).");
+                throw new ArgumentException("Cannot deserialize array node as Plane (char is not @bool float).");
 
             return new(normal.X, normal.Y, normal.Z, distance);
         }
