@@ -10,17 +10,15 @@ namespace Rusty.Serialization.Nodes;
 public readonly struct ObjectNode : INode
 {
     /* Fields. */
-    private readonly string typeName;
-    private readonly KeyValuePair<string, INode>[] members;
+    private readonly TypeName typeName;
+    private readonly KeyValuePair<Identifier, INode>[] members;
 
     /* Public properties. */
-    public readonly string TypeName => typeName;
-    public readonly ReadOnlySpan<KeyValuePair<string, INode>> Members => members;
+    public readonly ReadOnlySpan<KeyValuePair<Identifier, INode>> Members => members;
 
     /* Constructors. */
-    public ObjectNode(string typeName, KeyValuePair<string, INode>[] members)
+    public ObjectNode(KeyValuePair<Identifier, INode>[] members)
     {
-        this.typeName = typeName ?? string.Empty;
         this.members = members ?? [];
     }
 
@@ -40,22 +38,19 @@ public readonly struct ObjectNode : INode
 
     public readonly string Serialize()
     {
-        // Add type name string.
-        string typeSerialized = new StringNode(typeName).Serialize();
-
         // Handle empty objects.
         if (members.Length == 0)
-            return $"<{typeSerialized}>";
+            return "<>";
 
         // Add members.
         string body = string.Join(",",
             members.Select(pair =>
-                new StringNode(pair.Key).Serialize() + ":" + pair.Value.Serialize()
+                pair.Key + ":" + pair.Value.Serialize()
             )
         );
 
         // Surround with pointy brackets.
-        return $"<{typeSerialized},{body}>";
+        return $"<{body}>";
     }
 
     public static ObjectNode Deserialize(string text)
@@ -77,25 +72,13 @@ public readonly struct ObjectNode : INode
             // Split into terms.
             List<string> terms = ParseUtility.Split(inner);
 
-            // Enforce presence of type name.
+            // Handle empty objects.
             if (terms.Count == 0)
-                throw new Exception("Missing type string.");
-
-            // First term must be a quoted string for the type name.
-            string first = terms[0].Trim();
-            INode firstNode = ParseUtility.ParseValue(first);
-            if (!(firstNode is StringNode firstStr))
-                throw new Exception("Type name was not a string.");
-
-            string typeName = firstStr.Value;
-
-            // Handle empty member list.
-            if (terms.Count == 1)
-                return new ObjectNode(typeName, Array.Empty<KeyValuePair<string, INode>>());
+                return new ObjectNode(null);
 
             // Handle key:value pairs.
-            var pairs = new KeyValuePair<string, INode>[terms.Count - 1];
-            for (int i = 1; i < terms.Count; i++)
+            var pairs = new KeyValuePair<Identifier, INode>[terms.Count - 1];
+            for (int i = 0; i < terms.Count; i++)
             {
                 // Split into key and value.
                 List<string> pairStrs = ParseUtility.Split(terms[i], ':');
@@ -103,23 +86,14 @@ public readonly struct ObjectNode : INode
                     throw new Exception($"Malformed key-value pair.");
 
                 // Get keys and values.
-                string keyText = pairStrs[0].Trim();
-                string valText = pairStrs[1].Trim();
-
-                // Parse key.
-                INode keyNode = ParseUtility.ParseValue(keyText);
-                if (!(keyNode is StringNode keyStrNode))
-                    throw new Exception($"Member name not a string.");
-                string key = keyStrNode.Value;
-
-                // Parse value.
-                INode valueNode = ParseUtility.ParseValue(valText);
+                Identifier key = pairStrs[0].Trim();
+                INode valueNode = ParseUtility.ParseValue(pairStrs[1].Trim());
 
                 // Add key-value pair.
-                pairs[i - 1] = new KeyValuePair<string, INode>(key, valueNode);
+                pairs[i] = new KeyValuePair<Identifier, INode>(key, valueNode);
             }
 
-            return new ObjectNode(typeName, pairs);
+            return new ObjectNode(pairs);
         }
         catch (Exception ex)
         {

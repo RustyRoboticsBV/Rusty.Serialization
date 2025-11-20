@@ -103,7 +103,7 @@ internal static class ParseUtility
         else if (text.StartsWith('"') && text.EndsWith('"'))
             return StringNode.Deserialize(text);
         else if (text.StartsWith('(') && text.EndsWith(')'))
-            return EnumNode.Deserialize(text);
+            return TypeNode.Deserialize(text);
         else if (text.StartsWith('[') && text.EndsWith(']'))
             return ListNode.Deserialize(text);
         else if (text.StartsWith('{') && text.EndsWith('}'))

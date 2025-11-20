@@ -13,19 +13,12 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
     where T : new()
 {
     /* Fields. */
-    private readonly string typeCode;
     private readonly MemberInfo[] members;
 
     /* Constructors. */
-    public ObjectSerializer(string typeCode = null, params string[] memberNames)
+    public ObjectSerializer()
     {
-        Type type = typeof(T);
-        
-        // Store type code (default to full class name, without the namespace).
-        this.typeCode = typeCode ?? type.FullName.Replace(type.Namespace + ".", "");
-
-        // Get members.
-        members = GetMembers(memberNames);
+        members = GetMembers(null);
     }
 
     /* Public methods. */
@@ -34,7 +27,7 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
         if (value == null)
             return new NullNode();
 
-        var serialized = new KeyValuePair<string, INode>[members.Length];
+        var serialized = new KeyValuePair<Identifier, INode>[members.Length];
 
         for (int i = 0; i < serialized.Length; i++)
         {
@@ -48,7 +41,7 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
             serialized[i] = new(member.Name, node);
         }
 
-        return new ObjectNode(typeCode, serialized);
+        return new ObjectNode(serialized);
     }
 
     public T Deserialize(INode node, Registry context)
@@ -119,7 +112,7 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
         }
     }
 
-    private static MemberInfo[] GetMembers(string[] memberNames)
+    private static MemberInfo[] GetMembers(Identifier[] memberNames)
     {
         BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
 
@@ -131,7 +124,7 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
         var allMembers = fields.Concat(props);
 
         if (memberNames != null)
-            return allMembers.Where(m => memberNames.Contains(m.Name)).ToArray();
+            return allMembers.Where(m => memberNames.Any(id => (string)id == m.Name)).ToArray();
 
         return allMembers.ToArray();
     }

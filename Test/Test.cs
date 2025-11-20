@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Testing;
 /// <summary>
 /// A test class.
 /// </summary>
-public sealed class Test
+public sealed class Test<T>
 {
     // Primitives.
     public bool @bool = true;
@@ -72,4 +72,7 @@ public sealed class Test
         public int a;
     }
     public Struct @struct = new();
+
+    // Generics.
+    public T generic = default;
 }

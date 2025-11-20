@@ -38,7 +38,6 @@ public sealed class Registry
         AddSerializer<string, StringSerializer>();
 
         // Add built-in collection serializers.
-        AddSerializer(typeof(Array), typeof(ArraySerializer<>));
         AddSerializer(typeof(List<>), typeof(ListSerializer<>));
 
         AddSerializer(typeof(Dictionary<,>), typeof(DictionarySerializer<,>));
@@ -81,6 +80,18 @@ public sealed class Registry
     }
 
     /* Public methods. */
+#if DEBUG
+    public void PrintSerializers()
+    {
+        int index = 0;
+        foreach (var pair in serializerInstances)
+        {
+            Console.WriteLine(index + ": " + pair.Key + "\n    " + pair.Value);
+            index++;
+        }
+    }
+#endif
+
     /// <summary>
     /// Add a serializer for some type.
     /// </summary>
@@ -125,7 +136,7 @@ public sealed class Registry
             return serializer;
 
         // Else, throw exception.
-        throw new ArgumentException($"No serializerType for targetType '{type}' could be found.");
+        throw new ArgumentException($"No serializerType for arrayType '{type}' could be found.");
 
     }
 
@@ -145,7 +156,15 @@ public sealed class Registry
         if (serializerTypes.TryGetValue(type, out serializer))
             return serializerInstances[type] = CreateInstance(type, serializer);
 
-        // Step 2: walk up the base class chain.
+        // Step 2: generic type definition match.
+        if (type.IsGenericType)
+        {
+            var genericDef = type.GetGenericTypeDefinition();
+            if (serializerTypes.TryGetValue(genericDef, out serializer))
+                return serializerInstances[type] = CreateInstance(type, serializer);
+        }
+
+        // Step 3: walk up the base class chain.
         Type baseType = type.BaseType;
         while (baseType != null)
         {
@@ -155,7 +174,7 @@ public sealed class Registry
             baseType = baseType.BaseType;
         }
 
-        // Step 3: interface lookup in order of registration.
+        // Step 4: interface lookup in order of registration.
         Type[] implementedInterfaces = type.GetInterfaces();
 
         foreach (Type ordered in order)
@@ -164,22 +183,17 @@ public sealed class Registry
                 return serializerInstances[type] = CreateInstance(type, ordered);
         }
 
-        // Step 4: generic type definition match.
-        if (type.IsGenericType)
-        {
-            var genericDef = type.GetGenericTypeDefinition();
-            if (serializerTypes.TryGetValue(genericDef, out serializer))
-                return serializerInstances[type] = CreateInstance(type, serializer);
-        }
+        // Case 5: array serialization.
+        if (type.IsArray)
+            return serializerInstances[type] = CreateArraySerializer(type);
 
-        // Case 5: enum serialization.
+        // Case 6: enum serialization.
         if (type.IsEnum)
-            return serializerInstances[type] = CreateAutoEnumSerializer(type);
+            return serializerInstances[type] = CreateEnumSerializer(type);
 
-        // Case 6: default class/struct serialization.
+        // Case 7: default class/struct serialization.
         if ((type.IsClass && !type.IsAbstract) || (type.IsValueType && !type.IsPrimitive && !type.IsEnum))
-            return serializerInstances[type] = CreateAutoObjectSerializer(type);
-
+            return serializerInstances[type] = CreateObjectSerializer(type);
 
         // No serializer found.
         return serializerInstances[type] = null;
@@ -188,50 +202,62 @@ public sealed class Registry
     private ISerializer CreateInstance(Type targetType, Type serializerType)
     {
         // Case 1: serializer is NOT generic.
-        if (!serializerType.IsGenericTypeDefinition)
+        if (!targetType.IsGenericTypeDefinition && !serializerType.IsGenericTypeDefinition)
             return (ISerializer)Activator.CreateInstance(serializerType);
 
-        // Case 2: type is an array.
-        if (targetType.IsArray)
-        {
-            Type elem = targetType.GetElementType();
-            Type closed = serializerType.MakeGenericType(elem);
-            return (ISerializer)Activator.CreateInstance(closed);
-        }
-
-        // Case 3: target type is a generic type.
-        if (targetType.IsGenericType)
-        {
-            Type[] args = targetType.GetGenericArguments();
-            Type closed = serializerType.MakeGenericType(args);
-            return (ISerializer)Activator.CreateInstance(closed);
-        }
+        // Case 2: target type is a generic type.
+        if (targetType.IsGenericType && serializerType.IsGenericType)
+            return CreateGenericSerializer(targetType, serializerType);
 
         // This should never happen unless the registry is misconfigured.
         throw new InvalidOperationException(
-            $"Serializer targetType '{serializerType}' is generic, but target targetType '{targetType}' cannot supply targetType arguments."
+            $"Could not create serializer '{serializerType}' for target type '{targetType}'."
         );
     }
 
-    private ISerializer CreateAutoEnumSerializer(Type targetType)
+    /// <summary>
+    /// Create an array serializer for some array type.
+    /// </summary>
+    private ISerializer CreateArraySerializer(Type arrayType)
     {
-        // Create ObjectSerializer<T> closed generic.
-        Type serializerType = typeof(EnumSerializer<>).MakeGenericType(targetType);
+        // Get element type.
+        Type elementType = arrayType.GetElementType();
+
+        // Create ArraySerializer<T> closed generic.
+        Type closed = typeof(ArraySerializer<>).MakeGenericType(elementType);
 
         // Construct instance.
-        ISerializer instance = (ISerializer)Activator.CreateInstance(serializerType, (TypeName)targetType.FullName);
-
-        return instance;
+        return (ISerializer)Activator.CreateInstance(closed);
     }
 
-    private ISerializer CreateAutoObjectSerializer(Type targetType)
+    private ISerializer CreateGenericSerializer(Type genericTargetType, Type genericSerializerType)
+    {
+        Type[] args = genericTargetType.GetGenericArguments();
+        Type closedSerializer = genericSerializerType.MakeGenericType(args);
+        return (ISerializer)Activator.CreateInstance(closedSerializer);
+    }
+
+    /// <summary>
+    /// Create an enum serializer for some enum type.
+    /// </summary>
+    private ISerializer CreateEnumSerializer(Type enumType)
     {
         // Create ObjectSerializer<T> closed generic.
-        Type serializerType = typeof(ObjectSerializer<>).MakeGenericType(targetType);
+        Type serializerType = typeof(EnumSerializer<>).MakeGenericType(enumType);
 
         // Construct instance.
-        ISerializer instance = (ISerializer)Activator.CreateInstance(serializerType, [null, null]);
+        return (ISerializer)Activator.CreateInstance(serializerType);
+    }
 
-        return instance;
+    /// <summary>
+    /// Create an object serializer for some object type.
+    /// </summary>
+    private ISerializer CreateObjectSerializer(Type objectType)
+    {
+        // Create ObjectSerializer<T> closed generic.
+        Type serializerType = typeof(ObjectSerializer<>).MakeGenericType(objectType);
+
+        // Construct instance.
+        return (ISerializer)Activator.CreateInstance(serializerType);
     }
 }

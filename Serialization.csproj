@@ -12,7 +12,7 @@
   </ItemGroup>
   
   <PropertyGroup>
-    <DefineConstants>GODOT</DefineConstants>
+    <DefineConstants>DEBUG,GODOT</DefineConstants>
   </PropertyGroup>
 
 </Project>
