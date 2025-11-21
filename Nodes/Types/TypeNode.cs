@@ -12,7 +12,7 @@ public readonly struct TypeNode : INode
     private readonly INode obj;
 
     /* Public properties. */
-    public readonly TypeName Value => value;
+    public readonly TypeName TypeCode => value;
     public readonly INode Object => obj;
 
     /* Constructors. */

@@ -42,7 +42,12 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
             INode node = serializer.Serialize(memberValue, context);
 
             // Wrap in type node in case of type ambiguity.
-            if (memberValue != null && memberValue.GetType() != member.DeclaringType)
+            Type type = null;
+            if (member is PropertyInfo property)
+                type = property.PropertyType;
+            else if (member is FieldInfo field)
+                type = field.FieldType;
+            if (memberValue != null && memberValue.GetType() != type)
                 node = new TypeNode(context.GetTypeCode(memberValue.GetType()), node);
 
             // Store name-node pair.
@@ -74,7 +79,7 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
             {
                 if (dict.TryGetValue(member.Name, out INode valueNode))
                 {
-                    // Get serializer for the member type
+                    // Get serializer for the member type.
                     Type memberType = member switch
                     {
                         FieldInfo f => f.FieldType,
@@ -82,10 +87,22 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
                         _ => throw new InvalidOperationException($"Unsupported member type '{member.MemberType}'.")
                     };
 
+                    // If the value node was a type node, unpack it and find its type.
+                    if (valueNode is TypeNode typeNode)
+                    {
+                        memberType = context.FindType(typeNode.TypeCode);
+                        valueNode = typeNode.Object;
+                        if (memberType == null)
+                            throw new Exception("Could not resolve type code " + typeNode.TypeCode);
+                    }
+
+                    // Get serializer.
                     ISerializer serializer = context.GetSerializer(memberType);
 
+                    // Deserialize member.
                     object value = serializer.Deserialize(valueNode, context);
 
+                    // Store value.
                     SetValue(instance, member, value);
                 }
             }
