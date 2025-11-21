@@ -3,22 +3,25 @@ using System;
 using UnityEngine;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.Serializers.Unity;
-
-/// <summary>
-/// A Color32 serializer.
-/// </summary>
-public readonly struct Color32Serializer : ISerializer<Color32>
+namespace Rusty.Serialization.Serializers.Unity
 {
-    /* Public methods. */
-    public INode Serialize(Color32 value, Registry context)
-        => new ColorNode(value.r, value.g, value.b, value.a);
-
-    public Color32 Deserialize(INode node, Registry context)
+    /// <summary>
+    /// A Color32 serializer.
+    /// </summary>
+    public readonly struct Color32Serializer : ISerializer<Color32>
     {
-        if (node is ColorNode color)
-            return new(color.R, color.G, color.B, color.A);
-        throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");
+        /* Public methods. */
+        public INode Serialize(Color32 value, Registry context, bool addTypeLabel = false)
+            => new ColorNode(value.r, value.g, value.b, value.a);
+
+        public Color32 Deserialize(INode node, Registry context)
+        {
+            if (node is TypeNode type)
+                return Deserialize(type.Object, context);
+            if (node is ColorNode color)
+                return new(color.R, color.G, color.B, color.A);
+            throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");
+        }
     }
 }
 #endif

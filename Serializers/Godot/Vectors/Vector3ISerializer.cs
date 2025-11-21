@@ -11,13 +11,15 @@ namespace Rusty.Serialization.Serializers.Gd;
 public readonly struct Vector3ISerializer : ISerializer<Vector3I>
 {
     /* Public methods. */
-    public INode Serialize(Vector3I value, Registry context)
+    public INode Serialize(Vector3I value, Registry context, bool addTypeLabel = false)
     {
         return new ListNode([new IntNode(value.X), new IntNode(value.Y), new IntNode(value.Z)]);
     }
 
     public Vector3I Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 3)

@@ -9,10 +9,12 @@ namespace Rusty.Serialization.Serializers;
 public readonly struct BoolSerializer : ISerializer<bool>
 {
     /* Public methods. */
-    public INode Serialize(bool value, Registry context) => new BoolNode(value);
+    public INode Serialize(bool value, Registry context, bool addTypeLabel = false) => new BoolNode(value);
 
     public bool Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is BoolNode boolNode)
             return boolNode.Value;
         throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");

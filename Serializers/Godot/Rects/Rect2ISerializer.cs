@@ -14,7 +14,7 @@ public readonly struct Rect2ISerializer : ISerializer<Rect2I>
     private readonly Vector2ISerializer serializer;
 
     /* Public methods. */
-    public INode Serialize(Rect2I value, Registry context)
+    public INode Serialize(Rect2I value, Registry context, bool addTypeLabel = false)
     {
         INode position = serializer.Serialize(value.Position, context);
         INode size = serializer.Serialize(value.Size, context);
@@ -23,6 +23,8 @@ public readonly struct Rect2ISerializer : ISerializer<Rect2I>
 
     public Rect2I Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 2)

@@ -9,10 +9,12 @@ namespace Rusty.Serialization.Serializers;
 public readonly struct SbyteSerializer : ISerializer<sbyte>
 {
     /* Public methods. */
-    public INode Serialize(sbyte value, Registry context) => new IntNode(value);
+    public INode Serialize(sbyte value, Registry context, bool addTypeLabel = false) => new IntNode(value);
 
     public sbyte Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is IntNode typed)
             return (sbyte)typed.Value;
         throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");

@@ -14,7 +14,7 @@ public readonly struct BasisSerializer : ISerializer<Basis>
     private readonly Vector3Serializer serializer;
 
     /* Public methods. */
-    public INode Serialize(Basis value, Registry context)
+    public INode Serialize(Basis value, Registry context, bool addTypeLabel = false)
     {
         return new ListNode([
             serializer.Serialize(value.X, context),
@@ -25,6 +25,8 @@ public readonly struct BasisSerializer : ISerializer<Basis>
 
     public Basis Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 3)

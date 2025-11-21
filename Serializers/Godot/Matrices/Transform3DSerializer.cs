@@ -11,10 +11,10 @@ namespace Rusty.Serialization.Serializers.Gd;
 public readonly struct Transform3DSerializer : ISerializer<Transform3D>
 {
     /* Fields. */
-    private readonly Vector3Serializer serializer;
+    private static readonly Vector3Serializer serializer;
 
     /* Public methods. */
-    public INode Serialize(Transform3D value, Registry context)
+    public INode Serialize(Transform3D value, Registry context, bool addTypeLabel = false)
     {
         return new ListNode([
             serializer.Serialize(value.Basis.X, context),
@@ -26,6 +26,8 @@ public readonly struct Transform3DSerializer : ISerializer<Transform3D>
 
     public Transform3D Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 4)

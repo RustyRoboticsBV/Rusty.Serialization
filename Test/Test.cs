@@ -5,6 +5,7 @@ namespace Rusty.Serialization.Testing;
 /// <summary>
 /// A test class.
 /// </summary>
+[Serializable("Test")]
 public sealed class Test<T>
 {
     // Primitives.

@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Serializers.Gd;
 public readonly struct ColorSerializer : ISerializer<Color>
 {
     /* Public methods. */
-    public INode Serialize(Color value, Registry context)
+    public INode Serialize(Color value, Registry context, bool addTypeLabel = false)
         => new ColorNode((byte)value.R8, (byte)value.G8, (byte)value.B8, (byte)value.A8);
 
     public Color Deserialize(INode node, Registry context)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Rusty.Serialization.Serializers;
 
@@ -12,30 +13,32 @@ public sealed class Registry
     /* Fields. */
     private Dictionary<Type, Type> serializerTypes = new();
     private Dictionary<Type, ISerializer> serializerInstances = new();
+    private Dictionary<Type, string> typeToName = new();
+    private Dictionary<string, Type> nameToType = new();
     private List<Type> order = new();
 
     /* Constructors. */
     public Registry(IEnumerable<(Type, Type)> serializers = null)
     {
         // Add built-in primitive serializers.
-        AddSerializer<bool, BoolSerializer>();
+        AddSerializer<bool, BoolSerializer>("b");
 
-        AddSerializer<sbyte, SbyteSerializer>();
-        AddSerializer<byte, ByteSerializer>();
-        AddSerializer<short, ShortSerializer>();
-        AddSerializer<ushort, UshortSerializer>();
-        AddSerializer<int, IntSerializer>();
-        AddSerializer<uint, UintSerializer>();
-        AddSerializer<long, LongSerializer>();
-        AddSerializer<ulong, UlongSerializer>();
+        AddSerializer<sbyte, SbyteSerializer>("i8");
+        AddSerializer<byte, ByteSerializer>("i16");
+        AddSerializer<short, ShortSerializer>("i32");
+        AddSerializer<ushort, UshortSerializer>("i64");
+        AddSerializer<int, IntSerializer>("u8");
+        AddSerializer<uint, UintSerializer>("u16");
+        AddSerializer<long, LongSerializer>("u32");
+        AddSerializer<ulong, UlongSerializer>("u64");
 
-        AddSerializer<float, FloatSerializer>();
-        AddSerializer<double, DoubleSerializer>();
-        AddSerializer<decimal, DecimalSerializer>();
+        AddSerializer<float, FloatSerializer>("f16");
+        AddSerializer<double, DoubleSerializer>("f64");
+        AddSerializer<decimal, DecimalSerializer>("dec");
 
-        AddSerializer<char, CharSerializer>();
+        AddSerializer<char, CharSerializer>("chr");
 
-        AddSerializer<string, StringSerializer>();
+        AddSerializer<string, StringSerializer>("str");
 
         // Add built-in collection serializers.
         AddSerializer(typeof(List<>), typeof(ListSerializer<>));
@@ -47,26 +50,26 @@ public sealed class Registry
         AddSerializer<Godot.StringName, Gd.StringNameSerializer>();
         AddSerializer<Godot.NodePath, Gd.NodePathSerializer>();
 
-        AddSerializer<Godot.Vector2, Gd.Vector2Serializer>();
-        AddSerializer<Godot.Vector3, Gd.Vector3Serializer>();
-        AddSerializer<Godot.Vector4, Gd.Vector4Serializer>();
-        AddSerializer<Godot.Vector2I, Gd.Vector2ISerializer>();
-        AddSerializer<Godot.Vector3I, Gd.Vector3ISerializer>();
-        AddSerializer<Godot.Vector4I, Gd.Vector4ISerializer>();
+        AddSerializer<Godot.Vector2, Gd.Vector2Serializer>("vec2f");
+        AddSerializer<Godot.Vector3, Gd.Vector3Serializer>("vec3f");
+        AddSerializer<Godot.Vector4, Gd.Vector4Serializer>("vec4f");
+        AddSerializer<Godot.Vector2I, Gd.Vector2ISerializer>("vec2i");
+        AddSerializer<Godot.Vector3I, Gd.Vector3ISerializer>("vec3i");
+        AddSerializer<Godot.Vector4I, Gd.Vector4ISerializer>("vec4i");
 
-        AddSerializer<Godot.Quaternion, Gd.QuaternionSerializer>();
-        AddSerializer<Godot.Plane, Gd.PlaneSerializer>();
+        AddSerializer<Godot.Quaternion, Gd.QuaternionSerializer>("quat");
+        AddSerializer<Godot.Plane, Gd.PlaneSerializer>("pln");
 
-        AddSerializer<Godot.Rect2, Gd.Rect2Serializer>();
-        AddSerializer<Godot.Rect2I, Gd.Rect2ISerializer>();
-        AddSerializer<Godot.Aabb, Gd.AabbSerializer>();
+        AddSerializer<Godot.Rect2, Gd.Rect2Serializer>("rec2f");
+        AddSerializer<Godot.Rect2I, Gd.Rect2ISerializer>("rec2i");
+        AddSerializer<Godot.Aabb, Gd.AabbSerializer>("aabb");
 
-        AddSerializer<Godot.Transform2D, Gd.Transform2DSerializer>();
-        AddSerializer<Godot.Basis, Gd.BasisSerializer>();
-        AddSerializer<Godot.Transform3D, Gd.Transform3DSerializer>();
-        AddSerializer<Godot.Projection, Gd.ProjectionSerializer>();
+        AddSerializer<Godot.Transform2D, Gd.Transform2DSerializer>("mat23");
+        AddSerializer<Godot.Basis, Gd.BasisSerializer>("mat33");
+        AddSerializer<Godot.Transform3D, Gd.Transform3DSerializer>("mat34");
+        AddSerializer<Godot.Projection, Gd.ProjectionSerializer>("mat44");
 
-        AddSerializer<Godot.Color, Gd.ColorSerializer>();
+        AddSerializer<Godot.Color, Gd.ColorSerializer>("col");
 
         AddSerializer(typeof(Godot.Collections.Array<>), typeof(Gd.ArraySerializer<>));
         AddSerializer(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionarySerializer<,>));
@@ -74,8 +77,8 @@ public sealed class Registry
 
         // Add Unity serializers.
 #if UNITY_5_OR_NEWER
-        AddSerializer<UnityEngine.Color, Unity.ColorSerializer>();
-        AddSerializer<UnityEngine.Color32, Unity.Color32Serializer>();
+        AddSerializer<UnityEngine.Color, Unity.ColorSerializer>("col");
+        AddSerializer<UnityEngine.Color32, Unity.Color32Serializer>("col32");
 #endif
     }
 
@@ -95,34 +98,63 @@ public sealed class Registry
     /// <summary>
     /// Add a serializer for some type.
     /// </summary>
-    public void AddSerializer<TargetT, SerializerT>()
+    public void AddSerializer<TargetT, SerializerT>(string typeName = null)
         where SerializerT : ISerializer
     {
-        AddSerializer(typeof(TargetT), typeof(SerializerT));
+        AddSerializer(typeof(TargetT), typeof(SerializerT), typeName);
     }
 
     /// <summary>
     /// Add a serializer for some type.
     /// </summary>
-    public void AddSerializer(Type targetType, Type serializerType)
+    public void AddSerializer(Type targetType, Type serializerType, string typeName = null)
     {
+        if (typeName == null)
+        {
+            var serializableAttribute = targetType.GetCustomAttribute<SerializableAttribute>();
+            if (serializableAttribute != null)
+                typeName = serializableAttribute.TypeCode;
+            else
+                typeName = new TypeName(targetType);
+        }
+
         if (serializerType.GetInterface(nameof(ISerializer)) == null)
-            throw new ArgumentException($"The type '{serializerType}' does not implement {nameof(ISerializer)}.");
+            throw new ArgumentException($"The typeCode '{serializerType}' does not implement {nameof(ISerializer)}.");
 
         serializerTypes[targetType] = serializerType;
+        typeToName[targetType] = typeName;
+        nameToType[typeName] = targetType;
         order.Add(targetType);
     }
 
     /// <summary>
-    /// Try to get a serializer for some type.
+    /// Get a type from some type code.
     /// </summary>
-    public bool TryGetSerializer(Type type, out ISerializer serializer)
+    public Type FindType(string typeCode)
     {
-        // Try to retrieve the serializer for this type.
-        serializer = ResolveSerializer(type);
+        try
+        {
+            return nameToType[typeCode];
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
-        // Return whether or not we succeeded.
-        return serializer != null;
+    /// <summary>
+    /// Get the type code of some type.
+    /// </summary>
+    public TypeName GetTypeCode(Type type)
+    {
+        try
+        {
+            return typeToName[type];
+        }
+        catch
+        {
+            return new(type);
+        }
     }
 
     /// <summary>
@@ -136,8 +168,40 @@ public sealed class Registry
             return serializer;
 
         // Else, throw exception.
-        throw new ArgumentException($"No serializerType for arrayType '{type}' could be found.");
+        throw new ArgumentException($"No serializer for typeCode '{type}' could be found.");
+    }
 
+    /// <summary>
+    /// Get a serializer for some type code.
+    /// </summary>
+    public ISerializer GetSerializer(string typeCode)
+    {
+        return GetSerializer(FindType(typeCode));
+    }
+
+    /// <summary>
+    /// Try to get a serializer for some type.
+    /// </summary>
+    public bool TryGetSerializer(Type type, out ISerializer serializer)
+    {
+        try
+        {
+            serializer = GetSerializer(type);
+            return serializer != null;
+        }
+        catch
+        {
+            serializer = null;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Try to get a serializer for some type.
+    /// </summary>
+    public bool TryGetSerializer(string typeCode, out ISerializer serializer)
+    {
+        return TryGetSerializer(FindType(typeCode), out serializer);
     }
 
     /* Private methods. */
@@ -193,12 +257,18 @@ public sealed class Registry
 
         // Case 7: default class/struct serialization.
         if ((type.IsClass && !type.IsAbstract) || (type.IsValueType && !type.IsPrimitive && !type.IsEnum))
+        {
+            AddSerializer(type, typeof(ObjectSerializer<>).MakeGenericType(type));
             return serializerInstances[type] = CreateObjectSerializer(type);
+        }
 
         // No serializer found.
         return serializerInstances[type] = null;
     }
 
+    /// <summary>
+    /// Create a serializer instance.
+    /// </summary>
     private ISerializer CreateInstance(Type targetType, Type serializerType)
     {
         // Case 1: serializer is NOT generic.
@@ -211,7 +281,7 @@ public sealed class Registry
 
         // This should never happen unless the registry is misconfigured.
         throw new InvalidOperationException(
-            $"Could not create serializer '{serializerType}' for target type '{targetType}'."
+            $"Could not create serializer '{serializerType}' for target typeCode '{targetType}'."
         );
     }
 
@@ -230,6 +300,9 @@ public sealed class Registry
         return (ISerializer)Activator.CreateInstance(closed);
     }
 
+    /// <summary>
+    /// Create a serializer for some generic type.
+    /// </summary>
     private ISerializer CreateGenericSerializer(Type genericTargetType, Type genericSerializerType)
     {
         Type[] args = genericTargetType.GetGenericArguments();

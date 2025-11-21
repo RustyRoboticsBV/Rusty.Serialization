@@ -27,6 +27,7 @@ internal static class ParseUtility
         List<string> result = new();
         bool inChar = false;
         bool inString = false;
+        bool inType = false;
         int depth = 0;
         int start = 0;
 
@@ -55,6 +56,12 @@ internal static class ParseUtility
             else if (c == '\'')
                 inChar = true;
 
+            else if (!inType && c == '(')
+                inType = true;
+
+            else if (inType && c == ')')
+                inType = false;
+
             else if (c == delimiter && depth == 0)
             {
                 string segment = text.Substring(start, i - start).Trim();
@@ -66,13 +73,11 @@ internal static class ParseUtility
             {
                 switch (c)
                 {
-                    case '(':
                     case '[':
                     case '{':
                     case '<':
                         depth++;
                         break;
-                    case ')':
                     case ']':
                     case '}':
                     case '>':
@@ -102,8 +107,8 @@ internal static class ParseUtility
             return CharNode.Deserialize(text);
         else if (text.StartsWith('"') && text.EndsWith('"'))
             return StringNode.Deserialize(text);
-        else if (text.StartsWith('(') && text.EndsWith(')'))
-            return TypeNode.Deserialize(text);
+        else if (text.StartsWith('('))
+            return TypeNode.Parse(text);
         else if (text.StartsWith('[') && text.EndsWith(']'))
             return ListNode.Deserialize(text);
         else if (text.StartsWith('{') && text.EndsWith('}'))

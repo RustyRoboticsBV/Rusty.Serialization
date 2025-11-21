@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Serializers;
 public readonly struct DictionarySerializer<KeyT, ValueT> : ISerializer<Dictionary<KeyT, ValueT>>
 {
     /* Public methods. */
-    public INode Serialize(Dictionary<KeyT, ValueT> value, Registry context)
+    public INode Serialize(Dictionary<KeyT, ValueT> value, Registry context, bool addTypeLabel = false)
     {
         // Handle null.
         if (value == null)
@@ -38,7 +38,9 @@ public readonly struct DictionarySerializer<KeyT, ValueT> : ISerializer<Dictiona
     {
         if (node is NullNode @null)
             return null;
-        else if (node is DictNode dict)
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
+        if (node is DictNode dict)
         {
             // Deserialize elements.
             ISerializer keySerializer = context.GetSerializer(typeof(KeyT));

@@ -8,7 +8,7 @@ public struct TypeName
     private readonly string name;
 
     /* Constructors. */
-    public TypeName(Type type) : this(TypeNameUtility.GetFriendlyName(type)) { }
+    public TypeName(Type type) : this(type.FullName) { }
 
     public TypeName(string name)
     {

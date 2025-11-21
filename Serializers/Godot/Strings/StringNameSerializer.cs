@@ -11,10 +11,12 @@ namespace Rusty.Serialization.Serializers.Gd;
 public readonly struct StringNameSerializer : ISerializer<StringName>
 {
     /* Public methods. */
-    public INode Serialize(StringName value, Registry context) => new StringNode(value);
+    public INode Serialize(StringName value, Registry context, bool addTypeLabel = false) => new StringNode(value);
 
     public StringName Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is StringNode str)
             return new(str.Value);
         throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");

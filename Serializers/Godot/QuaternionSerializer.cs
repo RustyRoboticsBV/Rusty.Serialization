@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Serializers.Gd;
 public readonly struct QuaternionSerializer : ISerializer<Quaternion>
 {
     /* Public methods. */
-    public INode Serialize(Quaternion value, Registry context)
+    public INode Serialize(Quaternion value, Registry context, bool addTypeLabel = false)
     {
         return new ListNode([new FloatNode((decimal)value.X), new FloatNode((decimal)value.Y),
             new FloatNode((decimal)value.Z), new FloatNode((decimal)value.W)]);

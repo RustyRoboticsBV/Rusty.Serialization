@@ -14,7 +14,7 @@ public readonly struct AabbSerializer : ISerializer<Aabb>
     private readonly Vector3Serializer serializer;
 
     /* Public methods. */
-    public INode Serialize(Aabb value, Registry context)
+    public INode Serialize(Aabb value, Registry context, bool addTypeLabel = false)
     {
         INode position = serializer.Serialize(value.Position, context);
         INode size = serializer.Serialize(value.Size, context);
@@ -23,6 +23,8 @@ public readonly struct AabbSerializer : ISerializer<Aabb>
 
     public Aabb Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 2)

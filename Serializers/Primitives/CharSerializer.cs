@@ -9,10 +9,12 @@ namespace Rusty.Serialization.Serializers;
 public readonly struct CharSerializer : ISerializer<char>
 {
     /* Public methods. */
-    public INode Serialize(char value, Registry context) => new CharNode(value);
+    public INode Serialize(char value, Registry context, bool addTypeLabel = false) => new CharNode(value);
 
     public char Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is CharNode charNode)
             return charNode.Value;
         throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");

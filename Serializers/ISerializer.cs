@@ -18,7 +18,7 @@ public interface ISerializer
     /// <summary>
     /// Emit a serializer node for an object.
     /// </summary>
-    public INode Serialize(object obj, Registry context);
+    public INode Serialize(object obj, Registry context, bool addTypeLabel = false);
 
     /// <summary>
     /// Emit a deserialized object.
@@ -35,13 +35,13 @@ public interface ISerializer<T> : ISerializer
     Type ISerializer.TargetType => typeof(T);
 
     /* Public methods. */
-    INode ISerializer.Serialize(object obj, Registry context) => Serialize((T)obj, context);
+    INode ISerializer.Serialize(object obj, Registry context, bool addTypeLabel) => Serialize((T)obj, context, addTypeLabel);
     object ISerializer.Deserialize(INode node, Registry context) => Deserialize(node, context);
 
     /// <summary>
     /// Emit a serializer node for an object.
     /// </summary>
-    public INode Serialize(T obj, Registry context);
+    public INode Serialize(T obj, Registry context, bool addTypeLabel = false);
 
     /// <summary>
     /// Emit a deserialized object.

@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Serializers.Gd;
 public readonly struct PlaneSerializer : ISerializer<Plane>
 {
     /* Public methods. */
-    public INode Serialize(Plane value, Registry context)
+    public INode Serialize(Plane value, Registry context, bool addTypeLabel = false)
     {
         ListNode origin = new ListNode([
             new FloatNode((decimal)value.X),

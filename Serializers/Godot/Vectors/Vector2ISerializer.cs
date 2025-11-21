@@ -11,13 +11,15 @@ namespace Rusty.Serialization.Serializers.Gd;
 public readonly struct Vector2ISerializer : ISerializer<Vector2I>
 {
     /* Public methods. */
-    public INode Serialize(Vector2I value, Registry context)
+    public INode Serialize(Vector2I value, Registry context, bool addTypeLabel = false)
     {
         return new ListNode([new IntNode(value.X), new IntNode(value.Y)]);
     }
 
     public Vector2I Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 2)

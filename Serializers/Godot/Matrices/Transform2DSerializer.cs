@@ -14,7 +14,7 @@ public readonly struct Transform2DSerializer : ISerializer<Transform2D>
     private readonly Vector2Serializer serializer;
 
     /* Public methods. */
-    public INode Serialize(Transform2D value, Registry context)
+    public INode Serialize(Transform2D value, Registry context, bool addTypeLabel = false)
     {
         return new ListNode([
             serializer.Serialize(value.X, context),
@@ -25,6 +25,8 @@ public readonly struct Transform2DSerializer : ISerializer<Transform2D>
 
     public Transform2D Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 3)

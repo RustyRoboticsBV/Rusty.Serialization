@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Serializers;
 public readonly struct ListSerializer<T> : ISerializer<List<T>>
 {
     /* Public methods. */
-    public INode Serialize(List<T> value, Registry context)
+    public INode Serialize(List<T> value, Registry context, bool addTypeLabel = false)
     {
         // Handle null.
         if (value == null)
@@ -32,7 +32,9 @@ public readonly struct ListSerializer<T> : ISerializer<List<T>>
     {
         if (node is NullNode @null)
             return null;
-        else if (node is ListNode list)
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
+        if (node is ListNode list)
         {
             // Deserialize elements.
             ISerializer elementSerializer = context.GetSerializer(typeof(T));

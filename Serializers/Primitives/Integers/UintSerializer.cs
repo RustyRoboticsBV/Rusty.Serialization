@@ -9,10 +9,12 @@ namespace Rusty.Serialization.Serializers;
 public readonly struct UintSerializer : ISerializer<uint>
 {
     /* Public methods. */
-    public INode Serialize(uint value, Registry context) => new IntNode(value);
+    public INode Serialize(uint value, Registry context, bool addTypeLabel = false) => new IntNode(value);
 
     public uint Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is IntNode typed)
             return (uint)typed.Value;
         throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");

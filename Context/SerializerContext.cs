@@ -1,4 +1,5 @@
-﻿using Rusty.Serialization.Nodes;
+﻿using System;
+using Rusty.Serialization.Nodes;
 using Rusty.Serialization.Serializers;
 
 namespace Rusty.Serialization;
@@ -37,9 +38,11 @@ public class SerializerContext
     /// </summary>
     public string Serialize(object obj)
     {
-        ISerializer serializer = Registry.GetSerializer(obj.GetType());
+        Type type = obj.GetType();
+        ISerializer serializer = Registry.GetSerializer(type);
         INode node = serializer.Serialize(obj, Registry);
-        return node.Serialize();
+        TypeNode typeNode = new(Registry.GetTypeCode(type), node);
+        return typeNode.Serialize();
     }
 
     /// <summary>

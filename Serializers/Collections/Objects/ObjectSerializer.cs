@@ -22,7 +22,7 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
     }
 
     /* Public methods. */
-    public INode Serialize(T value, Registry context)
+    public INode Serialize(T value, Registry context, bool addTypeLabel = false)
     {
         if (value == null)
             return new NullNode();
@@ -48,7 +48,9 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
     {
         if (node is NullNode @null && typeof(T).IsClass)
             return default;
-        else if (node is ObjectNode obj)
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
+        if (node is ObjectNode obj)
         {
             T instance = new();
 

@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Serializers.Gd;
 public readonly struct Vector4Serializer : ISerializer<Vector4>
 {
     /* Public methods. */
-    public INode Serialize(Vector4 value, Registry context)
+    public INode Serialize(Vector4 value, Registry context, bool addTypeLabel = false)
     {
         return new ListNode([new FloatNode((decimal)value.X), new FloatNode((decimal)value.Y),
             new FloatNode((decimal)value.Z), new FloatNode((decimal)value.W)]);
@@ -19,6 +19,8 @@ public readonly struct Vector4Serializer : ISerializer<Vector4>
 
     public Vector4 Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 4)

@@ -9,7 +9,7 @@ namespace Rusty.Serialization.Serializers;
 public readonly struct StringSerializer : ISerializer<string>
 {
     /* Public methods. */
-    public INode Serialize(string value, Registry context)
+    public INode Serialize(string value, Registry context, bool addTypeLabel = false)
     {
         if (value == null)
             return new NullNode();
@@ -20,6 +20,8 @@ public readonly struct StringSerializer : ISerializer<string>
     {
         if (node is NullNode)
             return null;
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is StringNode stringNode)
             return stringNode.Value;
         throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");

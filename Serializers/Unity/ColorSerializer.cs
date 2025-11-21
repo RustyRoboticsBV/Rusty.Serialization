@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Serializers.Unity
     public readonly struct ColorSerializer : ISerializer<Color>
     {
         /* Public methods. */
-        public INode Serialize(Color value, Registry context)
+        public INode Serialize(Color value, Registry context, bool addTypeLabel = false)
         {
             byte r = (byte)Mathf.RoundToInt(value.r * 255f);
             byte g = (byte)Mathf.RoundToInt(value.g * 255f);
@@ -22,6 +22,8 @@ namespace Rusty.Serialization.Serializers.Unity
 
         public Color Deserialize(INode node, Registry context)
         {
+            if (node is TypeNode type)
+                return Deserialize(type.Object, context);
             if (node is ColorNode color)
             {
                 return new Color(
