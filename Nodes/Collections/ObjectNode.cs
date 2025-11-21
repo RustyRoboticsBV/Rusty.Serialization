@@ -91,7 +91,6 @@ public readonly struct ObjectNode : INode
                 INode valueNode = ParseUtility.ParseValue(valueStr);
 
                 // Add key-value pair.
-                System.Console.WriteLine("YAY " + key + " " + valueStr);
                 pairs[i] = new KeyValuePair<Identifier, INode>(key, valueNode);
             }
 

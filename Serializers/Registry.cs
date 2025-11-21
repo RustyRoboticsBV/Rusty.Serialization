@@ -162,6 +162,9 @@ public sealed class Registry
     /// </summary>
     public ISerializer GetSerializer(Type type)
     {
+        if (type == null)
+            return new NullSerializer();
+
         // Try to retrieve the serializer for this type.
         ISerializer serializer = ResolveSerializer(type);
         if (serializer != null)
@@ -228,7 +231,7 @@ public sealed class Registry
                 return serializerInstances[type] = CreateInstance(type, serializer);
         }
 
-        // Step 3: walk up the base class chain.
+        /*// Step 3: walk up the base class chain.
         Type baseType = type.BaseType;
         while (baseType != null)
         {
@@ -245,7 +248,7 @@ public sealed class Registry
         {
             if (ordered.IsInterface && implementedInterfaces.Contains(ordered))
                 return serializerInstances[type] = CreateInstance(type, ordered);
-        }
+        }*/
 
         // Case 5: array serialization.
         if (type.IsArray)

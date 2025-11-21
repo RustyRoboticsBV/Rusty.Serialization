@@ -16,6 +16,8 @@ public readonly struct ColorSerializer : ISerializer<Color>
 
     public Color Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ColorNode color)
             return new(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
         throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");

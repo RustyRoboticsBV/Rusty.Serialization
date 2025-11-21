@@ -19,6 +19,8 @@ public readonly struct QuaternionSerializer : ISerializer<Quaternion>
 
     public Quaternion Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 4)

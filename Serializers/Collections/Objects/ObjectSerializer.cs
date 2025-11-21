@@ -31,13 +31,21 @@ public readonly struct ObjectSerializer<T> : ISerializer<T>
 
         for (int i = 0; i < serialized.Length; i++)
         {
+            // Get member's info.
             MemberInfo member = members[i];
 
-            object rawValue = GetValue(value, member);
+            // Get member value value.
+            object memberValue = GetValue(value, member);
 
-            ISerializer serializer = context.GetSerializer(rawValue.GetType());
-            INode node = serializer.Serialize(rawValue, context);
+            // Serialize member into node.
+            ISerializer serializer = context.GetSerializer(memberValue?.GetType());
+            INode node = serializer.Serialize(memberValue, context);
 
+            // Wrap in type node in case of type ambiguity.
+            if (memberValue != null && memberValue.GetType() != member.DeclaringType)
+                node = new TypeNode(context.GetTypeCode(memberValue.GetType()), node);
+
+            // Store name-node pair.
             serialized[i] = new(member.Name, node);
         }
 

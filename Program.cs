@@ -1,7 +1,8 @@
-﻿using Rusty.Serialization.Testing;
-using Rusty.Serialization;
+﻿using Rusty.Serialization;
+using Rusty.Serialization.Testing;
 using System;
 
+// Create test class object.
 Test<int> test = new();
 test.@bool = false;
 test.@int = 12345;
@@ -11,38 +12,18 @@ test.@string = "A\"B\"C";
 test.array = [5, 7, 9, 11];
 test.dictionary = new() { { 'C', "CCC" }, { 'D', "DDD" } };
 test.@enum = Test<int>.Enum.B;
-
-SerializerContext context = new();
-
-Console.WriteLine(context.Serialize(true));
-
-Console.WriteLine(context.Serialize((sbyte)1));
-Console.WriteLine(context.Serialize((short)2));
-Console.WriteLine(context.Serialize(3));
-Console.WriteLine(context.Serialize((long)4));
-
-Console.WriteLine(context.Serialize((byte)1));
-Console.WriteLine(context.Serialize((ushort)2));
-Console.WriteLine(context.Serialize((uint)3));
-Console.WriteLine(context.Serialize((ulong)4));
-
-Console.WriteLine(context.Serialize(0.123f));
-Console.WriteLine(context.Serialize(0.123));
-Console.WriteLine(context.Serialize(0.123m));
-
-Console.WriteLine(context.Serialize('a'));
-Console.WriteLine(context.Serialize("abc"));
-
-Console.WriteLine(context.Serialize(new Godot.Vector3(1, 2, 3)));
+test.@class = new Test<int>.Disaster<string, decimal>() { thing = new(), a = 10 };
 
 // Print test class.
+SerializerContext context = new();
+
 string serialized = context.Serialize(test);
-Test<int> deserialized = context.Deserialize<Test<int>>(serialized);
-string reserialized = context.Serialize(deserialized);
 
 Console.WriteLine("Serialized");
 Console.WriteLine(serialized);
 
+Test<int> deserialized = context.Deserialize<Test<int>>(serialized);
+string reserialized = context.Serialize(deserialized);
 Console.WriteLine();
 Console.WriteLine("Reserialized");
 Console.WriteLine(reserialized);

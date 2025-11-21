@@ -24,6 +24,8 @@ public readonly struct PlaneSerializer : ISerializer<Plane>
 
     public Plane Deserialize(INode node, Registry context)
     {
+        if (node is TypeNode type)
+            return Deserialize(type.Object, context);
         if (node is ListNode list)
         {
             if (list.Elements.Length != 2)

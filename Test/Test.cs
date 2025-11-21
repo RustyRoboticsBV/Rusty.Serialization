@@ -68,6 +68,13 @@ public sealed class Test<T>
     }
     public Class @class = new();
 
+    public class Disaster<U, V> : Class
+    {
+        public Class thing = null;
+        public U first = default;
+        public V second = default;
+    }
+
     public struct Struct
     {
         public int a;
