@@ -77,7 +77,7 @@ public readonly struct ObjectNode : INode
                 return new ObjectNode(null);
 
             // Handle key:value pairs.
-            var pairs = new KeyValuePair<Identifier, INode>[terms.Count - 1];
+            var pairs = new KeyValuePair<Identifier, INode>[terms.Count];
             for (int i = 0; i < terms.Count; i++)
             {
                 // Split into key and value.
@@ -87,9 +87,11 @@ public readonly struct ObjectNode : INode
 
                 // Get keys and values.
                 Identifier key = pairStrs[0].Trim();
-                INode valueNode = ParseUtility.ParseValue(pairStrs[1].Trim());
+                string valueStr = pairStrs[1].Trim();
+                INode valueNode = ParseUtility.ParseValue(valueStr);
 
                 // Add key-value pair.
+                System.Console.WriteLine("YAY " + key + " " + valueStr);
                 pairs[i] = new KeyValuePair<Identifier, INode>(key, valueNode);
             }
 
@@ -97,7 +99,7 @@ public readonly struct ObjectNode : INode
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"Could not parse string '{text}' as an object.\n" + ex.Message);
+            throw new ArgumentException($"Could not parse string '{text}' as an object:\n\n{ex}");
         }
     }
 }

@@ -48,7 +48,7 @@ public readonly struct TypeNode : INode
         {
             // Enforce parentheses.
             int closeIndex = trimmed.IndexOf(')');
-            if (!trimmed.StartsWith('(') || closeIndex != -1)
+            if (!trimmed.StartsWith('(') || closeIndex == -1)
                 throw new Exception("Missing parentheses.");
 
             // Get text after parentheses and parse it.
@@ -61,9 +61,9 @@ public readonly struct TypeNode : INode
             // Return type node.
             return new(contents, obj);
         }
-        catch
+        catch (Exception ex)
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a type.");
+            throw new ArgumentException($"Could not parse string '{text}' as a type:\n\n{ex.Message}");
         }
     }
 }

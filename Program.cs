@@ -35,14 +35,8 @@ Console.WriteLine(context.Serialize("abc"));
 
 Console.WriteLine(context.Serialize(new Godot.Vector3(1, 2, 3)));
 
-/*Console.WriteLine(context.Serialize(5));
-Console.WriteLine(context.Serialize(7.77));
-Console.WriteLine(context.Serialize(new int[] { 1, 2, 3 }));
-Console.WriteLine(context.Serialize(new System.Collections.Generic.List<int> { 1, 2, 3 }));*/
-Console.WriteLine("Serialized:");
-Console.WriteLine(context.Serialize(test));
-
-/*string serialized = context.Serialize(test);
+// Print test class.
+string serialized = context.Serialize(test);
 Test<int> deserialized = context.Deserialize<Test<int>>(serialized);
 string reserialized = context.Serialize(deserialized);
 
@@ -54,7 +48,7 @@ Console.WriteLine("Reserialized");
 Console.WriteLine(reserialized);
 
 Console.WriteLine();
-Console.WriteLine("Are the objects equal: " + (serialized == reserialized));*/
+Console.WriteLine("Are the objects equal: " + (serialized == reserialized));
 
 #if DEBUG
 Console.WriteLine();

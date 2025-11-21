@@ -20,7 +20,12 @@ public readonly struct EnumSerializer<T> : ISerializer<T>
         if (node is TypeNode type)
             return Deserialize(type.Object, context);
         if (node is IntNode intNode)
-            return (T)Enum.ToObject(typeof(T), intNode.Value);
+        {
+            if (intNode.Value < 0)
+                return (T)Enum.ToObject(typeof(T), (long)intNode.Value);
+            else
+                return (T)Enum.ToObject(typeof(T), (ulong)intNode.Value);
+        }
         throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");
     }
 }

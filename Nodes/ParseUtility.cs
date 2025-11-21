@@ -100,33 +100,31 @@ internal static class ParseUtility
     {
         if (text == null)
             throw new ArgumentException("Cannot parse null.");
-
         if (text.StartsWith("#"))
             return ColorNode.Deserialize(text);
-        else if (text.StartsWith('\'') && text.EndsWith('\''))
+        if (text.StartsWith('\'') && text.EndsWith('\''))
             return CharNode.Deserialize(text);
-        else if (text.StartsWith('"') && text.EndsWith('"'))
+        if (text.StartsWith('"') && text.EndsWith('"'))
             return StringNode.Deserialize(text);
-        else if (text.StartsWith('('))
+        if (text.StartsWith('('))
             return TypeNode.Parse(text);
-        else if (text.StartsWith('[') && text.EndsWith(']'))
+        if (text.StartsWith('[') && text.EndsWith(']'))
             return ListNode.Deserialize(text);
-        else if (text.StartsWith('{') && text.EndsWith('}'))
+        if (text.StartsWith('{') && text.EndsWith('}'))
             return DictNode.Deserialize(text);
-        else if (text.StartsWith('<') && text.EndsWith('>'))
+        if (text.StartsWith('<') && text.EndsWith('>'))
             return ObjectNode.Deserialize(text);
-        else if (text.ToLower() == "true" || text.ToLower() == "false")
+        if (text.ToLower() == "true" || text.ToLower() == "false")
             return BoolNode.Deserialize(text);
-        else if (text.ToLower() == "null")
+        if (text.ToLower() == "null")
             return NullNode.Deserialize(text);
-        else if (decimal.TryParse(text, CultureInfo.InvariantCulture, out decimal d))
+        if (decimal.TryParse(text, CultureInfo.InvariantCulture, out decimal d))
         {
             if (text.Contains('.'))
                 return FloatNode.Deserialize(text);
             else
                 return IntNode.Deserialize(text);
         }
-        else
-            throw new ArgumentException($"Invalid string '{text}'");
+        throw new ArgumentException($"Invalid string '{text}'");
     }
 }
