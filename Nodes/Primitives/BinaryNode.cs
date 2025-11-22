@@ -44,11 +44,15 @@ public readonly struct BinaryNode : INode
                 throw new ArgumentException("Empty string.");
 
             // Enforce 0x prefix.
-            if (!(trimmed.StartsWith("0x")))
+            if (!trimmed.StartsWith("0x"))
                 throw new ArgumentException("Missing 0x prefix.");
 
             // Get contents.
             string contents = trimmed.Substring(2);
+
+            // Enforce even length.
+            if (contents.Length % 2 != 0)
+                throw new ArgumentException("Binary literals must have an even length.");
 
             // Parse as byte array.
             byte[] bytes = Convert.FromHexString(contents);
