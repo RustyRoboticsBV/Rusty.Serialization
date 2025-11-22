@@ -37,10 +37,28 @@ public struct ColorNode : INode
 
     public readonly string Serialize()
     {
-        if (a == 255)
-            return $"#{r:X2}{g:X2}{b:X2}";
+        // Serialize components as 2-digit hexadecimal strings.
+        string r = R.ToString("X2");
+        string g = G.ToString("X2");
+        string b = B.ToString("X2");
+        string a = A.ToString("X2");
+
+        // Truncate to CSS style if possible.
+        if (r[0] == r[1] && g[0] == g[1] && b[0] == b[1] && a[0] == a[1])
+        {
+            r = r[0].ToString();
+            g = g[0].ToString();
+            b = b[0].ToString();
+            a = a[0].ToString();
+        }
+
+        // Return as #RGB if a is 255.
+        if (A == 255)
+            return $"#{r}{g}{b}";
+
+        // Return as #RGBA in other cases.
         else
-            return $"#{r:X2}{g:X2}{b:X2}{a:X2}";
+            return $"#{r}{g}{b}{a}";
     }
 
     public static ColorNode Parse(string text)

@@ -146,5 +146,57 @@ public static class UnitTests
         Console.WriteLine("Succesful tests: " + ParseTester.Successes + " out of " + ParseTester.Total);
         Console.WriteLine("Failed tests: " + ParseTester.Failures + " out of " + ParseTester.Total);
     }
+
+    public static void RunSerializeTests()
+    {
+        Console.WriteLine("[BOOLEANS]");
+        SerializeTester.TestBool(true, "true");
+        SerializeTester.TestBool(false, "false");
+
+        Console.WriteLine();
+        Console.WriteLine("[INTEGERS]");
+        SerializeTester.TestInt(-10, "-10");
+        SerializeTester.TestInt(10, "10");
+
+        Console.WriteLine();
+        Console.WriteLine("[REALS]");
+        SerializeTester.TestReal(10.0m, "10.");
+        SerializeTester.TestReal(0.5m, ".5");
+        SerializeTester.TestReal(-0.005m, "-.005");
+        SerializeTester.TestReal(0, ".");
+
+        Console.WriteLine();
+        Console.WriteLine("[CHARACTERS]");
+        SerializeTester.TestChar('A', "'A'");
+        SerializeTester.TestChar('\\', "'\\'");
+        SerializeTester.TestChar('\'', "'''");
+        SerializeTester.TestChar('"', "'\"'");
+        SerializeTester.TestChar('\t', "'\\t'");
+        SerializeTester.TestChar('\n', "'\\n'");
+        SerializeTester.TestChar('\0', "'\\0'");
+        SerializeTester.TestChar('\u1234', "'\\[1234]'");
+
+        Console.WriteLine();
+        Console.WriteLine("[STRINGS]");
+        SerializeTester.TestString("A", "\"A\"");
+        SerializeTester.TestString("\\", "\"\\\\\"");
+        SerializeTester.TestString("'", "\"'\"");
+        SerializeTester.TestString("\"", "\"\\\"\"");
+        SerializeTester.TestString("\t", "\"\\t\"");
+        SerializeTester.TestString("\n", "\"\\n\"");
+        SerializeTester.TestString("\0", "\"\\0\"");
+        SerializeTester.TestString("\u1234", "\"\\[1234]\"");
+
+        Console.WriteLine();
+        Console.WriteLine("[COLORS]");
+        SerializeTester.TestColor((255, 0, 0, 255), "#F00");
+        SerializeTester.TestColor((255, 0, 0, 0), "#F000");
+        SerializeTester.TestColor((128, 0, 0, 255), "#800000");
+        SerializeTester.TestColor((128, 0, 0, 0), "#80000000");
+
+        Console.WriteLine();
+        Console.WriteLine("[NULL]");
+        SerializeTester.TestNull("null");
+    }
 }
 #endif

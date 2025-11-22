@@ -28,8 +28,18 @@ public readonly struct CharNode : INode
 
     public readonly string Serialize()
     {
-
-        return $"'{value.ToString(CultureInfo.InvariantCulture)}'";
+        string str = "";
+        if (value == '\t')
+            str = "\\t";
+        else if (value == '\n')
+            str = "\\n";
+        else if (value == '\0')
+            str = "\\0";
+        else if (value < ' ' || value > '~')
+            str = "\\[" + UnicodeParser.Serialize(value) + "]";
+        else
+            str = value.ToString(CultureInfo.InvariantCulture);
+        return $"'" + str + "'";
     }
 
     public static CharNode Parse(string text)

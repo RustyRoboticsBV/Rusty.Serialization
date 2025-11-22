@@ -47,7 +47,7 @@ public readonly struct StringNode : INode
 
             // Handle unicode characters.
             else if (c < ' ' || c > '~')
-                str.Append("\\[" + ((long)c).ToString("X") + "]");
+                str.Append("\\[" + UnicodeParser.Serialize(c) + "]");
 
             // Otherwise, append character as-is.
             else

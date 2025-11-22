@@ -40,6 +40,10 @@ public readonly struct RealNode : INode
             text += ".";
 
         // Remove leading zeroes.
+        while (text.StartsWith("-0"))
+        {
+            text = '-' + text.Substring(2);
+        }
         while (text.StartsWith('0'))
         {
             text = text.Substring(1);

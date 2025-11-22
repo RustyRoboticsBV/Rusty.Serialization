@@ -4,6 +4,8 @@ using Rusty.Serialization.Testing;
 using System;
 
 //UnitTests.RunParserTests(true);
+UnitTests.RunSerializeTests();
+return;
 
 // Create test class object.
 Test<int> test = new();
