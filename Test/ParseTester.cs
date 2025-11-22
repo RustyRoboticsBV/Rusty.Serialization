@@ -121,6 +121,19 @@ namespace Rusty.Serialization.Test
             }
         }
 
+        public static void TestBinary(string str, Result<byte[]> expected)
+        {
+            try
+            {
+                var node = BinaryNode.Parse(str);
+                Report(str, node.Value, expected, nameof(BinaryNode), null);
+            }
+            catch (Exception ex)
+            {
+                Report(str, Throw, expected, nameof(BinaryNode), ex);
+            }
+        }
+
         public static void TestNull(string str, Result<object> expected)
         {
             try
@@ -156,21 +169,21 @@ namespace Rusty.Serialization.Test
             {
                 if (!expected.thrown)
                 {
-                    if (result.value == null && expected.value == null || result.value.Equals(expected.value))
+                    if (result.value == null && expected.value == null || Equals(result.value, expected.value))
                     {
                         prefix = "SUCCESS";
-                        text = $"{nodeType} accepts {Format(str)} with correct output {ToSequence(result.ToString())}";
+                        text = $"{nodeType} accepts {Format(str)} with correct output {Numberfy(Stringify(result.value))}";
                     }
                     else
                     {
                         prefix = "FAILED";
-                        text = $"{nodeType} accepts {Format(str)} with wrong output {ToSequence(result.ToString())} - it should be {ToSequence(expected.ToString())}";
+                        text = $"{nodeType} accepts {Format(str)} with wrong output {Numberfy(Stringify(result.value))} - it should be {Numberfy(Stringify(expected.value))}";
                     }
                 }
                 else
                 {
                     prefix = "FAILED";
-                    text = $"{nodeType} accepts {Format(str)} with output {ToSequence(result.ToString())} - it should throw";
+                    text = $"{nodeType} accepts {Format(str)} with output {Numberfy(Stringify(result.value))} - it should throw";
                 }
             }
             else
@@ -187,7 +200,7 @@ namespace Rusty.Serialization.Test
                 else
                 {
                     prefix = "FAILED";
-                    text = $"{nodeType} throws on {Format(str)} - we expected output {ToSequence(expected.ToString())}{verbose}";
+                    text = $"{nodeType} throws on {Format(str)} - we expected output {Numberfy(Stringify(expected.value))}{verbose}";
                 }
             }
 
@@ -208,7 +221,7 @@ namespace Rusty.Serialization.Test
                 return $"'{str}'";
         }
 
-        private static string ToSequence(string str)
+        private static string Numberfy(string str)
         {
             if (!Numeric)
                 return str;
@@ -218,6 +231,46 @@ namespace Rusty.Serialization.Test
                 result += ' ' + ((int)str[i]).ToString();
             }
             return result;
+        }
+
+        private static string Stringify(object obj)
+        {
+            if (obj == null)
+                return "null";
+            if (obj is Array array)
+            {
+                string str = "";
+                foreach (object element in array)
+                {
+                    if (str != "")
+                        str += ",";
+                    str += element.ToString();
+                }
+                return '[' + str + ']';
+            }
+
+            return obj.ToString();
+        }
+
+        private static bool Equals<T>(T a, T b)
+        {
+            if (a is Array aa && b is Array ba)
+                return ArrayEquals(aa, ba);
+
+            return a.Equals(b);
+        }
+
+        private static bool ArrayEquals(Array a, Array b)
+        {
+            if (a.Length != b.Length)
+                return false;
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (!Equals(a.GetValue(i), b.GetValue(i)))
+                    return false;
+            }
+            return true;
         }
     }
 }

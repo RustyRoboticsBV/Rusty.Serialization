@@ -1,6 +1,7 @@
-﻿using System;
-using Rusty.Serialization.Nodes;
+﻿using Rusty.Serialization.Nodes;
 using Rusty.Serialization.Serializers;
+using System;
+using System.Text;
 
 namespace Rusty.Serialization;
 
@@ -60,5 +61,16 @@ public class SerializerContext
         INode node = ParseUtility.ParseValue(serialized);
         ISerializer serializer = Registry.GetSerializer(typeof(T));
         return (T)serializer.Deserialize(node, Registry);
+    }
+
+    /// <summary>
+    /// Encode string into ISO-8859-1 format.
+    /// </summary>
+    public static byte[] Encode(string str)
+    {
+        Encoding iso = Encoding.GetEncoding("ISO-8859-1");
+        Encoding utf8 = Encoding.UTF8;
+        byte[] utfBytes = utf8.GetBytes(str);
+        return Encoding.Convert(utf8, iso, utfBytes);
     }
 }

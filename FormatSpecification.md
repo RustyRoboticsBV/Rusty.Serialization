@@ -71,7 +71,7 @@ Colors literals must start with a hex sign, followed by the hexadecimal represen
 - `#RRGGBBAA`: full notation with alpha.
 
 #### Binary
-Binary data strings store arbitrary data in hexadecimal format. They start with `0x`, followed by the hexadecimal representation of the data, for example: `0x0004BAF890`. The literal `0x` represents a binary data string of length 0.
+Binary data strings store arbitrary data in hexadecimal format. They start with `0x`, followed by the hexadecimal representation of the data, for example: `0x0004BAF890`. The literal `0x` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.
 
 #### Null
 Null values are encoded with `null` literals. Like booleans, null values must be lower-case. Null values never need type labels, but are allowed to be annotated with them.

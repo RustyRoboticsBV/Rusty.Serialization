@@ -126,6 +126,16 @@ public static class UnitTests
         ParseTester.TestColor("#YYYYYY", ParseTester.Throw);
 
         Console.WriteLine();
+        Console.WriteLine("[BINARY]");
+        ParseTester.TestBinary(null, ParseTester.Throw);
+        ParseTester.TestBinary("", ParseTester.Throw);
+        ParseTester.TestBinary("0x", new byte[0]);
+        ParseTester.TestBinary("0x0123456789ABCDEF", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF});
+        ParseTester.TestBinary("     \n\t0x0123456789ABCDEF \t\t", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF});
+        ParseTester.TestBinary("0x0123456789ABCDE", ParseTester.Throw);
+        ParseTester.TestBinary("0x 123456789ABCDEF", ParseTester.Throw);
+
+        Console.WriteLine();
         Console.WriteLine("[NULL]");
         ParseTester.TestNull(null, ParseTester.Throw);
         ParseTester.TestNull("", ParseTester.Throw);
@@ -202,6 +212,11 @@ public static class UnitTests
         SerializeTester.TestColor((255, 0, 0, 0), "#F000");
         SerializeTester.TestColor((128, 0, 0, 255), "#800000");
         SerializeTester.TestColor((128, 0, 0, 0), "#80000000");
+
+        Console.WriteLine();
+        Console.WriteLine("[BINARY]");
+        SerializeTester.TestBinary([], "0x");
+        SerializeTester.TestBinary([0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF], "0x0123456789ABCDEF");
 
         Console.WriteLine();
         Console.WriteLine("[NULL]");

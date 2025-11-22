@@ -52,6 +52,13 @@ namespace Rusty.Serialization.Test
             Report(obj, result, expectedValue);
         }
 
+        public static void TestBinary(byte[] obj, string expectedValue)
+        {
+            BinaryNode node = new(obj);
+            string result = node.Serialize();
+            Report(obj, result, expectedValue);
+        }
+
         public static void TestNull(string expectedValue)
         {
             NullNode node = new();
@@ -63,9 +70,28 @@ namespace Rusty.Serialization.Test
         private static void Report(object obj, string value, string expected)
         {
             if (value == expected)
-                Console.WriteLine($"SUCCESS: Correctly serialized \"{obj}\" to \"{value}\"");
+                Console.WriteLine($"SUCCESS: Correctly serialized \"{Stringify(obj)}\" to \"{value}\"");
             else
-                Console.WriteLine($"FAILED: Serialized \"{obj}\" to \"{value}\" - but expected '{expected}'");
+                Console.WriteLine($"FAILED: Serialized \"{Stringify(obj)}\" to \"{value}\" - but expected '{expected}'");
+        }
+
+        private static string Stringify(object obj)
+        {
+            if (obj == null)
+                return "null";
+            if (obj is Array array)
+            {
+                string str = "";
+                foreach (object element in array)
+                {
+                    if (str != "")
+                        str += ",";
+                    str += element.ToString();
+                }
+                return '[' + str + ']';
+            }
+
+            return obj.ToString();
         }
     }
 }
