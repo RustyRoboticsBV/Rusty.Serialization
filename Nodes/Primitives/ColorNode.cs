@@ -32,7 +32,7 @@ public struct ColorNode : INode
     /* Public methods. */
     public override readonly string ToString()
     {
-        return $"gdcolor: ({r},{g},{b},{a})";
+        return $"color: ({r},{g},{b},{a})";
     }
 
     public readonly string Serialize()
@@ -43,36 +43,64 @@ public struct ColorNode : INode
             return $"#{r:X2}{g:X2}{b:X2}{a:X2}";
     }
 
-    public static ColorNode Deserialize(string text)
+    public static ColorNode Parse(string text)
     {
+        // Remove whitespaces.
+        string trimmed = text?.Trim();
+
         try
         {
-            // Remove whitespaces.
-            text = text.Trim();
+            // Empty strings are not allowed.
+            if (string.IsNullOrEmpty(trimmed))
+                throw new ArgumentException("Empty string.");
 
             // Enforce leading hex sign.
-            if (!text.StartsWith('#'))
-                throw new Exception();
+            if (!trimmed.StartsWith('#'))
+                throw new ArgumentException("Missing hex sign.");
+
+            // Allow CSS convention.
+            if (trimmed.Length == 4)
+            {
+                trimmed = trimmed[0]
+                    + new string(trimmed[1], 2)
+                    + new string(trimmed[2], 2)
+                    + new string(trimmed[3], 2);
+            }
+            else if (trimmed.Length == 5)
+            {
+                trimmed = trimmed[0]
+                    + new string(trimmed[1], 2)
+                    + new string(trimmed[2], 2)
+                    + new string(trimmed[3], 2)
+                    + new string(trimmed[4], 2);
+            }
 
             // Split into substrs.
-            if (text.Length != 7 && text.Length != 9)
-                throw new Exception();
-            string r = text.Substring(1, 2);
-            string g = text.Substring(3, 2);
-            string b = text.Substring(5, 2);
-            string a = text.Length == 9 ? text.Substring(7, 2) : "FF";
+            if (trimmed.Length != 7 && trimmed.Length != 9)
+                throw new Exception("Bad length. Use #RGB, #RGBA, #RRGGBB or #RRGGBBAA.");
+            string r = trimmed.Substring(1, 2);
+            string g = trimmed.Substring(3, 2);
+            string b = trimmed.Substring(5, 2);
+            string a = trimmed.Length == 9 ? trimmed.Substring(7, 2) : "FF";
 
             // Parse substrs.
-            return new(
-                byte.Parse(r, NumberStyles.HexNumber),
-                byte.Parse(g, NumberStyles.HexNumber),
-                byte.Parse(b, NumberStyles.HexNumber),
-                byte.Parse(a, NumberStyles.HexNumber)
-            );
+            try
+            {
+                return new(
+                    byte.Parse(r, NumberStyles.HexNumber),
+                    byte.Parse(g, NumberStyles.HexNumber),
+                    byte.Parse(b, NumberStyles.HexNumber),
+                    byte.Parse(a, NumberStyles.HexNumber)
+                );
+            }
+            catch
+            {
+                throw new ArgumentException("Not a hexadecimal number.");
+            }
         }
-        catch
+        catch (Exception ex)
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a gdcolor.");
+            throw new ArgumentException($"Could not parse string '{text}' as a color:\n{ex.Message}");
         }
     }
 }

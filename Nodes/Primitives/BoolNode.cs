@@ -30,15 +30,22 @@ public readonly struct BoolNode : INode
         return value ? "true" : "false";
     }
 
-    public static BoolNode Deserialize(string text)
+    public static BoolNode Parse(string text)
     {
+        string trimmed = text?.Trim();
         try
         {
-            return new(bool.Parse(text));
+            if (string.IsNullOrEmpty(trimmed))
+                throw new ArgumentException("Empty string.");
+            if (trimmed.Length == 4 && trimmed == "true")
+                return new(true);
+            if (trimmed.Length == 5 && trimmed == "false")
+                return new(false);
+            throw new ArgumentException($"Not a valid boolean.");
         }
-        catch
+        catch (Exception ex)
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a boolean.");
+            throw new ArgumentException($"Could not parse string '{text}' as a boolean:\n{ex.Message}");
         }
     }
 }

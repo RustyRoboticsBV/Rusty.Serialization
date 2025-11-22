@@ -13,7 +13,7 @@ public readonly struct NullSerializer : ISerializer<object>
 
     public object Deserialize(INode node, Registry context)
     {
-        if (node is NullNode nullNode)
+        if (node is TypeNode  || node is NullNode)
             return null;
         throw new ArgumentException($"'{GetType()}' cannot deserialize node of type '{node.GetType()}'.");
     }

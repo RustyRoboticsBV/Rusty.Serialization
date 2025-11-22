@@ -34,15 +34,28 @@ public readonly struct IntNode : INode
         return value.ToString(CultureInfo.InvariantCulture);
     }
 
-    public static IntNode Deserialize(string text)
+    public static IntNode Parse(string text)
     {
+        string trimmed = text?.Trim();
         try
         {
-            return new(decimal.Parse(text, CultureInfo.InvariantCulture));
+            // Empty strings are not allowed.
+            if (string.IsNullOrEmpty(trimmed))
+                throw new ArgumentException("Empty string.");
+
+            // Check syntax.
+            for (int i = 0; i < trimmed.Length; i++)
+            {
+                if (!(i == 0 && trimmed[i] == '-' || trimmed[i] >= '0' && trimmed[i] <= '9'))
+                    throw new ArgumentException($"Illegal character '{trimmed[i]}' at {i}.");
+            }
+
+            // Parse.
+            return new(decimal.Parse(trimmed, CultureInfo.InvariantCulture));
         }
-        catch
+        catch (Exception ex)
         {
-            throw new ArgumentException($"Could not parse string '{text}' as an integer.");
+            throw new ArgumentException($"Could not parse string '{text}' as an integer:\n{ex.Message}");
         }
     }
 }

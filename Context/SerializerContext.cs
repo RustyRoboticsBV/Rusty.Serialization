@@ -38,11 +38,18 @@ public class SerializerContext
     /// </summary>
     public string Serialize(object obj)
     {
-        Type type = obj.GetType();
+        Type type = obj?.GetType();
+
+        // Convert to node.
         ISerializer serializer = Registry.GetSerializer(type);
         INode node = serializer.Serialize(obj, Registry);
-        TypeNode typeNode = new(Registry.GetTypeCode(type), node);
-        return typeNode.Serialize();
+
+        // Add top-level type node.
+        if (node is not NullNode)
+            node = new TypeNode(Registry.GetTypeCode(type), node);
+
+        // Serialize node.
+        return node.Serialize();
     }
 
     /// <summary>

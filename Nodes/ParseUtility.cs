@@ -101,11 +101,11 @@ internal static class ParseUtility
         if (text == null)
             throw new ArgumentException("Cannot parse null.");
         if (text.StartsWith("#"))
-            return ColorNode.Deserialize(text);
+            return ColorNode.Parse(text);
         if (text.StartsWith('\'') && text.EndsWith('\''))
-            return CharNode.Deserialize(text);
+            return CharNode.Parse(text);
         if (text.StartsWith('"') && text.EndsWith('"'))
-            return StringNode.Deserialize(text);
+            return StringNode.Parse(text);
         if (text.StartsWith('('))
             return TypeNode.Parse(text);
         if (text.StartsWith('[') && text.EndsWith(']'))
@@ -115,15 +115,15 @@ internal static class ParseUtility
         if (text.StartsWith('<') && text.EndsWith('>'))
             return ObjectNode.Deserialize(text);
         if (text.ToLower() == "true" || text.ToLower() == "false")
-            return BoolNode.Deserialize(text);
+            return BoolNode.Parse(text);
         if (text.ToLower() == "null")
-            return NullNode.Deserialize(text);
+            return NullNode.Parse(text);
         if (decimal.TryParse(text, CultureInfo.InvariantCulture, out decimal d))
         {
             if (text.Contains('.'))
-                return FloatNode.Deserialize(text);
+                return RealNode.Parse(text);
             else
-                return IntNode.Deserialize(text);
+                return IntNode.Parse(text);
         }
         throw new ArgumentException($"Invalid string '{text}'");
     }

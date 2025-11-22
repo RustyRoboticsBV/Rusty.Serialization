@@ -14,11 +14,11 @@ public readonly struct PlaneSerializer : ISerializer<Plane>
     public INode Serialize(Plane value, Registry context, bool addTypeLabel = false)
     {
         ListNode origin = new ListNode([
-            new FloatNode((decimal)value.X),
-            new FloatNode((decimal)value.Y),
-            new FloatNode((decimal)value.Z)]
+            new RealNode((decimal)value.X),
+            new RealNode((decimal)value.Y),
+            new RealNode((decimal)value.Z)]
         );
-        FloatNode distance = new FloatNode((decimal)value.D);
+        RealNode distance = new RealNode((decimal)value.D);
         return new ListNode([origin, distance]);
     }
 
@@ -38,7 +38,7 @@ public readonly struct PlaneSerializer : ISerializer<Plane>
                 throw new ArgumentException("Cannot deserialize list node as Plane (normal is not a list).");
 
             float distance = 0f;
-            if (list.Elements[1] is FloatNode distanceNode)
+            if (list.Elements[1] is RealNode distanceNode)
                 distance = (float)distanceNode.Value;
             else
                 throw new ArgumentException("Cannot deserialize list node as Plane (distance is not a float).");
