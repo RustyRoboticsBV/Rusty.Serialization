@@ -24,7 +24,7 @@ public readonly struct BinaryNode : INode
     /* Public methods. */
     public override readonly string ToString()
     {
-        return "binary: " + value;
+        return "binary: " + $"0x{Convert.ToHexString(value)}";
     }
 
     public readonly string Serialize()
