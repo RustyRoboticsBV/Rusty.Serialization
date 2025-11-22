@@ -118,13 +118,10 @@ internal static class ParseUtility
             return BoolNode.Parse(text);
         if (text.ToLower() == "null")
             return NullNode.Parse(text);
+        if (text.Contains('.'))
+            return RealNode.Parse(text);
         if (decimal.TryParse(text, CultureInfo.InvariantCulture, out decimal d))
-        {
-            if (text.Contains('.'))
-                return RealNode.Parse(text);
-            else
-                return IntNode.Parse(text);
-        }
+            return IntNode.Parse(text);
         throw new ArgumentException($"Invalid string '{text}'");
     }
 }

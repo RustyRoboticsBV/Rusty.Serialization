@@ -136,6 +136,7 @@ public static class UnitTests
         ParseTester.TestType(null, ParseTester.Throw);
         ParseTester.TestType("", ParseTester.Throw);
         ParseTester.TestType("(i32)", (TypeName)"i32");
+        ParseTester.TestType("(i32).", (TypeName)"i32");
         ParseTester.TestType("(  dict<i32,c>[,][])", (TypeName)"dict<i32,c>[,][]");
         ParseTester.TestType("( \t \n i32   \t )", (TypeName)"i32");
         ParseTester.TestType("( ( )", ParseTester.Throw);

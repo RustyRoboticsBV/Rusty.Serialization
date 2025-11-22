@@ -28,7 +28,34 @@ public readonly struct StringNode : INode
 
     public readonly string Serialize()
     {
-        return '"' + value.Replace("\"", "\"\"") + '"';
+        StringBuilder str = new();
+        for (int i = 0; i < value.Length; i++)
+        {
+            char c = value[i];
+
+            // Escaped characters.
+            if (c == '\\')
+                str.Append("\\\\");
+            else if (c == '"')
+                str.Append("\\\"");
+            else if (c == '\t')
+                str.Append("\\t");
+            else if (c == '\n')
+                str.Append("\\n");
+            else if (c == '\0')
+                str.Append("\\0");
+
+            // Handle unicode characters.
+            else if (c < ' ' || c > '~')
+                str.Append("\\[" + ((long)c).ToString("X") + "]");
+
+            // Otherwise, append character as-is.
+            else
+                str.Append(value[i]);
+        }
+
+        // Enclose in double quotes.
+        return '"' + str.ToString() + '"';
     }
 
     public static StringNode Parse(string text)

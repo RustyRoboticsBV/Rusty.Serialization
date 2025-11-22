@@ -3,8 +3,7 @@ using Rusty.Serialization.Test;
 using Rusty.Serialization.Testing;
 using System;
 
-UnitTests.RunParserTests(true);
-return;
+//UnitTests.RunParserTests(true);
 
 // Create test class object.
 Test<int> test = new();
@@ -21,18 +20,26 @@ test.@class = new Test<int>.Disaster<string, decimal>() { thing = new(), a = 10 
 // Print test class.
 SerializerContext context = new();
 
-Console.WriteLine("Serialized");
-string serialized = context.Serialize(test);
-Console.WriteLine(serialized);
+try
+{
+    Console.WriteLine("Serialized");
+    string serialized = context.Serialize(test);
+    Console.WriteLine(serialized);
 
-Console.WriteLine();
-Console.WriteLine("Reserialized");
-Test<int> deserialized = context.Deserialize<Test<int>>(serialized);
-string reserialized = context.Serialize(deserialized);
-Console.WriteLine(reserialized);
+    Console.WriteLine();
+    Console.WriteLine("Reserialized");
+    Test<int> deserialized = context.Deserialize<Test<int>>(serialized);
+    string reserialized = context.Serialize(deserialized);
+    Console.WriteLine(reserialized);
 
-Console.WriteLine();
-Console.WriteLine("Are the objects equal: " + (serialized == reserialized));
+    Console.WriteLine();
+    Console.WriteLine("Are the objects equal: " + (serialized == reserialized));
+}
+
+catch (Exception ex)
+{
+    Console.WriteLine(ex);
+}
 
 #if DEBUG
 Console.WriteLine();
