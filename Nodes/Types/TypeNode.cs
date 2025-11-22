@@ -35,35 +35,41 @@ public readonly struct TypeNode : INode
     public readonly string Serialize()
     {
         if (obj == null)
-            throw new InvalidOperationException("obj was null.");
+            throw new InvalidOperationException("value node was null.");
         return $"({value}){obj.Serialize()}";
     }
 
     public static TypeNode Parse(string text)
     {
-        // Trim trailing whitespaces.
+        // Remove whitespaces.
         string trimmed = text?.Trim();
 
         try
         {
+            // Empty strings are not allowed.
+            if (string.IsNullOrEmpty(trimmed))
+                throw new ArgumentException("Empty string.");
+
             // Enforce parentheses.
             int closeIndex = trimmed.IndexOf(')');
             if (!trimmed.StartsWith('(') || closeIndex == -1)
-                throw new Exception("Missing parentheses.");
-
-            // Get text after parentheses and parse it.
-            string objStr = trimmed.Substring(closeIndex + 1).Trim();
-            INode obj = ParseUtility.ParseValue(objStr);
+                throw new ArgumentException("Missing parentheses.");
 
             // Get text between parentheses and trim it.
-            string contents = trimmed.Substring(1, closeIndex - 1).Trim();
+            string name = trimmed.Substring(1, closeIndex - 1).Trim();
+
+            // Get text after parentheses and parse it.
+            string value = trimmed.Substring(closeIndex + 1).Trim();
+            INode valueNode = null;
+            if (value.Length > 0)
+                valueNode = ParseUtility.ParseValue(value);
 
             // Return type node.
-            return new(contents, obj);
+            return new(name, valueNode);
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a type:\n\n{ex.Message}");
+            throw new ArgumentException($"Could not parse string '{text}' as a type:\n{ex.Message}");
         }
     }
 }

@@ -134,6 +134,19 @@ namespace Rusty.Serialization.Test
             }
         }
 
+        public static void TestType(string str, Result<TypeName> expected)
+        {
+            try
+            {
+                var node = TypeNode.Parse(str);
+                Report(str, new(node.TypeCode), expected, nameof(TypeNode), null);
+            }
+            catch (Exception ex)
+            {
+                Report(str, Throw, expected, nameof(TypeNode), ex);
+            }
+        }
+
         /* Private methods. */
         private static void Report<T>(string str, Result<T> result, Result<T> expected, string nodeType, Exception ex)
         {

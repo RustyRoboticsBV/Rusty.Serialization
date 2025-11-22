@@ -8,6 +8,9 @@ namespace Rusty.Serialization.Test;
 /// </summary>
 public static class UnitTests
 {
+    /// <summary>
+    /// Run a bunch of test cases for parsing values from text to nodes.
+    /// </summary>
     public static void RunParserTests(bool verbose = false, bool numberSequences = false)
     {
         // Set flags.
@@ -127,6 +130,16 @@ public static class UnitTests
         ParseTester.TestNull("n u l l ", ParseTester.Throw);
         ParseTester.TestNull("NULL", ParseTester.Throw);
         ParseTester.TestNull("abc", ParseTester.Throw);
+
+        Console.WriteLine();
+        Console.WriteLine("[TYPE LABELS]");
+        ParseTester.TestType(null, ParseTester.Throw);
+        ParseTester.TestType("", ParseTester.Throw);
+        ParseTester.TestType("(i32)", (TypeName)"i32");
+        ParseTester.TestType("(  dict<i32,c>[,][])", (TypeName)"dict<i32,c>[,][]");
+        ParseTester.TestType("( \t \n i32   \t )", (TypeName)"i32");
+        ParseTester.TestType("( ( )", ParseTester.Throw);
+        ParseTester.TestType("( ) )", ParseTester.Throw);
 
         Console.WriteLine();
         Console.WriteLine("Succesful tests: " + ParseTester.Successes + " out of " + ParseTester.Total);

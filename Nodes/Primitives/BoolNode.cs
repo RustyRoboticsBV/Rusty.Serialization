@@ -37,8 +37,11 @@ public readonly struct BoolNode : INode
 
         try
         {
+            // Empty strings are not allowed.
             if (string.IsNullOrEmpty(trimmed))
                 throw new ArgumentException("Empty string.");
+
+            // Make sure it's either true or false.
             if (trimmed.Length == 4 && trimmed == "true")
                 return new(true);
             if (trimmed.Length == 5 && trimmed == "false")

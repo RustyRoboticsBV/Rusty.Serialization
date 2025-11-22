@@ -1,31 +1,9 @@
 ﻿using Rusty.Serialization;
-using Rusty.Serialization.Nodes;
 using Rusty.Serialization.Test;
 using Rusty.Serialization.Testing;
 using System;
 
-UnitTests.RunParserTests();
-
-
-return;
-Console.WriteLine(BoolNode.Parse("true"));
-Console.WriteLine(IntNode.Parse("-0"));
-Console.WriteLine(IntNode.Parse("1000"));
-Console.WriteLine(RealNode.Parse("1000.0"));
-Console.WriteLine(RealNode.Parse(".5"));
-Console.WriteLine(RealNode.Parse("1."));
-Console.WriteLine(RealNode.Parse("."));
-Console.WriteLine(CharNode.Parse("'A'"));
-Console.WriteLine(CharNode.Parse("'''"));
-Console.WriteLine(CharNode.Parse("'\"'"));
-Console.WriteLine(CharNode.Parse("'\\''"));
-Console.WriteLine(CharNode.Parse("'\\\"'"));
-Console.WriteLine(CharNode.Parse("'\\t'"));
-Console.WriteLine(CharNode.Parse("'\\n'"));
-Console.WriteLine(CharNode.Parse("'\\0'"));
-Console.WriteLine(CharNode.Parse("'\\[21FF]'"));
-Console.WriteLine(CharNode.Parse("'\n'"));
-Console.WriteLine("\u21ff");
+UnitTests.RunParserTests(true);
 return;
 
 // Create test class object.

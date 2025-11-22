@@ -12,7 +12,9 @@ public struct TypeName
 
     public TypeName(string name)
     {
-        if (name.Contains('(') || name.Contains(')'))
+        if (name == null)
+            this.name = "null";
+        else if (name.Contains('(') || name.Contains(')'))
             throw new ArgumentException("Type names may not contain '(' or ')'.");
         this.name = name;
     }
