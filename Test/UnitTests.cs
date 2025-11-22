@@ -133,6 +133,7 @@ public static class UnitTests
         ParseTester.TestBinary("0x0123456789ABCDEF", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF});
         ParseTester.TestBinary("0xaBcDeF", new byte[] { 0xAB, 0xCD, 0xEF });
         ParseTester.TestBinary("     \n\t0x0123456789ABCDEF \t\t", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF});
+        ParseTester.TestBinary("0123456789ABCDE", ParseTester.Throw);
         ParseTester.TestBinary("0x0123456789ABCDE", ParseTester.Throw);
         ParseTester.TestBinary("0x 123456789ABCDEF", ParseTester.Throw);
 
