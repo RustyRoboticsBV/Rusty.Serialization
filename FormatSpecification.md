@@ -26,10 +26,10 @@ Examples: `(int)`, `(dict<str,str>)`, `(my_object)` `(  my_namespace.my_class<in
 
 ### Primitives
 
-#### Bool
+#### Booleans
 Booleans can be one of two literals: `true` or `false`. Boolean values must be lowercase.
 
-#### Int
+#### Integers
 Integers can be any combination of digits. Optionally, they may start with a negative sign. Leading zeros are allowed.
 
 Examples:
@@ -45,7 +45,7 @@ Examples:
 - `-0.5`, `-.5` and `-00.50` are all valid representations of the number `-0.5`.
 
 #### Characters
-Characters must be enclosed in single-quote characters. Only a single character may be stored inside. Empty character literals are not allowed. Only non-whitespace characters from the format's character set are allowed, except for the standard space character.
+Characters must be enclosed in single-quote characters. Only a single character may be stored inside. Empty character literals are not allowed. Only non-whitespace characters from the format's character set are allowed, except for the standard space character which is allowed.
 
 A few special character literals exist:
 - `'\''`: alternative way of writing `'''`.
