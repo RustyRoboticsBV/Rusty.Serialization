@@ -75,6 +75,7 @@ public static class UnitTests
         ParseTester.TestChar("'\\n'", '\n');
         ParseTester.TestChar("'\\0'", '\0');
         ParseTester.TestChar("'\\[21FF]'", '\u21ff');
+        ParseTester.TestChar($"'ÿ'", 'ÿ');
         ParseTester.TestChar("'\t'", ParseTester.Throw);
         ParseTester.TestChar("'\n'", ParseTester.Throw);
         ParseTester.TestChar("'\0'", ParseTester.Throw);
@@ -97,6 +98,7 @@ public static class UnitTests
         ParseTester.TestString("\" \\0 \"", " \0 ");
         ParseTester.TestString("\" \\[21ff] \"", " \u21ff ");
         ParseTester.TestString("\" \\\\ \\\" \\t \\n \\0 \\[21ff] \"", " \\ \" \t \n \0 \u21ff ");
+        ParseTester.TestString("\"áèîõüÿ\"", "áèîõüÿ");
         ParseTester.TestString("ABC", ParseTester.Throw);
         ParseTester.TestString("\"\"\"", ParseTester.Throw);
         ParseTester.TestString("\" \\[21ff \"", ParseTester.Throw);
@@ -149,6 +151,9 @@ public static class UnitTests
         Console.WriteLine("Failed tests: " + ParseTester.Failures + " out of " + ParseTester.Total);
     }
 
+    /// <summary>
+    /// Run a bunch of test cases for serializing values to text.
+    /// </summary>
     public static void RunSerializeTests()
     {
         Console.WriteLine("[BOOLEANS]");
@@ -177,6 +182,7 @@ public static class UnitTests
         SerializeTester.TestChar('\n', "'\\n'");
         SerializeTester.TestChar('\0', "'\\0'");
         SerializeTester.TestChar('\u1234', "'\\[1234]'");
+        SerializeTester.TestChar('ÿ', "'ÿ'");
 
         Console.WriteLine();
         Console.WriteLine("[STRINGS]");
@@ -188,6 +194,7 @@ public static class UnitTests
         SerializeTester.TestString("\n", "\"\\n\"");
         SerializeTester.TestString("\0", "\"\\0\"");
         SerializeTester.TestString("\u1234", "\"\\[1234]\"");
+        SerializeTester.TestString("áèîõüÿ", "\"áèîõüÿ\"");
 
         Console.WriteLine();
         Console.WriteLine("[COLORS]");

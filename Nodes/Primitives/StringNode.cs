@@ -46,7 +46,7 @@ public readonly struct StringNode : INode
                 str.Append("\\0");
 
             // Handle unicode characters.
-            else if (c < ' ' || c > '~')
+            else if (!CharChecker.Check(c))
                 str.Append("\\[" + UnicodeParser.Serialize(c) + "]");
 
             // Otherwise, append character as-is.
@@ -80,15 +80,17 @@ public readonly struct StringNode : INode
             StringBuilder builder = new();
             for (int i = 0; i < contents.Length; i++)
             {
+                char c = contents[i];
+
                 // Normal characters: append to buffer.
-                if (contents[i] >= ' ' && contents[i] <= '~' && contents[i] != '\\' && contents[i] != '"')
+                if (CharChecker.Check(c) && c != '\\' && c != '"' && !(c >= '\t' && c <= '\r'))
                 {
-                    builder.Append(contents[i]);
+                    builder.Append(c);
                     continue;
                 }
 
                 // Escaped characters.
-                if (contents[i] == '\\' && i < contents.Length - 1)
+                if (c == '\\' && i < contents.Length - 1)
                 {
                     switch (contents[i + 1])
                     {
@@ -137,9 +139,9 @@ public readonly struct StringNode : INode
                 }
 
                 // Don't allow certain characters.
-                if (contents[i] > '~' + 1)
-                    throw new ArgumentException($"Illegal raw unicode character '{(long)contents[i]}'. Use '\\[####]' instead.");
-                switch (contents[i])
+                if (c > '~' + 1)
+                    throw new ArgumentException($"Illegal raw unicode character '{(long)c}'. Use '\\[####]' instead.");
+                switch (c)
                 {
                     case '\\':
                         throw new ArgumentException("Illegal raw backslash character. Use '\\\\' instead.");
@@ -152,7 +154,7 @@ public readonly struct StringNode : INode
                     case '\0':
                         throw new ArgumentException("Illegal raw null character. Use '\\0' instead.");
                     default:
-                        throw new ArgumentException($"Illegal raw control character {(long)contents[i]}. Use '\\[####]' instead.");
+                        throw new ArgumentException($"Illegal raw control character {(long)c}. Use '\\[####]' instead.");
                 }
             }
 

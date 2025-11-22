@@ -35,7 +35,7 @@ public readonly struct CharNode : INode
             str = "\\n";
         else if (value == '\0')
             str = "\\0";
-        else if (value < ' ' || value > '~')
+        else if (!CharChecker.Check(value))
             str = "\\[" + UnicodeParser.Serialize(value) + "]";
         else
             str = value.ToString(CultureInfo.InvariantCulture);
@@ -64,13 +64,14 @@ public readonly struct CharNode : INode
             // Normal character.
             if (trimmed.Length == 3)
             {
-                if (trimmed[1] >= ' ' && trimmed[1] <= '~')
-                    return new(trimmed[1]);
+                char c = trimmed[1];
+                if (CharChecker.Check(c) && !(c >= '\t' && c <= '\r'))
+                    return new(c);
                 else
                 {
-                    if (trimmed[1] > '~' + 1)
-                        throw new ArgumentException($"Illegal raw unicode character '{(long)trimmed[1]}'. Use '\\[####]' instead.");
-                    switch (trimmed[1])
+                    if (c > '~' + 1)
+                        throw new ArgumentException($"Illegal raw unicode character '{(long)c}'. Use '\\[####]' instead.");
+                    switch (c)
                     {
                         case '\t':
                             throw new ArgumentException("Illegal raw tab character. Use '\\t' instead.");
@@ -79,7 +80,7 @@ public readonly struct CharNode : INode
                         case '\0':
                             throw new ArgumentException("Illegal raw null character. Use '\\0' instead.");
                         default:
-                            throw new ArgumentException($"Illegal raw control character {(long)trimmed[1]}. Use '\\[####]' instead.");
+                            throw new ArgumentException($"Illegal raw control character {(long)c}. Use '\\[####]' instead.");
                     }
                 }
             }
