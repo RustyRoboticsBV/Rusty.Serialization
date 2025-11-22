@@ -20,6 +20,7 @@ public readonly struct NullNode : INode
 
     public static NullNode Parse(string text)
     {
+        // Remove whitespaces.
         string trimmed = text?.Trim();
 
         try

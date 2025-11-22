@@ -34,7 +34,9 @@ public readonly struct CharNode : INode
 
     public static CharNode Parse(string text)
     {
+        // Remove whitespaces.
         string trimmed = text?.Trim();
+
         try
         {
             // Empty strings are not allowed.

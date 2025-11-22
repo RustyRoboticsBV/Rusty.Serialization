@@ -32,7 +32,9 @@ public readonly struct BoolNode : INode
 
     public static BoolNode Parse(string text)
     {
+        // Remove whitespaces.
         string trimmed = text?.Trim();
+
         try
         {
             if (string.IsNullOrEmpty(trimmed))

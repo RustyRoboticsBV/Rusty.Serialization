@@ -4,7 +4,7 @@ using Rusty.Serialization.Test;
 using Rusty.Serialization.Testing;
 using System;
 
-ParseTester.Verbose = true;
+//ParseTester.Verbose = true;
 
 Console.WriteLine("[BOOLEANS]");
 ParseTester.TestBool(null, ParseTester.Throw);
@@ -35,9 +35,12 @@ ParseTester.TestReal("1000.0", 1000.0m);
 ParseTester.TestReal("1.", 1.0m);
 ParseTester.TestReal(".5", 0.5m);
 ParseTester.TestReal(".", 0.0m);
+ParseTester.TestReal("-.", 0.0m);
+ParseTester.TestReal("-.5", -0.5m);
 ParseTester.TestReal("  \t  10.0  \t", 10.0m);
 ParseTester.TestReal("1", ParseTester.Throw);
 ParseTester.TestReal("1000 .0", ParseTester.Throw);
+ParseTester.TestReal("0..5", ParseTester.Throw);
 ParseTester.TestReal("abc", ParseTester.Throw);
 
 Console.WriteLine();
@@ -100,6 +103,7 @@ ParseTester.TestColor("#FF000000", (255, 0, 0, 0));
 ParseTester.TestColor("#FF0000", (255, 0, 0, 255));
 ParseTester.TestColor("  \t  #FF000000 \t\n", (255, 0, 0, 0));
 ParseTester.TestColor("FFFFFF", ParseTester.Throw);
+ParseTester.TestColor("# FFFFFF", ParseTester.Throw);
 ParseTester.TestColor("#FF", ParseTester.Throw);
 ParseTester.TestColor("#YYYYYY", ParseTester.Throw);
 

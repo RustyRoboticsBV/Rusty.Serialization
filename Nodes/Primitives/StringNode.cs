@@ -33,6 +33,7 @@ public readonly struct StringNode : INode
 
     public static StringNode Parse(string text)
     {
+        // Remove whitespaces.
         string trimmed = text?.Trim();
 
         try

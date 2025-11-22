@@ -56,19 +56,30 @@ public readonly struct RealNode : INode
 
     public static RealNode Parse(string text)
     {
+        // Remove whitespaces.
         string trimmed = text?.Trim();
+
         try
         {
             // Empty strings are not allowed.
             if (string.IsNullOrEmpty(trimmed))
                 throw new ArgumentException("Empty string.");
 
+            // Handle . and -. strings.
+            if (trimmed == "." || trimmed == "-.")
+                return new(0);
+
             // Check syntax.
             bool foundDot = false;
             for (int i = 0; i < trimmed.Length; i++)
             {
-                if (trimmed[i] == '.' && !foundDot)
-                    foundDot = true;
+                if (trimmed[i] == '.')
+                {
+                    if (!foundDot)
+                        foundDot = true;
+                    else
+                        throw new ArgumentException("Multiple decimal points.");
+                }
                 else if (!((i == 0 && trimmed[i] == '-') || (trimmed[i] >= '0' && trimmed[i] <= '9')))
                     throw new ArgumentException($"Illegal character '{trimmed[i]}' at {i}.");
             }
@@ -76,9 +87,7 @@ public readonly struct RealNode : INode
                 throw new ArgumentException("Missing decimal dot.");
 
             // Parse.
-            if (trimmed == "." || trimmed == "-.")
-                return new(0);
-            return new(decimal.Parse(text, CultureInfo.InvariantCulture));
+            return new(decimal.Parse(trimmed, CultureInfo.InvariantCulture));
         }
         catch (Exception ex)
         {

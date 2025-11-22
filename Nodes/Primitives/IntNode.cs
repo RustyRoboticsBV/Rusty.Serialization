@@ -36,7 +36,9 @@ public readonly struct IntNode : INode
 
     public static IntNode Parse(string text)
     {
+        // Remove whitespaces.
         string trimmed = text?.Trim();
+
         try
         {
             // Empty strings are not allowed.
@@ -46,7 +48,7 @@ public readonly struct IntNode : INode
             // Check syntax.
             for (int i = 0; i < trimmed.Length; i++)
             {
-                if (!(i == 0 && trimmed[i] == '-' || trimmed[i] >= '0' && trimmed[i] <= '9'))
+                if (!((i == 0 && trimmed[i] == '-') || (trimmed[i] >= '0' && trimmed[i] <= '9')))
                     throw new ArgumentException($"Illegal character '{trimmed[i]}' at {i}.");
             }
 
