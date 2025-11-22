@@ -152,7 +152,7 @@ public readonly struct StringNode : INode
                     case '\0':
                         throw new ArgumentException("Illegal raw null character. Use '\\0' instead.");
                     default:
-                        throw new ArgumentException($"Illegal raw control character {(long)contents[1]}. Use '\\[####]' instead.");
+                        throw new ArgumentException($"Illegal raw control character {(long)contents[i]}. Use '\\[####]' instead.");
                 }
             }
 

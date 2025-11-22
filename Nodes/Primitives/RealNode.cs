@@ -23,7 +23,7 @@ public readonly struct RealNode : INode
     /* Public methods. */
     public override readonly string ToString()
     {
-        return "float: " + value;
+        return "real: " + value;
     }
 
     public readonly string Serialize()

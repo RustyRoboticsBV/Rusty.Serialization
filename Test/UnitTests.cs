@@ -36,6 +36,7 @@ public static class UnitTests
         ParseTester.TestInt("10", 10);
         ParseTester.TestInt("-20", -20);
         ParseTester.TestInt(" \t  5   \t", 5);
+        ParseTester.TestInt("-", ParseTester.Throw);
         ParseTester.TestInt("5 5", ParseTester.Throw);
         ParseTester.TestInt("abc", ParseTester.Throw);
         ParseTester.TestInt("--5", ParseTester.Throw);
@@ -53,6 +54,7 @@ public static class UnitTests
         ParseTester.TestReal("-.5", -0.5m);
         ParseTester.TestReal("  \t  10.0  \t", 10.0m);
         ParseTester.TestReal("1", ParseTester.Throw);
+        ParseTester.TestReal("-", ParseTester.Throw);
         ParseTester.TestReal("1000 .0", ParseTester.Throw);
         ParseTester.TestReal("0..5", ParseTester.Throw);
         ParseTester.TestReal("abc", ParseTester.Throw);
