@@ -1,4 +1,11 @@
-﻿using System;
+﻿#if GODOT && !UNITY_5_OR_NEWER
+#define GODOT_CONTEXT
+
+#elif !GODOT && UNITY_5_OR_NEWER
+#define UNITY_CONTEXT
+#endif
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,6 +19,43 @@ public class TypeRegistry
     /* Private properties. */
     private Dictionary<Type, Type> targetToConverter = new();
     private Dictionary<Type, Type> cache = new();
+
+    /* Constructors. */
+    public TypeRegistry()
+    {
+        // Add built-in types.
+        Add<bool, BoolConverter>();
+
+        Add<sbyte, SbyteConverter>();
+        Add<short, ShortConverter>();
+        Add<int, IntConverter>();
+        Add<long, LongConverter>();
+        Add<byte, ByteConverter>();
+        Add<ushort, UshortConverter>();
+        Add<uint, UintConverter>();
+        Add<ulong, UlongConverter>();
+
+        Add<float, FloatConverter>();
+        Add<double, DoubleConverter>();
+        Add<decimal, DecimalConverter>();
+
+        Add<char, CharConverter>();
+
+        Add<string, StringConverter>();
+
+        Add<byte[], ByteArrayConverter>();
+
+        Add<System.Drawing.Color, ColorConverter>();
+#if GODOT_CONTEXT
+        Add<Godot.Color, Gd.ColorConverter>();
+#endif
+
+        Add(typeof(List<>), typeof(ListConverter<>));
+        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>));
+        Add(typeof(HashSet<>), typeof(HashSetConverter<>));
+        Add(typeof(Stack<>), typeof(StackConverter<>));
+        Add(typeof(Queue<>), typeof(QueueConverter<>));
+    }
 
     /* Public methods. */
     /// <summary>
@@ -82,7 +126,7 @@ public class TypeRegistry
             return targetToConverter[targetType];
         }
 
-        // Enum resolve.
+        // Resolve enum types.
         if (targetType.IsEnum)
         {
             Type enumConverterType = typeof(EnumConverter<>).MakeGenericType(targetType);
@@ -90,7 +134,7 @@ public class TypeRegistry
             return enumConverterType;
         }
 
-        // Array resolve.
+        // Resolve array types.
         if (targetType.IsArray)
         {
             Type elementType = targetType.GetElementType();
@@ -99,7 +143,7 @@ public class TypeRegistry
             return arrayConverterType;
         }
 
-        // Tuple resolve.
+        // Resolve tuple types.
         if (targetType.IsValueType && targetType.IsGenericType &&
             targetType.FullName!.StartsWith("System.ValueTuple`"))
         {
@@ -108,7 +152,7 @@ public class TypeRegistry
             return valueTupleConverterType;
         }
 
-        // Generic resolve.
+        // Resolve closed generic types.
         if (targetType.IsGenericType)
         {
             Type openGenericType = targetType.GetGenericTypeDefinition();
@@ -122,7 +166,7 @@ public class TypeRegistry
             }
         }
 
-        // Inheritanc resolve.
+        // Resolve inherited types.
         Type parentType = targetType.BaseType;
         while (parentType != null)
         {

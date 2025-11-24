@@ -1,16 +1,15 @@
-﻿using Rusty.Serialization.Nodes;
+﻿using System;
+using Rusty.Serialization.Nodes;
 
 namespace Rusty.Serialization.Converters;
 
 /// <summary>
 /// A generic array converter.
 /// </summary>
-public class ArrayConverter<T> : IListConverter<T[], T>
+public sealed class ArrayConverter<T> : ReferenceConverter<T[], ListNode>
 {
     /* Protected methods. */
-    protected sealed override T[] Instantiate() => [];
-
-    protected sealed override ListNode Convert(T[] obj, Context context)
+    protected override ListNode Convert(T[] obj, Context context)
     {
         INode[] elementNodes = new INode[obj.Length];
         for (int i = 0; i < obj.Length; i++)
@@ -28,5 +27,17 @@ public class ArrayConverter<T> : IListConverter<T[], T>
             array[i] = DeconvertElement(node.Elements[i], context);
         }
         return array;
+    }
+
+    /* Private methods. */
+    private INode ConvertElement(T obj, Context context)
+    {
+        return context.GetConverter(obj.GetType()).Convert(obj, context);
+    }
+
+    private T DeconvertElement(INode node, Context context)
+    {
+        Type targetType = ((IConverter)this).TargetType;
+        return (T)context.GetConverter(targetType).Deconvert(node, context);
     }
 }

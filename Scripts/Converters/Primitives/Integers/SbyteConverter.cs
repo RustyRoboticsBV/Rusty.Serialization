@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Converters;
 /// <summary>
 /// An sbyte converter.
 /// </summary>
-public sealed class SsbyteConverter : ValueConverter<sbyte, IntNode>
+public sealed class SbyteConverter : ValueConverter<sbyte, IntNode>
 {
     /* Protected methods. */
     protected override IntNode Convert(sbyte obj, Context context) => new(obj);

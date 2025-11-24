@@ -7,7 +7,7 @@ using Rusty.Serialization.Nodes;
 namespace Rusty.Serialization.Converters;
 
 /// <summary>
-/// A generic tuple converter.
+/// A generic value tuple converter.
 /// </summary>
 public sealed class TupleConverter<TupleT> : ValueConverter<TupleT, ListNode>
     where TupleT : struct, ITuple
