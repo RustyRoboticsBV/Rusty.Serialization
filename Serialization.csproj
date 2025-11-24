@@ -13,6 +13,7 @@
   
   <PropertyGroup>
     <DefineConstants>DEBUG,GODOT</DefineConstants>
+    <RootNamespace>Rusty.Serialization</RootNamespace>
   </PropertyGroup>
 
 </Project>
