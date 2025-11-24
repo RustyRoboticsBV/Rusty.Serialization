@@ -43,6 +43,9 @@ public class TypeRegistry
 
         Add<string, StringConverter>();
 
+        Add<DateTime, DateTimeConverter>();
+        Add<DateTimeOffset, DateTimeOffsetConverter>();
+
         Add<byte[], ByteArrayConverter>();
 
         Add<System.Drawing.Color, ColorConverter>();

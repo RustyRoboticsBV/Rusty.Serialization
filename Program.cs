@@ -5,8 +5,10 @@ using Rusty.Serialization.Testing;
 using System;
 using System.Collections;
 
-//UnitTests.RunParserTests(true);
-//UnitTests.RunSerializeTests();
+UnitTests.RunParserTests(true);
+UnitTests.RunSerializeTests();
+return;
+
 Context context = new();
 context.AddConverter<bool, BoolConverter>();
 context.AddConverter<int, IntConverter>();

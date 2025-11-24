@@ -1,5 +1,6 @@
 ﻿#if DEBUG
 using System;
+using Rusty.Serialization.Nodes;
 
 namespace Rusty.Serialization.Test;
 
@@ -124,6 +125,22 @@ public static class UnitTests
         ParseTester.TestColor("# FFFFFF", ParseTester.Throw);
         ParseTester.TestColor("#FF", ParseTester.Throw);
         ParseTester.TestColor("#YYYYYY", ParseTester.Throw);
+
+        Console.WriteLine();
+        Console.WriteLine("[DATETIMES]");
+        ParseTester.TestDatetime(null, ParseTester.Throw);
+        ParseTester.TestDatetime("", ParseTester.Throw);
+        ParseTester.TestDatetime("20251123_123456_789_+1030", new DatetimeNode.Datetime(2025, 11, 23, 12, 34, 56, 789, 10, 30));
+        ParseTester.TestDatetime("20251123_123456_789_-1030", new DatetimeNode.Datetime(2025, 11, 23, 12, 34, 56, 789, -10, 30));
+        ParseTester.TestDatetime("20251123_123456_+1000", new DatetimeNode.Datetime(2025, 11, 23, 12, 34, 56, 0, 10, 0));
+        ParseTester.TestDatetime("20251123_+1000", new DatetimeNode.Datetime(2025, 11, 23, 0, 0, 0, 0, 10, 0));
+        ParseTester.TestDatetime("_+1000", new DatetimeNode.Datetime(0, 0, 0, 0, 0, 0, 0, 10, 0));
+        ParseTester.TestDatetime("789_+1000", new DatetimeNode.Datetime(0, 0, 0, 0, 0, 0, 789, 10, 0));
+        ParseTester.TestDatetime("20251123_", new DatetimeNode.Datetime(2025, 11, 23, 0, 0, 0, 0, 0, 0));
+        ParseTester.TestDatetime("_789", new DatetimeNode.Datetime(0, 0, 0, 0, 0, 0, 789, 0, 0));
+        ParseTester.TestDatetime("_123456", new DatetimeNode.Datetime(0, 0, 0, 12, 34, 56, 0, 0, 0));
+        ParseTester.TestDatetime("20251123_789", new DatetimeNode.Datetime(2025, 11, 23, 0, 0, 0, 789, 0, 0));
+        ParseTester.TestDatetime("_", new DatetimeNode.Datetime(0, 0, 0, 0, 0, 0, 0, 0, 0));
 
         Console.WriteLine();
         Console.WriteLine("[BINARY]");

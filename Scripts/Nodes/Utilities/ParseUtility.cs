@@ -118,6 +118,8 @@ internal static class ParseUtility
             return BoolNode.Parse(text);
         if (text.ToLower() == "null")
             return NullNode.Parse(text);
+        if (text.Contains('_'))
+            return DatetimeNode.Parse(text);
         if (text.Contains('.'))
             return RealNode.Parse(text);
         if (decimal.TryParse(text, CultureInfo.InvariantCulture, out decimal d))

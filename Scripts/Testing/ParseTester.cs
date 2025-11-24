@@ -121,6 +121,19 @@ namespace Rusty.Serialization.Test
             }
         }
 
+        public static void TestDatetime(string str, Result<DatetimeNode.Datetime> expected)
+        {
+            try
+            {
+                var node = DatetimeNode.Parse(str);
+                Report(str, new(node.Value), expected, nameof(DatetimeNode), null);
+            }
+            catch (Exception ex)
+            {
+                Report(str, Throw, expected, nameof(DatetimeNode), ex);
+            }
+        }
+
         public static void TestBinary(string str, Result<byte[]> expected)
         {
             try
