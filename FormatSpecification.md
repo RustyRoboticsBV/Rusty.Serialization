@@ -74,25 +74,28 @@ Colors literals must start with a `#` hex sign, followed by the hexadecimal repr
 - `#RRGGBB`: full notation without alpha. The alpha is assumed to be `FF`.
 - `#RRGGBBAA`: full notation with alpha.
 
-#### Date/Time
-Datetime literals must contain an `_` underscore. They may contain a day of the year, a time of day and a timezone. The format is as follows: `YMD_hms_f±ZHZM`. `Y`, `M`, `D`, `h`, `m`, `s`, and `f`. A `-` negative sign may be prefixed for negative timestamps.
-- `Y` represents the number of years. It may be an integer number of any length. Leading zeros are allowed.
-- `M` represents the number of months. It may be an integer number between `0` and `11`. Leading zeros are NOT allowed.
-- `D` represents the number of days. It may be an integer number between `0` and `30`. Leading zeros are NOT allowed.
-- `h` represents the number of hours. It may be an integer number between `0` and `23`. Leading zeros are allowed.
-- `h` represents the number of minutes. It may be an integer number between `0` and `59`. Leading zeros are NOT allowed.
-- `h` represents the number of seconds. It may be an integer number between `0` and `59`. Leading zeros are NOT allowed.
-- `f` represents the number milliseconds. It may be an integer number between `0` and `999`. Leading zeros are allowed. 
-- `±ZHZM` represents the timezone, as an hour and minute offset from UTC. It must always be five characters long. The first character must either be a `+` positive sign or a `-` negative sign. The other characters must be digits. It may be omitted if the value is `+0000`.
+#### Timestamps
+Timestamp literals contain time data in the format `Y#M#D#h#m#s#f#`, where the characters between the letters should only consist of only digits. Optionally, the first character may be a `-` minus sign for negative timestamps. Any positive integer number is allowed for each part, negative numbers are not.  Leading zeros are allowed. Parts that equal 0 can be omitted, and the different parts can come in any order.
 
-`YMD`, `hms`, `f` and `ZHZM` may be omitted if their values are `0`. The underscore between `YMD` and `hms` must always be included in the literal.
+Each part represents a different unit:
+- `Y`: a number of years.
+- `M`: a number of months.
+- `D`: a number of days.
+- `h`: a number of hours.
+- `m`: a number of minutes.
+- `s`: a number of seconds.
+- `f`: a number of milliseconds.
+These prefixes are case-sensitive.
 
-The format does not enforce that a year-month-day tuple expresses a valid date. For example, `19940130_` represents the 31st of February, 1994 (which isn't a valid date but is allowed by the format).
+For example:
+- `Y1999M2D1h13` and `D1M2Y1999h13m0s0` are both valid representations of the date and time `February 1st 1999, 1 P.M.`.
+- `s1f100` and `m0f100s1` are both valid representations of the timespan `1 second and 100 milliseconds`.
+- `-Y100000` and `-Y100000M0D0h0m0s0f0` are both valid representations the year `-100,000 B.C.`.
 
-Examples: `19990101_130000_000_+0100`, `_054321_001`, `10000__`, `_`.
+Note that timestamp literals do not have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
 
 #### Binary
-Binary data strings store arbitrary data in hexadecimal format. They must start with `0x`, followed by the hexadecimal representation of the data, for example: `0x0004BAF890`. The literal `0x` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.
+Binary data literals store arbitrary data in hexadecimal format. They must start with `0x`, followed by the hexadecimal representation of the data, for example: `0x0004BAF890`. The literal `0x` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.
 
 #### Null
 Null values are encoded with `null` literals. Like booleans, null values must be lower-case. Null values never need type labels, but are allowed to be annotated with them.
