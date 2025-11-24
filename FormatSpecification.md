@@ -74,6 +74,15 @@ Colors literals must start with a `#` hex sign, followed by the hexadecimal repr
 - `#RRGGBB`: full notation without alpha. The alpha is assumed to be `FF`.
 - `#RRGGBBAA`: full notation with alpha.
 
+#### Date/Time
+Date/Time literals must contain an `_` underscore. They may contain a day of the year, a time of day and a timezone. The format is as follows: `YYYYMMDD_HHMMSS_MMM_±HHMM`:
+- `YYYYMMDD` represents the year, month and day. It must always be eight characters long, and may only consist of digits. It may be omitted if the value is `00000000`.
+- `HHMMSS` represents the hour, minute and second. It must always be six characters long, and may only consist of digits. It may be omitted if the value is `000000`.
+- `MMM` represents the millisecond. It must always be three characters long, and may only consist of digits. It may be omitted if the value is `000`.
+- `±HHMM` represents the timezone, as an hour and minute offset from UTC. It must always be five characters long. The first character must either a `+` positive sign or a `-` negative sign. The other characters must be digits. It may be omitted if the value is `+0000`.
+
+Note that the represented value does not have to be a valid date, time or timezone. Any value that fits in the format is allowed.
+
 #### Binary
 Binary data strings store arbitrary data in hexadecimal format. They must start with `0x`, followed by the hexadecimal representation of the data, for example: `0x0004BAF890`. The literal `0x` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.
 
