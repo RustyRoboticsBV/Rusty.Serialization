@@ -75,13 +75,21 @@ Colors literals must start with a `#` hex sign, followed by the hexadecimal repr
 - `#RRGGBBAA`: full notation with alpha.
 
 #### Date/Time
-Date/Time literals must contain an `_` underscore. They may contain a day of the year, a time of day and a timezone. The format is as follows: `YYYYMMDD_HHMMSS_MMM_±HHMM`:
-- `YYYYMMDD` represents the year, month and day. It must always be eight characters long, and may only consist of digits. It may be omitted if the value is `00000000`.
-- `HHMMSS` represents the hour, minute and second. It must always be six characters long, and may only consist of digits. It may be omitted if the value is `000000`.
-- `MMM` represents the millisecond. It must always be three characters long, and may only consist of digits. It may be omitted if the value is `000`.
-- `±HHMM` represents the timezone, as an hour and minute offset from UTC. It must always be five characters long. The first character must either a `+` positive sign or a `-` negative sign. The other characters must be digits. It may be omitted if the value is `+0000`.
+Datetime literals must contain an `_` underscore. They may contain a day of the year, a time of day and a timezone. The format is as follows: `YMD_hms_f±ZHZM`. `Y`, `M`, `D`, `h`, `m`, `s`, and `f`. A `-` negative sign may be prefixed for negative timestamps.
+- `Y` represents the number of years. It may be an integer number of any length. Leading zeros are allowed.
+- `M` represents the number of months. It may be an integer number between `0` and `11`. Leading zeros are NOT allowed.
+- `D` represents the number of days. It may be an integer number between `0` and `30`. Leading zeros are NOT allowed.
+- `h` represents the number of hours. It may be an integer number between `0` and `23`. Leading zeros are allowed.
+- `h` represents the number of minutes. It may be an integer number between `0` and `59`. Leading zeros are NOT allowed.
+- `h` represents the number of seconds. It may be an integer number between `0` and `59`. Leading zeros are NOT allowed.
+- `f` represents the number milliseconds. It may be an integer number between `0` and `999`. Leading zeros are allowed. 
+- `±ZHZM` represents the timezone, as an hour and minute offset from UTC. It must always be five characters long. The first character must either be a `+` positive sign or a `-` negative sign. The other characters must be digits. It may be omitted if the value is `+0000`.
 
-Note that the represented value does not have to be a valid date, time or timezone. Any value that fits in the format is allowed.
+`YMD`, `hms`, `f` and `ZHZM` may be omitted if their values are `0`. The underscore between `YMD` and `hms` must always be included in the literal.
+
+The format does not enforce that a year-month-day tuple expresses a valid date. For example, `19940130_` represents the 31st of February, 1994 (which isn't a valid date but is allowed by the format).
+
+Examples: `19990101_130000_000_+0100`, `_054321_001`, `10000__`, `_`.
 
 #### Binary
 Binary data strings store arbitrary data in hexadecimal format. They must start with `0x`, followed by the hexadecimal representation of the data, for example: `0x0004BAF890`. The literal `0x` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.

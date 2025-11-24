@@ -5,6 +5,8 @@ using Rusty.Serialization.Testing;
 using System;
 using System.Collections;
 
+DateTime dt = new(2005, 2, 29);
+System.Console.WriteLine(dt);
 UnitTests.RunParserTests(true);
 UnitTests.RunSerializeTests();
 return;
