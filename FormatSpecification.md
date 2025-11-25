@@ -75,7 +75,7 @@ Colors literals must start with a `#` hex sign, followed by the hexadecimal repr
 - `#RRGGBBAA`: full notation with alpha.
 
 #### Timestamps
-Timestamp literals contain time data in the format `Y#M#D#h#m#s#f#`, where the characters between the letters should only consist of only digits. Optionally, the first character may be a `-` minus sign for negative timestamps. Any positive integer number is allowed for each term, negative numbers are not.  Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms can come in any order. Empty terms are not allowed (i.e. `YMD200`).
+Timestamp literals contain time data in the format `Y#M#D#h#m#s#f#`, where the characters between the letters should only consist of only digits. Optionally, the first character may be a `-` minus sign for negative timestamps (this applies to the *entire* timestamp).
 
 Each part represents a different unit:
 - `Y`: a number of years.
@@ -86,6 +86,8 @@ Each part represents a different unit:
 - `s`: a number of seconds.
 - `f`: a number of milliseconds.
 These prefixes are case-sensitive.
+
+Any positive integer number is allowed for each term, negative numbers are not. Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms can come in any order. Empty terms are not allowed (i.e. `YMD200`), and a term cannot appear more than once (i.e. `Y2Y2`).
 
 For example:
 - `Y1999M2D1h13` and `D1M2Y1999h13m0s0` are both valid representations of the date and time `February 1st 1999, 1 P.M.`.

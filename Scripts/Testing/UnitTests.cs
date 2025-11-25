@@ -138,8 +138,13 @@ public static class UnitTests
         ParseTester.TestTimestamp("s1", new TimestampNode.Timestamp(false, 0, 0, 0, 0, 0, 1, 0));
         ParseTester.TestTimestamp("f123", new TimestampNode.Timestamp(false, 0, 0, 0, 0, 0, 0, 123));
         ParseTester.TestTimestamp("D31M7Y1999", new TimestampNode.Timestamp(false, 1999, 7, 31, 0, 0, 0, 0));
+        ParseTester.TestTimestamp("-D31M7Y1999", new TimestampNode.Timestamp(true, 1999, 7, 31, 0, 0, 0, 0));
         ParseTester.TestTimestamp("   \n\tY1999 \t", new TimestampNode.Timestamp(false, 1999, 0, 0, 0, 0, 0, 0));
+        ParseTester.TestTimestamp("YD2", ParseTester.Throw);
+        ParseTester.TestTimestamp("Y2D", ParseTester.Throw);
         ParseTester.TestTimestamp("D31X7", ParseTester.Throw);
+        ParseTester.TestTimestamp("Y2Y2", ParseTester.Throw);
+        ParseTester.TestTimestamp("Y-2000", ParseTester.Throw);
 
         Console.WriteLine();
         Console.WriteLine("[BINARY]");
