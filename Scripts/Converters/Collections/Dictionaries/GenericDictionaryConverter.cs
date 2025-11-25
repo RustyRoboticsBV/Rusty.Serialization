@@ -7,7 +7,7 @@ namespace Rusty.Serialization.Converters;
 /// <summary>
 /// A generic dictionary converter.
 /// </summary>
-public abstract class DictConverter<DictionaryT, KeyT, ValueT> : ReferenceConverter<DictionaryT, DictNode>
+public abstract class GenericDictionaryConverter<DictionaryT, KeyT, ValueT> : ReferenceConverter<DictionaryT, DictNode>
     where DictionaryT : class, IDictionary<KeyT, ValueT>, new()
 {
     /* Protected methods. */

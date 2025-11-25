@@ -8,12 +8,12 @@ namespace Rusty.Serialization.Converters;
 /// <summary>
 /// A generic IEnumerable converter.
 /// </summary>
-public abstract class EnumerableRefConverter<EnumerableT, ElementT, NodeT> : ReferenceConverter<EnumerableT, NodeT>
-    where EnumerableT : class, IEnumerable
+public abstract class EnumerableRefConverter<CollectionT, ElementT, NodeT> : ReferenceConverter<CollectionT, NodeT>
+    where CollectionT : class, IEnumerable
     where NodeT : INode
 {
     /* Protected methods. */
-    protected override NodeT Convert(EnumerableT obj, Context context)
+    protected override NodeT Convert(CollectionT obj, Context context)
     {
         // Convert the elements to nodes.
         List<INode> elementNodes = new();
@@ -26,7 +26,7 @@ public abstract class EnumerableRefConverter<EnumerableT, ElementT, NodeT> : Ref
         return CreateNode(elementNodes.ToArray());
     }
 
-    protected override EnumerableT Deconvert(NodeT node, Context context)
+    protected override CollectionT Deconvert(NodeT node, Context context)
     {
         IEnumerable<INode> elementNodes = GetElements(node);
         List<ElementT> elements = new();
@@ -46,7 +46,7 @@ public abstract class EnumerableRefConverter<EnumerableT, ElementT, NodeT> : Ref
     /// <summary>
     /// Create an object from an array of elements.
     /// </summary>
-    protected abstract EnumerableT CreateObject(ElementT[] elements);
+    protected abstract CollectionT CreateObject(ElementT[] elements);
 
     /// <summary>
     /// Get the INode elements from an INode.

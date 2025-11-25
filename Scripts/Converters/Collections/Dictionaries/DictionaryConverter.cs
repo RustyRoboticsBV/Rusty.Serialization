@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Converters;
 /// <summary>
 /// A dictionary converter.
 /// </summary>
-public sealed class DictionaryConverter<KeyT, ValueT> : DictConverter<Dictionary<KeyT, ValueT>, KeyT, ValueT>
+public sealed class DictionaryConverter<KeyT, ValueT> : GenericDictionaryConverter<Dictionary<KeyT, ValueT>, KeyT, ValueT>
 {
     
 }

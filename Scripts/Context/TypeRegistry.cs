@@ -57,8 +57,17 @@ public class TypeRegistry
         Add(typeof(HashSet<>), typeof(HashSetConverter<>));
         Add(typeof(Stack<>), typeof(StackConverter<>));
         Add(typeof(Queue<>), typeof(QueueConverter<>));
+#if GODOT_CONTEXT
+        Add(typeof(Godot.Collections.Array), typeof(Gd.ArrayConverter));
+        Add(typeof(Godot.Collections.Array<>), typeof(Gd.ArrayConverter<>));
+#endif
 
         Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
+        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>));
+#if GODOT_CONTEXT
+        Add(typeof(Godot.Collections.Dictionary), typeof(Gd.DictionaryConverter));
+        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionaryConverter<,>));
+#endif
     }
 
     /* Public methods. */
@@ -180,6 +189,22 @@ public class TypeRegistry
                 return targetToConverter[parentType];
             }
             parentType = parentType.BaseType;
+        }
+
+        // Resolve unregistered struct type.
+        if (targetType.IsValueType)
+        {
+            Type structConverterType = typeof(StructConverter<>).MakeGenericType(targetType);
+            cache[targetType] = structConverterType;
+            return cache[targetType];
+        }
+
+        // Resolve unregistered class type.
+        if (targetType.IsClass)
+        {
+            Type classConverterType = typeof(ClassConverter<>).MakeGenericType(targetType);
+            cache[targetType] = classConverterType;
+            return cache[targetType];
         }
 
         // Could not resolve.
