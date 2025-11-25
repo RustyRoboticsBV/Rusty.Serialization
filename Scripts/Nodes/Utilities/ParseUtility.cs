@@ -118,8 +118,16 @@ internal static class ParseUtility
             return BoolNode.Parse(text);
         if (text.ToLower() == "null")
             return NullNode.Parse(text);
-        if (text.Contains('_'))
-            return DatetimeNode.Parse(text);
+        if (text.StartsWith("Y") || text.StartsWith("-Y")
+            || text.StartsWith("M") || text.StartsWith("-M")
+            || text.StartsWith("D") || text.StartsWith("-D")
+            || text.StartsWith("h") || text.StartsWith("-h")
+            || text.StartsWith("m") || text.StartsWith("-m")
+            || text.StartsWith("s") || text.StartsWith("-s")
+            || text.StartsWith("f") || text.StartsWith("-f"))
+        {
+            return TimestampNode.Parse(text);
+        }
         if (text.Contains('.'))
             return RealNode.Parse(text);
         if (decimal.TryParse(text, CultureInfo.InvariantCulture, out decimal d))

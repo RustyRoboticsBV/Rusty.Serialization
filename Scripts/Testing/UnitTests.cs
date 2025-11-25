@@ -128,19 +128,18 @@ public static class UnitTests
 
         Console.WriteLine();
         Console.WriteLine("[DATETIMES]");
-        ParseTester.TestDatetime(null, ParseTester.Throw);
-        ParseTester.TestDatetime("", ParseTester.Throw);
-        ParseTester.TestDatetime("20251123_123456_789_+1030", new DatetimeNode.Datetime(2025, 11, 23, 12, 34, 56, 789, 10, 30));
-        ParseTester.TestDatetime("20251123_123456_789_-1030", new DatetimeNode.Datetime(2025, 11, 23, 12, 34, 56, 789, -10, 30));
-        ParseTester.TestDatetime("20251123_123456_+1000", new DatetimeNode.Datetime(2025, 11, 23, 12, 34, 56, 0, 10, 0));
-        ParseTester.TestDatetime("20251123_+1000", new DatetimeNode.Datetime(2025, 11, 23, 0, 0, 0, 0, 10, 0));
-        ParseTester.TestDatetime("_+1000", new DatetimeNode.Datetime(0, 0, 0, 0, 0, 0, 0, 10, 0));
-        ParseTester.TestDatetime("789_+1000", new DatetimeNode.Datetime(0, 0, 0, 0, 0, 0, 789, 10, 0));
-        ParseTester.TestDatetime("20251123_", new DatetimeNode.Datetime(2025, 11, 23, 0, 0, 0, 0, 0, 0));
-        ParseTester.TestDatetime("_789", new DatetimeNode.Datetime(0, 0, 0, 0, 0, 0, 789, 0, 0));
-        ParseTester.TestDatetime("_123456", new DatetimeNode.Datetime(0, 0, 0, 12, 34, 56, 0, 0, 0));
-        ParseTester.TestDatetime("20251123_789", new DatetimeNode.Datetime(2025, 11, 23, 0, 0, 0, 789, 0, 0));
-        ParseTester.TestDatetime("_", new DatetimeNode.Datetime(0, 0, 0, 0, 0, 0, 0, 0, 0));
+        ParseTester.TestTimestamp(null, ParseTester.Throw);
+        ParseTester.TestTimestamp("", ParseTester.Throw);
+        ParseTester.TestTimestamp("Y1999", new TimestampNode.Timestamp(false, 1999, 0, 0, 0, 0, 0, 0));
+        ParseTester.TestTimestamp("M7", new TimestampNode.Timestamp(false, 0, 7, 0, 0, 0, 0, 0));
+        ParseTester.TestTimestamp("D31", new TimestampNode.Timestamp(false, 0, 0, 31, 0, 0, 0, 0));
+        ParseTester.TestTimestamp("h3", new TimestampNode.Timestamp(false, 0, 0, 0, 3, 0, 0, 0));
+        ParseTester.TestTimestamp("m2", new TimestampNode.Timestamp(false, 0, 0, 0, 0, 2, 0, 0));
+        ParseTester.TestTimestamp("s1", new TimestampNode.Timestamp(false, 0, 0, 0, 0, 0, 1, 0));
+        ParseTester.TestTimestamp("f123", new TimestampNode.Timestamp(false, 0, 0, 0, 0, 0, 0, 123));
+        ParseTester.TestTimestamp("D31M7Y1999", new TimestampNode.Timestamp(false, 1999, 7, 31, 0, 0, 0, 0));
+        ParseTester.TestTimestamp("   \n\tY1999 \t", new TimestampNode.Timestamp(false, 1999, 0, 0, 0, 0, 0, 0));
+        ParseTester.TestTimestamp("D31X7", ParseTester.Throw);
 
         Console.WriteLine();
         Console.WriteLine("[BINARY]");
