@@ -53,10 +53,11 @@ public abstract class EnumerableRefConverter<EnumerableT, ElementT, NodeT> : Ref
     /// </summary>
     protected abstract IEnumerable<INode> GetElements(NodeT node);
 
+    /* Private methods. */
     /// <summary>
     /// Convert an element to an INode.
     /// </summary>
-    protected INode ConvertElement(ElementT obj, Context context)
+    private INode ConvertElement(ElementT obj, Context context)
     {
         return context.GetConverter(obj.GetType()).Convert(obj, context);
     }
@@ -64,7 +65,7 @@ public abstract class EnumerableRefConverter<EnumerableT, ElementT, NodeT> : Ref
     /// <summary>
     /// Deconvert an INode into an element.
     /// </summary>
-    protected ElementT DeconvertElement(INode node, Context context)
+    private ElementT DeconvertElement(INode node, Context context)
     {
         Type targetType = ((IConverter)this).TargetType;
         return (ElementT)context.GetConverter(targetType).Deconvert(node, context);

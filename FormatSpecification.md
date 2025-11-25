@@ -18,7 +18,7 @@ Whitespace is allowed between tokens for formatting reasons, but generally have 
 Two categories of values are supported: primitives and collections.
 
 ### 2.1. Type Labels
-Type labels can placed before any value, providing information on how to deserialize it. They are written as a type name between `()` parentheses.
+Type labels can placed before any value (both primitives and collections, including collections elements), providing information on how to deserialize it. They are written as a type name between `()` parentheses.
 
 The top-level value is always required to have a type label, unless it is `null`. Type labels may not be followed by another type label, they must be followed by a value of some kind.
 
@@ -58,7 +58,7 @@ A few special character literals exist:
 - `'\t'`: expresses a horizontal tab.
 - `'\n'`: expresses a newline.
 - `'\0'`: expresses a null character.
-- `'\[#]'`: expresses a unicode character. # must be a valid hexadecimal number, and can be of any length greater than 0.
+- `'\[#]'`: expresses a unicode character. # must be a hexadecimal number between `0` and `10FFFF`. Leading zeros are allowed.
 
 Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\[21ff]'`.
 

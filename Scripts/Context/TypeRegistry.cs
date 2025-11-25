@@ -57,6 +57,8 @@ public class TypeRegistry
         Add(typeof(HashSet<>), typeof(HashSetConverter<>));
         Add(typeof(Stack<>), typeof(StackConverter<>));
         Add(typeof(Queue<>), typeof(QueueConverter<>));
+
+        Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
     }
 
     /* Public methods. */
