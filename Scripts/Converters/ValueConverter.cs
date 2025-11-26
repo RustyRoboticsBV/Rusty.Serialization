@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Converters;
 /// <summary>
 /// A generic value type converter.
 /// </summary>
-public abstract class ValueConverter<TargetT, NodeT> : IConverter<TargetT>
+public abstract class ValueConverter<TargetT, NodeT> : IConverter<TargetT>, IConverter
     where TargetT : struct
     where NodeT : INode
 {

@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Rusty.Serialization.Converters;
 
@@ -19,55 +18,54 @@ public class TypeRegistry
 {
     /* Private properties. */
     private Dictionary<Type, Type> targetToConverter = new();
-    private BiDictionary<Type, TypeName> typeNames = new();
 
     /* Constructors. */
     public TypeRegistry()
     {
         // Add built-in types.
-        Add<bool, BoolConverter>("b");
+        Add<bool, BoolConverter>();
 
-        Add<sbyte, SbyteConverter>("i8");
-        Add<short, ShortConverter>("i16");
-        Add<int, IntConverter>("i32");
-        Add<long, LongConverter>("i64");
-        Add<byte, ByteConverter>("u8");
-        Add<ushort, UshortConverter>("u16");
-        Add<uint, UintConverter>("u32");
-        Add<ulong, UlongConverter>("u64");
+        Add<sbyte, SbyteConverter>();
+        Add<short, ShortConverter>();
+        Add<int, IntConverter>();
+        Add<long, LongConverter>();
+        Add<byte, ByteConverter>();
+        Add<ushort, UshortConverter>();
+        Add<uint, UintConverter>();
+        Add<ulong, UlongConverter>();
 
-        Add<float, FloatConverter>("f32");
-        Add<double, DoubleConverter>("f64");
-        Add<decimal, DecimalConverter>("dec");
+        Add<float, FloatConverter>();
+        Add<double, DoubleConverter>();
+        Add<decimal, DecimalConverter>();
 
-        Add<char, CharConverter>("chr");
+        Add<char, CharConverter>();
 
-        Add<string, StringConverter>("str");
+        Add<string, StringConverter>();
 
-        Add<DateTime, DateTimeConverter>("dt");
+        Add<DateTime, DateTimeConverter>();
 
-        Add<byte[], ByteArrayConverter>("u8[]");
+        Add<byte[], ByteArrayConverter>();
 
-        Add<System.Drawing.Color, ColorConverter>("col");
+        Add<System.Drawing.Color, ColorConverter>();
 #if GODOT_CONTEXT
-        Add<Godot.Color, Gd.ColorConverter>("gdcol");
+        Add<Godot.Color, Gd.ColorConverter>();
 #endif
 
-        Add(typeof(List<>), typeof(ListConverter<>), "list");
-        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "llist");
-        Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
-        Add(typeof(Stack<>), typeof(StackConverter<>), "stack");
-        Add(typeof(Queue<>), typeof(QueueConverter<>), "queue");
+        Add(typeof(List<>), typeof(ListConverter<>));
+        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>));
+        Add(typeof(HashSet<>), typeof(HashSetConverter<>));
+        Add(typeof(Stack<>), typeof(StackConverter<>));
+        Add(typeof(Queue<>), typeof(QueueConverter<>));
 #if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Array), typeof(Gd.ArrayConverter), "gdarru");
-        Add(typeof(Godot.Collections.Array<>), typeof(Gd.ArrayConverter<>), "gdarrt");
+        Add(typeof(Godot.Collections.Array), typeof(Gd.ArrayConverter));
+        Add(typeof(Godot.Collections.Array<>), typeof(Gd.ArrayConverter<>));
 #endif
 
-        Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
-        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
+        Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
+        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>));
 #if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Dictionary), typeof(Gd.DictionaryConverter), "gddictt");
-        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionaryConverter<,>), "gddictu");
+        Add(typeof(Godot.Collections.Dictionary), typeof(Gd.DictionaryConverter));
+        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionaryConverter<,>));
 #endif
     }
 
@@ -75,16 +73,16 @@ public class TypeRegistry
     /// <summary>
     /// Register a converter type for some target type.
     /// </summary>
-    public void Add<TargetT, ConverterT>(string typeName = null)
+    public void Add<TargetT, ConverterT>()
         where ConverterT : IConverter
     {
-        Add(typeof(TargetT), typeof(ConverterT), typeName);
+        Add(typeof(TargetT), typeof(ConverterT));
     }
 
     /// <summary>
     /// Register a converter type for some target type.
     /// </summary>
-    public void Add(Type target, Type converter, string typeName = null)
+    public void Add(Type target, Type converter)
     {
         // Only allow converter types that implement IConverter.
         if (!converter.GetInterfaces().Any(i => i == typeof(IConverter)))
@@ -99,28 +97,6 @@ public class TypeRegistry
 
         // Add the converter type.
         targetToConverter[target] = converter;
-
-        // Store type name.
-        if (typeName == null)
-            typeName = ResolveName(target);
-        typeNames[target] = typeName;
-    }
-
-    /// <summary>
-    /// Get the name of some type.
-    /// </summary>
-    public TypeName GetTypeName(Type type)
-    {
-        try
-        {
-            return typeNames[type];
-        }
-        catch
-        {
-
-            ResolveName(type);
-            return typeNames[type];
-        }
     }
 
     /// <summary>
@@ -204,19 +180,5 @@ public class TypeRegistry
 
         // Could not resolve.
         throw new Exception($"Could not find a converterType for type '{targetType}'.");
-    }
-
-    /// <summary>
-    /// Try to resolve a target type's name.
-    /// </summary>
-    private TypeName ResolveName(Type targetType)
-    {
-        // If the attribute is present, use that for the name.
-        var attribute = targetType.GetCustomAttribute<SerializableAttribute>();
-        if (attribute != null)
-            return attribute.Name;
-
-        // If nested, add the parent class name as a prefix.
-        return "";
     }
 }

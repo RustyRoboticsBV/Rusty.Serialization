@@ -42,12 +42,7 @@ public abstract class ObjectConverter<T> : IConverter<T>
             Identifier memberIdentifier = member.Name;
 
             // Create member node.
-            INode memberNode = ConvertMember(memberValue, context); ;
-
-            // Wrap member node in type node if the value's type does not match the member's declared type.
-            Type memberValueType = memberValue.GetType();
-            if (memberType != memberValueType)
-                memberNode = new TypeNode(memberValueType.FullName, memberNode);
+            INode memberNode = ConvertMember(memberType, memberValue, context);
 
             // Store finished identifier-node pair.
             memberPairs[i] = new(memberIdentifier, memberNode);
@@ -89,7 +84,7 @@ public abstract class ObjectConverter<T> : IConverter<T>
             }
             return obj;
         }
-        throw new ArgumentException($"Cannot deconvert nodes of type '{node.GetType()}'.");
+        throw new ArgumentException($"Cannot deconvert nodes of valueType '{node.GetType()}'.");
     }
 
     /* Private methods. */
@@ -120,9 +115,16 @@ public abstract class ObjectConverter<T> : IConverter<T>
     /// <summary>
     /// Convert a member into a node.
     /// </summary>
-    private INode ConvertMember<U>(U obj, Context context)
+    private INode ConvertMember<U>(Type memberType, U obj, Context context)
     {
-        return context.GetConverter(obj.GetType()).Convert(obj, context);
+        Type valueType = obj.GetType();
+        IConverter converter = context.GetConverter(valueType);
+        INode node = converter.Convert(obj, context);
+
+        if (memberType != valueType)
+            node = new TypeNode(converter.TypeLabel, node);
+
+        return node;
     }
 
     /// <summary>

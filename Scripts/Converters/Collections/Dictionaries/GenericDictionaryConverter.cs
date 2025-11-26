@@ -23,14 +23,10 @@ public abstract class GenericDictionaryConverter<DictionaryT, KeyT, ValueT> : Re
             // Convert key.
             Type elementKeyType = element.Key.GetType();
             INode key = ConvertElement(element.Key, context);
-            if (elementKeyType != keyType)
-                key = new TypeNode(context.GetTypeName(elementKeyType), key);
 
             // Convert value.
             Type elementValueType = element.Value.GetType();
             INode value = ConvertElement(element.Value, context);
-            if (elementValueType != valueType)
-                value = new TypeNode(context.GetTypeName(elementValueType), value);
 
             // Add pair.
             nodePairs.Add(new(key, value));

@@ -10,16 +10,14 @@ public class InstanceRegistry
 {
     /* Private properties. */
     private Dictionary<Type, IConverter> targetToConverter = new();
-    private BiDictionary<Type, TypeName> typeNames = new();
 
     /* Public methods. */
     /// <summary>
     /// Register a converter type for some target type.
     /// </summary>
-    public void Add(Type targetType, IConverter converter, string typeName = null)
+    public void Add(Type targetType, IConverter converter)
     {
         targetToConverter[targetType] = converter;
-        typeNames[targetType] = typeName;
     }
 
     /// <summary>

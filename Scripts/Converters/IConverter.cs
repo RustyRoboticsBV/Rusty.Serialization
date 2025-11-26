@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Rusty.Serialization.Nodes;
 
 namespace Rusty.Serialization.Converters;
@@ -13,6 +14,20 @@ public interface IConverter
     /// The type that this converter can handle.
     /// </summary>
     public Type TargetType { get; }
+    /// <summary>
+    /// The type label that will be used for the targer type.
+    /// </summary>
+    public string TypeLabel
+    {
+        get
+        {
+            TypeName name = new(TargetType);
+            var attribute = TargetType.GetCustomAttribute<SerializableAttribute>();
+            if (attribute != null)
+                name = name.Rename(attribute.Name);
+            return name;
+        }
+    }
 
     /* Public methods. */
     /// <summary>

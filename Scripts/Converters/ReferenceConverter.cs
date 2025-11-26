@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Converters;
 /// <summary>
 /// A generic reference type converter.
 /// </summary>
-public abstract class ReferenceConverter<TargetT, NodeT> : IConverter<TargetT>
+public abstract class ReferenceConverter<TargetT, NodeT> : IConverter<TargetT>, IConverter
     where TargetT : class
     where NodeT : INode
 {

@@ -12,6 +12,7 @@ TypeName ftn2 = new(typeof(Test<char>.Ouchie.Disaster<uint, System.Collections.G
 Console.WriteLine(ftn2);
 Console.WriteLine(ftn2.Rename("help"));
 Console.ReadLine();
+Console.WriteLine(ftn0.ParseType());
 
 Context context = new();
 string serialized = context.Serialize(new System.Collections.Generic.Dictionary<object, object>()
