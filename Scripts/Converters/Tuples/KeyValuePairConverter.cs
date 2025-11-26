@@ -12,8 +12,8 @@ public sealed class KeyValuePairConverter<KeyT, ValueT> : ValueConverter<KeyValu
     /* Protected methods. */
     protected sealed override DictNode Convert(KeyValuePair<KeyT, ValueT> obj, Context context)
     {
-        INode key = ConvertElement(obj.Key, context);
-        INode value = ConvertElement(obj.Value, context);
+        INode key = ConvertElement(typeof(KeyT), obj.Key, context);
+        INode value = ConvertElement(typeof(ValueT), obj.Value, context);
         return new([new(key, value)]);
     }
 
@@ -24,17 +24,5 @@ public sealed class KeyValuePairConverter<KeyT, ValueT> : ValueConverter<KeyValu
         KeyT key = DeconvertElement<KeyT>(node.Pairs[0].Key, context);
         ValueT value = DeconvertElement<ValueT>(node.Pairs[0].Value, context);
         return new(key, value);
-    }
-
-    /* Private methods. */
-    private INode ConvertElement<T>(T obj, Context context)
-    {
-        return context.GetConverter(obj.GetType()).Convert(obj, context);
-    }
-
-    private T DeconvertElement<T>(INode node, Context context)
-    {
-        Type targetType = ((IConverter)this).TargetType;
-        return (T)context.GetConverter(targetType).Deconvert(node, context);
     }
 }

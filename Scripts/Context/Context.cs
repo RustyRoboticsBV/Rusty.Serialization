@@ -78,13 +78,18 @@ public class Context
     /// <summary>
     /// Serialize an object.
     /// </summary>
-    public string Serialize(object obj)
+    public string Serialize(object obj, Type expectedType = null)
     {
         // Get converter.
         IConverter converter = GetConverter(obj.GetType());
 
         // Convert object to node.
         INode node = converter.Convert(obj, this);
+
+        // Wrap in type node if necessary.
+        Type objType = obj?.GetType();
+        if (objType != expectedType)
+            node = new TypeNode(GetTypeName(obj?.GetType()), node);
 
         // Serialize node.
         return node.Serialize();
@@ -93,13 +98,18 @@ public class Context
     /// <summary>
     /// Serialize an object.
     /// </summary>
-    public string Serialize<T>(T obj)
+    public string Serialize<T>(T obj, Type expectedType = null)
     {
         // Get converter.
         IConverter converter = GetConverter(obj.GetType());
 
         // Convert object to node.
         INode node = converter.Convert(obj, this);
+
+        // Wrap in type node if necessary.
+        Type objType = obj?.GetType();
+        if (objType != expectedType)
+            node = new TypeNode(GetTypeName(obj?.GetType()), node);
 
         // Serialize node.
         return node.Serialize();
@@ -119,6 +129,9 @@ public class Context
     private void AddBuiltInTypes()
     {
         // Add built-in types.
+        Aliasses.Add(typeof(Object), "obj");
+        Aliasses.Add(typeof(Enum), "enum");
+
         Add<bool, BoolConverter>("bl");
 
         Add<sbyte, SbyteConverter>("i8");

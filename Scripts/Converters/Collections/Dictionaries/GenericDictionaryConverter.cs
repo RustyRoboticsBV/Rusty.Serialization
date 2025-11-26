@@ -13,29 +13,18 @@ public abstract class GenericDictionaryConverter<DictionaryT, KeyT, ValueT> : Re
     /* Protected methods. */
     protected sealed override DictNode Convert(DictionaryT obj, Context context)
     {
-        Type keyType = obj.GetType().GetGenericArguments()[0];
-        Type valueType = obj.GetType().GetGenericArguments()[1];
+        Type keyType = typeof(KeyT);
+        Type valueType = typeof(ValueT);
 
         // Convert the elements to nodes.
         List<KeyValuePair<INode, INode>> nodePairs = new();
         foreach (KeyValuePair<KeyT, ValueT> element in obj)
         {
-            // Convert key.
-            Type elementKeyType = element.Key.GetType();
-            IConverter keyConverter = context.GetConverter(elementKeyType);
-            INode keyNode = ConvertElement(element.Key, context);
-            if (keyType != elementKeyType)
-                keyNode = new TypeNode(context.GetTypeName(elementKeyType), keyNode);
-
-            // Convert value.
-            Type elementValueType = element.Value.GetType();
-            IConverter valueConverter = context.GetConverter(elementValueType);
-            INode valueNode = ConvertElement(element.Value, context);
-            if (valueType != elementKeyType)
-                valueNode = new TypeNode(context.GetTypeName(elementValueType), valueNode);
+            INode key = ConvertElement(keyType, element.Key, context);
+            INode value = ConvertElement(valueType, element.Key, context);
 
             // Add pair.
-            nodePairs.Add(new(keyNode, valueNode));
+            nodePairs.Add(new(key, value));
         }
 
         // Create the node.
@@ -52,23 +41,5 @@ public abstract class GenericDictionaryConverter<DictionaryT, KeyT, ValueT> : Re
             obj[key] = value;
         }
         return obj;
-    }
-
-    /* Private methods. */
-    /// <summary>
-    /// Convert an object to an INode.
-    /// </summary>
-    private INode ConvertElement<T>(T obj, Context context)
-    {
-        return context.GetConverter(obj.GetType()).Convert(obj, context);
-    }
-
-    /// <summary>
-    /// Deconvert an INode into an object.
-    /// </summary>
-    private T DeconvertElement<T>(INode node, Context context)
-    {
-        Type targetType = ((IConverter)this).TargetType;
-        return (T)context.GetConverter(targetType).Deconvert(node, context);
     }
 }

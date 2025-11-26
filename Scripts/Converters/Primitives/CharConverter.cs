@@ -5,10 +5,8 @@ namespace Rusty.Serialization.Converters;
 /// <summary>
 /// A char converter.
 /// </summary>
-public sealed class CharConverter : ValueConverter<char, CharNode>, IConverter
+public sealed class CharConverter : ValueConverter<char, CharNode>
 {
-    public string TypeLabel => "chr";
-
     /* Protected methods. */
     protected override CharNode Convert(char obj, Context context) => new(obj);
     protected override char Deconvert(CharNode node, Context context) => node.Value;

@@ -16,7 +16,6 @@ public sealed class EnumConverter<T> : ValueConverter<T, IntNode>
     {
         if (Enum.IsDefined(typeof(T), node.Value))
             return (T)Enum.ToObject(typeof(T), node.Value);
-
         throw new Exception($"Cannot convert '{node.Value}' to enum type '{typeof(T)}'.");
     }
 }

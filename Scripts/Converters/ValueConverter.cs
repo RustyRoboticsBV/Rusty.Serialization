@@ -23,4 +23,31 @@ public abstract class ValueConverter<TargetT, NodeT> : IConverter<TargetT>, ICon
     /* Protected methods. */
     protected abstract NodeT Convert(TargetT obj, Context context);
     protected abstract TargetT Deconvert(NodeT node, Context context);
+
+    /// <summary>
+    /// Convert an element into a node.
+    /// </summary>
+    protected INode ConvertElement<T>(Type expectedType, T obj, Context context)
+    {
+        // Convert obj to node.
+        Type valueType = obj.GetType();
+        IConverter converter = context.GetConverter(valueType);
+        INode node = converter.Convert(obj, context);
+
+        // Wrap inside of a type node if there was a mismatch.
+        if (expectedType != valueType)
+            node = new TypeNode(context.GetTypeName(valueType), node);
+
+        // Return finished node.
+        return node;
+    }
+
+    /// <summary>
+    /// Deconvert an INode into an element.
+    /// </summary>
+    protected T DeconvertElement<T>(INode node, Context context)
+    {
+        Type targetType = ((IConverter)this).TargetType;
+        return (T)context.GetConverter(targetType).Deconvert(node, context);
+    }
 }

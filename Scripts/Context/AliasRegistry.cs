@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Rusty.Serialization.Converters;
 
@@ -13,6 +15,16 @@ public class AliasRegistry
     private Dictionary<string, Type> aliasToType = new();
 
     /* Public methods. */
+    public override string ToString()
+    {
+        StringBuilder sb = new();
+        foreach (var pair in aliasToType)
+        {
+            sb.AppendLine(pair.Key + ": " + pair.Value);
+        }
+        return sb.ToString();
+    }
+
     /// <summary>
     /// Register a converter type for some target type.
     /// </summary>
@@ -65,7 +77,14 @@ public class AliasRegistry
     /// </summary>
     public bool Has(Type type)
     {
-        return typeToAlias.ContainsKey(type);
+        try
+        {
+            return Get(type) != null;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -81,6 +100,22 @@ public class AliasRegistry
     /// </summary>
     public string Get(Type type)
     {
-        return typeToAlias[type];
+        // Direct resolve.
+        if (typeToAlias.TryGetValue(type, out var alias))
+            return alias;
+
+        // Resolve closed generic types.
+        if (type.IsGenericType)
+        {
+            Type genericDef = type.GetGenericTypeDefinition();
+
+            string baseName = typeToAlias.TryGetValue(genericDef, out var defAlias)
+                ? defAlias
+                : genericDef.Name;
+
+            return baseName;
+        }
+
+        throw new ArgumentException($"No alias existed for type '{type}'.");
     }
 }
