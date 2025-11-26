@@ -1,8 +1,6 @@
-﻿using Godot;
-using Rusty.Serialization.Nodes;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using Rusty.Serialization.Nodes;
 
 namespace Rusty.Serialization.Converters;
 
@@ -27,14 +25,14 @@ public abstract class GenericDictionaryConverter<DictionaryT, KeyT, ValueT> : Re
             IConverter keyConverter = context.GetConverter(elementKeyType);
             INode keyNode = ConvertElement(element.Key, context);
             if (keyType != elementKeyType)
-                keyNode = new TypeNode(keyConverter.TypeLabel, keyNode);
+                keyNode = new TypeNode(context.GetTypeName(elementKeyType), keyNode);
 
             // Convert value.
             Type elementValueType = element.Value.GetType();
             IConverter valueConverter = context.GetConverter(elementValueType);
             INode valueNode = ConvertElement(element.Value, context);
             if (valueType != elementKeyType)
-                valueNode = new TypeNode(valueConverter.TypeLabel, valueNode);
+                valueNode = new TypeNode(context.GetTypeName(elementValueType), valueNode);
 
             // Add pair.
             nodePairs.Add(new(keyNode, valueNode));

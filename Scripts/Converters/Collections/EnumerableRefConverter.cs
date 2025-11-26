@@ -19,7 +19,7 @@ public abstract class EnumerableRefConverter<CollectionT, ElementT, NodeT> : Ref
         List<INode> elementNodes = new();
         foreach (ElementT element in obj)
         {
-            elementNodes.Add(ConvertElement(element, context));
+            elementNodes.Add(ConvertElement(typeof(ElementT), element, context));
         }
 
         // Create the node.
@@ -55,11 +55,18 @@ public abstract class EnumerableRefConverter<CollectionT, ElementT, NodeT> : Ref
 
     /* Private methods. */
     /// <summary>
-    /// Convert an element to an INode.
+    /// Convert an element into a node.
     /// </summary>
-    private INode ConvertElement(ElementT obj, Context context)
+    private INode ConvertElement<U>(Type expectedType, U obj, Context context)
     {
-        return context.GetConverter(obj.GetType()).Convert(obj, context);
+        Type valueType = obj.GetType();
+        IConverter converter = context.GetConverter(valueType);
+        INode node = converter.Convert(obj, context);
+
+        if (expectedType != valueType)
+            node = new TypeNode(context.GetTypeName(valueType), node);
+
+        return node;
     }
 
     /// <summary>

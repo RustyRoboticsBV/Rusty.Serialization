@@ -1,6 +1,14 @@
-﻿using System;
-using Rusty.Serialization.Nodes;
+﻿#if GODOT && !UNITY_5_OR_NEWER
+#define GODOT_CONTEXT
+
+#elif !GODOT && UNITY_5_OR_NEWER
+#define UNITY_CONTEXT
+#endif
+
 using Rusty.Serialization.Converters;
+using Rusty.Serialization.Nodes;
+using System;
+using System.Collections.Generic;
 
 namespace Rusty.Serialization;
 
@@ -9,34 +17,51 @@ namespace Rusty.Serialization;
 /// </summary>
 public class Context
 {
-    /* Private properties. */
+    /* Internal properties. */
     /// <summary>
     /// The registry of known converter types.
     /// </summary>
-    private TypeRegistry Types { get; set; }
+    internal TypeRegistry Types { get; } = new();
     /// <summary>
     /// The registry of known converter instances.
     /// </summary>
-    private InstanceRegistry Instances { get; } = new();
+    internal InstanceRegistry Instances { get; } = new();
+    /// <summary>
+    /// The registry of known type aliasses.
+    /// </summary>
+    internal AliasRegistry Aliasses { get; } = new();
 
     /* Constructors. */
-    public Context() : this(new()) { }
-
-    public Context(TypeRegistry registry)
+    public Context()
     {
-        Types = registry;
+        AddBuiltInTypes();
     }
 
     /* Public methods. */
-    public void AddConverter(Type targetT, Type converterT)
+    public void Add(Type targetT, Type converterT, string alias = null)
     {
         Types.Add(targetT, converterT);
+        if (alias != null)
+            Aliasses.Add(targetT, alias);
     }
 
-    public void AddConverter<TargetT, ConverterT>()
+    public void Add<TargetT, ConverterT>(string alias = null)
         where ConverterT : IConverter<TargetT>
     {
-        Types.Add<TargetT, ConverterT>();
+        Add(typeof(TargetT), typeof(ConverterT), alias);
+    }
+
+    public IConverter GetConverter(string targetNameOrAlias)
+    {
+        Type type;
+        if (Aliasses.Has(targetNameOrAlias))
+            type = Aliasses.Get(targetNameOrAlias);
+        else
+        {
+            TypeName targetName = new(targetNameOrAlias, Aliasses);
+            type = targetName.GetType();
+        }
+        return GetConverter(type);
     }
 
     public IConverter GetConverter(Type targetType)
@@ -78,5 +103,65 @@ public class Context
 
         // Serialize node.
         return node.Serialize();
+    }
+
+    /// <summary>
+    /// Get a type's name.
+    /// </summary>
+    public TypeName GetTypeName(Type type) => new(type, Aliasses);
+
+    /// <summary>
+    /// Get a type from a type name.
+    /// </summary>
+    public Type GetTypeFromName(string name) => (Type)new TypeName(name, Aliasses);
+
+    /* Private methods. */
+    private void AddBuiltInTypes()
+    {
+        // Add built-in types.
+        Add<bool, BoolConverter>("bl");
+
+        Add<sbyte, SbyteConverter>("i8");
+        Add<short, ShortConverter>("i16");
+        Add<int, IntConverter>("i32");
+        Add<long, LongConverter>("i64");
+        Add<byte, ByteConverter>("u8");
+        Add<ushort, UshortConverter>("u16");
+        Add<uint, UintConverter>("u32");
+        Add<ulong, UlongConverter>("u64");
+
+        Add<float, FloatConverter>("f32");
+        Add<double, DoubleConverter>("f64");
+        Add<decimal, DecimalConverter>("dec");
+
+        Add<char, CharConverter>("chr");
+
+        Add<string, StringConverter>("str");
+
+        Add<DateTime, DateTimeConverter>("dt");
+
+        Add<byte[], ByteArrayConverter>("u8[]");
+
+        Add<System.Drawing.Color, ColorConverter>("col");
+#if GODOT_CONTEXT
+        Add<Godot.Color, Converters.Gd.ColorConverter>("GDcol");
+#endif
+
+        Add(typeof(List<>), typeof(ListConverter<>), "list");
+        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "lnls");
+        Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
+        Add(typeof(Stack<>), typeof(StackConverter<>), "stck");
+        Add(typeof(Queue<>), typeof(QueueConverter<>), "queu");
+#if GODOT_CONTEXT
+        Add(typeof(Godot.Collections.Array), typeof(Converters.Gd.ArrayConverter), "GDarr");
+        Add(typeof(Godot.Collections.Array<>), typeof(Converters.Gd.ArrayConverter<>), "GDarrT");
+#endif
+
+        Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
+        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
+#if GODOT_CONTEXT
+        Add(typeof(Godot.Collections.Dictionary), typeof(Converters.Gd.DictionaryConverter), "GDdict");
+        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Converters.Gd.DictionaryConverter<,>), "GDdictT");
+#endif
     }
 }

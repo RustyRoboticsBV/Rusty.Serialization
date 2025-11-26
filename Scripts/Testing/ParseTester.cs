@@ -160,7 +160,7 @@ namespace Rusty.Serialization.Test
             }
         }
 
-        public static void TestType(string str, Result<TypeName> expected)
+        public static void TestType(string str, Result<string> expected)
         {
             try
             {

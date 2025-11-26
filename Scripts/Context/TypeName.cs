@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rusty.Serialization.Converters;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,13 +11,21 @@ namespace Rusty.Serialization;
 public struct TypeName
 {
     /* Fields. */
+    private readonly AliasRegistry context;
+    private readonly Type type;
+
     private readonly string nameSpace;
     private readonly string name;
     private readonly TypeName[] genericArgs;
 
     /* Constructors. */
-    public TypeName(Type type)
+    public TypeName(Type type, AliasRegistry context)
     {
+        // Store type & context.
+        this.type = type;
+        this.context = context;
+
+        // Handle generic type parameters.
         if (type.IsGenericParameter)
         {
             nameSpace = "";
@@ -25,15 +34,18 @@ public struct TypeName
             return;
         }
 
+        // Namespace.
         nameSpace = type.Namespace ?? "";
 
+        // Generic type arguments.
         Type[] genericArgTypes = type.GetGenericArguments();
         genericArgs = new TypeName[genericArgTypes.Length];
         for (int i = 0; i < genericArgTypes.Length; i++)
         {
-            genericArgs[i] = new(genericArgTypes[i]);
+            genericArgs[i] = new(genericArgTypes[i], context);
         }
 
+        // Main name.
         name = type.Name;
         while (type.DeclaringType != null)
         {
@@ -42,18 +54,25 @@ public struct TypeName
         }
     }
 
-    public TypeName(string name)
+    public TypeName(string name, AliasRegistry context)
     {
         // Figure out namespace, main name and generic args parts.
         int namespaceIndex = -1;
         int genericsIndex = -1;
 
+        int genericDepth = 0;
         for (int i = 0; i < name.Length; i++)
         {
             if (name[i] == '.' && genericsIndex == -1)
                 namespaceIndex = i;
-            if (i < name.Length - 1 && name[i] == '[')
-                genericsIndex = i;
+            if (name[i] == '[')
+            {
+                if (genericDepth == 0)
+                    genericsIndex = i;
+                genericDepth++;
+            }
+            if (name[i] == ']')
+                genericDepth--;
         }
 
         // Namespace.
@@ -70,39 +89,45 @@ public struct TypeName
         {
             string generics = name.Substring(genericsIndex + 2);
             name = name.Substring(0, genericsIndex);
-            genericArgs = ParseGenericArgs(generics);
+            genericArgs = ParseGenericArgs(generics, context);
         }
         else
             genericArgs = [];
 
         // Type name.
         this.name = name;
-    }
 
-    private TypeName(string nameSpace, string name, TypeName[] genericArgs)
-    {
-        this.nameSpace = nameSpace;
-        this.name = name;
-        this.genericArgs = genericArgs;
+        // Parse type.
+        type = Type.GetType(name);
     }
 
     /* Conversion operators. */
+    public static implicit operator Type(TypeName tn) => tn.type;
     public static implicit operator string(TypeName tn) => tn.ToString();
-    public static implicit operator TypeName(string str) => new TypeName(str);
 
     /* Public methods. */
     public override string ToString()
     {
         StringBuilder str = new();
 
+        // Add namespace.
         if (nameSpace.Length > 0)
         {
             str.Append(nameSpace);
             str.Append('.');
         }
 
+        // Add type.
         str.Append(name);
 
+        // Apply alias.
+        if (context.Has(type))
+        {
+            str.Clear();
+            str.Append(context.Get(type));
+        }
+
+        // Add generic type arguments.
         if (genericArgs.Length > 0)
         {
             str.Append("[");
@@ -128,19 +153,8 @@ public struct TypeName
         return hashcode;
     }
 
-    public TypeName Rename(string newName)
-    {
-        int index = name.IndexOf("[");
-        if (index == -1)
-            return this;
-
-        return new("", newName + name.Substring(index), genericArgs);
-    }
-
-    public Type ParseType() => Type.GetType(name);
-
     /* Private methods. */
-    private static TypeName[] ParseGenericArgs(string str)
+    private static TypeName[] ParseGenericArgs(string str, AliasRegistry context)
     {
         if (str.StartsWith('[') && str.EndsWith(']'))
             str = str.Substring(1, str.Length - 2);
@@ -165,7 +179,7 @@ public struct TypeName
         TypeName[] names = new TypeName[terms.Count];
         for (int i = 0; i < names.Length; i++)
         {
-            names[i] = new TypeName(terms[i]);
+            names[i] = new TypeName(terms[i], context);
         }
 
         return names;

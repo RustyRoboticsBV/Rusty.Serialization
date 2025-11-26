@@ -1,11 +1,4 @@
-﻿#if GODOT && !UNITY_5_OR_NEWER
-#define GODOT_CONTEXT
-
-#elif !GODOT && UNITY_5_OR_NEWER
-#define UNITY_CONTEXT
-#endif
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,56 +11,6 @@ public class TypeRegistry
 {
     /* Private properties. */
     private Dictionary<Type, Type> targetToConverter = new();
-
-    /* Constructors. */
-    public TypeRegistry()
-    {
-        // Add built-in types.
-        Add<bool, BoolConverter>();
-
-        Add<sbyte, SbyteConverter>();
-        Add<short, ShortConverter>();
-        Add<int, IntConverter>();
-        Add<long, LongConverter>();
-        Add<byte, ByteConverter>();
-        Add<ushort, UshortConverter>();
-        Add<uint, UintConverter>();
-        Add<ulong, UlongConverter>();
-
-        Add<float, FloatConverter>();
-        Add<double, DoubleConverter>();
-        Add<decimal, DecimalConverter>();
-
-        Add<char, CharConverter>();
-
-        Add<string, StringConverter>();
-
-        Add<DateTime, DateTimeConverter>();
-
-        Add<byte[], ByteArrayConverter>();
-
-        Add<System.Drawing.Color, ColorConverter>();
-#if GODOT_CONTEXT
-        Add<Godot.Color, Gd.ColorConverter>();
-#endif
-
-        Add(typeof(List<>), typeof(ListConverter<>));
-        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>));
-        Add(typeof(HashSet<>), typeof(HashSetConverter<>));
-        Add(typeof(Stack<>), typeof(StackConverter<>));
-        Add(typeof(Queue<>), typeof(QueueConverter<>));
-#if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Array), typeof(Gd.ArrayConverter));
-        Add(typeof(Godot.Collections.Array<>), typeof(Gd.ArrayConverter<>));
-#endif
-
-        Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
-        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>));
-#if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Dictionary), typeof(Gd.DictionaryConverter));
-        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionaryConverter<,>));
-#endif
-    }
 
     /* Public methods. */
     /// <summary>

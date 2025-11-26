@@ -18,13 +18,13 @@ Whitespace is allowed between tokens for formatting reasons, but generally have 
 Two categories of values are supported: primitives and collections.
 
 ### 2.1. Type Labels
-Type labels can placed before any value (both primitives and collections, including collections elements), providing information on how to deserialize it. They are written as a type name between `()` parentheses.
+Type labels can placed before any value (both primitives and collections, including collections elements). They are written as a type name between `()` parentheses. The format has no knowledge about what a type name actually *means* - the labels merely act as hints for a deserializer about what kind of object was serialized.
 
-The top-level value is always required to have a type label, unless it is `null`. Type labels may not be followed by another type label, they must be followed by a value of some kind.
+Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters (whitespace characters between the outer parentheses and the name itself are allowed, but have no meaning). They are case-sensitive. Type labels may not be followed by another type label - they must be followed by a value of some kind (either a collection or a primitive, including list elements, dictionary element keys, dictionary element values, and object member values).
 
-Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters (whitespace characters between an outer parenthesis and the name itself are allowed, but have no meaning). They are case-sensitive.
+Serializers are encouraged to only generate type labels in situations where it would otherwise be ambiguous what kind of type was serialized.
 
-Examples: `(int)`, `(dict<str,str>)`, `(my_object)` `(  my_namespace.my_class<int>.my_struct<list<f64>>[] )`.
+Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(  my_namespace.my_class<int>.my_struct<list<f64>>[] )`.
 
 ### 2.2. Primitives
 

@@ -122,7 +122,7 @@ public abstract class ObjectConverter<T> : IConverter<T>
         INode node = converter.Convert(obj, context);
 
         if (memberType != valueType)
-            node = new TypeNode(converter.TypeLabel, node);
+            node = new TypeNode(context.GetTypeName(valueType), node);
 
         return node;
     }
