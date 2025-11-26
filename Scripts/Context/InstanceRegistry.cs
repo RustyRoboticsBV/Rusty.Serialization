@@ -17,6 +17,8 @@ public class InstanceRegistry
     /// </summary>
     public void Add(Type targetType, IConverter converter)
     {
+        if (targetType == null)
+            targetType = typeof(object);
         targetToConverter[targetType] = converter;
     }
 
@@ -25,6 +27,8 @@ public class InstanceRegistry
     /// </summary>
     public IConverter Get(Type targetType)
     {
+        if (targetType == null)
+            targetType = typeof(object);
         if (targetToConverter.TryGetValue(targetType, out IConverter converter))
             return converter;
         return null;

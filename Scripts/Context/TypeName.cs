@@ -25,6 +25,15 @@ public struct TypeName
         this.type = type;
         this.context = context;
 
+        // Handle null.
+        if (type == null)
+        {
+            nameSpace = "";
+            name = "null";
+            genericArgs = [];
+            return;
+        }
+
         // Handle generic type parameters.
         if (type.IsGenericParameter)
         {

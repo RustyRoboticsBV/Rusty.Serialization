@@ -80,16 +80,17 @@ public class Context
     /// </summary>
     public string Serialize(object obj, Type expectedType = null)
     {
+        Type objType = obj?.GetType();
+
         // Get converter.
-        IConverter converter = GetConverter(obj.GetType());
+        IConverter converter = GetConverter(objType);
 
         // Convert object to node.
         INode node = converter.Convert(obj, this);
 
         // Wrap in type node if necessary.
-        Type objType = obj?.GetType();
         if (objType != expectedType)
-            node = new TypeNode(GetTypeName(obj?.GetType()), node);
+            node = new TypeNode(GetTypeName(objType), node);
 
         // Serialize node.
         return node.Serialize();
@@ -100,16 +101,17 @@ public class Context
     /// </summary>
     public string Serialize<T>(T obj, Type expectedType = null)
     {
+        Type objType = obj?.GetType();
+
         // Get converter.
-        IConverter converter = GetConverter(obj.GetType());
+        IConverter converter = GetConverter(objType);
 
         // Convert object to node.
         INode node = converter.Convert(obj, this);
 
         // Wrap in type node if necessary.
-        Type objType = obj?.GetType();
         if (objType != expectedType)
-            node = new TypeNode(GetTypeName(obj?.GetType()), node);
+            node = new TypeNode(GetTypeName(objType), node);
 
         // Serialize node.
         return node.Serialize();

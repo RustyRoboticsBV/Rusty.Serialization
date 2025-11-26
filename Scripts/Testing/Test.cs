@@ -61,6 +61,8 @@ public sealed class Test<T>
     };
 
     // Objects.
+    public object any = 2;
+
     public class Class
     {
         public int a = 0;
@@ -77,6 +79,8 @@ public sealed class Test<T>
             public V second = default;
         }
     }
+    public Ouchie.Disaster<int, char[]> ouhie1 = new();
+    public Ouchie.Disaster<string, byte[]> ouhie2 = new();
 
     public struct Struct
     {

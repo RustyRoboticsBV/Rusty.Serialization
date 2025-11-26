@@ -97,7 +97,7 @@ public abstract class ObjectConverter<T> : IConverter<T>
         FieldInfo[] fields = type.GetFields();
         for (int i = 0; i < fields.Length; i++)
         {
-            if (fields[i].IsPublic)
+            if (fields[i].IsPublic && !fields[i].IsStatic)
                 members.Add(fields[i]);
         }
 
@@ -105,7 +105,9 @@ public abstract class ObjectConverter<T> : IConverter<T>
         PropertyInfo[] properties = type.GetProperties();
         for (int i = 0; i < properties.Length; i++)
         {
-            if (properties[i].GetMethod.IsPublic && properties[i].SetMethod.IsPublic)
+            MethodInfo getter = properties[i].GetMethod;
+            MethodInfo setter = properties[i].SetMethod;
+            if (properties[i].GetIndexParameters().Length == 0 && getter != null && getter.IsPublic && !getter.IsStatic && setter != null && setter.IsPublic && !setter.IsStatic)
                 members.Add(properties[i]);
         }
 
@@ -117,11 +119,11 @@ public abstract class ObjectConverter<T> : IConverter<T>
     /// </summary>
     private INode ConvertMember<U>(Type memberType, U obj, Context context)
     {
-        Type valueType = obj.GetType();
+        Type valueType = obj?.GetType();
         IConverter converter = context.GetConverter(valueType);
         INode node = converter.Convert(obj, context);
 
-        if (memberType != valueType)
+        if (memberType != valueType && valueType != null)
             node = new TypeNode(context.GetTypeName(valueType), node);
 
         return node;

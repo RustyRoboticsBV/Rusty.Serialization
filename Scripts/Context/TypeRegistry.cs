@@ -66,6 +66,10 @@ public class TypeRegistry
     /// </summary>
     private Type ResolveConverter(Type targetType)
     {
+        // Resolve null.
+        if (targetType == null)
+            return typeof(NullConverter);
+
         // Cannot resolve open generic types.
         if (targetType.IsGenericTypeDefinition || targetType.ContainsGenericParameters)
             throw new Exception($"Cannot resolve open generic type '{targetType}'.");

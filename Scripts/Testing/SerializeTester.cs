@@ -2,7 +2,7 @@
 using System;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.Test
+namespace Rusty.Serialization.Testing
 {
     /// <summary>
     /// Unit test utility for checking if a serializing function is working correctly.

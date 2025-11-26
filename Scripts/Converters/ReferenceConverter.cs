@@ -38,7 +38,7 @@ public abstract class ReferenceConverter<TargetT, NodeT> : IConverter<TargetT>, 
         INode node = converter.Convert(obj, context);
 
         // Wrap inside of a type node if there was a mismatch.
-        if (expectedType != valueType)
+        if (expectedType != valueType && valueType != null)
             node = new TypeNode(context.GetTypeName(valueType), node);
 
         // Return finished node.
