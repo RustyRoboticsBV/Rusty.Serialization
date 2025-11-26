@@ -72,6 +72,7 @@ public sealed class Test<T>
     {
         public class Disaster<U, V> : Class
         {
+            public class Help { }
             public Class thing = null;
             public U first = default;
             public V second = default;

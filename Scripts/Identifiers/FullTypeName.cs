@@ -1,147 +1,135 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 
-namespace Rusty.Serialization
+namespace Rusty.Serialization;
+
+public readonly struct FullTypeName
 {
-    public struct FullTypeName
+    /* Fields. */
+    private readonly string @namespace;
+    private readonly List<Segment> segments;
+
+    /* Private types. */
+    private readonly struct Segment
     {
-        /* Fields. */
-        private readonly string @namespace;
-        private readonly FullTypeName[] declaringTypes;
-        private readonly string name;
-        private readonly FullTypeName[] genericArguments;
+        public readonly string name;
+        public readonly FullTypeName[] genericArgs;
 
-        private readonly int hashcode;
-
-        /* Constructors. */
-        public FullTypeName(Type type)
+        public Segment(string name, FullTypeName[] genericArgs)
         {
-            // Generic parameter types.
-            if (type.IsGenericParameter)
+            this.name = name;
+            this.genericArgs = genericArgs;
+        }
+    }
+
+    /* Constructors. */
+    public FullTypeName(Type type)
+    {
+        if (type.IsGenericParameter)
+        {
+            @namespace = "";
+            segments = new() { new Segment(type.Name, []) };
+            return;
+        }
+
+        // Build declaring type chain, outer to inner.
+        var chain = new List<Type>();
+        var cursor = type;
+
+        while (cursor != null)
+        {
+            chain.Insert(0, cursor);
+            cursor = cursor.DeclaringType;
+        }
+
+        @namespace = chain[0].Namespace ?? "";
+
+        // Flatten all generic args in order.
+        var flatArgs = type.IsGenericType ? type.GetGenericArguments() : [];
+        int index = 0;
+
+        segments = new List<Segment>();
+
+        foreach (var t in chain)
+        {
+            // Count generic args belonging to THIS declaring level.
+            int ownCount = 0;
+
+            if (t.IsGenericType)
             {
-                @namespace = "";
-                declaringTypes = Array.Empty<FullTypeName>();
-                name = type.Name;
-                genericArguments = Array.Empty<FullTypeName>();
-                hashcode = ToString().GetHashCode();
-                return;
-            }
+                ownCount = t.GetGenericTypeDefinition()
+                            .GetGenericArguments()
+                            .Length;
 
-            // Store namespace.
-            @namespace = type.Namespace;
-
-            // Build declaring type chain.
-            List<Type> chain = new();
-            Type current = type.DeclaringType;
-            while (current != null)
-            {
-                chain.Insert(0, current);
-                current = current.DeclaringType;
-            }
-
-            // Flattened generic arguments.
-            Type[] allArgs = type.IsGenericType ? type.GetGenericArguments() : [];
-            int argIndex = 0;
-
-            List<FullTypeName> declaringChain = new();
-            foreach (var t in chain)
-            {
-                int ownArgsCount = t.IsGenericType ? t.GetGenericArguments().Length : 0;
-                FullTypeName[] ownArgs = new FullTypeName[ownArgsCount];
-                for (int i = 0; i < ownArgsCount; i++)
+                // But this count includes outer generic args for nested types.
+                // Adjust down to actual number belonging to this type.
+                if (t.DeclaringType != null && t.DeclaringType.IsGenericType)
                 {
-                    ownArgs[i] = new FullTypeName(allArgs[argIndex++]);
-                }
+                    int outerCount = t.DeclaringType
+                                      .GetGenericTypeDefinition()
+                                      .GetGenericArguments().Length;
 
-                declaringChain.Add(new(t.Namespace, [], GetTypeName(t), ownArgs));
+                    ownCount -= outerCount;
+                }
             }
 
-            declaringTypes = declaringChain.ToArray();
-
-            // Get own generic arguments.
-            int ownCount = type.IsGenericType ? type.GetGenericArguments().Length - argIndex : 0;
-            genericArguments = new FullTypeName[ownCount];
+            // Consume correct subset.
+            var argList = new FullTypeName[ownCount];
             for (int i = 0; i < ownCount; i++)
             {
-                genericArguments[i] = new FullTypeName(allArgs[argIndex++]);
+                argList[i] = new FullTypeName(flatArgs[index++]);
             }
 
-            // Get name.
-            var attribute = type.GetCustomAttribute<SerializableAttribute>();
-            if (attribute != null)
-            {
-                name = attribute.Name;
-                @namespace = "";
-            }
-            else
-                name = GetTypeName(type);
-            hashcode = ToString().GetHashCode();
+            // Strip backtick.
+            string name = t.Name;
+            int pos = name.IndexOf('`');
+            if (pos >= 0)
+                name = name[..pos];
+
+            segments.Add(new Segment(name, argList));
         }
+    }
 
-        private FullTypeName(string ns, FullTypeName[] declaringTypes, string name, FullTypeName[] genericArguments)
+    /* Public methods. */
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+
+        // Add namespace.
+        if (!string.IsNullOrEmpty(@namespace))
+            sb.Append(@namespace).Append('.');
+
+        // Add nested segments.
+        for (int i = 0; i < segments.Count; i++)
         {
-            @namespace = ns;
-            this.declaringTypes = declaringTypes;
-            this.name = name;
-            this.genericArguments = genericArguments;
-            hashcode = ToString().GetHashCode();
-        }
-
-        public static implicit operator string(FullTypeName typeName)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            // Namespace.
-            if (!string.IsNullOrEmpty(typeName.@namespace))
-            {
-                sb.Append(typeName.@namespace);
-                sb.Append('.');
-            }
-
-            // Declaring types.
-            for (int i = 0; i < typeName.declaringTypes.Length; i++)
-            {
-                sb.Append(typeName.declaringTypes[i]);
+            if (i > 0)
                 sb.Append('+');
-            }
 
-            // Main type name.
-            sb.Append(typeName.name);
+            Segment s = segments[i];
 
-            // Generic arguments.
-            if (typeName.genericArguments.Length > 0)
+            // Add name.
+            sb.Append(s.name);
+
+            // Add generic arguments.
+            if (s.genericArgs.Length > 0)
             {
                 sb.Append('<');
-                for (int i = 0; i < typeName.genericArguments.Length; i++)
+                for (int g = 0; g < s.genericArgs.Length; g++)
                 {
-                    if (i > 0)
-                        sb.Append(",");
-                    sb.Append(typeName.genericArguments[i]);
+                    if (g > 0)
+                        sb.Append(',');
+                    sb.Append(s.genericArgs[g]);
                 }
                 sb.Append('>');
             }
-
-            return sb.ToString();
         }
 
-        public static implicit operator TypeName(FullTypeName typeName) => (string)typeName;
-
-        /* Public methods. */
-        public override string ToString() => (string)this;
-        public override int GetHashCode() => hashcode;
-
-        /* Private methods. */
-        private static string GetTypeName(Type type)
-        {
-            string name = type.Name;
-
-            // Remove backtick notation if present.
-            int backtick = name.IndexOf('`');
-            if (backtick >= 0)
-                name = name.Substring(0, backtick);
-            return name;
-        }
+        return sb.ToString();
     }
+
+    /* Conversion operators. */
+    public static implicit operator string(FullTypeName t) => t.ToString();
+
+    public static implicit operator TypeName(FullTypeName typeName) => (string)typeName;
 }

@@ -4,9 +4,11 @@ using Rusty.Serialization.Test;
 using Rusty.Serialization.Testing;
 using System;
 
+FullTypeName ftn0 = new(typeof(Test<>));
+Console.WriteLine((TypeName)ftn0);
 FullTypeName ftn1 = new(typeof(Test<char>));
 Console.WriteLine((TypeName)ftn1);
-FullTypeName ftn2 = new(typeof(Test<char>.Ouchie.Disaster<uint, System.Collections.Generic.List<string>>));
+FullTypeName ftn2 = new(typeof(Test<char>.Ouchie.Disaster<uint, System.Collections.Generic.List<string>>.Help));
 Console.WriteLine((TypeName)ftn2);
 Console.ReadLine();
 
