@@ -23,6 +23,7 @@ string serialized = context.Serialize(new System.Collections.Generic.Dictionary<
 });
 System.Console.WriteLine(serialized);
 System.Console.WriteLine(ParseUtility.ParseValue(serialized));
+Console.ReadLine();
 
 UnitTests.RunParserTests(true);
 UnitTests.RunSerializeTests();
