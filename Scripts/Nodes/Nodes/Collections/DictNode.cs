@@ -71,7 +71,7 @@ public readonly struct DictNode : INode
                 // Split into key and value.
                 List<string> pairStrs = ParseUtility.Split(parsed[i], ':');
                 if (pairStrs.Count != 2)
-                    throw new Exception("Malformed key-value pair.");
+                    throw new Exception("Malformed key-name pair.");
 
                 // Parse keys and values.
                 INode key = ParseUtility.ParseValue(pairStrs[0].Trim());

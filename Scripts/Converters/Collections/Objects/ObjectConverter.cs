@@ -60,7 +60,7 @@ public abstract class ObjectConverter<T> : IConverter<T>
     public virtual T Deconvert(INode node, Context context)
     {
         if (node is TypeNode typeNode)
-            return Deconvert(typeNode.Object, context);
+            return Deconvert(typeNode.Value, context);
         if (node is ObjectNode objNode)
         {
             // Create new object.

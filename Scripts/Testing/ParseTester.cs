@@ -165,7 +165,7 @@ namespace Rusty.Serialization.Test
             try
             {
                 var node = TypeNode.Parse(str);
-                Report(str, new(node.TypeCode), expected, nameof(TypeNode), null);
+                Report(str, new(node.Name), expected, nameof(TypeNode), null);
             }
             catch (Exception ex)
             {

@@ -78,7 +78,7 @@ public readonly struct ObjectNode : INode
                 // Split into key and value.
                 List<string> pairStrs = ParseUtility.Split(terms[i], ':');
                 if (pairStrs.Count != 2)
-                    throw new Exception($"Malformed key-value pair.");
+                    throw new Exception($"Malformed key-name pair.");
 
                 // Get keys and values.
                 Identifier key = pairStrs[0].Trim();

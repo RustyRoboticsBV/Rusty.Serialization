@@ -8,35 +8,38 @@ namespace Rusty.Serialization.Nodes;
 public readonly struct TypeNode : INode
 {
     /* Fields. */
-    private readonly TypeName value;
-    private readonly INode obj;
+    private readonly string name;
+    private readonly INode value;
 
     /* Public properties. */
-    public readonly TypeName TypeCode => value;
-    public readonly INode Object => obj;
+    public readonly string Name => name;
+    public readonly INode Value => value;
 
     /* Constructors. */
-    public TypeNode(TypeName value, INode obj)
+    public TypeNode(string name, INode value)
     {
+        this.name = name;
         this.value = value;
-        this.obj = obj;
     }
 
     /* Public methods. */
     public override readonly string ToString()
     {
-        if (obj == null)
-            return "type: " + value + " (null)";
+        if (value == null)
+            return "type: " + name + " (null)";
 
-        string objStr = obj.ToString().Replace("\n", "\n ");
-        return "type: " + value + "\n " + objStr;
+        string objStr = value.ToString().Replace("\n", "\n ");
+        return "type: " + name + "\n   => " + objStr;
     }
 
     public readonly string Serialize()
     {
-        if (obj == null)
-            throw new InvalidOperationException("value node was null.");
-        return $"({value}){obj.Serialize()}";
+        string name = this.name.Trim();
+        Validate(name);
+
+        if (value == null)
+            throw new InvalidOperationException("name was null.");
+        return $"({this.name}){value.Serialize()}";
     }
 
     public static TypeNode Parse(string text)
@@ -55,8 +58,9 @@ public readonly struct TypeNode : INode
             if (!trimmed.StartsWith('(') || closeIndex == -1)
                 throw new ArgumentException("Missing parentheses.");
 
-            // Get text between parentheses and trim it.
+            // Get text between parentheses, validate and trim it.
             string name = trimmed.Substring(1, closeIndex - 1).Trim();
+            Validate(name);
 
             // Get text after parentheses and parse it.
             string value = trimmed.Substring(closeIndex + 1).Trim();
@@ -70,6 +74,17 @@ public readonly struct TypeNode : INode
         catch (Exception ex)
         {
             throw new ArgumentException($"Could not parse string '{text}' as a type:\n{ex.Message}");
+        }
+    }
+
+    /* Private methods. */
+    private static void Validate(string name)
+    {
+        for (int i = 0; i < name.Length; i++)
+        {
+            char c = name[i];
+            if (c < '!' && c > '~' || c == '(' || c == ')')
+                throw new ArgumentException($"Disallowed character '{c}' in type '{name}'.");
         }
     }
 }

@@ -40,7 +40,7 @@ internal class BiDictionary<KeyT, ValueT>
         if (reverse.TryGetValue(value, out var existingKey) &&
             !EqualityComparer<KeyT>.Default.Equals(existingKey, key))
         {
-            throw new ArgumentException($"Duplicate value '{value}'.");
+            throw new ArgumentException($"Duplicate name '{value}'.");
         }
 
         // Set key-value and value-key pairs.

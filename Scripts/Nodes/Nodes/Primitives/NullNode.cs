@@ -37,7 +37,7 @@ public readonly struct NullNode : INode
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a null value:\n{ex.Message}");
+            throw new ArgumentException($"Could not parse string '{text}' as a null name:\n{ex.Message}");
         }
     }
 }
