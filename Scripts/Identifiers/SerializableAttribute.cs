@@ -9,17 +9,12 @@ namespace Rusty.Serialization;
 public class SerializableAttribute : Attribute
 {
     /* Fields. */
-    private readonly TypeName name;
+    private readonly string name;
 
     /* Public properties. */
-    public TypeName Name => name;
+    public string Name => name;
 
     /* Constructors. */
-    public SerializableAttribute(TypeName name)
-    {
-        this.name = name;
-    }
-
     public SerializableAttribute(string name)
     {
         this.name = name;

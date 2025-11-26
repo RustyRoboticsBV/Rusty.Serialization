@@ -5,7 +5,6 @@
 #define UNITY_CONTEXT
 #endif
 
-using Rusty.Serialization.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,20 +54,20 @@ public class TypeRegistry
 #endif
 
         Add(typeof(List<>), typeof(ListConverter<>), "list");
-        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "link");
+        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "llist");
         Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
         Add(typeof(Stack<>), typeof(StackConverter<>), "stack");
         Add(typeof(Queue<>), typeof(QueueConverter<>), "queue");
 #if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Array), typeof(Gd.ArrayConverter), "gdarr");
-        Add(typeof(Godot.Collections.Array<>), typeof(Gd.ArrayConverter<>), "gdarr");
+        Add(typeof(Godot.Collections.Array), typeof(Gd.ArrayConverter), "gdarru");
+        Add(typeof(Godot.Collections.Array<>), typeof(Gd.ArrayConverter<>), "gdarrt");
 #endif
 
         Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
-        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "dict");
+        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
 #if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Dictionary), typeof(Gd.DictionaryConverter), "gddict");
-        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionaryConverter<,>), "gddict");
+        Add(typeof(Godot.Collections.Dictionary), typeof(Gd.DictionaryConverter), "gddictt");
+        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionaryConverter<,>), "gddictu");
 #endif
     }
 

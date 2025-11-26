@@ -12,10 +12,6 @@ public struct TypeName
 
     public TypeName(string name)
     {
-        if (name == null)
-            this.name = "null";
-        else if (name.Contains('(') || name.Contains(')'))
-            throw new ArgumentException("Type names may not contain '(' or ')'.");
         this.name = name;
     }
 
@@ -25,4 +21,5 @@ public struct TypeName
 
     /* Public method */
     public override string ToString() => name;
+    public override int GetHashCode() => name?.GetHashCode() ?? 0;
 }
