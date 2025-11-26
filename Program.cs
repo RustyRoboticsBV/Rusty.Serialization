@@ -6,7 +6,7 @@ using System;
 
 FullTypeName ftn1 = new(typeof(Test<char>));
 Console.WriteLine((TypeName)ftn1);
-FullTypeName ftn2 = new(typeof(Test<char>.Disaster<uint, System.Collections.Generic.List<string>>));
+FullTypeName ftn2 = new(typeof(Test<char>.Ouchie.Disaster<uint, System.Collections.Generic.List<string>>));
 Console.WriteLine((TypeName)ftn2);
 Console.ReadLine();
 

@@ -5,15 +5,12 @@ using System.Text;
 
 namespace Rusty.Serialization
 {
-    /// <summary>
-    /// Represents a full type name, including namespace, declaring types, and generic arguments.
-    /// </summary>
     public struct FullTypeName
     {
         /* Fields. */
-        private readonly TypeName @namespace;
+        private readonly string @namespace;
         private readonly FullTypeName[] declaringTypes;
-        private readonly TypeName name;
+        private readonly string name;
         private readonly FullTypeName[] genericArguments;
 
         private readonly int hashcode;
@@ -21,25 +18,77 @@ namespace Rusty.Serialization
         /* Constructors. */
         public FullTypeName(Type type)
         {
+            // Generic parameter types.
             if (type.IsGenericParameter)
             {
                 @namespace = "";
-                declaringTypes = [];
+                declaringTypes = Array.Empty<FullTypeName>();
                 name = type.Name;
-                genericArguments = [];
+                genericArguments = Array.Empty<FullTypeName>();
+                hashcode = ToString().GetHashCode();
+                return;
             }
 
-            else
+            // Store namespace.
+            @namespace = type.Namespace;
+
+            // Build declaring type chain.
+            List<Type> chain = new();
+            Type current = type.DeclaringType;
+            while (current != null)
             {
-                @namespace = type.Namespace;
-                declaringTypes = GetDeclaringTypeChain(type);
-                name = GetTypeName(type);
-                genericArguments = GetOwnGenericArguments(type);
-                hashcode = ToString().GetHashCode();
+                chain.Insert(0, current);
+                current = current.DeclaringType;
             }
+
+            // Flattened generic arguments.
+            Type[] allArgs = type.IsGenericType ? type.GetGenericArguments() : [];
+            int argIndex = 0;
+
+            List<FullTypeName> declaringChain = new();
+            foreach (var t in chain)
+            {
+                int ownArgsCount = t.IsGenericType ? t.GetGenericArguments().Length : 0;
+                FullTypeName[] ownArgs = new FullTypeName[ownArgsCount];
+                for (int i = 0; i < ownArgsCount; i++)
+                {
+                    ownArgs[i] = new FullTypeName(allArgs[argIndex++]);
+                }
+
+                declaringChain.Add(new(t.Namespace, [], GetTypeName(t), ownArgs));
+            }
+
+            declaringTypes = declaringChain.ToArray();
+
+            // Get own generic arguments.
+            int ownCount = type.IsGenericType ? type.GetGenericArguments().Length - argIndex : 0;
+            genericArguments = new FullTypeName[ownCount];
+            for (int i = 0; i < ownCount; i++)
+            {
+                genericArguments[i] = new FullTypeName(allArgs[argIndex++]);
+            }
+
+            // Get name.
+            var attribute = type.GetCustomAttribute<SerializableAttribute>();
+            if (attribute != null)
+            {
+                name = attribute.Name;
+                @namespace = "";
+            }
+            else
+                name = GetTypeName(type);
+            hashcode = ToString().GetHashCode();
         }
 
-        /* Conversion operators. */
+        private FullTypeName(string ns, FullTypeName[] declaringTypes, string name, FullTypeName[] genericArguments)
+        {
+            @namespace = ns;
+            this.declaringTypes = declaringTypes;
+            this.name = name;
+            this.genericArguments = genericArguments;
+            hashcode = ToString().GetHashCode();
+        }
+
         public static implicit operator string(FullTypeName typeName)
         {
             StringBuilder sb = new StringBuilder();
@@ -58,7 +107,7 @@ namespace Rusty.Serialization
                 sb.Append('+');
             }
 
-            // Main type.
+            // Main type name.
             sb.Append(typeName.name);
 
             // Generic arguments.
@@ -84,75 +133,15 @@ namespace Rusty.Serialization
         public override int GetHashCode() => hashcode;
 
         /* Private methods. */
-        /// <summary>
-        /// Get a type's declaring type chain.
-        /// </summary>
-        private static FullTypeName[] GetDeclaringTypeChain(Type type)
+        private static string GetTypeName(Type type)
         {
-            if (!type.IsNested)
-                return [];
-
-            // Walk up the declaring type chain and collect full names.
-            List<FullTypeName> chain = new();
-            while (type.DeclaringType != null)
-            {
-                type = type.DeclaringType;
-                chain.Add(new(type));
-            }
-            return chain.ToArray();
-        }
-
-        /// <summary>
-        /// Get the name of a type.
-        /// </summary>
-        private static TypeName GetTypeName(Type type)
-        {
-            // Check attribute.
-            var attribute = type.GetCustomAttribute<SerializableAttribute>();
-            if (attribute != null)
-                return attribute.Name;
-
-            // Otherwise, infer name from type.
             string name = type.Name;
 
-            // Remove backtick notation.
+            // Remove backtick notation if present.
             int backtick = name.IndexOf('`');
             if (backtick >= 0)
                 name = name.Substring(0, backtick);
-
-            return new(name);
-        }
-
-        /// <summary>
-        /// Returns the generic type arguments that belong to a single type (excluding outer declaring types).
-        /// </summary>
-        private static FullTypeName[] GetOwnGenericArguments(Type type)
-        {
-            if (!type.IsGenericType)
-                return [];
-
-            // Get all generic arguments.
-            Type[] allArgs = type.GetGenericArguments();
-
-            // Get the number of generic arguments in the declaring type.
-            int outerCount = 0;
-            if (type.DeclaringType != null && type.DeclaringType.IsGenericType)
-                outerCount = type.DeclaringType.GetGenericTypeDefinition().GetGenericArguments().Length;
-
-            // Get our own generic types.
-            int ownCount = allArgs.Length - outerCount;
-            Type[] ownArgs = new Type[ownCount];
-            for (int i = 0; i < ownCount; i++)
-            {
-                ownArgs[i] = allArgs[outerCount + i];
-            }
-
-            FullTypeName[] names = new FullTypeName[ownCount];
-            for (int i = 0; i < ownCount; i++)
-            {
-                names[i] = new(ownArgs[i]);
-            }
-            return names;
+            return name;
         }
     }
 }
