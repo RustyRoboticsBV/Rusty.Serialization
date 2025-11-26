@@ -1,6 +1,14 @@
 ﻿using Rusty.Serialization;
 using Rusty.Serialization.Nodes;
 using Rusty.Serialization.Test;
+using Rusty.Serialization.Testing;
+using System;
+
+FullTypeName ftn1 = new(typeof(Test<char>));
+Console.WriteLine((TypeName)ftn1);
+FullTypeName ftn2 = new(typeof(Test<char>.Disaster<uint, System.Collections.Generic.List<string>>));
+Console.WriteLine((TypeName)ftn2);
+Console.ReadLine();
 
 Context context = new();
 string serialized = context.Serialize(new System.Collections.Generic.Dictionary<object, object>()
@@ -10,7 +18,7 @@ string serialized = context.Serialize(new System.Collections.Generic.Dictionary<
     { "ABC", new Struct() }
 });
 System.Console.WriteLine(serialized);
-System.Console.WriteLine(ParseUtility.ParseValue("{[\"abc\",'d',123]:12.5,false:[Y1M2D3],\"ABC\":<A:0,B:\"BBB\">}"));
+System.Console.WriteLine(ParseUtility.ParseValue(serialized));
 
 UnitTests.RunParserTests(true);
 UnitTests.RunSerializeTests();
@@ -20,6 +28,7 @@ public struct Struct
 {
     public int A = 0;
     public string B = "BBB";
+    public object C = 'C';
 
     public Struct() { }
 }

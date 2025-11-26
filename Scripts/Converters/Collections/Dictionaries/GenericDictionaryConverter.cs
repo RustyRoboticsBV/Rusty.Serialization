@@ -13,12 +13,26 @@ public abstract class GenericDictionaryConverter<DictionaryT, KeyT, ValueT> : Re
     /* Protected methods. */
     protected sealed override DictNode Convert(DictionaryT obj, Context context)
     {
+        Type keyType = obj.GetType().GetGenericArguments()[0];
+        Type valueType = obj.GetType().GetGenericArguments()[1];
+
         // Convert the elements to nodes.
         List<KeyValuePair<INode, INode>> nodePairs = new();
         foreach (KeyValuePair<KeyT, ValueT> element in obj)
         {
+            // Convert key.
+            Type elementKeyType = element.Key.GetType();
             INode key = ConvertElement(element.Key, context);
+            if (elementKeyType != keyType)
+                key = new TypeNode(context.GetTypeName(elementKeyType), key);
+
+            // Convert value.
+            Type elementValueType = element.Value.GetType();
             INode value = ConvertElement(element.Value, context);
+            if (elementValueType != valueType)
+                value = new TypeNode(context.GetTypeName(elementValueType), value);
+
+            // Add pair.
             nodePairs.Add(new(key, value));
         }
 

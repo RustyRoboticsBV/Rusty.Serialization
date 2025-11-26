@@ -50,6 +50,11 @@ public class Context
         return instance;
     }
 
+    public TypeName GetTypeName(Type targetType)
+    {
+        return Types.GetTypeName(targetType);
+    }
+
     /// <summary>
     /// Serialize an object.
     /// </summary>

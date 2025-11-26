@@ -5,9 +5,11 @@
 #define UNITY_CONTEXT
 #endif
 
+using Rusty.Serialization.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Rusty.Serialization.Converters;
 
@@ -18,55 +20,55 @@ public class TypeRegistry
 {
     /* Private properties. */
     private Dictionary<Type, Type> targetToConverter = new();
-    private Dictionary<Type, Type> cache = new();
+    private BiDictionary<Type, TypeName> typeNames = new();
 
     /* Constructors. */
     public TypeRegistry()
     {
         // Add built-in types.
-        Add<bool, BoolConverter>();
+        Add<bool, BoolConverter>("b");
 
-        Add<sbyte, SbyteConverter>();
-        Add<short, ShortConverter>();
-        Add<int, IntConverter>();
-        Add<long, LongConverter>();
-        Add<byte, ByteConverter>();
-        Add<ushort, UshortConverter>();
-        Add<uint, UintConverter>();
-        Add<ulong, UlongConverter>();
+        Add<sbyte, SbyteConverter>("i8");
+        Add<short, ShortConverter>("i16");
+        Add<int, IntConverter>("i32");
+        Add<long, LongConverter>("i64");
+        Add<byte, ByteConverter>("u8");
+        Add<ushort, UshortConverter>("u16");
+        Add<uint, UintConverter>("u32");
+        Add<ulong, UlongConverter>("u64");
 
-        Add<float, FloatConverter>();
-        Add<double, DoubleConverter>();
-        Add<decimal, DecimalConverter>();
+        Add<float, FloatConverter>("f32");
+        Add<double, DoubleConverter>("f64");
+        Add<decimal, DecimalConverter>("dec");
 
-        Add<char, CharConverter>();
+        Add<char, CharConverter>("chr");
 
-        Add<string, StringConverter>();
+        Add<string, StringConverter>("str");
 
-        Add<DateTime, DateTimeConverter>();
+        Add<DateTime, DateTimeConverter>("dt");
 
-        Add<byte[], ByteArrayConverter>();
+        Add<byte[], ByteArrayConverter>("u8[]");
 
-        Add<System.Drawing.Color, ColorConverter>();
+        Add<System.Drawing.Color, ColorConverter>("col");
 #if GODOT_CONTEXT
-        Add<Godot.Color, Gd.ColorConverter>();
+        Add<Godot.Color, Gd.ColorConverter>("gdcol");
 #endif
 
-        Add(typeof(List<>), typeof(ListConverter<>));
-        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>));
-        Add(typeof(HashSet<>), typeof(HashSetConverter<>));
-        Add(typeof(Stack<>), typeof(StackConverter<>));
-        Add(typeof(Queue<>), typeof(QueueConverter<>));
+        Add(typeof(List<>), typeof(ListConverter<>), "list");
+        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "link");
+        Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
+        Add(typeof(Stack<>), typeof(StackConverter<>), "stack");
+        Add(typeof(Queue<>), typeof(QueueConverter<>), "queue");
 #if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Array), typeof(Gd.ArrayConverter));
-        Add(typeof(Godot.Collections.Array<>), typeof(Gd.ArrayConverter<>));
+        Add(typeof(Godot.Collections.Array), typeof(Gd.ArrayConverter), "gdarr");
+        Add(typeof(Godot.Collections.Array<>), typeof(Gd.ArrayConverter<>), "gdarr");
 #endif
 
-        Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
-        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>));
+        Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
+        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "dict");
 #if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Dictionary), typeof(Gd.DictionaryConverter));
-        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionaryConverter<,>));
+        Add(typeof(Godot.Collections.Dictionary), typeof(Gd.DictionaryConverter), "gddict");
+        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Gd.DictionaryConverter<,>), "gddict");
 #endif
     }
 
@@ -74,16 +76,16 @@ public class TypeRegistry
     /// <summary>
     /// Register a converter type for some target type.
     /// </summary>
-    public void Add<TargetT, ConverterT>()
+    public void Add<TargetT, ConverterT>(string typeName = null)
         where ConverterT : IConverter
     {
-        Add(typeof(TargetT), typeof(ConverterT));
+        Add(typeof(TargetT), typeof(ConverterT), typeName);
     }
 
     /// <summary>
     /// Register a converter type for some target type.
     /// </summary>
-    public void Add(Type target, Type converter)
+    public void Add(Type target, Type converter, string typeName = null)
     {
         // Only allow converter types that implement IConverter.
         if (!converter.GetInterfaces().Any(i => i == typeof(IConverter)))
@@ -98,6 +100,28 @@ public class TypeRegistry
 
         // Add the converter type.
         targetToConverter[target] = converter;
+
+        // Store type name.
+        if (typeName == null)
+            typeName = ResolveName(target);
+        typeNames[target] = typeName;
+    }
+
+    /// <summary>
+    /// Get the name of some type.
+    /// </summary>
+    public TypeName GetTypeName(Type type)
+    {
+        try
+        {
+            return typeNames[type];
+        }
+        catch
+        {
+
+            ResolveName(type);
+            return typeNames[type];
+        }
     }
 
     /// <summary>
@@ -105,7 +129,7 @@ public class TypeRegistry
     /// </summary>
     public IConverter Instantiate(Type targetType)
     {
-        Type converterType = Resolve(targetType);
+        Type converterType = ResolveConverter(targetType);
         return Activator.CreateInstance(converterType) as IConverter;
     }
 
@@ -122,47 +146,32 @@ public class TypeRegistry
     /// <summary>
     /// Try to resolve a target type and match it with a serializer.
     /// </summary>
-    private Type Resolve(Type targetType)
+    private Type ResolveConverter(Type targetType)
     {
         // Cannot resolve open generic types.
         if (targetType.IsGenericTypeDefinition || targetType.ContainsGenericParameters)
             throw new Exception($"Cannot resolve open generic type '{targetType}'.");
 
-        // Cache.
-        if (cache.ContainsKey(targetType))
-            return cache[targetType];
-
         // Direct resolve.
         if (targetToConverter.ContainsKey(targetType))
-        {
-            cache[targetType] = targetToConverter[targetType];
             return targetToConverter[targetType];
-        }
 
         // Resolve enum types.
         if (targetType.IsEnum)
-        {
-            Type enumConverterType = typeof(EnumConverter<>).MakeGenericType(targetType);
-            cache[targetType] = enumConverterType;
-            return enumConverterType;
-        }
+            return typeof(EnumConverter<>).MakeGenericType(targetType);
 
         // Resolve array types.
         if (targetType.IsArray)
         {
             Type elementType = targetType.GetElementType();
-            Type arrayConverterType = typeof(ArrayConverter<>).MakeGenericType(elementType);
-            cache[targetType] = arrayConverterType;
-            return arrayConverterType;
+            return typeof(ArrayConverter<>).MakeGenericType(elementType);
         }
 
         // Resolve tuple types.
         if (targetType.IsValueType && targetType.IsGenericType &&
             targetType.FullName!.StartsWith("System.ValueTuple`"))
         {
-            Type valueTupleConverterType = typeof(TupleConverter<>).MakeGenericType(targetType);
-            cache[targetType] = valueTupleConverterType;
-            return valueTupleConverterType;
+            return typeof(TupleConverter<>).MakeGenericType(targetType);
         }
 
         // Resolve closed generic types.
@@ -173,9 +182,7 @@ public class TypeRegistry
             {
                 Type genericConverterType = targetToConverter[openGenericType];
                 Type[] typeArguments = targetType.GetGenericArguments();
-                Type closedConverterType = genericConverterType.MakeGenericType(typeArguments);
-                cache[targetType] = closedConverterType;
-                return closedConverterType;
+                return genericConverterType.MakeGenericType(typeArguments);
             }
         }
 
@@ -184,30 +191,33 @@ public class TypeRegistry
         while (parentType != null)
         {
             if (targetToConverter.ContainsKey(parentType))
-            {
-                cache[targetType] = targetToConverter[parentType];
                 return targetToConverter[parentType];
-            }
             parentType = parentType.BaseType;
         }
 
         // Resolve unregistered struct type.
         if (targetType.IsValueType)
-        {
-            Type structConverterType = typeof(StructConverter<>).MakeGenericType(targetType);
-            cache[targetType] = structConverterType;
-            return cache[targetType];
-        }
+            return typeof(StructConverter<>).MakeGenericType(targetType);
 
         // Resolve unregistered class type.
         if (targetType.IsClass)
-        {
-            Type classConverterType = typeof(ClassConverter<>).MakeGenericType(targetType);
-            cache[targetType] = classConverterType;
-            return cache[targetType];
-        }
+            return typeof(ClassConverter<>).MakeGenericType(targetType);
 
         // Could not resolve.
         throw new Exception($"Could not find a converterType for type '{targetType}'.");
+    }
+
+    /// <summary>
+    /// Try to resolve a target type's name.
+    /// </summary>
+    private TypeName ResolveName(Type targetType)
+    {
+        // If the attribute is present, use that for the name.
+        var attribute = targetType.GetCustomAttribute<SerializableAttribute>();
+        if (attribute != null)
+            return attribute.Name;
+
+        // If nested, add the parent class name as a prefix.
+        return "";
     }
 }

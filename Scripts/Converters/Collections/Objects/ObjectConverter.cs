@@ -23,15 +23,34 @@ public abstract class ObjectConverter<T> : IConverter<T>
         {
             MemberInfo member = members[i];
 
-            Identifier identifier = member.Name;
+            // Collect member type and member value.
+            Type memberType = null;
+            object memberValue = null;
 
-            INode node = null;
             if (member is FieldInfo field)
-                node = ConvertMember(field.GetValue(obj), context);
+            {
+                memberType = field.FieldType;
+                memberValue = field.GetValue(obj);
+            }
             else if (member is PropertyInfo property)
-                node = ConvertMember(property.GetValue(obj), context);
+            {
+                memberType = property.PropertyType;
+                memberValue = property.GetValue(obj);
+            }
 
-            memberPairs[i] = new(identifier, node);
+            // Get member identifier.
+            Identifier memberIdentifier = member.Name;
+
+            // Create member node.
+            INode memberNode = ConvertMember(memberValue, context); ;
+
+            // Wrap member node in type node if the value's type does not match the member's declared type.
+            Type memberValueType = memberValue.GetType();
+            if (memberType != memberValueType)
+                memberNode = new TypeNode(memberValueType.FullName, memberNode);
+
+            // Store finished identifier-node pair.
+            memberPairs[i] = new(memberIdentifier, memberNode);
         }
 
         // Return finished object node.
@@ -40,6 +59,8 @@ public abstract class ObjectConverter<T> : IConverter<T>
 
     public virtual T Deconvert(INode node, Context context)
     {
+        if (node is TypeNode typeNode)
+            return Deconvert(typeNode.Object, context);
         if (node is ObjectNode objNode)
         {
             // Create new object.
