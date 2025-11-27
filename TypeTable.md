@@ -29,14 +29,18 @@ Below you can view the types that have built-in serialization/deserialization su
 
 ## Other .NET Types
 ### System
-|C#|Serialized|
-|-|-|
-|Half|real|
-|Version|string|
-|Uri|string|
-|Guid|binary|
-|DateTime|time|
-|TimeSpan|time|
+|C#|Serialized|Notes|
+|-|-|-|
+|Half|real||
+|Index|int||
+|Range|list||
+|Version|string||
+|Uri|string||
+|Guid|binary||
+|TimeSpan|time||
+|DateTime|time||
+|DateOnly|time|C# 10 or higher|
+|TimeOnly|time|C# 10 or higher|
 
 ### System.Collections.Generic
 |C#|Serialized|

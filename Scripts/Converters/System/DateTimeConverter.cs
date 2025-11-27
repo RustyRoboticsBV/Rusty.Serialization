@@ -4,7 +4,7 @@ using Rusty.Serialization.Nodes;
 namespace Rusty.Serialization.Converters
 {
     /// <summary>
-    /// A DateTime converter.
+    /// A System.DateTime converter.
     /// </summary>
     public sealed class DateTimeConverter : ValueConverter<DateTime, TimeNode>
     {

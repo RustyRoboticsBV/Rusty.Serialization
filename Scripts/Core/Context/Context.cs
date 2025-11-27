@@ -151,6 +151,7 @@ namespace Rusty.Serialization
             Aliasses.Add(typeof(Enum), "enum");
 
             Add<BigInteger, BigIntegerConverter>("ibig");
+            Add<Index, IndexConverter>("idx");
 
             // Real types.
             Add<float, FloatConverter>("f32");
@@ -178,6 +179,11 @@ namespace Rusty.Serialization
             Add<TimeSpan, TimeSpanConverter>("ts");
             Add<DateTime, DateTimeConverter>("dt");
 
+#if NET6_0_OR_GREATER
+            Add<DateOnly, DateOnlyConverter>("date");
+            Add<TimeOnly, TimeOnlyConverter>("time");
+#endif
+
             // Binary types.
             Add<byte[], ByteArrayConverter>("u8[]");
             Add<Guid, GuidConverter>("guid");
@@ -195,6 +201,8 @@ namespace Rusty.Serialization
 #endif
 
             // List types.
+            Add<Range, RangeConverter>("rng");
+
             Add(typeof(List<>), typeof(ListConverter<>), "list");
             Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "lnls");
             Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
