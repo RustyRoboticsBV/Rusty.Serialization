@@ -12,7 +12,7 @@
   </ItemGroup>
   
   <PropertyGroup>
-    <DefineConstants>DEBUG,GODOT</DefineConstants>
+    <DefineConstants>RUSTY_DEBUG,GODOT</DefineConstants>
     <RootNamespace>Rusty.Serialization</RootNamespace>
   </PropertyGroup>
 

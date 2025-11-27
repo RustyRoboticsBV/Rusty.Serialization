@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Text;
 
 namespace Rusty.Serialization.Nodes;
@@ -15,40 +16,43 @@ public readonly struct TimestampNode : INode
     public struct Timestamp
     {
         public bool negative;
-        public ulong year;
-        public ulong month;
-        public ulong day;
 
-        public ulong hour;
-        public ulong minute;
-        public ulong second;
-        public ulong millisecond;
+        public BigInteger year;
+        public BigInteger month;
+        public BigInteger day;
 
-        public Timestamp(bool negative, ulong year, ulong month, ulong day, ulong hour, ulong minute, ulong second, ulong millisecond)
+        public BigInteger hour;
+        public BigInteger minute;
+        public BigInteger second;
+        public BigInteger millisecond;
+
+        public Timestamp(BigInteger year, BigInteger month, BigInteger day, BigInteger hour, BigInteger minute, BigInteger second, BigInteger millisecond)
         {
-            this.negative = negative;
-            this.year = year;
-            this.month = month;
-            this.day = day;
+            negative = year < 0
+                || (year == 0 && month < 0)
+                || (year == 0 && month == 0 && day < 0)
+                || (year == 0 && month == 0 && day == 0 && hour < 0)
+                || (year == 0 && month == 0 && day == 0 && hour == 0 && minute < 0)
+                || (year == 0 && month == 0 && day == 0 && hour == 0 && minute == 0 && second < 0)
+                || (year == 0 && month == 0 && day == 0 && hour == 0 && minute == 0 && second == 0 && millisecond < 0);
 
-            this.hour = hour;
-            this.minute = minute;
-            this.second = second;
-            this.millisecond = millisecond;
+            this.year = BigInteger.Abs(year);
+            this.month = BigInteger.Abs(month);
+            this.day = BigInteger.Abs(day);
+
+            this.hour = BigInteger.Abs(hour);
+            this.minute = BigInteger.Abs(minute);
+            this.second = BigInteger.Abs(second);
+            this.millisecond = BigInteger.Abs(millisecond);
         }
 
-        public Timestamp(DateTime value)
-        {
-            negative = value.Year < 0;
-            year = (ulong)Math.Abs(value.Year);
-            month = (ulong)value.Month;
-            day = (ulong)value.Day;
+        public Timestamp(DateTime value) : this(
+            value.Year, value.Month, value.Day,
+            value.Hour, value.Minute, value.Second, value.Millisecond) { }
 
-            hour = (ulong)value.Hour;
-            minute = (ulong)value.Minute;
-            second = (ulong)value.Second;
-            millisecond = (ulong)value.Millisecond;
-        }
+        public Timestamp(TimeSpan value) : this(
+            0, 0, value.Days,
+            value.Hours, value.Minutes, value.Seconds, value.Milliseconds) { }
 
         public override string ToString()
         {
@@ -119,13 +123,13 @@ public readonly struct TimestampNode : INode
             bool negative = trimmed.StartsWith('-');
 
             // Interpret.
-            ulong? year = null;
-            ulong? month = null;
-            ulong? day = null;
-            ulong? hour = null;
-            ulong? minute = null;
-            ulong? second = null;
-            ulong? millisecond = null;
+            BigInteger? year = null;
+            BigInteger? month = null;
+            BigInteger? day = null;
+            BigInteger? hour = null;
+            BigInteger? minute = null;
+            BigInteger? second = null;
+            BigInteger? millisecond = null;
 
             for (int i = negative ? 1 : 0; i < trimmed.Length; i++)
             {
@@ -187,9 +191,28 @@ public readonly struct TimestampNode : INode
             second = second ?? 0;
             millisecond = millisecond ?? 0;
 
+            // Apply negative sign.
+            if (negative)
+            {
+                if (year > 0)
+                    year = -year;
+                else if (month > 0)
+                    month = -month;
+                else if (day > 0)
+                    day = -day;
+                else if (hour > 0)
+                    hour = -hour;
+                else if (minute > 0)
+                    minute = -minute;
+                else if (second > 0)
+                    second = -second;
+                else if (millisecond > 0)
+                    millisecond = -millisecond;
+            }
+
             // Create node.
-            return new(new(negative, (ulong)year, (ulong)month, (ulong)day,
-                (ulong)hour, (ulong)minute, (ulong)second, (ulong)millisecond));
+            return new(new(year.Value, month.Value, day.Value,
+                hour.Value, minute.Value, second.Value, millisecond.Value));
         }
         catch (Exception ex)
         {
@@ -197,7 +220,7 @@ public readonly struct TimestampNode : INode
         }
     }
 
-    private static ulong Parse(string str, ref int index)
+    private static BigInteger Parse(string str, ref int index)
     {
         int i;
         for (i = index + 1; i < str.Length; i++)
@@ -207,7 +230,7 @@ public readonly struct TimestampNode : INode
         }
         if (i == index + 1)
             throw new Exception($"Empty term '{str[index]}'.");
-        ulong value = ulong.Parse(str.Substring(index + 1, i - (index + 1)));
+        BigInteger value = BigInteger.Parse(str.Substring(index + 1, i - (index + 1)));
         index = i - 1;
         return value;
     }

@@ -9,6 +9,9 @@ using Rusty.Serialization.Converters;
 using Rusty.Serialization.Nodes;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Numerics;
+using System.Text;
 
 namespace Rusty.Serialization;
 
@@ -145,6 +148,10 @@ public class Context
         Add<uint, UintConverter>("u32");
         Add<ulong, UlongConverter>("u64");
 
+        Aliasses.Add(typeof(Enum), "enum");
+
+        Add<BigInteger, BigIntegerConverter>("ibig");
+
         // Real types.
         Add<float, FloatConverter>("f32");
         Add<double, DoubleConverter>("f64");
@@ -155,21 +162,33 @@ public class Context
 
         // String types.
         Add<string, StringConverter>("str");
+
+        Add<StringBuilder, StringBuilderConverter>("sb");
+        Add<Uri, UriConverter>("uri");
+
 #if GODOT_CONTEXT
         Add<Godot.StringName, StringNameConverter>("GDsname");
         Add<Godot.NodePath, NodePathConverter>("GDnpath");
 #endif
 
         // Time types.
+        Add<TimeSpan, TimeSpanConverter>("ts");
         Add<DateTime, DateTimeConverter>("dt");
 
         // Binary types.
         Add<byte[], ByteArrayConverter>("u8[]");
+        Add<Guid, GuidConverter>("guid");
 
         // Color types.
-        Add<System.Drawing.Color, ColorConverter>("col");
+        Add<Color, Converters.ColorConverter>("col");
+
 #if GODOT_CONTEXT
         Add<Godot.Color, Converters.Gd.ColorConverter>("GDcol");
+#endif
+
+#if UNITY_CONTEXT
+        Add<UnityEngine.Color, Converters.Unity.ColorConverter>("UNcol");
+        Add<UnityEngine.Color32, Converters.Unity.ColorConverter>("UNcol32");
 #endif
 
         // List types.
@@ -178,6 +197,22 @@ public class Context
         Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
         Add(typeof(Stack<>), typeof(StackConverter<>), "stck");
         Add(typeof(Queue<>), typeof(QueueConverter<>), "queu");
+
+        Add(typeof(Point), typeof(Converters.PointConverter), "p2i");
+        Add(typeof(PointF), typeof(PointFConverter), "p2f");
+        Add(typeof(Size), typeof(Converters.SizeConverter), "s2i");
+        Add(typeof(SizeF), typeof(SizeFConverter), "s2f");
+        Add(typeof(Rectangle), typeof(Converters.RectangleConverter), "r2i");
+        Add(typeof(RectangleF), typeof(RectangleFConverter), "r2f");
+
+        Add(typeof(Vector2), typeof(Vector2Converter), "v2f");
+        Add(typeof(Vector3), typeof(Vector3Converter), "v3f");
+        Add(typeof(Vector4), typeof(Vector4Converter), "v4f");
+        Add(typeof(Quaternion), typeof(QuaternionConverter), "quat");
+        Add(typeof(Plane), typeof(PlaneConverter), "pln");
+        Add(typeof(Matrix3x2), typeof(Matrix3x2), "m3x2");
+        Add(typeof(Matrix4x4), typeof(Matrix4x4), "m4x4");
+
 #if GODOT_CONTEXT
         Add(typeof(Godot.Collections.Array), typeof(Converters.Gd.ArrayConverter), "GDarr");
         Add(typeof(Godot.Collections.Array<>), typeof(Converters.Gd.ArrayConverter<>), "GDarrT");
@@ -201,14 +236,15 @@ public class Context
         // Dictionary types.
         Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
         Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
+
 #if GODOT_CONTEXT
         Add(typeof(Godot.Collections.Dictionary), typeof(Converters.Gd.DictionaryConverter), "GDdict");
         Add(typeof(Godot.Collections.Dictionary<,>), typeof(Converters.Gd.DictionaryConverter<,>), "GDdictT");
 #endif
 
-        // Generic types.
+        // Object types.
         Aliasses.Add(typeof(object), "obj");
-        Aliasses.Add(typeof(Enum), "enum");
+
 #if GODOT_CONTEXT
         Add(typeof(Godot.Variant), typeof(Converters.Gd.VariantConverter), "GDvar");
         Add(typeof(Godot.Resource), typeof(Converters.Gd.ResourceConverter), "GDres");
