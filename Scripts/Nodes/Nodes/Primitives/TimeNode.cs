@@ -5,9 +5,9 @@ using System.Text;
 namespace Rusty.Serialization.Nodes;
 
 /// <summary>
-/// A datetime serializer node.
+/// A time serializer node.
 /// </summary>
-public readonly struct TimestampNode : INode
+public readonly struct TimeNode : INode
 {
     /// <summary>
     /// An internal representation of a date-time-timezone tuple.
@@ -67,7 +67,7 @@ public readonly struct TimestampNode : INode
     public readonly Timestamp Value => value;
 
     /* Constructors. */
-    public TimestampNode(Timestamp value)
+    public TimeNode(Timestamp value)
     {
         this.value = value;
     }
@@ -108,7 +108,7 @@ public readonly struct TimestampNode : INode
         return serialized;
     }
 
-    public static TimestampNode Parse(string text)
+    public static TimeNode Parse(string text)
     {
         // Remove whitespaces.
         string trimmed = text?.Trim();

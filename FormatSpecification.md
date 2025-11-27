@@ -76,8 +76,8 @@ Colors literals must start with a `#` hex sign, followed by the hexadecimal repr
 - `#RRGGBB`: full notation without alpha. The alpha is assumed to be `FF`.
 - `#RRGGBBAA`: full notation with alpha.
 
-#### Timestamps
-Timestamp literals contain time data in the format `Y#M#D#h#m#s#f#`, where the characters between the letters should only consist of only digits. Optionally, the first character may be a `-` minus sign for negative timestamps (this applies to the *entire* timestamp).
+#### Time
+Time literals contain time data in the format `Y#M#D#h#m#s#f#`, where the characters between the letters should only consist of only digits. Optionally, the first character may be a `-` minus sign for negative times (this applies to the *entire* time literal).
 
 Each part represents a different unit:
 - `Y`: a number of years.

@@ -121,16 +121,16 @@ namespace Rusty.Serialization.Testing
             }
         }
 
-        public static void TestTimestamp(string str, Result<TimestampNode.Timestamp> expected)
+        public static void TestTimestamp(string str, Result<TimeNode.Timestamp> expected)
         {
             try
             {
-                var node = TimestampNode.Parse(str);
-                Report(str, new(node.Value), expected, nameof(TimestampNode), null);
+                var node = TimeNode.Parse(str);
+                Report(str, new(node.Value), expected, nameof(TimeNode), null);
             }
             catch (Exception ex)
             {
-                Report(str, Throw, expected, nameof(TimestampNode), ex);
+                Report(str, Throw, expected, nameof(TimeNode), ex);
             }
         }
 

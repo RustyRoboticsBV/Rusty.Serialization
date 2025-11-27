@@ -126,7 +126,7 @@ internal static class ParseUtility
             || text.StartsWith("s") || text.StartsWith("-s")
             || text.StartsWith("f") || text.StartsWith("-f"))
         {
-            return TimestampNode.Parse(text);
+            return TimeNode.Parse(text);
         }
         if (text.Contains('.'))
             return RealNode.Parse(text);

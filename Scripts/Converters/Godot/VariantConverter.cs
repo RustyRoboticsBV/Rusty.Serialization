@@ -121,7 +121,7 @@ public sealed class VariantConverter : ValueConverter<Variant, INode>
                     color.G * 255f,
                     color.B * 255f,
                     color.A * 255f));
-            case TimestampNode time:
+            case TimeNode time:
                 return Variant.From(time.Value.ToString());
             case BinaryNode binary:
                 return Variant.From(binary.Value);
