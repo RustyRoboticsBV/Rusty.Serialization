@@ -211,6 +211,7 @@ public class Context
         Aliasses.Add(typeof(Enum), "enum");
 #if GODOT_CONTEXT
         Add(typeof(Godot.Variant), typeof(Converters.Gd.VariantConverter), "GDvar");
+        Add(typeof(Godot.Resource), typeof(Converters.Gd.ResourceConverter), "GDres");
 #endif
     }
 }
