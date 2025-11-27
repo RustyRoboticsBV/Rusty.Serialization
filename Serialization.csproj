@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Scripts\Converters\Collections\" />
     <Folder Include="Scripts\Core\Converters\" />
   </ItemGroup>
   
