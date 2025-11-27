@@ -100,7 +100,7 @@ namespace Rusty.Serialization.Nodes
         {
             if (text == null)
                 throw new ArgumentException("Cannot parse null.");
-            if (text.StartsWith("#"))
+            if (text.StartsWith('#'))
                 return ColorNode.Parse(text);
             if (text.StartsWith('\'') && text.EndsWith('\''))
                 return CharNode.Parse(text);
@@ -118,13 +118,13 @@ namespace Rusty.Serialization.Nodes
                 return BoolNode.Parse(text);
             if (text.ToLower() == "null")
                 return NullNode.Parse(text);
-            if (text.StartsWith("Y") || text.StartsWith("-Y")
-                || text.StartsWith("M") || text.StartsWith("-M")
-                || text.StartsWith("D") || text.StartsWith("-D")
-                || text.StartsWith("h") || text.StartsWith("-h")
-                || text.StartsWith("m") || text.StartsWith("-m")
-                || text.StartsWith("s") || text.StartsWith("-s")
-                || text.StartsWith("f") || text.StartsWith("-f"))
+            if (text.StartsWith('Y') || text.StartsWith("-Y")
+                || text.StartsWith('M') || text.StartsWith("-M")
+                || text.StartsWith('D') || text.StartsWith("-D")
+                || text.StartsWith('h') || text.StartsWith("-h")
+                || text.StartsWith('m') || text.StartsWith("-m")
+                || text.StartsWith('s') || text.StartsWith("-s")
+                || text.StartsWith('f') || text.StartsWith("-f"))
             {
                 return TimeNode.Parse(text);
             }
