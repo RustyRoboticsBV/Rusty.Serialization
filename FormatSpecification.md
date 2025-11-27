@@ -20,9 +20,9 @@ Two categories of values are supported: primitives and collections. Additionally
 Exactly one top-level value must be present in any string of serialized CSCD. This value may be of any type (including both primitives and collections). Optionally, the top-level value may be annotated with a type label.
 
 ### 2.1. Type Labels
-Type labels can placed before any value (both primitives and collections, including collection elements and null literals). They are written as a type name between `()` parentheses. The format has no knowledge about what a type name actually *means* - the labels merely act as hints for a deserializer about what kind of object was serialized.
+Type labels can optionally placed before any value, and are written as a type name between `()` parentheses. Type labels act as hints for deserializers, telling them what kind of object was originally serialized. The format has no knowledge about what a type name actually *means*.
 
-Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters (whitespace characters between the outer parentheses and the name itself are allowed, but have no meaning). They are case-sensitive. Type labels may not be followed by another type label - they must be followed by a value of some kind (either a collection or a primitive, including list elements, dictionary element keys, dictionary element values, and object member values).
+Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters (whitespace characters between the outer parentheses and the name itself are allowed, but have no meaning). They are case-sensitive. Type labels may not be followed by another type label - they must be followed by a value of some kind. They may be used inside collections.
 
 Serializers are encouraged to only generate type labels in situations where it would otherwise be ambiguous what kind of type was serialized.
 
@@ -67,7 +67,7 @@ Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\[21ff]'`.
 #### Strings
 Strings must be enclosed in `"` double-quotes. Empty strings are allowed. The same character set is used as for character literals. The same special character rules apply as well, except that using unescaped double-quotes and backslashes is NOT allowed -  you MUST use `\"` and `\\` to represent them.
 
-Example: `"This is a \"string\"!"`, `¡No habló español!`, `\[21ff]\tarrow`, `C:\\path\\to\\file`.
+Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\[21ff]\tarrow"`, `"C:\\path\\to\\file"`.
 
 #### Colors
 Colors literals must start with a `#` hex sign, followed by the hexadecimal representation of the color. Four conventions are available:
@@ -87,6 +87,7 @@ Each part represents a different unit:
 - `m`: a number of minutes.
 - `s`: a number of seconds.
 - `f`: a number of milliseconds.
+
 These prefixes are case-sensitive.
 
 Any positive integer number is allowed for each term, negative numbers are not. Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms can come in any order. Empty terms are not allowed (i.e. `YMD200`), and a term cannot appear more than once (i.e. `Y2Y2`).
