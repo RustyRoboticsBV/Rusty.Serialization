@@ -131,7 +131,7 @@ public class Context
     private void AddBuiltInTypes()
     {
         // Add built-in types.
-        Aliasses.Add(typeof(Object), "obj");
+        Aliasses.Add(typeof(object), "obj");
         Aliasses.Add(typeof(Enum), "enum");
 
         Add<bool, BoolConverter>("bl");
@@ -152,6 +152,10 @@ public class Context
         Add<char, CharConverter>("chr");
 
         Add<string, StringConverter>("str");
+#if GODOT_CONTEXT
+        Add<Godot.StringName, StringNameConverter>("GDsname");
+        Add<Godot.NodePath, NodePathConverter>("GDnpath");
+#endif
 
         Add<DateTime, DateTimeConverter>("dt");
 
@@ -170,6 +174,21 @@ public class Context
 #if GODOT_CONTEXT
         Add(typeof(Godot.Collections.Array), typeof(Converters.Gd.ArrayConverter), "GDarr");
         Add(typeof(Godot.Collections.Array<>), typeof(Converters.Gd.ArrayConverter<>), "GDarrT");
+        Add<Godot.Vector2, Converters.Gd.Vector2Converter>("GDv2f");
+        Add<Godot.Vector3, Converters.Gd.Vector3Converter>("GDv3f");
+        Add<Godot.Vector4, Converters.Gd.Vector4Converter>("GDv4f");
+        Add<Godot.Vector2I, Converters.Gd.Vector2IConverter>("GDv2i");
+        Add<Godot.Vector3I, Converters.Gd.Vector3IConverter>("GDv3i");
+        Add<Godot.Vector4I, Converters.Gd.Vector4IConverter>("GDv4i");
+        Add<Godot.Quaternion, Converters.Gd.QuaternionConverter>("GDquat");
+        Add<Godot.Plane, Converters.Gd.PlaneConverter>("GDpln");
+        Add<Godot.Rect2, Converters.Gd.Rect2Converter>("GDr2f");
+        Add<Godot.Rect2I, Converters.Gd.Rect2IConverter>("GDr2i");
+        Add<Godot.Aabb, Converters.Gd.AabbConverter>("GDaabb");
+        Add<Godot.Transform2D, Converters.Gd.Transform2DConverter>("GDm2x2");
+        Add<Godot.Basis, Converters.Gd.BasisConverter>("GDm3x3");
+        Add<Godot.Transform3D, Converters.Gd.Transform3DConverter>("GDm3x4");
+        Add<Godot.Projection, Converters.Gd.ProjectionConverter>("GDm4x4");
 #endif
 
         Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");

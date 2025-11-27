@@ -79,8 +79,8 @@ public sealed class Test<T>
             public V second = default;
         }
     }
-    public Ouchie.Disaster<int, char[]> ouhie1 = new();
-    public Ouchie.Disaster<string, byte[]> ouhie2 = new();
+    public Ouchie.Disaster<int, char[]> disaster1 = new();
+    public Ouchie.Disaster<string, byte[]> disaster2 = new();
 
     public struct Struct
     {
