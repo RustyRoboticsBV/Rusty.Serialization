@@ -131,11 +131,11 @@ public class Context
     private void AddBuiltInTypes()
     {
         // Add built-in types.
-        Aliasses.Add(typeof(object), "obj");
-        Aliasses.Add(typeof(Enum), "enum");
 
+        // Bool types.
         Add<bool, BoolConverter>("bl");
 
+        // Int types.
         Add<sbyte, SbyteConverter>("i8");
         Add<short, ShortConverter>("i16");
         Add<int, IntConverter>("i32");
@@ -145,27 +145,34 @@ public class Context
         Add<uint, UintConverter>("u32");
         Add<ulong, UlongConverter>("u64");
 
+        // Real types.
         Add<float, FloatConverter>("f32");
         Add<double, DoubleConverter>("f64");
         Add<decimal, DecimalConverter>("dec");
 
+        // Char types.
         Add<char, CharConverter>("chr");
 
+        // String types.
         Add<string, StringConverter>("str");
 #if GODOT_CONTEXT
         Add<Godot.StringName, StringNameConverter>("GDsname");
         Add<Godot.NodePath, NodePathConverter>("GDnpath");
 #endif
 
+        // Time types.
         Add<DateTime, DateTimeConverter>("dt");
 
+        // Binary types.
         Add<byte[], ByteArrayConverter>("u8[]");
 
+        // Color types.
         Add<System.Drawing.Color, ColorConverter>("col");
 #if GODOT_CONTEXT
         Add<Godot.Color, Converters.Gd.ColorConverter>("GDcol");
 #endif
 
+        // List types.
         Add(typeof(List<>), typeof(ListConverter<>), "list");
         Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "lnls");
         Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
@@ -191,11 +198,19 @@ public class Context
         Add<Godot.Projection, Converters.Gd.ProjectionConverter>("GDm4x4");
 #endif
 
+        // Dictionary types.
         Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
         Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
 #if GODOT_CONTEXT
         Add(typeof(Godot.Collections.Dictionary), typeof(Converters.Gd.DictionaryConverter), "GDdict");
         Add(typeof(Godot.Collections.Dictionary<,>), typeof(Converters.Gd.DictionaryConverter<,>), "GDdictT");
+#endif
+
+        // Generic types.
+        Aliasses.Add(typeof(object), "obj");
+        Aliasses.Add(typeof(Enum), "enum");
+#if GODOT_CONTEXT
+        Add(typeof(Godot.Variant), typeof(Converters.Gd.VariantConverter), "GDvar");
 #endif
     }
 }

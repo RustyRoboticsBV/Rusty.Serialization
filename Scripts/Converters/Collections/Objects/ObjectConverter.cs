@@ -18,7 +18,7 @@ public abstract class ObjectConverter<T> : IConverter<T>
         MemberInfo[] members = GetPublicMembers(obj);
 
         // Collect identifiers and convert values to member nodes.
-        var memberPairs = new KeyValuePair<Identifier, INode>[members.Length];
+        var memberPairs = new KeyValuePair<string, INode>[members.Length];
         for (int i = 0; i < members.Length; i++)
         {
             MemberInfo member = members[i];
@@ -39,13 +39,13 @@ public abstract class ObjectConverter<T> : IConverter<T>
             }
 
             // Get member identifier.
-            Identifier memberIdentifier = member.Name;
+            string memberstring = member.Name;
 
             // Create member node.
             INode memberNode = ConvertMember(memberType, memberValue, context);
 
             // Store finished identifier-node pair.
-            memberPairs[i] = new(memberIdentifier, memberNode);
+            memberPairs[i] = new(memberstring, memberNode);
         }
 
         // Return finished object node.
@@ -70,7 +70,7 @@ public abstract class ObjectConverter<T> : IConverter<T>
             {
                 MemberInfo member = members[i];
 
-                Identifier memberIdentifier = objNode.Members[i].Key;
+                string memberIdentifier = objNode.Members[i].Key;
 
                 INode memberNode = objNode.Members[i].Value;
                 if (memberIdentifier != member.Name)

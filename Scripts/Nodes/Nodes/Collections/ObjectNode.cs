@@ -10,13 +10,13 @@ namespace Rusty.Serialization.Nodes;
 public readonly struct ObjectNode : INode
 {
     /* Fields. */
-    private readonly KeyValuePair<Identifier, INode>[] members;
+    private readonly KeyValuePair<string, INode>[] members;
 
     /* Public properties. */
-    public readonly ReadOnlySpan<KeyValuePair<Identifier, INode>> Members => members;
+    public readonly ReadOnlySpan<KeyValuePair<string, INode>> Members => members;
 
     /* Constructors. */
-    public ObjectNode(KeyValuePair<Identifier, INode>[] members)
+    public ObjectNode(KeyValuePair<string, INode>[] members)
     {
         this.members = members ?? [];
     }
@@ -72,21 +72,37 @@ public readonly struct ObjectNode : INode
                 return new ObjectNode(null);
 
             // Handle key:value pairs.
-            var pairs = new KeyValuePair<Identifier, INode>[terms.Count];
+            var pairs = new KeyValuePair<string, INode>[terms.Count];
             for (int i = 0; i < terms.Count; i++)
             {
                 // Split into key and value.
                 List<string> pairStrs = ParseUtility.Split(terms[i], ':');
                 if (pairStrs.Count != 2)
-                    throw new Exception($"Malformed key-name pair.");
+                    throw new Exception($"Malformed identifier-name pair.");
 
-                // Get keys and values.
-                Identifier key = pairStrs[0].Trim();
+                // Get identifier.
+                string identifier = pairStrs[0].Trim();
+                for (int j = 0; j < identifier.Length; j++)
+                {
+                    char c = identifier[i];
+                    if (j == 0)
+                    {
+                        if (!(c <= '~' && (c == '_' || char.IsLetter(c))))
+                            throw new ArgumentException($"Illegal identifier '{identifier}' (must start with letter or underscore).");
+                    }
+                    else
+                    {
+                        if (!(c <= '~' && (c == '_' || char.IsLetter(c) || char.IsDigit(c))))
+                            throw new ArgumentException($"Illegal identifier '{identifier}' (must only contain letters, digits or underscores).");
+                    }
+                }
+
+                // Get value.
                 string valueStr = pairStrs[1].Trim();
                 INode valueNode = ParseUtility.ParseValue(valueStr);
 
                 // Add key-value pair.
-                pairs[i] = new KeyValuePair<Identifier, INode>(key, valueNode);
+                pairs[i] = new KeyValuePair<string, INode>(identifier, valueNode);
             }
 
             return new ObjectNode(pairs);
