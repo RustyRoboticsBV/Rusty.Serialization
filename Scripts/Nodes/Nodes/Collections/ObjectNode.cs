@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-
+using System.Text;
+    
 namespace Rusty.Serialization.Nodes;
 
 /// <summary>
@@ -42,11 +42,16 @@ public readonly struct ObjectNode : INode
             return "<>";
 
         // Add members.
-        string body = string.Join(",",
-            members.Select(pair =>
-                pair.Key + ":" + pair.Value.Serialize()
-            )
-        );
+        StringBuilder body = new();
+        for (int i = 0; i < members.Length; i++)
+        {
+            if (i > 0)
+                body.Append(',');
+            ValidateIdentifier(members[i].Key);
+            body.Append(members[i].Key);
+            body.Append(':');
+            body.Append(members[i].Value.Serialize());
+        }
 
         // Surround with pointy brackets.
         return $"<{body}>";
@@ -82,20 +87,7 @@ public readonly struct ObjectNode : INode
 
                 // Get identifier.
                 string identifier = pairStrs[0].Trim();
-                for (int j = 0; j < identifier.Length; j++)
-                {
-                    char c = identifier[i];
-                    if (j == 0)
-                    {
-                        if (!(c <= '~' && (c == '_' || char.IsLetter(c))))
-                            throw new ArgumentException($"Illegal identifier '{identifier}' (must start with letter or underscore).");
-                    }
-                    else
-                    {
-                        if (!(c <= '~' && (c == '_' || char.IsLetter(c) || char.IsDigit(c))))
-                            throw new ArgumentException($"Illegal identifier '{identifier}' (must only contain letters, digits or underscores).");
-                    }
-                }
+                ValidateIdentifier(identifier);
 
                 // Get value.
                 string valueStr = pairStrs[1].Trim();
@@ -110,6 +102,22 @@ public readonly struct ObjectNode : INode
         catch (Exception ex)
         {
             throw new ArgumentException($"Could not parse string '{text}' as an object:\n\n{ex.Message}");
+        }
+    }
+
+    /* Private methods. */
+    private static void ValidateIdentifier(string identifier)
+    {
+        for (int i = 0; i < identifier.Length; i++)
+        {
+            char c = identifier[i];
+            if (i == 0)
+            {
+                if (!(c <= '~' && (c == '_' || char.IsLetter(c))))
+                    throw new ArgumentException($"Illegal identifier '{identifier}' (must start with letter or underscore).");
+            }
+            else if (!(c <= '~' && (c == '_' || char.IsLetter(c) || char.IsDigit(c))))
+                throw new ArgumentException($"Illegal identifier '{identifier}' (must only contain letters, digits or underscores).");
         }
     }
 }
