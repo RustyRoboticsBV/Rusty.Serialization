@@ -1,4 +1,4 @@
-﻿#if DEBUG
+﻿#if RUSTY_DEBUG
 using System;
 using Rusty.Serialization.Nodes;
 

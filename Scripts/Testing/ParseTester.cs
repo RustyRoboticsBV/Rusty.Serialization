@@ -1,6 +1,6 @@
-﻿#if DEBUG
-using Rusty.Serialization.Nodes;
+﻿#if RUSTY_DEBUG
 using System;
+using Rusty.Serialization.Nodes;
 
 namespace Rusty.Serialization.Testing
 {

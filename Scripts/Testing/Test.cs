@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if RUSTY_DEBUG
+using System.Collections.Generic;
 
 namespace Rusty.Serialization.Testing;
 
@@ -91,3 +92,4 @@ public sealed class Test<T>
     // Generics.
     public T generic = default;
 }
+#endif
