@@ -1,4 +1,4 @@
-namespace Rusty.Serialization.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// An utility for checking if a character is inside the allowed character set.

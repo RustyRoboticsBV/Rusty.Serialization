@@ -1,6 +1,6 @@
 using System;
 
-namespace Rusty.Serialization.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A null serializer node.

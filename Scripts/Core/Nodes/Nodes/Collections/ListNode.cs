@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rusty.Serialization.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A list serializer node.

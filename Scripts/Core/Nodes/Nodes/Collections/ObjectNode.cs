@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rusty.Serialization.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// An object serializer node.

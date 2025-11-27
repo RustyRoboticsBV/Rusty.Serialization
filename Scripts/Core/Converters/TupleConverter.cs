@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Rusty.Serialization.Nodes;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {

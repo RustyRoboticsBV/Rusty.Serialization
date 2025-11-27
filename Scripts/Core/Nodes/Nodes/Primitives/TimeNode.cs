@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using System.Text;
 
-namespace Rusty.Serialization.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A time serializer node.

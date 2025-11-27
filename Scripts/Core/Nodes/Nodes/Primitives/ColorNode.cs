@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Rusty.Serialization.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A color serializer node.

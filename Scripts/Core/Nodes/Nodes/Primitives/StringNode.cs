@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Rusty.Serialization.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A string serializer node.

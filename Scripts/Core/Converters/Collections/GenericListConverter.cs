@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Rusty.Serialization.Nodes;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
