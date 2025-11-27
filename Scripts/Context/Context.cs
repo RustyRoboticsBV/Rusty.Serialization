@@ -157,6 +157,8 @@ public class Context
         Add<double, DoubleConverter>("f64");
         Add<decimal, DecimalConverter>("dec");
 
+        Add<Half, HalfConverter>("i16");
+
         // Char types.
         Add<char, CharConverter>("chr");
 

@@ -18,7 +18,7 @@ The following built-in C# types can be serialized and deserialized:
 
 ### System Library
 The following `System` types have explicit support:
-- `System`: `DateTime`, `TimeSpan`, `Guid`, `Uri`.
+- `System`: `Half`, `DateTime`, `TimeSpan`, `Guid`, `Uri`.
 - `System.Collections.Generic`: `List<T>`, `LinkedList<T>`, `Stack<T>`, `Queue<T>`, `HashSet<T>`, `Dictionary<T,U>`, `KeyValuePair<T,U>`.
 - `System.Numerics`: `BigInteger`, `Vector2`, `Vector3`, `Vector4`, `Quaternion`, `Plane`, `Matrix3x2`, `Matrix4x4`.
 - `System.Drawing`: `Color`, `Point`, `PointF`, `Rectangle`, `RectangleF`, `Size`, `SizeF`.
