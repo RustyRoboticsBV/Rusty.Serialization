@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using Rusty.Serialization.Core.Converters;
 
 namespace Rusty.Serialization.Converters
 {

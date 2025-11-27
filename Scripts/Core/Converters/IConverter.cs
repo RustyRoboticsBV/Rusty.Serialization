@@ -1,7 +1,7 @@
 using System;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.Converters
+namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
     /// An object that can convert between objects of some type and serializer nodes.

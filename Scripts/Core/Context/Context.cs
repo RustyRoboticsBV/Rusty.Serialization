@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Text;
+using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.Converters;
 using Rusty.Serialization.Nodes;
 

@@ -1,6 +1,7 @@
 ﻿#if GODOT
 using Godot;
 using Godot.Collections;
+using Rusty.Serialization.Core.Converters;
 
 namespace Rusty.Serialization.Converters.Gd
 {

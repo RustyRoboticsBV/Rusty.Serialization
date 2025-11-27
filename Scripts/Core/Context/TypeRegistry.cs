@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rusty.Serialization.Converters;
+using Rusty.Serialization.Core.Converters;
 
 namespace Rusty.Serialization
 {
