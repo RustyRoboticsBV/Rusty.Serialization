@@ -17,8 +17,10 @@ Whitespace is allowed between tokens for formatting reasons, but generally have 
 ## 2. Data Types
 Two categories of values are supported: primitives and collections. Additionally, values can be annotated with type labels.
 
+Exactly one top-level value must be present in any string of serialized CSCD. This value may be of any type (including primitives and collections). Optionally, the top-level value may be annotated with a type label.
+
 ### 2.1. Type Labels
-Type labels can placed before any value (both primitives and collections, including collections elements and null literals). They are written as a type name between `()` parentheses. The format has no knowledge about what a type name actually *means* - the labels merely act as hints for a deserializer about what kind of object was serialized.
+Type labels can placed before any value (both primitives and collections, including collection elements and null literals). They are written as a type name between `()` parentheses. The format has no knowledge about what a type name actually *means* - the labels merely act as hints for a deserializer about what kind of object was serialized.
 
 Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters (whitespace characters between the outer parentheses and the name itself are allowed, but have no meaning). They are case-sensitive. Type labels may not be followed by another type label - they must be followed by a value of some kind (either a collection or a primitive, including list elements, dictionary element keys, dictionary element values, and object member values).
 
@@ -100,7 +102,7 @@ Note that timestamp literals do not have to represent valid dates or times of da
 Binary data literals store arbitrary data in hexadecimal format. They must start with `0x`, followed by the hexadecimal representation of the data, for example: `0x0004BAF890`. The literal `0x` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.
 
 #### Null
-Null values are encoded with `null` literals. Like booleans, null values must be lower-case. Null values never need type labels, but are allowed to be annotated with them.
+Null values are encoded with `null` literals. Like booleans, null values must be lower-case. Null values can be annotated with type labels like any other value.
 
 ### 2.3. Collections
 
