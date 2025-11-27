@@ -17,7 +17,7 @@ Whitespace is allowed between tokens for formatting reasons, but generally have 
 ## 2. Data Types
 Two categories of values are supported: primitives and collections. Additionally, values can be annotated with type labels.
 
-Exactly one top-level value must be present in any string of serialized CSCD. This value may be of any type (including primitives and collections). Optionally, the top-level value may be annotated with a type label.
+Exactly one top-level value must be present in any string of serialized CSCD. This value may be of any type (including both primitives and collections). Optionally, the top-level value may be annotated with a type label.
 
 ### 2.1. Type Labels
 Type labels can placed before any value (both primitives and collections, including collection elements and null literals). They are written as a type name between `()` parentheses. The format has no knowledge about what a type name actually *means* - the labels merely act as hints for a deserializer about what kind of object was serialized.
