@@ -20,19 +20,19 @@ namespace Rusty.Serialization;
 /// </summary>
 public class Context
 {
-    /* Internal properties. */
+    /* Private properties. */
     /// <summary>
     /// The registry of known converter types.
     /// </summary>
-    internal TypeRegistry Types { get; } = new();
+    private TypeRegistry Types { get; } = new();
     /// <summary>
     /// The registry of known converter instances.
     /// </summary>
-    internal InstanceRegistry Instances { get; } = new();
+    private InstanceRegistry Instances { get; } = new();
     /// <summary>
     /// The registry of known type aliasses.
     /// </summary>
-    internal AliasRegistry Aliasses { get; } = new();
+    private AliasRegistry Aliasses { get; } = new();
 
     /* Constructors. */
     public Context()

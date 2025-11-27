@@ -10,6 +10,10 @@
       <HintPath>..\..\Godot_v4.5-stable_mono_win64\GodotSharp\Api\Release\GodotSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Scripts\Core\Converters\" />
+  </ItemGroup>
   
   <PropertyGroup>
     <DefineConstants>RUSTY_DEBUG,GODOT</DefineConstants>
