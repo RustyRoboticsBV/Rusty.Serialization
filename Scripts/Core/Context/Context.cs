@@ -167,10 +167,11 @@ namespace Rusty.Serialization
 
             Add<StringBuilder, StringBuilderConverter>("sb");
             Add<Uri, UriConverter>("uri");
+            Add<Version, VersionConverter>("ver");
 
 #if GODOT_CONTEXT
-        Add<Godot.StringName, StringNameConverter>("GDsname");
-        Add<Godot.NodePath, NodePathConverter>("GDnpath");
+            Add<Godot.StringName, StringNameConverter>("GDsname");
+            Add<Godot.NodePath, NodePathConverter>("GDnpath");
 #endif
 
             // Time types.
@@ -185,12 +186,12 @@ namespace Rusty.Serialization
             Add<Color, Converters.ColorConverter>("col");
 
 #if GODOT_CONTEXT
-        Add<Godot.Color, Converters.Gd.ColorConverter>("GDcol");
+            Add<Godot.Color, Converters.Gd.ColorConverter>("GDcol");
 #endif
 
 #if UNITY_CONTEXT
-        Add<UnityEngine.Color, Converters.Unity.ColorConverter>("UNcol");
-        Add<UnityEngine.Color32, Converters.Unity.ColorConverter>("UNcol32");
+            Add<UnityEngine.Color, Converters.Unity.ColorConverter>("UNcol");
+            Add<UnityEngine.Color32, Converters.Unity.ColorConverter>("UNcol32");
 #endif
 
             // List types.
@@ -207,6 +208,7 @@ namespace Rusty.Serialization
             Add(typeof(Rectangle), typeof(Converters.RectangleConverter), "r2i");
             Add(typeof(RectangleF), typeof(RectangleFConverter), "r2f");
 
+            Add(typeof(Complex), typeof(ComplexConverter), "cpx");
             Add(typeof(Vector2), typeof(Vector2Converter), "v2f");
             Add(typeof(Vector3), typeof(Vector3Converter), "v3f");
             Add(typeof(Vector4), typeof(Vector4Converter), "v4f");
@@ -216,23 +218,23 @@ namespace Rusty.Serialization
             Add(typeof(Matrix4x4), typeof(Matrix4x4Converter), "m4x4");
 
 #if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Array), typeof(Converters.Gd.ArrayConverter), "GDarr");
-        Add(typeof(Godot.Collections.Array<>), typeof(Converters.Gd.ArrayConverter<>), "GDarrT");
-        Add<Godot.Vector2, Converters.Gd.Vector2Converter>("GDv2f");
-        Add<Godot.Vector3, Converters.Gd.Vector3Converter>("GDv3f");
-        Add<Godot.Vector4, Converters.Gd.Vector4Converter>("GDv4f");
-        Add<Godot.Vector2I, Converters.Gd.Vector2IConverter>("GDv2i");
-        Add<Godot.Vector3I, Converters.Gd.Vector3IConverter>("GDv3i");
-        Add<Godot.Vector4I, Converters.Gd.Vector4IConverter>("GDv4i");
-        Add<Godot.Quaternion, Converters.Gd.QuaternionConverter>("GDquat");
-        Add<Godot.Plane, Converters.Gd.PlaneConverter>("GDpln");
-        Add<Godot.Rect2, Converters.Gd.Rect2Converter>("GDr2f");
-        Add<Godot.Rect2I, Converters.Gd.Rect2IConverter>("GDr2i");
-        Add<Godot.Aabb, Converters.Gd.AabbConverter>("GDaabb");
-        Add<Godot.Transform2D, Converters.Gd.Transform2DConverter>("GDm2x2");
-        Add<Godot.Basis, Converters.Gd.BasisConverter>("GDm3x3");
-        Add<Godot.Transform3D, Converters.Gd.Transform3DConverter>("GDm3x4");
-        Add<Godot.Projection, Converters.Gd.ProjectionConverter>("GDm4x4");
+            Add(typeof(Godot.Collections.Array), typeof(Converters.Gd.ArrayConverter), "GDarr");
+            Add(typeof(Godot.Collections.Array<>), typeof(Converters.Gd.ArrayConverter<>), "GDarrT");
+            Add<Godot.Vector2, Converters.Gd.Vector2Converter>("GDv2f");
+            Add<Godot.Vector3, Converters.Gd.Vector3Converter>("GDv3f");
+            Add<Godot.Vector4, Converters.Gd.Vector4Converter>("GDv4f");
+            Add<Godot.Vector2I, Converters.Gd.Vector2IConverter>("GDv2i");
+            Add<Godot.Vector3I, Converters.Gd.Vector3IConverter>("GDv3i");
+            Add<Godot.Vector4I, Converters.Gd.Vector4IConverter>("GDv4i");
+            Add<Godot.Quaternion, Converters.Gd.QuaternionConverter>("GDquat");
+            Add<Godot.Plane, Converters.Gd.PlaneConverter>("GDpln");
+            Add<Godot.Rect2, Converters.Gd.Rect2Converter>("GDr2f");
+            Add<Godot.Rect2I, Converters.Gd.Rect2IConverter>("GDr2i");
+            Add<Godot.Aabb, Converters.Gd.AabbConverter>("GDaabb");
+            Add<Godot.Transform2D, Converters.Gd.Transform2DConverter>("GDm2x2");
+            Add<Godot.Basis, Converters.Gd.BasisConverter>("GDm3x3");
+            Add<Godot.Transform3D, Converters.Gd.Transform3DConverter>("GDm3x4");
+            Add<Godot.Projection, Converters.Gd.ProjectionConverter>("GDm4x4");
 #endif
 
             // Dictionary types.
@@ -240,16 +242,16 @@ namespace Rusty.Serialization
             Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
 
 #if GODOT_CONTEXT
-        Add(typeof(Godot.Collections.Dictionary), typeof(Converters.Gd.DictionaryConverter), "GDdict");
-        Add(typeof(Godot.Collections.Dictionary<,>), typeof(Converters.Gd.DictionaryConverter<,>), "GDdictT");
+            Add(typeof(Godot.Collections.Dictionary), typeof(Converters.Gd.DictionaryConverter), "GDdict");
+            Add(typeof(Godot.Collections.Dictionary<,>), typeof(Converters.Gd.DictionaryConverter<,>), "GDdictT");
 #endif
 
             // Object types.
             Aliasses.Add(typeof(object), "obj");
 
 #if GODOT_CONTEXT
-        Add(typeof(Godot.Variant), typeof(Converters.Gd.VariantConverter), "GDvar");
-        Add(typeof(Godot.Resource), typeof(Converters.Gd.ResourceConverter), "GDres");
+            Add(typeof(Godot.Variant), typeof(Converters.Gd.VariantConverter), "GDvar");
+            Add(typeof(Godot.Resource), typeof(Converters.Gd.ResourceConverter), "GDres");
 #endif
         }
     }

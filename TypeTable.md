@@ -32,6 +32,7 @@ Below you can view the types that have built-in serialization/deserialization su
 |C#|Serialized|
 |-|-|
 |Half|real|
+|Version|string|
 |Uri|string|
 |Guid|binary|
 |DateTime|time|
@@ -52,6 +53,7 @@ Below you can view the types that have built-in serialization/deserialization su
 |C#|Serialized|
 |-|-|
 |BigInteger|int|
+|Complex|list|
 |Vector2|list|
 |Vector3|list|
 |Vector4|list|
