@@ -157,7 +157,7 @@ public class Context
         Add<double, DoubleConverter>("f64");
         Add<decimal, DecimalConverter>("dec");
 
-        Add<Half, HalfConverter>("i16");
+        Add<Half, HalfConverter>("f16");
 
         // Char types.
         Add<char, CharConverter>("chr");
@@ -203,7 +203,7 @@ public class Context
         Add(typeof(Point), typeof(Converters.PointConverter), "p2i");
         Add(typeof(PointF), typeof(PointFConverter), "p2f");
         Add(typeof(Size), typeof(Converters.SizeConverter), "s2i");
-        Add(typeof(SizeF), typeof(SizeFConverter), "s2f");
+        Add(typeof(SizeF), typeof(Converters.SizeFConverter), "s2f");
         Add(typeof(Rectangle), typeof(Converters.RectangleConverter), "r2i");
         Add(typeof(RectangleF), typeof(RectangleFConverter), "r2f");
 
@@ -212,8 +212,8 @@ public class Context
         Add(typeof(Vector4), typeof(Vector4Converter), "v4f");
         Add(typeof(Quaternion), typeof(QuaternionConverter), "quat");
         Add(typeof(Plane), typeof(PlaneConverter), "pln");
-        Add(typeof(Matrix3x2), typeof(Matrix3x2), "m3x2");
-        Add(typeof(Matrix4x4), typeof(Matrix4x4), "m4x4");
+        Add(typeof(Matrix3x2), typeof(Matrix3x2Converter), "m3x2");
+        Add(typeof(Matrix4x4), typeof(Matrix4x4Converter), "m4x4");
 
 #if GODOT_CONTEXT
         Add(typeof(Godot.Collections.Array), typeof(Converters.Gd.ArrayConverter), "GDarr");

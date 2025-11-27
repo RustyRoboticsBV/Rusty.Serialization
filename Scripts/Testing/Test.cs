@@ -35,6 +35,7 @@ public sealed class Test<T>
     // Lists.
     public int[] array = [1, 2, 3, 4, 5];
     public List<float> list = [1.1f, 2.2f, 3.3f, 4.4f, 5.5f];
+    public (int, char, string) tuple = (1, 'B', "C");
 #if GODOT
     public Godot.Vector2 vector2 = new(1.1f, 2.2f);
     public Godot.Vector3 vector3 = new(1.1f, 2.2f, 3.3f);

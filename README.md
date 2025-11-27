@@ -36,6 +36,8 @@ When used in a Godot context, the following types have explicit support:
 - String types: `StringName` and `NodePath`.
 - `Color`.
 - Vectors types: `Vector2`, `Vector3`, `Vector4`, `Vector2I`, `Vector3I`, `Vector4I`.
+- `Quaternion`
+- `Plane`
 - Rect types: `Rect2`, `Rect2I`, `Aabb`.
 - Matrix types: `Transform2D`, `Basis`, `Transform3D`, `Projection`.
 - Collection types: `Array`, `Array<T>`, `Dictionary`, `Dictionary<T,U>`.

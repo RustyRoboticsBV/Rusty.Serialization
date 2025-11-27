@@ -7,7 +7,7 @@ namespace Rusty.Serialization.Converters;
 /// <summary>
 /// A System.Numerics.SizeF converter.
 /// </summary>
-public sealed class SizeFFConverter : VectorConverter<SizeF, float>
+public sealed class SizeFConverter : VectorConverter<SizeF, float>
 {
     /* Protected properties. */
     protected override int Length => 2;

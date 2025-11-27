@@ -2,7 +2,7 @@
 using System;
 using System.Numerics;
 
-namespace Rusty.Serialization.Converters.Gd;
+namespace Rusty.Serialization.Converters;
 
 /// <summary>
 /// A Godot.Matrix3x2 converter.
