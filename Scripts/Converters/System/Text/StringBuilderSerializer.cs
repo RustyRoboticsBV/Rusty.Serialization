@@ -2,7 +2,7 @@ using System.Text;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Converters;
 
-namespace Rusty.Serialization.Converters
+namespace Rusty.Serialization.Converters.System
 {
     /// <summary>
     /// A System.Text.StringBuilder converter.

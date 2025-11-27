@@ -2,34 +2,35 @@
 using Rusty.Serialization.Core.Converters;
 using System.Drawing;
 
-namespace Rusty.Serialization.Converters;
-
-/// <summary>
-/// A System.Drawing.PointF converter.
-/// </summary>
-public sealed class PointFConverter : VectorConverter<PointF, float>
+namespace Rusty.Serialization.Converters.System
 {
-    /* Protected properties. */
-    protected override int Length => 2;
-
-    /* Protected methods. */
-    protected override float GetAt(ref PointF obj, int index)
+    /// <summary>
+    /// A System.Drawing.PointF converter.
+    /// </summary>
+    public sealed class PointFConverter : VectorConverter<PointF, float>
     {
-        switch (index)
+        /* Protected properties. */
+        protected override int Length => 2;
+
+        /* Protected methods. */
+        protected override float GetAt(ref PointF obj, int index)
         {
-            case 0: return obj.X;
-            case 1: return obj.Y;
-            default: throw new ArgumentException($"Bad index {index}.");
+            switch (index)
+            {
+                case 0: return obj.X;
+                case 1: return obj.Y;
+                default: throw new ArgumentException($"Bad index {index}.");
+            }
         }
-    }
 
-    protected override void SetAt(ref PointF obj, int index, float value)
-    {
-        switch (index)
+        protected override void SetAt(ref PointF obj, int index, float value)
         {
-            case 0: obj.X = value; break;
-            case 1: obj.Y = value; break;
-            default: throw new ArgumentException($"Bad index {index}.");
+            switch (index)
+            {
+                case 0: obj.X = value; break;
+                case 1: obj.Y = value; break;
+                default: throw new ArgumentException($"Bad index {index}.");
+            }
         }
     }
 }

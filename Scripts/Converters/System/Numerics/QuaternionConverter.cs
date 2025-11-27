@@ -2,7 +2,7 @@
 using System.Numerics;
 using Rusty.Serialization.Core.Converters;
 
-namespace Rusty.Serialization.Converters
+namespace Rusty.Serialization.Converters.System
 {
     /// <summary>
     /// A System.Numerics.Quaternion converter.

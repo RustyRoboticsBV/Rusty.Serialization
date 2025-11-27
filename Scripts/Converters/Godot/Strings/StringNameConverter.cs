@@ -3,7 +3,7 @@ using Godot;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Converters;
 
-namespace Rusty.Serialization.Converters
+namespace Rusty.Serialization.Converters.Gd
 {
     /// <summary>
     /// A Godot.StringName converter.

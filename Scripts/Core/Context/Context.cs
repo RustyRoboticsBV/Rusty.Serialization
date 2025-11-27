@@ -13,6 +13,7 @@ using System.Text;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.Converters;
+using Rusty.Serialization.Converters.System;
 
 namespace Rusty.Serialization
 {
@@ -172,8 +173,8 @@ namespace Rusty.Serialization
             Add<Version, VersionConverter>("ver");
 
 #if GODOT_CONTEXT
-            Add<Godot.StringName, StringNameConverter>("GDsname");
-            Add<Godot.NodePath, NodePathConverter>("GDnpath");
+            Add<Godot.StringName, Converters.Gd.StringNameConverter>("GDsname");
+            Add<Godot.NodePath, Converters.Gd.NodePathConverter>("GDnpath");
 #endif
 
             // Time types.
@@ -190,7 +191,7 @@ namespace Rusty.Serialization
             Add<Guid, GuidConverter>("guid");
 
             // Color types.
-            Add<Color, Converters.ColorConverter>("col");
+            Add<Color, Converters.System.ColorConverter>("col");
 
 #if GODOT_CONTEXT
             Add<Godot.Color, Converters.Gd.ColorConverter>("GDcol");
@@ -210,11 +211,11 @@ namespace Rusty.Serialization
             Add(typeof(Stack<>), typeof(StackConverter<>), "stck");
             Add(typeof(Queue<>), typeof(QueueConverter<>), "queu");
 
-            Add(typeof(Point), typeof(Converters.PointConverter), "p2i");
+            Add(typeof(Point), typeof(Converters.System.PointConverter), "p2i");
             Add(typeof(PointF), typeof(PointFConverter), "p2f");
-            Add(typeof(Size), typeof(Converters.SizeConverter), "s2i");
-            Add(typeof(SizeF), typeof(Converters.SizeFConverter), "s2f");
-            Add(typeof(Rectangle), typeof(Converters.RectangleConverter), "r2i");
+            Add(typeof(Size), typeof(Converters.System.SizeConverter), "s2i");
+            Add(typeof(SizeF), typeof(Converters.System.SizeFConverter), "s2f");
+            Add(typeof(Rectangle), typeof(Converters.System.RectangleConverter), "r2i");
             Add(typeof(RectangleF), typeof(RectangleFConverter), "r2f");
 
             Add(typeof(Complex), typeof(ComplexConverter), "cpx");
