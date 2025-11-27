@@ -79,6 +79,10 @@ namespace Rusty.Serialization
             if (targetToConverter.ContainsKey(targetType))
                 return targetToConverter[targetType];
 
+            // Resolve nullable types.
+            if (Nullable.GetUnderlyingType(targetType) is Type underlyingType)
+                return typeof(NullableConverter<>).MakeGenericType(underlyingType);
+
             // Resolve enum types.
             if (targetType.IsEnum)
                 return typeof(EnumConverter<>).MakeGenericType(targetType);
