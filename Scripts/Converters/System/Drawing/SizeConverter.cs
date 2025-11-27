@@ -1,5 +1,4 @@
-﻿#if GODOT
-using System;
+﻿using System;
 using System.Drawing;
 
 namespace Rusty.Serialization.Converters;
@@ -33,5 +32,3 @@ public sealed class SizeConverter : VectorConverter<Size, int>
         }
     }
 }
-
-#endif

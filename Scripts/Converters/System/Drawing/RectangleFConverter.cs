@@ -1,5 +1,4 @@
-﻿#if GODOT
-using System;
+﻿using System;
 using System.Drawing;
 
 namespace Rusty.Serialization.Converters;
@@ -37,4 +36,3 @@ public sealed class RectangleFConverter : VectorConverter<RectangleF, float>
         }
     }
 }
-#endif

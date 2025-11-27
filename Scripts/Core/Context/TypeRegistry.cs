@@ -1,132 +1,133 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Rusty.Serialization.Converters;
 
-namespace Rusty.Serialization;
-
-/// <summary>
-/// An target type to IConverter type registry.
-/// </summary>
-public class TypeRegistry
+namespace Rusty.Serialization
 {
-    /* Private properties. */
-    private Dictionary<Type, Type> targetToConverter = new();
-
-    /* Public methods. */
     /// <summary>
-    /// Register a converter type for some target type.
+    /// An target type to IConverter type registry.
     /// </summary>
-    public void Add<TargetT, ConverterT>()
-        where ConverterT : IConverter
+    public class TypeRegistry
     {
-        Add(typeof(TargetT), typeof(ConverterT));
-    }
+        /* Private properties. */
+        private Dictionary<Type, Type> targetToConverter = new();
 
-    /// <summary>
-    /// Register a converter type for some target type.
-    /// </summary>
-    public void Add(Type target, Type converter)
-    {
-        // Only allow converter types that implement IConverter.
-        if (!converter.GetInterfaces().Any(i => i == typeof(IConverter)))
-            throw new Exception($"Type '{converter}' does not implement interface {nameof(IConverter)}!");
-
-        // Only allow target and converter types with the same number of generic arguments.
-        if (target.GetGenericArguments().Length != converter.GetGenericArguments().Length)
+        /* Public methods. */
+        /// <summary>
+        /// Register a converter type for some target type.
+        /// </summary>
+        public void Add<TargetT, ConverterT>()
+            where ConverterT : IConverter
         {
-            throw new Exception($"Target type '{target}' and converterType type '{converter}' did not have the same number of "
-                + "generic type arguments.");
+            Add(typeof(TargetT), typeof(ConverterT));
         }
 
-        // Add the converter type.
-        targetToConverter[target] = converter;
-    }
-
-    /// <summary>
-    /// Instantiate a registered converter and return it.
-    /// </summary>
-    public IConverter Instantiate(Type targetType)
-    {
-        Type converterType = ResolveConverter(targetType);
-        return Activator.CreateInstance(converterType) as IConverter;
-    }
-
-    /// <summary>
-    /// Instantiate a registered converter and return it.
-    /// </summary>
-    public IConverter<TargetT> Instantiate<TargetT>()
-    {
-        Type type = typeof(TargetT);
-        return Instantiate(type) as IConverter<TargetT>;
-    }
-
-    /* Private methods. */
-    /// <summary>
-    /// Try to resolve a target type and match it with a serializer.
-    /// </summary>
-    private Type ResolveConverter(Type targetType)
-    {
-        // Resolve null.
-        if (targetType == null)
-            return typeof(NullConverter);
-
-        // Cannot resolve open generic types.
-        if (targetType.IsGenericTypeDefinition || targetType.ContainsGenericParameters)
-            throw new Exception($"Cannot resolve open generic type '{targetType}'.");
-
-        // Direct resolve.
-        if (targetToConverter.ContainsKey(targetType))
-            return targetToConverter[targetType];
-
-        // Resolve enum types.
-        if (targetType.IsEnum)
-            return typeof(EnumConverter<>).MakeGenericType(targetType);
-
-        // Resolve array types.
-        if (targetType.IsArray)
+        /// <summary>
+        /// Register a converter type for some target type.
+        /// </summary>
+        public void Add(Type target, Type converter)
         {
-            Type elementType = targetType.GetElementType();
-            return typeof(ArrayConverter<>).MakeGenericType(elementType);
-        }
+            // Only allow converter types that implement IConverter.
+            if (!converter.GetInterfaces().Any(i => i == typeof(IConverter)))
+                throw new Exception($"Type '{converter}' does not implement interface {nameof(IConverter)}!");
 
-        // Resolve tuple types.
-        if (targetType.IsValueType && targetType.IsGenericType &&
-            targetType.FullName!.StartsWith("System.ValueTuple`"))
-        {
-            return typeof(TupleConverter<>).MakeGenericType(targetType);
-        }
-
-        // Resolve closed generic types.
-        if (targetType.IsGenericType)
-        {
-            Type openGenericType = targetType.GetGenericTypeDefinition();
-            if (targetToConverter.ContainsKey(openGenericType))
+            // Only allow target and converter types with the same number of generic arguments.
+            if (target.GetGenericArguments().Length != converter.GetGenericArguments().Length)
             {
-                Type genericConverterType = targetToConverter[openGenericType];
-                Type[] typeArguments = targetType.GetGenericArguments();
-                return genericConverterType.MakeGenericType(typeArguments);
+                throw new Exception($"Target type '{target}' and converterType type '{converter}' did not have the same number of "
+                    + "generic type arguments.");
             }
+
+            // Add the converter type.
+            targetToConverter[target] = converter;
         }
 
-        // Resolve inherited types.
-        Type parentType = targetType.BaseType;
-        while (parentType != null)
+        /// <summary>
+        /// Instantiate a registered converter and return it.
+        /// </summary>
+        public IConverter Instantiate(Type targetType)
         {
-            if (targetToConverter.ContainsKey(parentType))
-                return targetToConverter[parentType];
-            parentType = parentType.BaseType;
+            Type converterType = ResolveConverter(targetType);
+            return Activator.CreateInstance(converterType) as IConverter;
         }
 
-        // Resolve unregistered struct type.
-        if (targetType.IsValueType)
-            return typeof(StructConverter<>).MakeGenericType(targetType);
+        /// <summary>
+        /// Instantiate a registered converter and return it.
+        /// </summary>
+        public IConverter<TargetT> Instantiate<TargetT>()
+        {
+            Type type = typeof(TargetT);
+            return Instantiate(type) as IConverter<TargetT>;
+        }
 
-        // Resolve unregistered class type.
-        if (targetType.IsClass)
-            return typeof(ClassConverter<>).MakeGenericType(targetType);
+        /* Private methods. */
+        /// <summary>
+        /// Try to resolve a target type and match it with a serializer.
+        /// </summary>
+        private Type ResolveConverter(Type targetType)
+        {
+            // Resolve null.
+            if (targetType == null)
+                return typeof(NullConverter);
 
-        // Could not resolve.
-        throw new Exception($"Could not find a converterType for type '{targetType}'.");
+            // Cannot resolve open generic types.
+            if (targetType.IsGenericTypeDefinition || targetType.ContainsGenericParameters)
+                throw new Exception($"Cannot resolve open generic type '{targetType}'.");
+
+            // Direct resolve.
+            if (targetToConverter.ContainsKey(targetType))
+                return targetToConverter[targetType];
+
+            // Resolve enum types.
+            if (targetType.IsEnum)
+                return typeof(EnumConverter<>).MakeGenericType(targetType);
+
+            // Resolve array types.
+            if (targetType.IsArray)
+            {
+                Type elementType = targetType.GetElementType();
+                return typeof(ArrayConverter<>).MakeGenericType(elementType);
+            }
+
+            // Resolve tuple types.
+            if (targetType.IsValueType && targetType.IsGenericType &&
+                targetType.FullName!.StartsWith("System.ValueTuple`"))
+            {
+                return typeof(TupleConverter<>).MakeGenericType(targetType);
+            }
+
+            // Resolve closed generic types.
+            if (targetType.IsGenericType)
+            {
+                Type openGenericType = targetType.GetGenericTypeDefinition();
+                if (targetToConverter.ContainsKey(openGenericType))
+                {
+                    Type genericConverterType = targetToConverter[openGenericType];
+                    Type[] typeArguments = targetType.GetGenericArguments();
+                    return genericConverterType.MakeGenericType(typeArguments);
+                }
+            }
+
+            // Resolve inherited types.
+            Type parentType = targetType.BaseType;
+            while (parentType != null)
+            {
+                if (targetToConverter.ContainsKey(parentType))
+                    return targetToConverter[parentType];
+                parentType = parentType.BaseType;
+            }
+
+            // Resolve unregistered struct type.
+            if (targetType.IsValueType)
+                return typeof(StructConverter<>).MakeGenericType(targetType);
+
+            // Resolve unregistered class type.
+            if (targetType.IsClass)
+                return typeof(ClassConverter<>).MakeGenericType(targetType);
+
+            // Could not resolve.
+            throw new Exception($"Could not find a converterType for type '{targetType}'.");
+        }
     }
 }

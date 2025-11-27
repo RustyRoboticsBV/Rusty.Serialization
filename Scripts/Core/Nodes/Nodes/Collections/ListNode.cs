@@ -1,75 +1,75 @@
-﻿using System;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rusty.Serialization.Nodes;
-
-/// <summary>
-/// A list serializer node.
-/// </summary>
-public readonly struct ListNode : INode
+namespace Rusty.Serialization.Nodes
 {
-    /* Fields. */
-    private readonly INode[] elements;
-
-    /* Public properties. */
-    public readonly ReadOnlySpan<INode> Elements => elements;
-
-    /* Constructors. */
-    public ListNode(INode[] elements)
+    /// <summary>
+    /// A list serializer node.
+    /// </summary>
+    public readonly struct ListNode : INode
     {
-        this.elements = elements;
-    }
+        /* Fields. */
+        private readonly INode[] elements;
 
-    /* Public methods. */
-    public override readonly string ToString()
-    {
-        string str = "list: ";
-        for (int i = 0; i < elements.Length; i++)
+        /* Public properties. */
+        public readonly ReadOnlySpan<INode> Elements => elements;
+
+        /* Constructors. */
+        public ListNode(INode[] elements)
         {
-            str += "\n- " + elements[i].ToString().Replace("\n", "\n  ");
+            this.elements = elements;
         }
-        return str;
-    }
 
-    public readonly string Serialize()
-    {
-        if (elements == null)
-            throw new Exception("Cannot serialize list nodes whose element arrays are null.");
-        return "[" + string.Join(",", elements.Select(e => e.Serialize())) + "]";
-    }
-
-    public static ListNode Deserialize(string text)
-    {
-        // Trim trailing whitespaces.
-        string trimmed = text?.Trim();
-
-        try
+        /* Public methods. */
+        public override readonly string ToString()
         {
-            // Enforce square brackets.
-            if (!trimmed.StartsWith('[') || !trimmed.EndsWith(']'))
-                throw new Exception("Missing square brackets.");
-
-            // Get text between square brackets and trim it.
-            string contents = trimmed.Substring(1, trimmed.Length - 2);
-
-            // Split into terms.
-            List<string> terms = ParseUtility.Split(contents);
-
-            // Create child nodes.
-            INode[] nodes = new INode[terms.Count];
-            for (int i = 0; i < terms.Count; i++)
+            string str = "list: ";
+            for (int i = 0; i < elements.Length; i++)
             {
-                nodes[i] = ParseUtility.ParseValue(terms[i]);
+                str += "\n- " + elements[i].ToString().Replace("\n", "\n  ");
             }
-
-            // Create list node.
-            return new(nodes);
+            return str;
         }
-        catch (Exception ex)
+
+        public readonly string Serialize()
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a elements:\n\n{ex.Message}.");
+            if (elements == null)
+                throw new Exception("Cannot serialize list nodes whose element arrays are null.");
+            return "[" + string.Join(",", elements.Select(e => e.Serialize())) + "]";
+        }
+
+        public static ListNode Deserialize(string text)
+        {
+            // Trim trailing whitespaces.
+            string trimmed = text?.Trim();
+
+            try
+            {
+                // Enforce square brackets.
+                if (!trimmed.StartsWith('[') || !trimmed.EndsWith(']'))
+                    throw new Exception("Missing square brackets.");
+
+                // Get text between square brackets and trim it.
+                string contents = trimmed.Substring(1, trimmed.Length - 2);
+
+                // Split into terms.
+                List<string> terms = ParseUtility.Split(contents);
+
+                // Create child nodes.
+                INode[] nodes = new INode[terms.Count];
+                for (int i = 0; i < terms.Count; i++)
+                {
+                    nodes[i] = ParseUtility.ParseValue(terms[i]);
+                }
+
+                // Create list node.
+                return new(nodes);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Could not parse string '{text}' as a elements:\n\n{ex.Message}.");
+            }
         }
     }
 }

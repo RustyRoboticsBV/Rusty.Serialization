@@ -1,30 +1,31 @@
-﻿using Rusty.Serialization.Nodes;
+using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.Converters;
-
-/// <summary>
-/// A generic class converter.
-/// </summary>
-public sealed class ClassConverter<T> : ObjectConverter<T>
-    where T : class, new()
+namespace Rusty.Serialization.Converters
 {
-    /* Protected methods. */
-    public override INode Convert(T obj, Context context)
+    /// <summary>
+    /// A generic class converter.
+    /// </summary>
+    public sealed class ClassConverter<T> : ObjectConverter<T>
+        where T : class, new()
     {
-        // Handle null.
-        if (obj == null)
-            return new NullNode();
+        /* Protected methods. */
+        public override INode Convert(T obj, Context context)
+        {
+            // Handle null.
+            if (obj == null)
+                return new NullNode();
 
-        // Handle non-null.
-        return base.Convert(obj, context);
-    }
+            // Handle non-null.
+            return base.Convert(obj, context);
+        }
 
-    public override T Deconvert(INode node, Context context)
-    {
-        if (node is NullNode)
-            return null;
+        public override T Deconvert(INode node, Context context)
+        {
+            if (node is NullNode)
+                return null;
 
-        // Handle non-null.
-        return base.Deconvert(node, context);
+            // Handle non-null.
+            return base.Deconvert(node, context);
+        }
     }
 }

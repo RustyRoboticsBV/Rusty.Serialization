@@ -1,56 +1,57 @@
-﻿using System;
+using System;
 
-namespace Rusty.Serialization.Nodes;
-
-/// <summary>
-/// A boolean serializer node.
-/// </summary>
-public readonly struct BoolNode : INode
+namespace Rusty.Serialization.Nodes
 {
-    /* Fields. */
-    private readonly bool value;
-
-    /* Public properties. */
-    public readonly bool Value => value;
-
-    /* Constructors. */
-    public BoolNode(bool value)
+    /// <summary>
+    /// A boolean serializer node.
+    /// </summary>
+    public readonly struct BoolNode : INode
     {
-        this.value = value;
-    }
+        /* Fields. */
+        private readonly bool value;
 
-    /* Public methods. */
-    public override readonly string ToString()
-    {
-        return "bool: " + value;
-    }
+        /* Public properties. */
+        public readonly bool Value => value;
 
-    public readonly string Serialize()
-    {
-        return value ? "true" : "false";
-    }
-
-    public static BoolNode Parse(string text)
-    {
-        // Remove whitespaces.
-        string trimmed = text?.Trim();
-
-        try
+        /* Constructors. */
+        public BoolNode(bool value)
         {
-            // Empty strings are not allowed.
-            if (string.IsNullOrEmpty(trimmed))
-                throw new ArgumentException("Empty string.");
-
-            // Make sure it's either true or false.
-            if (trimmed.Length == 4 && trimmed == "true")
-                return new(true);
-            if (trimmed.Length == 5 && trimmed == "false")
-                return new(false);
-            throw new ArgumentException($"Not a valid boolean.");
+            this.value = value;
         }
-        catch (Exception ex)
+
+        /* Public methods. */
+        public override readonly string ToString()
         {
-            throw new ArgumentException($"Could not parse string '{text}' as a boolean:\n{ex.Message}");
+            return "bool: " + value;
+        }
+
+        public readonly string Serialize()
+        {
+            return value ? "true" : "false";
+        }
+
+        public static BoolNode Parse(string text)
+        {
+            // Remove whitespaces.
+            string trimmed = text?.Trim();
+
+            try
+            {
+                // Empty strings are not allowed.
+                if (string.IsNullOrEmpty(trimmed))
+                    throw new ArgumentException("Empty string.");
+
+                // Make sure it's either true or false.
+                if (trimmed.Length == 4 && trimmed == "true")
+                    return new(true);
+                if (trimmed.Length == 5 && trimmed == "false")
+                    return new(false);
+                throw new ArgumentException($"Not a valid boolean.");
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Could not parse string '{text}' as a boolean:\n{ex.Message}");
+            }
         }
     }
 }

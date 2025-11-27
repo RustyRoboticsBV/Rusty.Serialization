@@ -1,13 +1,14 @@
-﻿using Rusty.Serialization.Nodes;
+using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.Converters;
-
-/// <summary>
-/// A ulong converter.
-/// </summary>
-public sealed class UlongConverter : ValueConverter<ulong, IntNode>
+namespace Rusty.Serialization.Converters
 {
-    /* Protected methods. */
-    protected override IntNode Convert(ulong obj, Context context) => new(obj);
-    protected override ulong Deconvert(IntNode node, Context context) => (ulong)node.Value;
+    /// <summary>
+    /// A ulong converter.
+    /// </summary>
+    public sealed class UlongConverter : ValueConverter<ulong, IntNode>
+    {
+        /* Protected methods. */
+        protected override IntNode Convert(ulong obj, Context context) => new(obj);
+        protected override ulong Deconvert(IntNode node, Context context) => (ulong)node.Value;
+    }
 }

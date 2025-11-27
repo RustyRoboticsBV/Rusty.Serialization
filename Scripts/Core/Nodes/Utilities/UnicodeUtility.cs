@@ -1,39 +1,40 @@
-﻿using System;
+using System;
 using System.Globalization;
 
-namespace Rusty.Serialization.Nodes;
-
-/// <summary>
-/// An utility class for parsing unicode indices in hexadecimal representation.
-/// </summary>
-internal static class UnicodeUtility
+namespace Rusty.Serialization.Nodes
 {
     /// <summary>
-    /// Parse a hexidecimal representation into an unicode character.
+    /// An utility class for parsing unicode indices in hexadecimal representation.
     /// </summary>
-    public static char Parse(string text)
+    internal static class UnicodeUtility
     {
-        if (text == null)
-            throw new ArgumentNullException("Cannot parse null as unicode character");
-        for (int i = 0; i < text.Length; i++)
+        /// <summary>
+        /// Parse a hexidecimal representation into an unicode character.
+        /// </summary>
+        public static char Parse(string text)
         {
-            if (
-                !(text[i] >= 'A' && text[i] <= 'F'
-                || text[i] >= 'a' && text[i] <= 'f'
-                || text[i] >= '0' && text[i] <= '9')
-            )
+            if (text == null)
+                throw new ArgumentNullException("Cannot parse null as unicode character");
+            for (int i = 0; i < text.Length; i++)
             {
-                throw new ArgumentException("Cannot parse unicode character. Not a valid hex number.");
+                if (
+                    !(text[i] >= 'A' && text[i] <= 'F'
+                    || text[i] >= 'a' && text[i] <= 'f'
+                    || text[i] >= '0' && text[i] <= '9')
+                )
+                {
+                    throw new ArgumentException("Cannot parse unicode character. Not a valid hex number.");
+                }
             }
+            return (char)int.Parse(text, NumberStyles.HexNumber);
         }
-        return (char)int.Parse(text, NumberStyles.HexNumber);
-    }
 
-    /// <summary>
-    /// Convert a character to an unicode hexcode.
-    /// </summary>
-    public static string Serialize(char chr)
-    {
-        return ((long)chr).ToString("X");
+        /// <summary>
+        /// Convert a character to an unicode hexcode.
+        /// </summary>
+        public static string Serialize(char chr)
+        {
+            return ((long)chr).ToString("X");
+        }
     }
 }

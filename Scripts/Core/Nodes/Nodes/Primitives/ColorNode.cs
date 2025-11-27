@@ -1,124 +1,125 @@
-﻿using System;
+using System;
 using System.Globalization;
 
-namespace Rusty.Serialization.Nodes;
-
-/// <summary>
-/// A color serializer node.
-/// </summary>
-public struct ColorNode : INode
+namespace Rusty.Serialization.Nodes
 {
-    /* Fields. */
-    private readonly byte r;
-    private readonly byte g;
-    private readonly byte b;
-    private readonly byte a;
-
-    /* Public properties. */
-    public readonly byte R => r;
-    public readonly byte G => g;
-    public readonly byte B => b;
-    public readonly byte A => a;
-
-    /* Constructors. */
-    public ColorNode(byte r, byte g, byte b, byte a)
+    /// <summary>
+    /// A color serializer node.
+    /// </summary>
+    public struct ColorNode : INode
     {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
-    }
+        /* Fields. */
+        private readonly byte r;
+        private readonly byte g;
+        private readonly byte b;
+        private readonly byte a;
 
-    /* Public methods. */
-    public override readonly string ToString()
-    {
-        return $"color: ({r},{g},{b},{a})";
-    }
+        /* Public properties. */
+        public readonly byte R => r;
+        public readonly byte G => g;
+        public readonly byte B => b;
+        public readonly byte A => a;
 
-    public readonly string Serialize()
-    {
-        // Serialize components as 2-digit hexadecimal strings.
-        string r = R.ToString("X2");
-        string g = G.ToString("X2");
-        string b = B.ToString("X2");
-        string a = A.ToString("X2");
-
-        // Truncate to CSS style if possible.
-        if (r[0] == r[1] && g[0] == g[1] && b[0] == b[1] && a[0] == a[1])
+        /* Constructors. */
+        public ColorNode(byte r, byte g, byte b, byte a)
         {
-            r = r[0].ToString();
-            g = g[0].ToString();
-            b = b[0].ToString();
-            a = a[0].ToString();
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
         }
 
-        // Return as #RGB if a is 255.
-        if (A == 255)
-            return $"#{r}{g}{b}";
-
-        // Return as #RGBA in other cases.
-        else
-            return $"#{r}{g}{b}{a}";
-    }
-
-    public static ColorNode Parse(string text)
-    {
-        // Remove whitespaces.
-        string trimmed = text?.Trim();
-
-        try
+        /* Public methods. */
+        public override readonly string ToString()
         {
-            // Empty strings are not allowed.
-            if (string.IsNullOrEmpty(trimmed))
-                throw new ArgumentException("Empty string.");
+            return $"color: ({r},{g},{b},{a})";
+        }
 
-            // Enforce leading hex sign.
-            if (!trimmed.StartsWith('#'))
-                throw new ArgumentException("Missing hex sign.");
+        public readonly string Serialize()
+        {
+            // Serialize components as 2-digit hexadecimal strings.
+            string r = R.ToString("X2");
+            string g = G.ToString("X2");
+            string b = B.ToString("X2");
+            string a = A.ToString("X2");
 
-            // Allow CSS convention.
-            if (trimmed.Length == 4)
+            // Truncate to CSS style if possible.
+            if (r[0] == r[1] && g[0] == g[1] && b[0] == b[1] && a[0] == a[1])
             {
-                trimmed = trimmed[0]
-                    + new string(trimmed[1], 2)
-                    + new string(trimmed[2], 2)
-                    + new string(trimmed[3], 2);
-            }
-            else if (trimmed.Length == 5)
-            {
-                trimmed = trimmed[0]
-                    + new string(trimmed[1], 2)
-                    + new string(trimmed[2], 2)
-                    + new string(trimmed[3], 2)
-                    + new string(trimmed[4], 2);
+                r = r[0].ToString();
+                g = g[0].ToString();
+                b = b[0].ToString();
+                a = a[0].ToString();
             }
 
-            // Split into substrs.
-            if (trimmed.Length != 7 && trimmed.Length != 9)
-                throw new Exception("Bad length. Use #RGB, #RGBA, #RRGGBB or #RRGGBBAA.");
-            string r = trimmed.Substring(1, 2);
-            string g = trimmed.Substring(3, 2);
-            string b = trimmed.Substring(5, 2);
-            string a = trimmed.Length == 9 ? trimmed.Substring(7, 2) : "FF";
+            // Return as #RGB if a is 255.
+            if (A == 255)
+                return $"#{r}{g}{b}";
 
-            // Parse substrs.
+            // Return as #RGBA in other cases.
+            else
+                return $"#{r}{g}{b}{a}";
+        }
+
+        public static ColorNode Parse(string text)
+        {
+            // Remove whitespaces.
+            string trimmed = text?.Trim();
+
             try
             {
-                return new(
-                    byte.Parse(r, NumberStyles.HexNumber),
-                    byte.Parse(g, NumberStyles.HexNumber),
-                    byte.Parse(b, NumberStyles.HexNumber),
-                    byte.Parse(a, NumberStyles.HexNumber)
-                );
+                // Empty strings are not allowed.
+                if (string.IsNullOrEmpty(trimmed))
+                    throw new ArgumentException("Empty string.");
+
+                // Enforce leading hex sign.
+                if (!trimmed.StartsWith('#'))
+                    throw new ArgumentException("Missing hex sign.");
+
+                // Allow CSS convention.
+                if (trimmed.Length == 4)
+                {
+                    trimmed = trimmed[0]
+                        + new string(trimmed[1], 2)
+                        + new string(trimmed[2], 2)
+                        + new string(trimmed[3], 2);
+                }
+                else if (trimmed.Length == 5)
+                {
+                    trimmed = trimmed[0]
+                        + new string(trimmed[1], 2)
+                        + new string(trimmed[2], 2)
+                        + new string(trimmed[3], 2)
+                        + new string(trimmed[4], 2);
+                }
+
+                // Split into substrs.
+                if (trimmed.Length != 7 && trimmed.Length != 9)
+                    throw new Exception("Bad length. Use #RGB, #RGBA, #RRGGBB or #RRGGBBAA.");
+                string r = trimmed.Substring(1, 2);
+                string g = trimmed.Substring(3, 2);
+                string b = trimmed.Substring(5, 2);
+                string a = trimmed.Length == 9 ? trimmed.Substring(7, 2) : "FF";
+
+                // Parse substrs.
+                try
+                {
+                    return new(
+                        byte.Parse(r, NumberStyles.HexNumber),
+                        byte.Parse(g, NumberStyles.HexNumber),
+                        byte.Parse(b, NumberStyles.HexNumber),
+                        byte.Parse(a, NumberStyles.HexNumber)
+                    );
+                }
+                catch
+                {
+                    throw new ArgumentException("Not a hexadecimal number.");
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                throw new ArgumentException("Not a hexadecimal number.");
+                throw new ArgumentException($"Could not parse string '{text}' as a color:\n{ex.Message}");
             }
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException($"Could not parse string '{text}' as a color:\n{ex.Message}");
         }
     }
 }

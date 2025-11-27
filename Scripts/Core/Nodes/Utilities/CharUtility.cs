@@ -1,19 +1,20 @@
-﻿namespace Rusty.Serialization.Nodes;
-
-/// <summary>
-/// An utility for checking if a character is inside the allowed character set.
-/// </summary>
-internal static class CharUtility
+namespace Rusty.Serialization.Nodes
 {
-    /* Public methods. */
     /// <summary>
-    /// Check if a character is in the allowed character set.
+    /// An utility for checking if a character is inside the allowed character set.
     /// </summary>
-    public static bool Check(char chr)
+    internal static class CharUtility
     {
-        return (chr >= ' ' && chr <= '~')
-            || (chr >= '\t' && chr <= '\r')
-            || (chr >= '\u00A1' && chr <= '\u00AC')
-            || (chr >= '\u00AE' && chr <= '\u00FF');
+        /* Public methods. */
+        /// <summary>
+        /// Check if a character is in the allowed character set.
+        /// </summary>
+        public static bool Check(char chr)
+        {
+            return (chr >= ' ' && chr <= '~')
+                || (chr >= '\t' && chr <= '\r')
+                || (chr >= '\u00A1' && chr <= '\u00AC')
+                || (chr >= '\u00AE' && chr <= '\u00FF');
+        }
     }
 }

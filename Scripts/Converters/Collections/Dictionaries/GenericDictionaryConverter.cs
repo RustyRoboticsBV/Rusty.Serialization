@@ -1,45 +1,46 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.Converters;
-
-/// <summary>
-/// A generic dictionary converter.
-/// </summary>
-public abstract class GenericDictionaryConverter<DictionaryT, KeyT, ValueT> : ReferenceConverter<DictionaryT, DictNode>
-    where DictionaryT : class, IDictionary<KeyT, ValueT>, new()
+namespace Rusty.Serialization.Converters
 {
-    /* Protected methods. */
-    protected sealed override DictNode Convert(DictionaryT obj, Context context)
+    /// <summary>
+    /// A generic dictionary converter.
+    /// </summary>
+    public abstract class GenericDictionaryConverter<DictionaryT, KeyT, ValueT> : ReferenceConverter<DictionaryT, DictNode>
+        where DictionaryT : class, IDictionary<KeyT, ValueT>, new()
     {
-        Type keyType = typeof(KeyT);
-        Type valueType = typeof(ValueT);
-
-        // Convert the elements to nodes.
-        List<KeyValuePair<INode, INode>> nodePairs = new();
-        foreach (KeyValuePair<KeyT, ValueT> element in obj)
+        /* Protected methods. */
+        protected sealed override DictNode Convert(DictionaryT obj, Context context)
         {
-            INode key = ConvertElement(keyType, element.Key, context);
-            INode value = ConvertElement(valueType, element.Key, context);
+            Type keyType = typeof(KeyT);
+            Type valueType = typeof(ValueT);
 
-            // Add pair.
-            nodePairs.Add(new(key, value));
+            // Convert the elements to nodes.
+            List<KeyValuePair<INode, INode>> nodePairs = new();
+            foreach (KeyValuePair<KeyT, ValueT> element in obj)
+            {
+                INode key = ConvertElement(keyType, element.Key, context);
+                INode value = ConvertElement(valueType, element.Key, context);
+
+                // Add pair.
+                nodePairs.Add(new(key, value));
+            }
+
+            // Create the node.
+            return new(nodePairs.ToArray());
         }
 
-        // Create the node.
-        return new(nodePairs.ToArray());
-    }
-
-    protected sealed override DictionaryT Deconvert(DictNode node, Context context)
-    {
-        DictionaryT obj = new();
-        foreach (var pair in node.Pairs)
+        protected sealed override DictionaryT Deconvert(DictNode node, Context context)
         {
-            KeyT key = DeconvertElement<KeyT>(pair.Key, context);
-            ValueT value = DeconvertElement<ValueT>(pair.Value, context);
-            obj[key] = value;
+            DictionaryT obj = new();
+            foreach (var pair in node.Pairs)
+            {
+                KeyT key = DeconvertElement<KeyT>(pair.Key, context);
+                ValueT value = DeconvertElement<ValueT>(pair.Value, context);
+                obj[key] = value;
+            }
+            return obj;
         }
-        return obj;
     }
 }

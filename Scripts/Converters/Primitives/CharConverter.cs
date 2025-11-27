@@ -1,13 +1,14 @@
-﻿using Rusty.Serialization.Nodes;
+using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization.Converters;
-
-/// <summary>
-/// A char converter.
-/// </summary>
-public sealed class CharConverter : ValueConverter<char, CharNode>
+namespace Rusty.Serialization.Converters
 {
-    /* Protected methods. */
-    protected override CharNode Convert(char obj, Context context) => new(obj);
-    protected override char Deconvert(CharNode node, Context context) => node.Value;
+    /// <summary>
+    /// A char converter.
+    /// </summary>
+    public sealed class CharConverter : ValueConverter<char, CharNode>
+    {
+        /* Protected methods. */
+        protected override CharNode Convert(char obj, Context context) => new(obj);
+        protected override char Deconvert(CharNode node, Context context) => node.Value;
+    }
 }

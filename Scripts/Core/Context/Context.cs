@@ -1,4 +1,4 @@
-﻿#if GODOT && !UNITY_5_OR_NEWER
+#if GODOT && !UNITY_5_OR_NEWER
 #define GODOT_CONTEXT
 
 #elif !GODOT && UNITY_5_OR_NEWER
@@ -13,176 +13,176 @@ using System.Text;
 using Rusty.Serialization.Converters;
 using Rusty.Serialization.Nodes;
 
-namespace Rusty.Serialization;
-
-/// <summary>
-/// A serialization context. It can be used to serialize and deserialize objects.
-/// </summary>
-public class Context
+namespace Rusty.Serialization
 {
-    /* Private properties. */
     /// <summary>
-    /// The registry of known converter types.
+    /// A serialization context. It can be used to serialize and deserialize objects.
     /// </summary>
-    private TypeRegistry Types { get; } = new();
-    /// <summary>
-    /// The registry of known converter instances.
-    /// </summary>
-    private InstanceRegistry Instances { get; } = new();
-    /// <summary>
-    /// The registry of known type aliasses.
-    /// </summary>
-    private AliasRegistry Aliasses { get; } = new();
-
-    /* Constructors. */
-    public Context()
+    public class Context
     {
-        AddBuiltInTypes();
-    }
+        /* Private properties. */
+        /// <summary>
+        /// The registry of known converter types.
+        /// </summary>
+        private TypeRegistry Types { get; } = new();
+        /// <summary>
+        /// The registry of known converter instances.
+        /// </summary>
+        private InstanceRegistry Instances { get; } = new();
+        /// <summary>
+        /// The registry of known type aliasses.
+        /// </summary>
+        private AliasRegistry Aliasses { get; } = new();
 
-    /* Public methods. */
-    public void Add(Type targetT, Type converterT, string alias = null)
-    {
-        Types.Add(targetT, converterT);
-        if (alias != null)
-            Aliasses.Add(targetT, alias);
-    }
-
-    public void Add<TargetT, ConverterT>(string alias = null)
-        where ConverterT : IConverter<TargetT>
-    {
-        Add(typeof(TargetT), typeof(ConverterT), alias);
-    }
-
-    public IConverter GetConverter(string targetNameOrAlias)
-    {
-        Type type;
-        if (Aliasses.Has(targetNameOrAlias))
-            type = Aliasses.Get(targetNameOrAlias);
-        else
+        /* Constructors. */
+        public Context()
         {
-            TypeName targetName = new(targetNameOrAlias, Aliasses);
-            type = targetName.GetType();
+            AddBuiltInTypes();
         }
-        return GetConverter(type);
-    }
 
-    public IConverter GetConverter(Type targetType)
-    {
-        IConverter instance = Instances.Get(targetType);
-        if (instance == null)
+        /* Public methods. */
+        public void Add(Type targetT, Type converterT, string alias = null)
         {
-            instance = Types.Instantiate(targetType);
-            Instances.Add(targetType, instance);
+            Types.Add(targetT, converterT);
+            if (alias != null)
+                Aliasses.Add(targetT, alias);
         }
-        return instance;
-    }
 
-    /// <summary>
-    /// Serialize an object.
-    /// </summary>
-    public string Serialize(object obj, Type expectedType = null)
-    {
-        Type objType = obj?.GetType();
+        public void Add<TargetT, ConverterT>(string alias = null)
+            where ConverterT : IConverter<TargetT>
+        {
+            Add(typeof(TargetT), typeof(ConverterT), alias);
+        }
 
-        // Get converter.
-        IConverter converter = GetConverter(objType);
+        public IConverter GetConverter(string targetNameOrAlias)
+        {
+            Type type;
+            if (Aliasses.Has(targetNameOrAlias))
+                type = Aliasses.Get(targetNameOrAlias);
+            else
+            {
+                TypeName targetName = new(targetNameOrAlias, Aliasses);
+                type = targetName.GetType();
+            }
+            return GetConverter(type);
+        }
 
-        // Convert object to node.
-        INode node = converter.Convert(obj, this);
+        public IConverter GetConverter(Type targetType)
+        {
+            IConverter instance = Instances.Get(targetType);
+            if (instance == null)
+            {
+                instance = Types.Instantiate(targetType);
+                Instances.Add(targetType, instance);
+            }
+            return instance;
+        }
 
-        // Wrap in type node if necessary.
-        if (objType != expectedType)
-            node = new TypeNode(GetTypeName(objType), node);
+        /// <summary>
+        /// Serialize an object.
+        /// </summary>
+        public string Serialize(object obj, Type expectedType = null)
+        {
+            Type objType = obj?.GetType();
 
-        // Serialize node.
-        return node.Serialize();
-    }
+            // Get converter.
+            IConverter converter = GetConverter(objType);
 
-    /// <summary>
-    /// Serialize an object.
-    /// </summary>
-    public string Serialize<T>(T obj, Type expectedType = null)
-    {
-        Type objType = obj?.GetType();
+            // Convert object to node.
+            INode node = converter.Convert(obj, this);
 
-        // Get converter.
-        IConverter converter = GetConverter(objType);
+            // Wrap in type node if necessary.
+            if (objType != expectedType)
+                node = new TypeNode(GetTypeName(objType), node);
 
-        // Convert object to node.
-        INode node = converter.Convert(obj, this);
+            // Serialize node.
+            return node.Serialize();
+        }
 
-        // Wrap in type node if necessary.
-        if (objType != expectedType)
-            node = new TypeNode(GetTypeName(objType), node);
+        /// <summary>
+        /// Serialize an object.
+        /// </summary>
+        public string Serialize<T>(T obj, Type expectedType = null)
+        {
+            Type objType = obj?.GetType();
 
-        // Serialize node.
-        return node.Serialize();
-    }
+            // Get converter.
+            IConverter converter = GetConverter(objType);
 
-    /// <summary>
-    /// Get a type's name.
-    /// </summary>
-    public TypeName GetTypeName(Type type) => new(type, Aliasses);
+            // Convert object to node.
+            INode node = converter.Convert(obj, this);
 
-    /// <summary>
-    /// Get a type from a type name.
-    /// </summary>
-    public Type GetTypeFromName(string name) => (Type)new TypeName(name, Aliasses);
+            // Wrap in type node if necessary.
+            if (objType != expectedType)
+                node = new TypeNode(GetTypeName(objType), node);
 
-    /* Private methods. */
-    private void AddBuiltInTypes()
-    {
-        // Add built-in types.
+            // Serialize node.
+            return node.Serialize();
+        }
 
-        // Bool types.
-        Add<bool, BoolConverter>("bl");
+        /// <summary>
+        /// Get a type's name.
+        /// </summary>
+        public TypeName GetTypeName(Type type) => new(type, Aliasses);
 
-        // Int types.
-        Add<sbyte, SbyteConverter>("i8");
-        Add<short, ShortConverter>("i16");
-        Add<int, IntConverter>("i32");
-        Add<long, LongConverter>("i64");
-        Add<byte, ByteConverter>("u8");
-        Add<ushort, UshortConverter>("u16");
-        Add<uint, UintConverter>("u32");
-        Add<ulong, UlongConverter>("u64");
+        /// <summary>
+        /// Get a type from a type name.
+        /// </summary>
+        public Type GetTypeFromName(string name) => (Type)new TypeName(name, Aliasses);
 
-        Aliasses.Add(typeof(Enum), "enum");
+        /* Private methods. */
+        private void AddBuiltInTypes()
+        {
+            // Add built-in types.
 
-        Add<BigInteger, BigIntegerConverter>("ibig");
+            // Bool types.
+            Add<bool, BoolConverter>("bl");
 
-        // Real types.
-        Add<float, FloatConverter>("f32");
-        Add<double, DoubleConverter>("f64");
-        Add<decimal, DecimalConverter>("dec");
+            // Int types.
+            Add<sbyte, SbyteConverter>("i8");
+            Add<short, ShortConverter>("i16");
+            Add<int, IntConverter>("i32");
+            Add<long, LongConverter>("i64");
+            Add<byte, ByteConverter>("u8");
+            Add<ushort, UshortConverter>("u16");
+            Add<uint, UintConverter>("u32");
+            Add<ulong, UlongConverter>("u64");
 
-        Add<Half, HalfConverter>("f16");
+            Aliasses.Add(typeof(Enum), "enum");
 
-        // Char types.
-        Add<char, CharConverter>("chr");
+            Add<BigInteger, BigIntegerConverter>("ibig");
 
-        // String types.
-        Add<string, StringConverter>("str");
+            // Real types.
+            Add<float, FloatConverter>("f32");
+            Add<double, DoubleConverter>("f64");
+            Add<decimal, DecimalConverter>("dec");
 
-        Add<StringBuilder, StringBuilderConverter>("sb");
-        Add<Uri, UriConverter>("uri");
+            Add<Half, HalfConverter>("f16");
+
+            // Char types.
+            Add<char, CharConverter>("chr");
+
+            // String types.
+            Add<string, StringConverter>("str");
+
+            Add<StringBuilder, StringBuilderConverter>("sb");
+            Add<Uri, UriConverter>("uri");
 
 #if GODOT_CONTEXT
         Add<Godot.StringName, StringNameConverter>("GDsname");
         Add<Godot.NodePath, NodePathConverter>("GDnpath");
 #endif
 
-        // Time types.
-        Add<TimeSpan, TimeSpanConverter>("ts");
-        Add<DateTime, DateTimeConverter>("dt");
+            // Time types.
+            Add<TimeSpan, TimeSpanConverter>("ts");
+            Add<DateTime, DateTimeConverter>("dt");
 
-        // Binary types.
-        Add<byte[], ByteArrayConverter>("u8[]");
-        Add<Guid, GuidConverter>("guid");
+            // Binary types.
+            Add<byte[], ByteArrayConverter>("u8[]");
+            Add<Guid, GuidConverter>("guid");
 
-        // Color types.
-        Add<Color, Converters.ColorConverter>("col");
+            // Color types.
+            Add<Color, Converters.ColorConverter>("col");
 
 #if GODOT_CONTEXT
         Add<Godot.Color, Converters.Gd.ColorConverter>("GDcol");
@@ -193,27 +193,27 @@ public class Context
         Add<UnityEngine.Color32, Converters.Unity.ColorConverter>("UNcol32");
 #endif
 
-        // List types.
-        Add(typeof(List<>), typeof(ListConverter<>), "list");
-        Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "lnls");
-        Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
-        Add(typeof(Stack<>), typeof(StackConverter<>), "stck");
-        Add(typeof(Queue<>), typeof(QueueConverter<>), "queu");
+            // List types.
+            Add(typeof(List<>), typeof(ListConverter<>), "list");
+            Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "lnls");
+            Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
+            Add(typeof(Stack<>), typeof(StackConverter<>), "stck");
+            Add(typeof(Queue<>), typeof(QueueConverter<>), "queu");
 
-        Add(typeof(Point), typeof(Converters.PointConverter), "p2i");
-        Add(typeof(PointF), typeof(PointFConverter), "p2f");
-        Add(typeof(Size), typeof(Converters.SizeConverter), "s2i");
-        Add(typeof(SizeF), typeof(Converters.SizeFConverter), "s2f");
-        Add(typeof(Rectangle), typeof(Converters.RectangleConverter), "r2i");
-        Add(typeof(RectangleF), typeof(RectangleFConverter), "r2f");
+            Add(typeof(Point), typeof(Converters.PointConverter), "p2i");
+            Add(typeof(PointF), typeof(PointFConverter), "p2f");
+            Add(typeof(Size), typeof(Converters.SizeConverter), "s2i");
+            Add(typeof(SizeF), typeof(Converters.SizeFConverter), "s2f");
+            Add(typeof(Rectangle), typeof(Converters.RectangleConverter), "r2i");
+            Add(typeof(RectangleF), typeof(RectangleFConverter), "r2f");
 
-        Add(typeof(Vector2), typeof(Vector2Converter), "v2f");
-        Add(typeof(Vector3), typeof(Vector3Converter), "v3f");
-        Add(typeof(Vector4), typeof(Vector4Converter), "v4f");
-        Add(typeof(Quaternion), typeof(QuaternionConverter), "quat");
-        Add(typeof(Plane), typeof(PlaneConverter), "pln");
-        Add(typeof(Matrix3x2), typeof(Matrix3x2Converter), "m3x2");
-        Add(typeof(Matrix4x4), typeof(Matrix4x4Converter), "m4x4");
+            Add(typeof(Vector2), typeof(Vector2Converter), "v2f");
+            Add(typeof(Vector3), typeof(Vector3Converter), "v3f");
+            Add(typeof(Vector4), typeof(Vector4Converter), "v4f");
+            Add(typeof(Quaternion), typeof(QuaternionConverter), "quat");
+            Add(typeof(Plane), typeof(PlaneConverter), "pln");
+            Add(typeof(Matrix3x2), typeof(Matrix3x2Converter), "m3x2");
+            Add(typeof(Matrix4x4), typeof(Matrix4x4Converter), "m4x4");
 
 #if GODOT_CONTEXT
         Add(typeof(Godot.Collections.Array), typeof(Converters.Gd.ArrayConverter), "GDarr");
@@ -235,21 +235,22 @@ public class Context
         Add<Godot.Projection, Converters.Gd.ProjectionConverter>("GDm4x4");
 #endif
 
-        // Dictionary types.
-        Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
-        Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
+            // Dictionary types.
+            Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
+            Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
 
 #if GODOT_CONTEXT
         Add(typeof(Godot.Collections.Dictionary), typeof(Converters.Gd.DictionaryConverter), "GDdict");
         Add(typeof(Godot.Collections.Dictionary<,>), typeof(Converters.Gd.DictionaryConverter<,>), "GDdictT");
 #endif
 
-        // Object types.
-        Aliasses.Add(typeof(object), "obj");
+            // Object types.
+            Aliasses.Add(typeof(object), "obj");
 
 #if GODOT_CONTEXT
         Add(typeof(Godot.Variant), typeof(Converters.Gd.VariantConverter), "GDvar");
         Add(typeof(Godot.Resource), typeof(Converters.Gd.ResourceConverter), "GDres");
 #endif
+        }
     }
 }
