@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,11 +8,11 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A generic struct or class converter.
     /// </summary>
-    public abstract class ObjectConverter<T> : IConverter<T>
+    public abstract class ObjectConverter<T> : Converter<T>
         where T : new()
     {
         /* Protected methods. */
-        public virtual INode Convert(T obj, Context context)
+        public override INode Convert(T obj, IConverterScheme scheme)
         {
             // Collect public members.
             MemberInfo[] members = GetPublicMembers(obj);
@@ -43,7 +42,7 @@ namespace Rusty.Serialization.Core.Converters
                 string memberstring = member.Name;
 
                 // Create member node.
-                INode memberNode = ConvertMember(memberType, memberValue, context);
+                INode memberNode = ConvertNested(memberType, memberValue, scheme);
 
                 // Store finished identifier-node pair.
                 memberPairs[i] = new(memberstring, memberNode);
@@ -53,10 +52,10 @@ namespace Rusty.Serialization.Core.Converters
             return new ObjectNode(memberPairs);
         }
 
-        public virtual T Deconvert(INode node, Context context)
+        public override T Deconvert(INode node, IConverterScheme scheme)
         {
             if (node is TypeNode typeNode)
-                return Deconvert(typeNode.Value, context);
+                return Deconvert(typeNode.Value, scheme);
             if (node is ObjectNode objNode)
             {
                 // Create new object.
@@ -77,7 +76,7 @@ namespace Rusty.Serialization.Core.Converters
                     if (memberIdentifier != member.Name)
                         throw new Exception($"Mismatch between members {i}: '{member.Name}' and '{memberIdentifier}'.");
 
-                    object memberObj = DeconvertMember(memberNode, context);
+                    object memberObj = DeconvertNested<object>(memberNode, scheme);
                     if (member is FieldInfo field)
                         field.SetValue(obj, memberObj);
                     else if (member is PropertyInfo property)
@@ -113,30 +112,6 @@ namespace Rusty.Serialization.Core.Converters
             }
 
             return members.ToArray();
-        }
-
-        /// <summary>
-        /// Convert a member into a node.
-        /// </summary>
-        private INode ConvertMember<U>(Type memberType, U obj, Context context)
-        {
-            Type valueType = obj?.GetType();
-            IConverter converter = context.GetConverter(valueType);
-            INode node = converter.Convert(obj, context);
-
-            if (memberType != valueType && valueType != null)
-                node = new TypeNode(context.GetTypeName(valueType), node);
-
-            return node;
-        }
-
-        /// <summary>
-        /// Deconvert a member node into an object.
-        /// </summary>
-        private object DeconvertMember(INode node, Context context)
-        {
-            Type targetType = ((IConverter)this).TargetType;
-            return context.GetConverter(targetType).Deconvert(node, context);
         }
     }
 }

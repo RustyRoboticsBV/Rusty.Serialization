@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class UlongConverter : ValueConverter<ulong, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode Convert(ulong obj, Context context) => new(obj);
-        protected override ulong Deconvert(IntNode node, Context context) => (ulong)node.Value;
+        protected override IntNode ConvertValue(ulong obj, IConverterScheme scheme) => new(obj);
+        protected override ulong DeconvertValue(IntNode node, IConverterScheme scheme) => (ulong)node.Value;
     }
 }

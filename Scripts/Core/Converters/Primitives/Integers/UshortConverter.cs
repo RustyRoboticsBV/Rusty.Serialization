@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class UshortConverter : ValueConverter<ushort, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode Convert(ushort obj, Context context) => new(obj);
-        protected override ushort Deconvert(IntNode node, Context context) => (ushort)node.Value;
+        protected override IntNode ConvertValue(ushort obj, IConverterScheme scheme) => new(obj);
+        protected override ushort DeconvertValue(IntNode node, IConverterScheme scheme) => (ushort)node.Value;
     }
 }

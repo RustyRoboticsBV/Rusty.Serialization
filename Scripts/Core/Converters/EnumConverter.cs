@@ -1,5 +1,4 @@
 using System;
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -11,9 +10,9 @@ namespace Rusty.Serialization.Core.Converters
         where T : struct, Enum
     {
         /* Protected methods. */
-        protected override IntNode Convert(T obj, Context context) => new(System.Convert.ToInt32(obj));
+        protected override IntNode ConvertValue(T obj, IConverterScheme scheme) => new(System.Convert.ToInt32(obj));
 
-        protected override T Deconvert(IntNode node, Context context)
+        protected override T DeconvertValue(IntNode node, IConverterScheme scheme)
         {
             if (Enum.IsDefined(typeof(T), node.Value))
                 return (T)Enum.ToObject(typeof(T), node.Value);

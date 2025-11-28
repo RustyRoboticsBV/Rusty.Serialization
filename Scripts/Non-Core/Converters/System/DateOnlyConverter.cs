@@ -12,9 +12,9 @@ namespace Rusty.Serialization.Converters.System
     public sealed class DateOnlyConverter : ValueConverter<DateOnly, TimeNode>
     {
         /* Protected methods. */
-        protected override TimeNode Convert(DateOnly obj, Context context)
+        protected override TimeNode ConvertValue(DateOnly obj, IConverterScheme scheme)
             => new(new(obj.Year, obj.Month, obj.Day, 0, 0, 0, 0));
-        protected override DateOnly Deconvert(TimeNode node, Context context)
+        protected override DateOnly DeconvertValue(TimeNode node, IConverterScheme scheme)
             => new((int)node.Value.year, (int)node.Value.month, (int)node.Value.day);
     }
 }

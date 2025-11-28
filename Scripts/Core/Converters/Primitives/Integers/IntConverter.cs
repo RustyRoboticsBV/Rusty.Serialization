@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class IntConverter : ValueConverter<int, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode Convert(int obj, Context context) => new(obj);
-        protected override int Deconvert(IntNode node, Context context) => (int)node.Value;
+        protected override IntNode ConvertValue(int obj, IConverterScheme scheme) => new(obj);
+        protected override int DeconvertValue(IntNode node, IConverterScheme scheme) => (int)node.Value;
     }
 }

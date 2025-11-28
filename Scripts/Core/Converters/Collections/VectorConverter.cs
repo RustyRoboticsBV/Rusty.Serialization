@@ -14,24 +14,24 @@ namespace Rusty.Serialization.Core.Converters
         protected abstract int Length { get; }
 
         /* Protected methods. */
-        protected override ListNode Convert(VectorT obj, Context context)
+        protected override ListNode ConvertValue(VectorT obj, IConverterScheme scheme)
         {
             INode[] nodes = new INode[Length];
             for (int i = 0; i < Length; i++)
             {
-                nodes[i] = ConvertElement(typeof(ElementT), GetAt(ref obj, i), context);
+                nodes[i] = ConvertNested(typeof(ElementT), GetAt(ref obj, i), scheme);
             }
             return new(nodes);
         }
 
-        protected override VectorT Deconvert(ListNode node, Context context)
+        protected override VectorT DeconvertValue(ListNode node, IConverterScheme scheme)
         {
             if (node.Elements.Length != Length)
                 throw new ArgumentException($"Expected a list node with length '{Length}', received '{node.Elements.Length}'.");
             VectorT vector = new();
             for (int i = 0; i < Length; i++)
             {
-                SetAt(ref vector, i, DeconvertElement<ElementT>(node.Elements[i], context));
+                SetAt(ref vector, i, DeconvertNested<ElementT>(node.Elements[i], scheme));
             }
             return vector;
         }

@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class CharConverter : ValueConverter<char, CharNode>
     {
         /* Protected methods. */
-        protected override CharNode Convert(char obj, Context context) => new(obj);
-        protected override char Deconvert(CharNode node, Context context) => node.Value;
+        protected override CharNode ConvertValue(char obj, IConverterScheme scheme) => new(obj);
+        protected override char DeconvertValue(CharNode node, IConverterScheme scheme) => node.Value;
     }
 }

@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class DecimalConverter : ValueConverter<decimal, RealNode>
     {
         /* Protected methods. */
-        protected override RealNode Convert(decimal obj, Context context) => new(obj);
-        protected override decimal Deconvert(RealNode node, Context context) => node.Value;
+        protected override RealNode ConvertValue(decimal obj, IConverterScheme scheme) => new(obj);
+        protected override decimal DeconvertValue(RealNode node, IConverterScheme scheme) => node.Value;
     }
 }

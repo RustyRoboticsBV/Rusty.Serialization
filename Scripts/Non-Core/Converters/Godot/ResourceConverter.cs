@@ -12,12 +12,12 @@ namespace Rusty.Serialization.Converters.Gd
     public sealed class ResourceConverter : ReferenceConverter<Resource, StringNode>
     {
         /* Protected methods. */
-        protected override StringNode Convert(Resource obj, Context context)
+        protected override StringNode ConvertRef(Resource obj, IConverterScheme scheme)
         {
             return new(obj.ResourcePath);
         }
 
-        protected override Resource Deconvert(StringNode node, Context context)
+        protected override Resource DeconvertRef(StringNode node, IConverterScheme scheme)
         {
             return ResourceLoader.Load(node.Value);
         }

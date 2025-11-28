@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class LongConverter : ValueConverter<long, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode Convert(long obj, Context context) => new(obj);
-        protected override long Deconvert(IntNode node, Context context) => (long)node.Value;
+        protected override IntNode ConvertValue(long obj, IConverterScheme scheme) => new(obj);
+        protected override long DeconvertValue(IntNode node, IConverterScheme scheme) => (long)node.Value;
     }
 }

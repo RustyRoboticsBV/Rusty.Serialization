@@ -12,9 +12,9 @@ namespace Rusty.Serialization.Converters.System
     public sealed class TimeOnlyConverter : ValueConverter<TimeOnly, TimeNode>
     {
         /* Protected methods. */
-        protected override TimeNode Convert(TimeOnly obj, Context context)
+        protected override TimeNode ConvertValue(TimeOnly obj, IConverterScheme scheme)
             => new(new(0, 0, 0, obj.Hour, obj.Minute, obj.Second, obj.Millisecond));
-        protected override TimeOnly Deconvert(TimeNode node, Context context)
+        protected override TimeOnly DeconvertValue(TimeNode node, IConverterScheme scheme)
             => new((int)node.Value.hour, (int)node.Value.minute, (int)node.Value.second, (int)node.Value.millisecond);
     }
 }

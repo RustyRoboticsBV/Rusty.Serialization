@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class BoolConverter : ValueConverter<bool, BoolNode>
     {
         /* Protected methods. */
-        protected override BoolNode Convert(bool obj, Context context) => new(obj);
-        protected override bool Deconvert(BoolNode node, Context context) => node.Value;
+        protected override BoolNode ConvertValue(bool obj, IConverterScheme scheme) => new(obj);
+        protected override bool DeconvertValue(BoolNode node, IConverterScheme scheme) => node.Value;
     }
 }

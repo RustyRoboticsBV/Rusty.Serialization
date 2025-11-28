@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -12,7 +11,7 @@ namespace Rusty.Serialization.Core.Converters
         where DictionaryT : class, IDictionary<KeyT, ValueT>, new()
     {
         /* Protected methods. */
-        protected sealed override DictNode Convert(DictionaryT obj, Context context)
+        protected sealed override DictNode ConvertRef(DictionaryT obj, IConverterScheme scheme)
         {
             Type keyType = typeof(KeyT);
             Type valueType = typeof(ValueT);
@@ -21,8 +20,8 @@ namespace Rusty.Serialization.Core.Converters
             List<KeyValuePair<INode, INode>> nodePairs = new();
             foreach (KeyValuePair<KeyT, ValueT> element in obj)
             {
-                INode key = ConvertElement(keyType, element.Key, context);
-                INode value = ConvertElement(valueType, element.Key, context);
+                INode key = ConvertNested(keyType, element.Key, scheme);
+                INode value = ConvertNested(valueType, element.Key, scheme);
 
                 // Add pair.
                 nodePairs.Add(new(key, value));
@@ -32,13 +31,13 @@ namespace Rusty.Serialization.Core.Converters
             return new(nodePairs.ToArray());
         }
 
-        protected sealed override DictionaryT Deconvert(DictNode node, Context context)
+        protected sealed override DictionaryT DeconvertRef(DictNode node, IConverterScheme scheme)
         {
             DictionaryT obj = new();
             foreach (var pair in node.Pairs)
             {
-                KeyT key = DeconvertElement<KeyT>(pair.Key, context);
-                ValueT value = DeconvertElement<ValueT>(pair.Value, context);
+                KeyT key = DeconvertNested<KeyT>(pair.Key, scheme);
+                ValueT value = DeconvertNested<ValueT>(pair.Value, scheme);
                 obj[key] = value;
             }
             return obj;

@@ -1,5 +1,4 @@
 using System;
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -19,12 +18,12 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Emit a serializer node representation for some object.
         /// </summary>
-        public INode Convert(object obj, Context context);
+        public INode Convert(object obj, IConverterScheme scheme);
 
         /// <summary>
         /// Emit a deserialized object from some serializer node.
         /// </summary>
-        public object Deconvert(INode node, Context context);
+        public object Deconvert(INode node, IConverterScheme scheme);
     }
 
     /// <summary>
@@ -32,21 +31,15 @@ namespace Rusty.Serialization.Core.Converters
     /// </summary>
     public interface IConverter<T> : IConverter
     {
-        /* Public properties. */
-        Type IConverter.TargetType => typeof(T);
-
         /* Public methods. */
-        INode IConverter.Convert(object obj, Context context) => Convert((T)obj, context);
-        object IConverter.Deconvert(INode node, Context context) => Deconvert(node, context);
-
         /// <summary>
         /// Emit a serializer node representation for some object.
         /// </summary>
-        public INode Convert(T obj, Context context);
+        public INode Convert(T obj, IConverterScheme scheme);
 
         /// <summary>
         /// Emit a deserialized object from some serializer node.
         /// </summary>
-        public new T Deconvert(INode node, Context context);
+        public new T Deconvert(INode node, IConverterScheme scheme);
     }
 }

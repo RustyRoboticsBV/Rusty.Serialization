@@ -1,23 +1,13 @@
 using System;
 using Rusty.Serialization.Core.Nodes;
-using Rusty.Serialization.Core.Converters;
-using Rusty.Serialization.Core.Serializers;
 
-namespace Rusty.Serialization.Core.Contexts
+namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// A serialization context. It can be used to serialize and deserialize objects.
-    /// It contains serializers for all C# types with syntax-level support: bool, ints, reals, char, string, classes, structs,
-    /// enums, arrays, tuples and nullables.
+    /// A base class for converter schemes.
     /// </summary>
-    public abstract class Context
+    public abstract class ConverterScheme : IConverterScheme
     {
-        /* Public properties. */
-        /// <summary>
-        /// The serializer scheme of this context.
-        /// </summary>
-        public abstract ISerializerScheme SerializerScheme { get; set; }
-
         /* Private properties. */
         /// <summary>
         /// The registry of known converter types.
@@ -33,7 +23,7 @@ namespace Rusty.Serialization.Core.Contexts
         private AliasRegistry Aliasses { get; } = new();
 
         /* Constructors. */
-        public Context()
+        public ConverterScheme()
         {
             // Bool types.
             Add<bool, BoolConverter>("bl");
@@ -106,47 +96,40 @@ namespace Rusty.Serialization.Core.Contexts
             return instance;
         }
 
-        /// <summary>
-        /// Serialize an object.
-        /// </summary>
-        public string Serialize(object obj, Type expectedType = null)
+        public INode Convert(object obj)
         {
-            Type objType = obj?.GetType();
-
-            // Get converter.
-            IConverter converter = GetConverter(objType);
-
-            // Convert object to node.
-            INode node = converter.Convert(obj, this);
-
-            // Wrap in type node if necessary.
-            if (objType != expectedType)
-                node = new TypeNode(GetTypeName(objType), node);
-
-            // Serialize node.
-            return SerializerScheme.Serialize(node);
+            IConverter converter = GetConverter(obj?.GetType());
+            return converter.Convert(obj, this);
         }
 
-        /// <summary>
-        /// Serialize an object.
-        /// </summary>
-        public string Serialize<T>(T obj, Type expectedType = null)
+        public INode Convert<T>(T obj) => Convert(ref obj);
+
+        public INode Convert<T>(ref T obj)
         {
-            Type objType = obj?.GetType();
-
-            // Get converter.
-            IConverter converter = GetConverter(objType);
-
-            // Convert object to node.
-            INode node = converter.Convert(obj, this);
-
-            // Wrap in type node if necessary.
-            if (objType != expectedType)
-                node = new TypeNode(GetTypeName(objType), node);
-
-            // Serialize node.
-            return SerializerScheme.Serialize(node);
+            IConverter converter = GetConverter(obj?.GetType());
+            if (converter is IConverter<T> typed)
+                return typed.Convert(obj, this);
+            else
+                return converter.Convert(obj, this);
         }
+
+        public object Deconvert(TypeNode node)
+        {
+            IConverter converter = GetConverter(node.Name);
+            return converter.Deconvert(node.Value, this);
+        }
+
+        public T Deconvert<T>(INode node)
+        {
+            if (node is TypeNode)
+                return (T)Deconvert((TypeNode)node);
+            IConverter converter = GetConverter(typeof(T));
+            return (T)converter.Deconvert(node, this);
+        }
+
+        public void Deconvert(ref object obj, TypeNode node) { }
+
+        public void Deconvert<T>(ref T obj, INode node) { }
 
         /// <summary>
         /// Get a type's name.

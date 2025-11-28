@@ -12,8 +12,8 @@ namespace Rusty.Serialization.Converters.Gd
     public sealed class StringNameConverter : ReferenceConverter<StringName, StringNode>
     {
         /* Protected methods. */
-        protected override StringNode Convert(StringName obj, Context context) => new(obj);
-        protected override StringName Deconvert(StringNode node, Context context) => node.Value;
+        protected override StringNode ConvertRef(StringName obj, IConverterScheme scheme) => new(obj);
+        protected override StringName DeconvertRef(StringNode node, IConverterScheme scheme) => node.Value;
     }
 }
 #endif

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Rusty.Serialization.Core.Converters;
 
-namespace Rusty.Serialization.Core.Contexts
+namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
     /// An target type to IConverter instance registry.

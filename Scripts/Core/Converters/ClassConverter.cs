@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -10,23 +9,23 @@ namespace Rusty.Serialization.Core.Converters
         where T : class, new()
     {
         /* Protected methods. */
-        public override INode Convert(T obj, Context context)
+        public override INode Convert(T obj, IConverterScheme scheme)
         {
             // Handle null.
             if (obj == null)
                 return new NullNode();
 
             // Handle non-null.
-            return base.Convert(obj, context);
+            return base.Convert(obj, scheme);
         }
 
-        public override T Deconvert(INode node, Context context)
+        public override T Deconvert(INode node, IConverterScheme scheme)
         {
             if (node is NullNode)
                 return null;
 
             // Handle non-null.
-            return base.Deconvert(node, context);
+            return base.Deconvert(node, scheme);
         }
     }
 }

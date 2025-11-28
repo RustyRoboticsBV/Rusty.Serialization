@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class ByteArrayConverter : ReferenceConverter<byte[], BinaryNode>
     {
         /* Protected methods. */
-        protected override BinaryNode Convert(byte[] obj, Context context) => new(obj);
-        protected override byte[] Deconvert(BinaryNode node, Context context) => node.Value;
+        protected override BinaryNode ConvertRef(byte[] obj, IConverterScheme scheme) => new(obj);
+        protected override byte[] DeconvertRef(BinaryNode node, IConverterScheme scheme) => node.Value;
     }
 }

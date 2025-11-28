@@ -1,4 +1,3 @@
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -9,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class NullConverter : ReferenceConverter<object, NullNode>
     {
         /* Protected methods. */
-        protected override NullNode Convert(object obj, Context context) => new();
-        protected override object Deconvert(NullNode node, Context context) => null;
+        protected override NullNode ConvertRef(object obj, IConverterScheme scheme) => new();
+        protected override object DeconvertRef(NullNode node, IConverterScheme scheme) => null;
     }
 }

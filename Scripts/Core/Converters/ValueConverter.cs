@@ -1,5 +1,4 @@
 using System;
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -7,49 +6,30 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A generic value type converter.
     /// </summary>
-    public abstract class ValueConverter<TargetT, NodeT> : IConverter<TargetT>
+    public abstract class ValueConverter<TargetT, NodeT> : Converter<TargetT>
         where TargetT : struct
         where NodeT : INode
     {
         /* Public methods */
-        INode IConverter<TargetT>.Convert(TargetT obj, Context context) => Convert(obj, context);
+        public override INode Convert(TargetT obj, IConverterScheme scheme) => ConvertValue(obj, scheme);
 
-        TargetT IConverter<TargetT>.Deconvert(INode node, Context context)
+        public override TargetT Deconvert(INode node, IConverterScheme scheme)
         {
+            if (node is TypeNode type)
+                return DeconvertNested<TargetT>(type.Value, scheme);
             if (node is NodeT typed)
-                return Deconvert(typed, context);
+                return DeconvertValue(typed, scheme);
             throw new Exception($"Cannot interpret nodes of type '{node.GetType()}'.");
         }
 
         /* Protected methods. */
-        protected abstract NodeT Convert(TargetT obj, Context context);
-        protected abstract TargetT Deconvert(NodeT node, Context context);
-
         /// <summary>
-        /// Convert an element into a node.
+        /// Convert a value into a node.
         /// </summary>
-        protected INode ConvertElement<T>(Type expectedType, T obj, Context context)
-        {
-            // Convert obj to node.
-            Type valueType = obj.GetType();
-            IConverter converter = context.GetConverter(valueType);
-            INode node = converter.Convert(obj, context);
-
-            // Wrap inside of a type node if there was a mismatch.
-            if (expectedType != valueType && valueType != null)
-                node = new TypeNode(context.GetTypeName(valueType), node);
-
-            // Return finished node.
-            return node;
-        }
-
+        protected abstract NodeT ConvertValue(TargetT obj, IConverterScheme scheme);
         /// <summary>
-        /// Deconvert an INode into an element.
+        /// Deconvert a node into a value.
         /// </summary>
-        protected T DeconvertElement<T>(INode node, Context context)
-        {
-            Type targetType = ((IConverter)this).TargetType;
-            return (T)context.GetConverter(targetType).Deconvert(node, context);
-        }
+        protected abstract TargetT DeconvertValue(NodeT node, IConverterScheme scheme);
     }
 }

@@ -2,7 +2,6 @@
 using Godot;
 using Godot.Collections;
 using System;
-using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Converters;
 
@@ -14,7 +13,7 @@ namespace Rusty.Serialization.Converters.Gd
     public sealed class VariantConverter : ValueConverter<Variant, INode>
     {
         /* Protected methods. */
-        protected override INode Convert(Variant obj, Context context)
+        protected override INode ConvertValue(Variant obj, IConverterScheme scheme)
         {
             // Convert underlying value (this automatically wraps it in a type node).
             switch (obj.VariantType)
@@ -22,77 +21,77 @@ namespace Rusty.Serialization.Converters.Gd
                 case Variant.Type.Nil:
                     return new NullNode();
                 case Variant.Type.Bool:
-                    return ConvertElement(typeof(Variant), obj.AsBool(), context);
+                    return ConvertNested(typeof(Variant), obj.AsBool(), scheme);
                 case Variant.Type.Int:
-                    return ConvertElement(typeof(Variant), obj.AsInt32(), context);
+                    return ConvertNested(typeof(Variant), obj.AsInt32(), scheme);
                 case Variant.Type.Float:
-                    return ConvertElement(typeof(Variant), obj.AsDouble(), context);
+                    return ConvertNested(typeof(Variant), obj.AsDouble(), scheme);
                 case Variant.Type.String:
-                    return ConvertElement(typeof(Variant), obj.AsString(), context);
+                    return ConvertNested(typeof(Variant), obj.AsString(), scheme);
                 case Variant.Type.StringName:
-                    return ConvertElement(typeof(Variant), obj.AsStringName(), context);
+                    return ConvertNested(typeof(Variant), obj.AsStringName(), scheme);
                 case Variant.Type.NodePath:
-                    return ConvertElement(typeof(Variant), obj.AsNodePath(), context);
+                    return ConvertNested(typeof(Variant), obj.AsNodePath(), scheme);
                 case Variant.Type.Color:
-                    return ConvertElement(typeof(Variant), obj.AsColor(), context);
+                    return ConvertNested(typeof(Variant), obj.AsColor(), scheme);
                 case Variant.Type.Vector2:
-                    return ConvertElement(typeof(Variant), obj.AsVector2(), context);
+                    return ConvertNested(typeof(Variant), obj.AsVector2(), scheme);
                 case Variant.Type.Vector3:
-                    return ConvertElement(typeof(Variant), obj.AsVector3(), context);
+                    return ConvertNested(typeof(Variant), obj.AsVector3(), scheme);
                 case Variant.Type.Vector4:
-                    return ConvertElement(typeof(Variant), obj.AsVector4(), context);
+                    return ConvertNested(typeof(Variant), obj.AsVector4(), scheme);
                 case Variant.Type.Vector2I:
-                    return ConvertElement(typeof(Variant), obj.AsVector2I(), context);
+                    return ConvertNested(typeof(Variant), obj.AsVector2I(), scheme);
                 case Variant.Type.Vector3I:
-                    return ConvertElement(typeof(Variant), obj.AsVector3I(), context);
+                    return ConvertNested(typeof(Variant), obj.AsVector3I(), scheme);
                 case Variant.Type.Vector4I:
-                    return ConvertElement(typeof(Variant), obj.AsVector4I(), context);
+                    return ConvertNested(typeof(Variant), obj.AsVector4I(), scheme);
                 case Variant.Type.Rect2:
-                    return ConvertElement(typeof(Variant), obj.AsRect2(), context);
+                    return ConvertNested(typeof(Variant), obj.AsRect2(), scheme);
                 case Variant.Type.Rect2I:
-                    return ConvertElement(typeof(Variant), obj.AsRect2I(), context);
+                    return ConvertNested(typeof(Variant), obj.AsRect2I(), scheme);
                 case Variant.Type.Aabb:
-                    return ConvertElement(typeof(Variant), obj.AsAabb(), context);
+                    return ConvertNested(typeof(Variant), obj.AsAabb(), scheme);
                 case Variant.Type.Transform2D:
-                    return ConvertElement(typeof(Variant), obj.AsTransform2D(), context);
+                    return ConvertNested(typeof(Variant), obj.AsTransform2D(), scheme);
                 case Variant.Type.Basis:
-                    return ConvertElement(typeof(Variant), obj.AsBasis(), context);
+                    return ConvertNested(typeof(Variant), obj.AsBasis(), scheme);
                 case Variant.Type.Transform3D:
-                    return ConvertElement(typeof(Variant), obj.AsTransform3D(), context);
+                    return ConvertNested(typeof(Variant), obj.AsTransform3D(), scheme);
                 case Variant.Type.Projection:
-                    return ConvertElement(typeof(Variant), obj.AsProjection(), context);
+                    return ConvertNested(typeof(Variant), obj.AsProjection(), scheme);
                 case Variant.Type.Array:
-                    return ConvertElement(typeof(Variant), obj.AsGodotArray(), context);
+                    return ConvertNested(typeof(Variant), obj.AsGodotArray(), scheme);
                 case Variant.Type.Dictionary:
-                    return ConvertElement(typeof(Variant), obj.AsGodotDictionary(), context);
+                    return ConvertNested(typeof(Variant), obj.AsGodotDictionary(), scheme);
                 case Variant.Type.Object:
-                    return ConvertElement(typeof(Variant), obj.AsGodotObject(), context);
+                    return ConvertNested(typeof(Variant), obj.AsGodotObject(), scheme);
                 case Variant.Type.PackedByteArray:
-                    return ConvertElement(typeof(Variant), obj.AsByteArray(), context);
+                    return ConvertNested(typeof(Variant), obj.AsByteArray(), scheme);
                 case Variant.Type.PackedInt32Array:
-                    return ConvertElement(typeof(Variant), obj.AsInt32Array(), context);
+                    return ConvertNested(typeof(Variant), obj.AsInt32Array(), scheme);
                 case Variant.Type.PackedInt64Array:
-                    return ConvertElement(typeof(Variant), obj.AsInt64Array(), context);
+                    return ConvertNested(typeof(Variant), obj.AsInt64Array(), scheme);
                 case Variant.Type.PackedFloat32Array:
-                    return ConvertElement(typeof(Variant), obj.AsFloat32Array(), context);
+                    return ConvertNested(typeof(Variant), obj.AsFloat32Array(), scheme);
                 case Variant.Type.PackedFloat64Array:
-                    return ConvertElement(typeof(Variant), obj.AsFloat64Array(), context);
+                    return ConvertNested(typeof(Variant), obj.AsFloat64Array(), scheme);
                 case Variant.Type.PackedStringArray:
-                    return ConvertElement(typeof(Variant), obj.AsStringArray(), context);
+                    return ConvertNested(typeof(Variant), obj.AsStringArray(), scheme);
                 case Variant.Type.PackedColorArray:
-                    return ConvertElement(typeof(Variant), obj.AsColorArray(), context);
+                    return ConvertNested(typeof(Variant), obj.AsColorArray(), scheme);
                 case Variant.Type.PackedVector2Array:
-                    return ConvertElement(typeof(Variant), obj.AsVector2Array(), context);
+                    return ConvertNested(typeof(Variant), obj.AsVector2Array(), scheme);
                 case Variant.Type.PackedVector3Array:
-                    return ConvertElement(typeof(Variant), obj.AsVector3Array(), context);
+                    return ConvertNested(typeof(Variant), obj.AsVector3Array(), scheme);
                 case Variant.Type.PackedVector4Array:
-                    return ConvertElement(typeof(Variant), obj.AsVector4Array(), context);
+                    return ConvertNested(typeof(Variant), obj.AsVector4Array(), scheme);
                 default:
                     throw new ArgumentException($"Unsupported variant type {obj.VariantType}.");
             }
         }
 
-        protected override Variant Deconvert(INode node, Context context)
+        protected override Variant DeconvertValue(INode node, IConverterScheme scheme)
         {
             return FromNode(node);
         }

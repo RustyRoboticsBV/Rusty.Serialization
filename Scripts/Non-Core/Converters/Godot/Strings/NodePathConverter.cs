@@ -12,8 +12,8 @@ namespace Rusty.Serialization.Converters.Gd
     public sealed class NodePathConverter : ReferenceConverter<NodePath, StringNode>
     {
         /* Protected methods. */
-        protected override StringNode Convert(NodePath obj, Context context) => new(obj);
-        protected override NodePath Deconvert(StringNode node, Context context) => node.Value;
+        protected override StringNode ConvertRef(NodePath obj, IConverterScheme scheme) => new(obj);
+        protected override NodePath DeconvertRef(StringNode node, IConverterScheme scheme) => node.Value;
     }
 }
 #endif

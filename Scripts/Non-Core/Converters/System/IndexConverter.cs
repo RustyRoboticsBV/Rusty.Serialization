@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class IndexConverter : ValueConverter<Index, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode Convert(Index obj, Context context) => new(obj.Value);
-        protected override Index Deconvert(IntNode node, Context context) => (int)node.Value;
+        protected override IntNode ConvertValue(Index obj, IConverterScheme scheme) => new(obj.Value);
+        protected override Index DeconvertValue(IntNode node, IConverterScheme scheme) => (int)node.Value;
     }
 }
