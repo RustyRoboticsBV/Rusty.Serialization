@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 
 namespace Rusty.Serialization.Core.Nodes
 {
@@ -39,12 +39,22 @@ namespace Rusty.Serialization.Core.Nodes
 
         public readonly string Serialize()
         {
+            if (pairs == null)
+                throw new Exception("Cannot serialize dictionary nodes whose pairs array are null.");
+
             if (pairs.Length == 0)
                 return "{}";
 
-            return "{" + string.Join(",", pairs.Select(
-                kv => kv.Key.Serialize() + ":" + kv.Value.Serialize()
-            )) + "}";
+            StringBuilder sb = new();
+            for (int i = 0; i < pairs.Length; i++)
+            {
+                if (i > 0)
+                    sb.Append(',');
+                sb.Append(pairs[i].Key.Serialize());
+                sb.Append(':');
+                sb.Append(pairs[i].Value.Serialize());
+            }
+            return '{' + sb.ToString() + '}';
         }
 
         public static DictNode Deserialize(string text)

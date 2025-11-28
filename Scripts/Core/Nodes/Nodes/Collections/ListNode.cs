@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 
 namespace Rusty.Serialization.Core.Nodes
 {
@@ -35,8 +35,19 @@ namespace Rusty.Serialization.Core.Nodes
         public readonly string Serialize()
         {
             if (elements == null)
-                throw new Exception("Cannot serialize list nodes whose element arrays are null.");
-            return "[" + string.Join(",", elements.Select(e => e.Serialize())) + "]";
+                throw new Exception("Cannot serialize list nodes whose elements array are null.");
+
+            if (elements.Length == 0)
+                return "[]";
+
+            StringBuilder sb = new();
+            for (int i = 0; i < elements.Length; i++)
+            {
+                if (i > 0)
+                    sb.Append(',');
+                sb.Append(elements[i].Serialize());
+            }
+            return '[' + sb.ToString() + ']';
         }
 
         public static ListNode Deserialize(string text)

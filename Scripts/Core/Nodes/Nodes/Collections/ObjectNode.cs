@@ -37,24 +37,24 @@ namespace Rusty.Serialization.Core.Nodes
 
         public readonly string Serialize()
         {
-            // Handle empty objects.
+            if (members == null)
+                throw new Exception("Cannot serialize object nodes whose members array are null.");
+
             if (members.Length == 0)
                 return "<>";
 
             // Add members.
-            StringBuilder body = new();
+            StringBuilder sb = new();
             for (int i = 0; i < members.Length; i++)
             {
                 if (i > 0)
-                    body.Append(',');
+                    sb.Append(',');
                 ValidateIdentifier(members[i].Key);
-                body.Append(members[i].Key);
-                body.Append(':');
-                body.Append(members[i].Value.Serialize());
+                sb.Append(members[i].Key);
+                sb.Append(':');
+                sb.Append(members[i].Value.Serialize());
             }
-
-            // Surround with pointy brackets.
-            return $"<{body}>";
+            return $"<{sb}>";
         }
 
         public static ObjectNode Deserialize(string text)
