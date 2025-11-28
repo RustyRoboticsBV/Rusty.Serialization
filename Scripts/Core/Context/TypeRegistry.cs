@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Rusty.Serialization.Core.Converters;
 
-namespace Rusty.Serialization
+namespace Rusty.Serialization.Core.Contexts
 {
     /// <summary>
     /// An target type to IConverter type registry.

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rusty.Serialization
+namespace Rusty.Serialization.Core.Contexts
 {
     /// <summary>
     /// An type alias registry.

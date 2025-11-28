@@ -3,8 +3,7 @@ using System;
 using Rusty.Serialization;
 using Rusty.Serialization.Testing;
 
-Context context = new();
-string serialized = context.Serialize(new Test<char>());
+string serialized = Serializer.Default.Serialize(new Test<char>());
 Console.WriteLine(serialized);
 
 UnitTests.RunSerializeTests();

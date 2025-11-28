@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Rusty.Serialization.Converters;
 
-namespace Rusty.Serialization
+namespace Rusty.Serialization.Core.Contexts
 {
     /// <summary>
     /// Represents a type name.
