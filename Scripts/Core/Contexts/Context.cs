@@ -40,20 +40,16 @@ namespace Rusty.Serialization.Core.Contexts
             return SerializerScheme.Serialize(node);
         }
 
-        public object Deserialize(string serialized)
-        {
-            return null;
-        }
-
         public T Deserialize<T>(string serialized)
         {
-            return default;
+            INode node = SerializerScheme.Parse(serialized);
+            return ConverterScheme.Deconvert<T>(node);
         }
 
-        public void Deserialize(ref object target, string serialized)
-        { }
-
-        public void Deserialize<T>(ref T target, string serialized)
-        { }
+        public object Deserialize(Type type, string serialized)
+        {
+            INode node = SerializerScheme.Parse(serialized);
+            return ConverterScheme.Deconvert(type, node);
+        }
     }
 }

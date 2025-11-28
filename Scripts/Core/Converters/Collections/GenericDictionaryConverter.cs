@@ -21,7 +21,7 @@ namespace Rusty.Serialization.Core.Converters
             foreach (KeyValuePair<KeyT, ValueT> element in obj)
             {
                 INode key = ConvertNested(keyType, element.Key, scheme);
-                INode value = ConvertNested(valueType, element.Key, scheme);
+                INode value = ConvertNested(valueType, element.Value, scheme);
 
                 // Add pair.
                 nodePairs.Add(new(key, value));

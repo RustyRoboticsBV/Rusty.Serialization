@@ -14,9 +14,10 @@ namespace Rusty.Serialization.Core.Converters
 
         protected override T DeconvertValue(IntNode node, IConverterScheme scheme)
         {
-            if (Enum.IsDefined(typeof(T), node.Value))
-                return (T)Enum.ToObject(typeof(T), node.Value);
-            throw new Exception($"Cannot convert '{node.Value}' to enum type '{typeof(T)}'.");
+            Type enumType = typeof(T);
+            Type underlyingType = enumType.GetEnumUnderlyingType();
+            object value = System.Convert.ChangeType(node.Value, underlyingType);
+            return (T)Enum.ToObject(enumType, value);
         }
     }
 }

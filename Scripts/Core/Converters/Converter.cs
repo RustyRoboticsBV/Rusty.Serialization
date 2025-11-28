@@ -42,8 +42,23 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         protected U DeconvertNested<U>(INode node, IConverterScheme scheme)
         {
-            // TODO
-            return default;
+            if (node is TypeNode typed)
+                return (U)DeconvertNested(scheme.GetTypeFromName(typed.Name), typed.Value, scheme);
+            return scheme.Deconvert<U>(node);
+        }
+
+        /// <summary>
+        /// Deconvert an object into an element.
+        /// </summary>
+        protected object DeconvertNested(Type type, INode node, IConverterScheme scheme)
+        {
+            if (node is TypeNode typed)
+            {
+                type = scheme.GetTypeFromName(typed.Name);
+                System.Console.WriteLine("Casting " + typed.Name + " to " + type);
+                return DeconvertNested(scheme.GetTypeFromName(typed.Name), typed.Value, scheme);
+            }
+            return scheme.Deconvert(type, node);
         }
     }
 }

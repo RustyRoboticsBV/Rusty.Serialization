@@ -25,14 +25,6 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         /// <summary>
-        /// Register a converter type for some target type.
-        /// </summary>
-        public void Add<T>(string alias)
-        {
-            Add(typeof(T), alias);
-        }
-
-        /// <summary>
         /// Register a type with some alias.
         /// </summary>
         public void Add(Type type, string alias)
@@ -101,18 +93,22 @@ namespace Rusty.Serialization.Core.Converters
         {
             // Direct resolve.
             if (typeToAlias.TryGetValue(type, out var alias))
+            {
+                System.Console.WriteLine("WHEWEWEEE" + type + " " + alias);
                 return alias;
+            }
 
             // Resolve closed generic types.
             if (type.IsGenericType)
             {
                 Type genericDef = type.GetGenericTypeDefinition();
 
-                string baseName = typeToAlias.TryGetValue(genericDef, out var defAlias)
-                    ? defAlias
-                    : genericDef.Name;
+                System.Console.WriteLine("GENERICDEF " + genericDef);
+                if (typeToAlias.TryGetValue(genericDef, out alias))
+                    return alias;
 
-                return baseName;
+                //System.Console.WriteLine("BASENAME " + baseName);
+                //return baseName;
             }
 
             throw new ArgumentException($"No alias existed for type '{type}'.");

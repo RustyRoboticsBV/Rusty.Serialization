@@ -5,10 +5,10 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A null converter.
     /// </summary>
-    public sealed class NullConverter : ReferenceConverter<object, NullNode>
+    public sealed class NullConverter : ReferenceConverter<object, INode>
     {
         /* Protected methods. */
-        protected override NullNode ConvertRef(object obj, IConverterScheme scheme) => new();
-        protected override object DeconvertRef(NullNode node, IConverterScheme scheme) => null;
+        protected override INode ConvertRef(object obj, IConverterScheme scheme) => new NullNode();
+        protected override object DeconvertRef(INode node, IConverterScheme scheme) => null;
     }
 }

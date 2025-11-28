@@ -25,22 +25,11 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Deconvert an INode hierarchy to an object.
         /// </summary>
-        public object Deconvert(TypeNode node);
-
-        /// <summary>
-        /// Deconvert an INode hierarchy to an object.
-        /// </summary>
         public T Deconvert<T>(INode node);
-
         /// <summary>
         /// Deconvert an INode hierarchy to an object.
         /// </summary>
-        public void Deconvert(ref object obj, TypeNode node);
-
-        /// <summary>
-        /// Deconvert an INode hierarchy to an object.
-        /// </summary>
-        public void Deconvert<T>(ref T obj, INode node);
+        public object Deconvert(Type type, INode node);
 
         /// <summary>
         /// Get the typename of some object.

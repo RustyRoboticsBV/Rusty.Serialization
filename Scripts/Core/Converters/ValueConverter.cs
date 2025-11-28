@@ -19,7 +19,7 @@ namespace Rusty.Serialization.Core.Converters
                 return DeconvertNested<TargetT>(type.Value, scheme);
             if (node is NodeT typed)
                 return DeconvertValue(typed, scheme);
-            throw new Exception($"Cannot interpret nodes of type '{node.GetType()}'.");
+            throw new Exception($"{GetType().Name} cannot interpret nodes of type '{node.GetType()}'.");
         }
 
         /* Protected methods. */

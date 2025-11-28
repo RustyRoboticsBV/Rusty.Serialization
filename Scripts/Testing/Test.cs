@@ -56,11 +56,11 @@ namespace Rusty.Serialization.Testing
 
         // Dictionaries.
         public Dictionary<char, string> dictionary = new Dictionary<char, string>()
-    {
-        { 'a', "AAA" },
-        { 'b', "BBB" },
-        { 'c', "CCC" }
-    };
+        {
+            { 'a', "AAA" },
+            { 'b', "BBB" },
+            { 'c', "CCC" }
+        };
 
         // Objects.
         public object any = 2;
@@ -82,7 +82,7 @@ namespace Rusty.Serialization.Testing
             }
         }
         public Ouchie.Disaster<int, char[]> disaster1 = new();
-        public Ouchie.Disaster<string, byte[]> disaster2 = new();
+        public Class disaster2 = new Ouchie.Disaster<string, byte[]>();
 
         public struct Struct
         {

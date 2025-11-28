@@ -76,15 +76,20 @@ namespace Rusty.Serialization.Core.Converters
                     if (memberIdentifier != member.Name)
                         throw new Exception($"Mismatch between members {i}: '{member.Name}' and '{memberIdentifier}'.");
 
-                    object memberObj = DeconvertNested<object>(memberNode, scheme);
                     if (member is FieldInfo field)
+                    {
+                        object memberObj = DeconvertNested(field.FieldType, memberNode, scheme);
                         field.SetValue(obj, memberObj);
+                    }
                     else if (member is PropertyInfo property)
+                    {
+                        object memberObj = DeconvertNested(property.PropertyType, memberNode, scheme);
                         property.SetValue(obj, memberObj);
+                    }
                 }
                 return obj;
             }
-            throw new ArgumentException($"Cannot deconvert nodes of valueType '{node.GetType()}'.");
+            throw new ArgumentException($"{GetType().Name} cannot deconvert nodes of valueType '{node.GetType()}'.");
         }
 
         /* Private methods. */

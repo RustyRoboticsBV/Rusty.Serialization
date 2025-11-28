@@ -1,4 +1,6 @@
-﻿namespace Rusty.Serialization.Core.Contexts
+﻿using System;
+
+namespace Rusty.Serialization.Core.Contexts
 {
     /// <summary>
     /// A serialization context. It can serialize objects and deserialize strings, according to configurable schemes.
@@ -14,18 +16,10 @@
         /// <summary>
         /// Deserialize an object, using the current converter & serialization schemes..
         /// </summary>
-        public object Deserialize(string serialized);
+        public object Deserialize(Type type, string serialized);
         /// <summary>
         /// Deserialize an object, using the current converter & serialization schemes..
         /// </summary>
         public T Deserialize<T>(string serialized);
-        /// <summary>
-        /// Deserialize an object, using the current converter & serialization schemes..
-        /// </summary>
-        public void Deserialize(ref object obj, string serialized);
-        /// <summary>
-        /// Deserialize an object, using the current converter & serialization schemes..
-        /// </summary>
-        public void Deserialize<T>(ref T obj, string serialized);
     }
 }

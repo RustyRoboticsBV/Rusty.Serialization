@@ -113,23 +113,17 @@ namespace Rusty.Serialization.Core.Converters
                 return converter.Convert(obj, this);
         }
 
-        public object Deconvert(TypeNode node)
-        {
-            IConverter converter = GetConverter(node.Name);
-            return converter.Deconvert(node.Value, this);
-        }
-
         public T Deconvert<T>(INode node)
         {
-            if (node is TypeNode)
-                return (T)Deconvert((TypeNode)node);
             IConverter converter = GetConverter(typeof(T));
             return (T)converter.Deconvert(node, this);
         }
 
-        public void Deconvert(ref object obj, TypeNode node) { }
-
-        public void Deconvert<T>(ref T obj, INode node) { }
+        public object Deconvert(Type type, INode node)
+        {
+            IConverter converter = GetConverter(type);
+            return converter.Deconvert(node, this);
+        }
 
         /// <summary>
         /// Get a type's name.
@@ -139,6 +133,12 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Get a type from a type name.
         /// </summary>
-        public Type GetTypeFromName(string name) => (Type)new TypeName(name, Aliasses);
+        public Type GetTypeFromName(string name)
+        {
+            if (Aliasses.Has(name))
+                return Aliasses.Get(name);
+
+            return (Type)new TypeName(name, Aliasses);
+        }
     }
 }
