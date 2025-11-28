@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Rusty.Serialization.Core.Nodes
 {
@@ -13,7 +11,7 @@ namespace Rusty.Serialization.Core.Nodes
         private readonly KeyValuePair<INode, INode>[] pairs;
 
         /* Public properties. */
-        public readonly ReadOnlySpan<KeyValuePair<INode, INode>> Pairs => pairs;
+        public readonly KeyValuePair<INode, INode>[] Pairs => pairs;
 
         /* Constructors. */
         public DictNode(KeyValuePair<INode, INode>[] pairs)
@@ -35,67 +33,6 @@ namespace Rusty.Serialization.Core.Nodes
                 str += $"\n- {keyStr} => {valStr}";
             }
             return str;
-        }
-
-        public readonly string Serialize()
-        {
-            if (pairs == null)
-                throw new Exception("Cannot serialize dictionary nodes whose pairs array are null.");
-
-            if (pairs.Length == 0)
-                return "{}";
-
-            StringBuilder sb = new();
-            for (int i = 0; i < pairs.Length; i++)
-            {
-                if (i > 0)
-                    sb.Append(',');
-                sb.Append(pairs[i].Key.Serialize());
-                sb.Append(':');
-                sb.Append(pairs[i].Value.Serialize());
-            }
-            return '{' + sb.ToString() + '}';
-        }
-
-        public static DictNode Deserialize(string text)
-        {
-            // Remove whitespaces.
-            string trimmed = text?.Trim() ?? throw new ArgumentException("Cannot parse null.");
-
-            try
-            {
-                // Enforce curly braces.
-                if (!trimmed.StartsWith('{') || !trimmed.EndsWith('}'))
-                    throw new Exception("Missing curly braces.");
-
-                // Get text between curly braces and trim it.
-                string contents = trimmed.Substring(1, trimmed.Length - 2).Trim();
-
-                // Split into terms.
-                List<string> parsed = ParseUtility.Split(contents);
-
-                // Parse terms.
-                var pairs = new KeyValuePair<INode, INode>[parsed.Count];
-                for (int i = 0; i < parsed.Count; i++)
-                {
-                    // Split into key and value.
-                    List<string> pairStrs = ParseUtility.Split(parsed[i], ':');
-                    if (pairStrs.Count != 2)
-                        throw new Exception("Malformed key-name pair.");
-
-                    // Parse keys and values.
-                    INode key = ParseUtility.ParseValue(pairStrs[0].Trim());
-                    INode value = ParseUtility.ParseValue(pairStrs[1].Trim());
-                    pairs[i] = new(key, value);
-                }
-
-                return new DictNode(pairs);
-
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException($"Could not parse string '{text}' as a dictionary:\n\n{ex.Message}.");
-            }
         }
     }
 }

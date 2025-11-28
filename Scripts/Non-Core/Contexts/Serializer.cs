@@ -12,6 +12,7 @@ using System.Numerics;
 using System.Text;
 using Rusty.Serialization.Converters.System;
 using Rusty.Serialization.Core.Contexts;
+using Rusty.Serialization.Core.Serializers;
 
 namespace Rusty.Serialization
 {
@@ -29,6 +30,12 @@ namespace Rusty.Serialization
         /// A global, default serialization context.
         /// </summary>
         public static Serializer Default => @default;
+        /// <summary>
+        /// A CSCD serialization scheme.
+        /// </summary>
+        public static Serializers.CSCD.Scheme CscdScheme => new();
+
+        public override ISerializerScheme SerializerScheme { get; set; } = CscdScheme;
 
         /* Constructors. */
         public Serializer() : base()

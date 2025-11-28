@@ -1,6 +1,8 @@
 ﻿#if RUSTY_DEBUG
 using System;
 using Rusty.Serialization.Core.Nodes;
+using Rusty.Serialization.Core.Serializers;
+using Rusty.Serialization.Serializers.CSCD;
 
 namespace Rusty.Serialization.Testing
 {
@@ -9,60 +11,63 @@ namespace Rusty.Serialization.Testing
     /// </summary>
     public static class SerializeTester
     {
+        /* Public properties. */
+        public static ISerializerScheme Scheme { get; set; } = new Scheme();
+
         /* Public methods. */
         public static void TestBool(bool obj, string expectedValue)
         {
             BoolNode node = new(obj);
-            string result = node.Serialize();
+            string result = Scheme.Serialize(node);
             Report(obj, result, expectedValue);
         }
 
         public static void TestInt(decimal obj, string expectedValue)
         {
             IntNode node = new(obj);
-            string result = node.Serialize();
+            string result = Scheme.Serialize(node);
             Report(obj, result, expectedValue);
         }
 
         public static void TestReal(decimal obj, string expectedValue)
         {
             RealNode node = new(obj);
-            string result = node.Serialize();
+            string result = Scheme.Serialize(node);
             Report(obj, result, expectedValue);
         }
 
         public static void TestChar(char obj, string expectedValue)
         {
             CharNode node = new(obj);
-            string result = node.Serialize();
+            string result = Scheme.Serialize(node);
             Report(obj, result, expectedValue);
         }
 
         public static void TestString(string obj, string expectedValue)
         {
             StringNode node = new(obj);
-            string result = node.Serialize();
+            string result = Scheme.Serialize(node);
             Report(obj, result, expectedValue);
         }
 
         public static void TestColor((byte, byte, byte, byte) obj, string expectedValue)
         {
             ColorNode node = new(obj.Item1, obj.Item2, obj.Item3, obj.Item4);
-            string result = node.Serialize();
+            string result = Scheme.Serialize(node);
             Report(obj, result, expectedValue);
         }
 
         public static void TestBinary(byte[] obj, string expectedValue)
         {
             BinaryNode node = new(obj);
-            string result = node.Serialize();
+            string result = Scheme.Serialize(node);
             Report(obj, result, expectedValue);
         }
 
         public static void TestNull(string expectedValue)
         {
             NullNode node = new();
-            string result = node.Serialize();
+            string result = Scheme.Serialize(node);
             Report(null, result, expectedValue);
         }
 

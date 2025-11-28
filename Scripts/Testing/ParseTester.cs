@@ -1,6 +1,8 @@
 ﻿#if RUSTY_DEBUG
 using System;
 using Rusty.Serialization.Core.Nodes;
+using Rusty.Serialization.Core.Serializers;
+using Rusty.Serialization.Serializers.CSCD;
 
 namespace Rusty.Serialization.Testing
 {
@@ -42,12 +44,14 @@ namespace Rusty.Serialization.Testing
         public static int Failures { get; set; }
         public static ParseResultThrow Throw => new();
 
+        public static ISerializerScheme Scheme { get; } = new Scheme();
+
         /* Public methods. */
         public static void TestBool(string str, Result<bool> expected)
         {
             try
             {
-                var node = BoolNode.Parse(str);
+                var node = (BoolNode)Scheme.Parse(str);
                 Report(str, new(node.Value), expected, nameof(BoolNode), null);
             }
             catch (Exception ex)
@@ -60,7 +64,7 @@ namespace Rusty.Serialization.Testing
         {
             try
             {
-                var node = IntNode.Parse(str);
+                var node = (IntNode)Scheme.Parse(str);
                 Report(str, new(node.Value), expected, nameof(IntNode), null);
             }
             catch (Exception ex)
@@ -73,7 +77,7 @@ namespace Rusty.Serialization.Testing
         {
             try
             {
-                var node = RealNode.Parse(str);
+                var node = (RealNode)Scheme.Parse(str);
                 Report(str, new(node.Value), expected, nameof(RealNode), null);
             }
             catch (Exception ex)
@@ -86,7 +90,7 @@ namespace Rusty.Serialization.Testing
         {
             try
             {
-                var node = CharNode.Parse(str);
+                var node = (CharNode)Scheme.Parse(str);
                 Report(str, new(node.Value), expected, nameof(CharNode), null);
             }
             catch (Exception ex)
@@ -99,7 +103,7 @@ namespace Rusty.Serialization.Testing
         {
             try
             {
-                var node = StringNode.Parse(str);
+                var node = (StringNode)Scheme.Parse(str);
                 Report(str, new(node.Value), expected, nameof(StringNode), null);
             }
             catch (Exception ex)
@@ -112,7 +116,7 @@ namespace Rusty.Serialization.Testing
         {
             try
             {
-                var node = ColorNode.Parse(str);
+                var node = (ColorNode)Scheme.Parse(str);
                 Report(str, new((node.R, node.G, node.B, node.A)), expected, nameof(ColorNode), null);
             }
             catch (Exception ex)
@@ -125,7 +129,7 @@ namespace Rusty.Serialization.Testing
         {
             try
             {
-                var node = TimeNode.Parse(str);
+                var node = (TimeNode)Scheme.Parse(str);
                 Report(str, new(node.Value), expected, nameof(TimeNode), null);
             }
             catch (Exception ex)
@@ -138,7 +142,7 @@ namespace Rusty.Serialization.Testing
         {
             try
             {
-                var node = BinaryNode.Parse(str);
+                var node = (BinaryNode)Scheme.Parse(str);
                 Report(str, node.Value, expected, nameof(BinaryNode), null);
             }
             catch (Exception ex)
@@ -151,7 +155,7 @@ namespace Rusty.Serialization.Testing
         {
             try
             {
-                var node = NullNode.Parse(str);
+                var node = (NullNode)Scheme.Parse(str);
                 Report(str, new(null), expected, nameof(NullNode), null);
             }
             catch (Exception ex)
@@ -164,7 +168,7 @@ namespace Rusty.Serialization.Testing
         {
             try
             {
-                var node = TypeNode.Parse(str);
+                var node = (TypeNode)Scheme.Parse(str);
                 Report(str, new(node.Name), expected, nameof(TypeNode), null);
             }
             catch (Exception ex)

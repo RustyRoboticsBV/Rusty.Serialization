@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 
-namespace Rusty.Serialization.Core.Nodes
+namespace Rusty.Serialization.Serializers.CSCD
 {
+    /// <summary>
+    /// An utility for parsing CSCD strings.
+    /// </summary>
     internal static class ParseUtility
     {
         /* Public methods. */
@@ -91,48 +93,6 @@ namespace Rusty.Serialization.Core.Nodes
             result.Add(final);
 
             return result;
-        }
-
-        /// <summary>
-        /// Parse a trimmed string and return a serializer node of the appropriate type.
-        /// </summary>
-        public static INode ParseValue(string text)
-        {
-            if (text == null)
-                throw new ArgumentException("Cannot parse null.");
-            if (text.StartsWith('#'))
-                return ColorNode.Parse(text);
-            if (text.StartsWith('\'') && text.EndsWith('\''))
-                return CharNode.Parse(text);
-            if (text.StartsWith('"') && text.EndsWith('"'))
-                return StringNode.Parse(text);
-            if (text.StartsWith('('))
-                return TypeNode.Parse(text);
-            if (text.StartsWith('[') && text.EndsWith(']'))
-                return ListNode.Deserialize(text);
-            if (text.StartsWith('{') && text.EndsWith('}'))
-                return DictNode.Deserialize(text);
-            if (text.StartsWith('<') && text.EndsWith('>'))
-                return ObjectNode.Deserialize(text);
-            if (text.ToLower() == "true" || text.ToLower() == "false")
-                return BoolNode.Parse(text);
-            if (text.ToLower() == "null")
-                return NullNode.Parse(text);
-            if (text.StartsWith('Y') || text.StartsWith("-Y")
-                || text.StartsWith('M') || text.StartsWith("-M")
-                || text.StartsWith('D') || text.StartsWith("-D")
-                || text.StartsWith('h') || text.StartsWith("-h")
-                || text.StartsWith('m') || text.StartsWith("-m")
-                || text.StartsWith('s') || text.StartsWith("-s")
-                || text.StartsWith('f') || text.StartsWith("-f"))
-            {
-                return TimeNode.Parse(text);
-            }
-            if (text.Contains('.'))
-                return RealNode.Parse(text);
-            if (decimal.TryParse(text, CultureInfo.InvariantCulture, out decimal d))
-                return IntNode.Parse(text);
-            throw new ArgumentException($"Invalid string '{text}'");
         }
     }
 }

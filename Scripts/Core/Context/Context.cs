@@ -1,6 +1,7 @@
 using System;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Serializers;
 
 namespace Rusty.Serialization.Core.Contexts
 {
@@ -9,8 +10,14 @@ namespace Rusty.Serialization.Core.Contexts
     /// It contains serializers for all C# types with syntax-level support: bool, ints, reals, char, string, classes, structs,
     /// enums, arrays, tuples and nullables.
     /// </summary>
-    public class Context
+    public abstract class Context
     {
+        /* Public properties. */
+        /// <summary>
+        /// The serializer scheme of this context.
+        /// </summary>
+        public abstract ISerializerScheme SerializerScheme { get; set; }
+
         /* Private properties. */
         /// <summary>
         /// The registry of known converter types.
@@ -117,7 +124,7 @@ namespace Rusty.Serialization.Core.Contexts
                 node = new TypeNode(GetTypeName(objType), node);
 
             // Serialize node.
-            return node.Serialize();
+            return SerializerScheme.Serialize(node);
         }
 
         /// <summary>
@@ -138,7 +145,7 @@ namespace Rusty.Serialization.Core.Contexts
                 node = new TypeNode(GetTypeName(objType), node);
 
             // Serialize node.
-            return node.Serialize();
+            return SerializerScheme.Serialize(node);
         }
 
         /// <summary>
