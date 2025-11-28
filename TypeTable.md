@@ -83,6 +83,7 @@ Below you can view the types that have built-in serialization/deserialization su
 |StringBuilder|string|
 
 ## Godot Engine Types
+*These types are only available when compiling in a Godot context.*
 
 |C#|Serialized|
 |-|-|
