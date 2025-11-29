@@ -16,6 +16,9 @@ namespace Rusty.Serialization.Converters
     {
         public DefaultConverters()
         {
+            // Null types.
+            Add<DBNull, DBNullConverter>("db0");
+
             // Int types.
             Add<BigInteger, BigIntegerConverter>("ibig");
             Add<Index, IndexConverter>("idx");
@@ -27,6 +30,8 @@ namespace Rusty.Serialization.Converters
             Add<StringBuilder, StringBuilderConverter>("sb");
             Add<Uri, UriConverter>("uri");
             Add<Version, VersionConverter>("ver");
+
+            Add<Encoding, EncodingConverter>("enc");
 
 #if GODOT
             Add<Godot.StringName, Gd.StringNameConverter>("GDsname");

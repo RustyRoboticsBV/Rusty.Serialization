@@ -6,7 +6,7 @@ using Rusty.Serialization.Core.Converters;
 namespace Rusty.Serialization.Converters.System
 {
     /// <summary>
-    /// A key-value pair converter.
+    /// A System.Collections.Generic.KeyValuePair converter.
     /// </summary>
     public sealed class KeyValuePairConverter<KeyT, ValueT> : ValueConverter<KeyValuePair<KeyT, ValueT>, DictNode>
     {

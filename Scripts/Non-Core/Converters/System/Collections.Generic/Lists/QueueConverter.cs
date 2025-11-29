@@ -4,7 +4,7 @@ using Rusty.Serialization.Core.Converters;
 namespace Rusty.Serialization.Converters.System
 {
     /// <summary>
-    /// A queue converter.
+    /// A System.Collections.Generic.Queue converter.
     /// </summary>
     public sealed class QueueConverter<T> : GenericListConverter<Queue<T>, T>
     {

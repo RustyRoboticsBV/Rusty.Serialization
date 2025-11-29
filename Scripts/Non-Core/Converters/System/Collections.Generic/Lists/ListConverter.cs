@@ -4,7 +4,7 @@ using Rusty.Serialization.Core.Converters;
 namespace Rusty.Serialization.Converters.System
 {
     /// <summary>
-    /// A list converter.
+    /// A System.Collections.Generic.List converter.
     /// </summary>
     public sealed class ListConverter<T> : GenericListConverter<List<T>, T>
     {

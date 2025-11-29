@@ -4,7 +4,7 @@ using Rusty.Serialization.Core.Converters;
 namespace Rusty.Serialization.Converters.System
 {
     /// <summary>
-    /// A hash set converter.
+    /// A System.Collections.GenericHashSet converter.
     /// </summary>
     public sealed class HashSetConverter<T> : GenericListConverter<HashSet<T>, T>
     {

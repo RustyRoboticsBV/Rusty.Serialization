@@ -4,7 +4,7 @@ using Rusty.Serialization.Core.Converters;
 namespace Rusty.Serialization.Converters.System
 {
     /// <summary>
-    /// A sorted set converter.
+    /// A System.Collections.Generic.SortedSet converter.
     /// </summary>
     public sealed class SortedSetConverter<T> : GenericListConverter<SortedSet<T>, T>
     {

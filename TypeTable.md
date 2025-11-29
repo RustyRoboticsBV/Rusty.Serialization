@@ -31,6 +31,7 @@ Below you can view the types that have built-in serialization/deserialization su
 ### System
 |C#|Serialized|Notes|
 |-|-|-|
+|DBNull|null||
 |Half|real||
 |Index|int||
 |Range|list||
@@ -85,6 +86,7 @@ Below you can view the types that have built-in serialization/deserialization su
 |C#|Serialized|
 |-|-|
 |StringBuilder|string|
+|Encoding|string|
 
 ## Godot Engine Types
 *These types are only available when compiling in a Godot context.*
