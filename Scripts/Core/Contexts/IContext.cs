@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Core.Contexts
         /// <summary>
         /// Serialize an object, using the current converter & serialization schemes.
         /// </summary>
-        public string Serialize(object obj);
+        public string Serialize(object obj, bool prettyPrint = false);
 
         /// <summary>
         /// Deserialize an object, using the current converter & serialization schemes..

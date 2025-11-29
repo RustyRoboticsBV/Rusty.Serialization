@@ -1,10 +1,4 @@
-﻿#if GODOT && !UNITY_5_OR_NEWER
-#define GODOT_CONTEXT
-
-#elif !GODOT && UNITY_5_OR_NEWER
-#define UNITY_CONTEXT
-#endif
-using Rusty.Serialization.Converters;
+﻿using Rusty.Serialization.Converters;
 using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.Core.Serializers;

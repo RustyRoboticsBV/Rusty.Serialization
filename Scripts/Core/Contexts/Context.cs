@@ -26,7 +26,7 @@ namespace Rusty.Serialization.Core.Contexts
         /// <summary>
         /// Serialize an object.
         /// </summary>
-        public string Serialize(object obj)
+        public string Serialize(object obj, bool prettyPrint = false)
         {
             // Convert to node.
             INode node = ConverterScheme.Convert(obj);
@@ -37,6 +37,7 @@ namespace Rusty.Serialization.Core.Contexts
             node = new TypeNode(typeName, node);
 
             // Serialize node.
+            SerializerScheme.PrettyPrint = prettyPrint;
             return SerializerScheme.Serialize(node);
         }
 

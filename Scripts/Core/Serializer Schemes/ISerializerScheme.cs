@@ -7,6 +7,16 @@ namespace Rusty.Serialization.Core.Serializers
     /// </summary>
     public interface ISerializerScheme
     {
+        /* Public properties. */
+        /// <summary>
+        /// Whether or not pretty print has been enabled.
+        /// </summary>
+        public bool PrettyPrint { get; set; }
+        /// <summary>
+        /// The tab string used for pretty printing.
+        /// </summary>
+        public string Tab { get; set; }
+
         /* Public methods. */
         /// <summary>
         /// Serialize an INode hierarchy.

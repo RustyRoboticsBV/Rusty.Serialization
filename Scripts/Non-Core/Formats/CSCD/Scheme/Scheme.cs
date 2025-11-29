@@ -9,7 +9,11 @@ namespace Rusty.Serialization.Serializers.CSCD
     /// </summary>
     public class Scheme : ISerializerScheme
     {
-        /* Private methods. */
+        /* Public properties. */
+        public bool PrettyPrint { get; set; }
+        public string Tab { get; set; } = "\t";
+
+        /* Private properties. */
         private NullSerializer Null { get; } = new();
         private BoolSerializer Bool { get; } = new();
         private IntSerializer Int { get; } = new();
