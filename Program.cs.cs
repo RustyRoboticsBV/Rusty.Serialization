@@ -2,9 +2,16 @@
 using System;
 using System.Text;
 using Rusty.Serialization;
+using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.Testing;
 
-TypeNameParser.Test();
+//TypeNameParser.Test();
+string nstr = "System.Collections.Generic.Dictionary`2[System.Int32,System.Char][,][]";
+TypeName tn = new(nstr, null);
+Type ttype = tn.ToType();
+Console.WriteLine(nstr);
+Console.WriteLine(tn);
+Console.WriteLine(ttype);
 Console.ReadLine();
 
 DefaultContext context = new DefaultContext();

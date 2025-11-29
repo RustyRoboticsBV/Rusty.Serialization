@@ -28,99 +28,23 @@ namespace Rusty.Serialization.Core.Converters
 
         public TypeName(string typeName, AliasRegistry context)
         {
-            System.Console.WriteLine(typeName);
+            var result = TypeNameParser.Parse(typeName);
 
-            if (typeName == "")
+            nameSpace = result.Namespace;
+            name = result.Name;
+            genericArgs = new TypeName[result.GenericArgs.Count];
+            for (int i = 0; i < genericArgs.Length; i++)
             {
-                this.context = context;
-                type = null;
-                nameSpace = "";
-                name = "";
-                genericArgs = [];
-                return;
+                genericArgs[i] = new(result.GenericArgs[i], null);
             }
-
-            // Figure out namespace, main name, generic args and array suffix parts.
-            string copy = typeName;
-            int namespaceIndex = -1;
-            int genericsIndex = -1;
-            int genericsLength = 0;
-            int arrayIndex = -1;
-
-            int bracketDepth = 0;
-            int bracketStart = 0;
-            bool isGenericArgs = false;
-            for (int i = 0; i < copy.Length; i++)
-            {
-                if (copy[i] == '.' && bracketDepth == 0)
-                    namespaceIndex = i;
-                else if (copy[i] == '[')
-                {
-                    if (bracketDepth == 0)
-                        genericsIndex = i;
-                    bracketDepth++;
-                }
-                else if (copy[i] == ']')
-                {
-                    bracketDepth--;
-                    if (bracketDepth == 0)
-                    {
-                        if (!isGenericArgs || i < copy.Length - 1)
-                            arrayIndex = i + 1;
-                        else
-                            genericsLength = i - genericsIndex - 1;
-                        break;
-                    }
-                }
-                else if (bracketDepth > 0)
-                {
-                    if (!isGenericArgs && (copy[i] >= 'a' && copy[i] <= 'z' || copy[i] >= 'A' && copy[i] <= 'Z'
-                        || copy[i] == '_' || copy[i] == '`' || copy[i] == '.'))
-                    {
-                        isGenericArgs = true;
-                        genericsIndex = bracketStart;
-                    }
-                }
-            }
-
-            // Namespace.
-            if (namespaceIndex >= 0)
-            {
-                nameSpace = copy.Substring(0, namespaceIndex);
-                copy = copy.Substring(namespaceIndex + 1);
-            }
-            else
-                nameSpace = "";
-
-            // Generic arguments.
-            if (genericsIndex >= 0 && genericsIndex + 2 < copy.Length)
-            {
-                string generics = copy.Substring(genericsIndex + 2, 2);
-                copy = copy.Substring(0, genericsIndex);
-                genericArgs = ParseGenericArgs(generics, context);
-            }
-            else
-                genericArgs = [];
-
-            // Array suffix.
-            if (arrayIndex >= 0)
-                arraySuffix = copy.Substring(arrayIndex);
-
-            // Type name.
-            name = copy;
-
-            // Get type.
-            System.Console.WriteLine(typeName + "   ns:" + nameSpace + " n:" + name + " ga:" + genericArgs.Length);
-            type = Type.GetType(ToString());
-            if (type == null)
-                throw new Exception("Bad type name: " + ToString());
+            arraySuffix = result.ArraySuffix;
 
             // Parse type.
             this.context = context;
         }
 
         /* Conversion operators. */
-        public static implicit operator Type(TypeName tn) => tn.type;
+        public static implicit operator Type(TypeName tn) => tn.ToType();
         public static implicit operator string(TypeName tn) => tn.ToString();
 
         /* Public methods. */
@@ -151,8 +75,13 @@ namespace Rusty.Serialization.Core.Converters
                 sb.Append("]");
             }
 
+            // Add array suffix.
+            sb.Append(arraySuffix);
+
             return sb.ToString();
         }
+
+        public Type ToType() => Type.GetType(ToString());
 
         public override readonly int GetHashCode()
         {
