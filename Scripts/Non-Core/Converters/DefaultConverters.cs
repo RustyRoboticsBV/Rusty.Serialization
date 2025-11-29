@@ -46,7 +46,7 @@ namespace Rusty.Serialization.Converters
             Add<Guid, GuidConverter>("guid");
 
             // Color types.
-            Add<Color, Converters.System.ColorConverter>("col");
+            Add<Color, System.ColorConverter>("col");
 
 #if GODOT
             Add<Godot.Color, Gd.ColorConverter>("GDcol");
@@ -65,6 +65,7 @@ namespace Rusty.Serialization.Converters
             Add(typeof(HashSet<>), typeof(HashSetConverter<>), "hset");
             Add(typeof(Stack<>), typeof(StackConverter<>), "stck");
             Add(typeof(Queue<>), typeof(QueueConverter<>), "queu");
+            Add(typeof(SortedSet<>), typeof(SortedSetConverter<>), "sset");
 
             Add(typeof(Point), typeof(System.PointConverter), "p2i");
             Add(typeof(PointF), typeof(PointFConverter), "p2f");
@@ -104,6 +105,8 @@ namespace Rusty.Serialization.Converters
 
             // Dictionary types.
             Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
+            Add(typeof(SortedList<,>), typeof(SortedListConverter<,>), "slst");
+            Add(typeof(SortedDictionary<,>), typeof(SortedDictionaryConverter<,>), "sdic");
             Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
 
 #if GODOT

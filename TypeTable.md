@@ -45,13 +45,16 @@ Below you can view the types that have built-in serialization/deserialization su
 ### System.Collections.Generic
 |C#|Serialized|
 |-|-|
-|List<T>|list/null|
-|Stack<T>|list/null|
-|Queue<T>|list/null|
-|LinkedList<T>|list/null|
-|HashSet<T>|list/null|
+|List&lt;T&gt;|list/null|
+|Stack&lt;T&gt;|list/null|
+|Queue&lt;T&gt;|list/null|
+|LinkedList&lt;T&gt;|list/null|
+|HashSet&lt;T&gt;|list/null|
 |Dictionary<T,U>|dictionary/null|
 |KeyValuePair<T,U>|list/null|
+|SortedSet&lt;T&gt;|list/null|
+|SortedList<T,U>|dictionary/null|
+|SortedDictionary<T,U>|dictionary/null|
 
 ### System.Numerics
 |C#|Serialized|
@@ -90,7 +93,7 @@ Below you can view the types that have built-in serialization/deserialization su
 |Variant|*varies*|
 |Resource|string/null|
 |Array|list/null|
-|Array<T>|list/null|
+|Array&lt;T&gt;|list/null|
 |Dictionary|dictionary/null|
 |Dictionary<T,U>|dictionary/null|
 |StringName|string|
