@@ -1,6 +1,19 @@
 # Rusty Serialization
 A configurable C# serialization/deserialization module, with support for built-in C# types, as well as common API types from the Godot and Unity game engines. It's primarily meant for engine-agnostic tool development.
 
+## Usage
+Serializing:
+```
+MyClass obj = new();
+DefaultContext context = new();                 // Contains serialization scheme for all built-in types.
+string serialized = context.Serialize(obj);     // Serializes all public properties and fields of MyClass.
+```
+
+Deserializing:
+```
+obj = context.Deserialize<MyClass>(serialized); // Deserializes back to MyClass.
+```
+
 ## Architecture
 The module uses two steps in the serialization process.
 1. Convert between the C# object and an intermediate node-based representation.
