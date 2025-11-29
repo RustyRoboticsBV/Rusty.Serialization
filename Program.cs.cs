@@ -15,14 +15,15 @@ Console.WriteLine(ttype);
 Console.ReadLine();
 
 DefaultContext context = new DefaultContext();
+bool prettyPrint = false;
 
 var obj = new Test<char>();
-string serialized = context.Serialize(obj);
+string serialized = context.Serialize(obj, prettyPrint);
 Console.WriteLine(serialized);
 
 Console.WriteLine();
 obj = context.Deserialize<Test<char>>(serialized);
-string reserialized = context.Serialize(obj);
+string reserialized = context.Serialize(obj, prettyPrint);
 Console.WriteLine(reserialized);
 
 Console.WriteLine();

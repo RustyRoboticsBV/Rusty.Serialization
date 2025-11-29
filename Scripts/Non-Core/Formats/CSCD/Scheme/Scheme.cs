@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Serializers.CSCD
     {
         /* Public properties. */
         public bool PrettyPrint { get; set; }
-        public string Tab { get; set; } = "\t";
+        public string Tab { get; set; } = "  ";
 
         /* Private properties. */
         private NullSerializer Null { get; } = new();

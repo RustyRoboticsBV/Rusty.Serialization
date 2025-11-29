@@ -5,8 +5,8 @@ A configurable C# serialization/deserialization module, with support for built-i
 Serializing:
 ```
 MyClass obj = new();
-DefaultContext context = new();                 // Contains serialization scheme for all built-in types.
-string serialized = context.Serialize(obj);     // Serializes all public properties and fields of MyClass.
+DefaultContext context = new();             // Contains serialization scheme for all built-in types.
+string serialized = context.Serialize(obj); // Serializes all public properties and fields of MyClass.
 ```
 
 Deserializing:

@@ -20,17 +20,41 @@ namespace Rusty.Serialization.Serializers.CSCD
             if (node.Members.Length == 0)
                 return "<>";
 
+            bool prettyPrint = scheme.PrettyPrint;
+            string tab = scheme.Tab;
+
             // Add members.
             StringBuilder sb = new();
             for (int i = 0; i < node.Members.Length; i++)
             {
-                if (i > 0)
-                    sb.Append(',');
+                string value = scheme.Serialize(node.Members[i].Value);
+
+                if (prettyPrint)
+                    sb.Append('\n' + tab);
+
+                // Key.
                 ValidateIdentifier(node.Members[i].Key);
                 sb.Append(node.Members[i].Key);
+
+                // Separator.
+                if (prettyPrint)
+                    sb.Append(' ');
                 sb.Append(':');
-                sb.Append(scheme.Serialize(node.Members[i].Value));
+                if (prettyPrint)
+                    sb.Append(' ');
+
+                // Value.
+                if (prettyPrint && i < node.Members.Length - 1)
+                    sb.Append(value.Replace("\n", "\n" + tab));
+                else
+                    sb.Append(value);
+
+                // Comma.
+                if (i < node.Members.Length - 1)
+                    sb.Append(',');
             }
+            if (prettyPrint)
+                sb.Append('\n');
             return $"<{sb}>";
         }
 
