@@ -97,7 +97,12 @@ namespace Rusty.Serialization.Core.Converters
             if (targetType.IsValueType && targetType.IsGenericType &&
                 targetType.FullName!.StartsWith("System.ValueTuple`"))
             {
-                return typeof(TupleConverter<>).MakeGenericType(targetType);
+                return typeof(ValueTupleConverter<>).MakeGenericType(targetType);
+            }
+            if (targetType.IsClass && targetType.IsGenericType &&
+                targetType.FullName!.StartsWith("System.Tuple`"))
+            {
+                return typeof(ReferenceTupleConverter<>).MakeGenericType(targetType);
             }
 
             // Resolve closed generic types.

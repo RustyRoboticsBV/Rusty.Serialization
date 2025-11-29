@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
@@ -53,6 +54,8 @@ namespace Rusty.Serialization.Converters
 
             // Binary types.
             Add<Guid, GuidConverter>("guid");
+
+            Add<BitArray, BitArrayConverter>("barr");
 
             // Color types.
             Add<Color, System.ColorConverter>("col");

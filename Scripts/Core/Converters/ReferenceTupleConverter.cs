@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -7,13 +7,13 @@ using Rusty.Serialization.Core.Nodes;
 namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// A generic value tuple converter.
+    /// A generic reference tuple converter.
     /// </summary>
-    public sealed class TupleConverter<TupleT> : ValueConverter<TupleT, ListNode>
-        where TupleT : struct, ITuple
+    public sealed class ReferenceTupleConverter<TupleT> : ReferenceConverter<TupleT, ListNode>
+        where TupleT : class, ITuple
     {
         /* Protected methods. */
-        protected sealed override ListNode ConvertValue(TupleT obj, IConverterScheme scheme)
+        protected sealed override ListNode ConvertRef(TupleT obj, IConverterScheme scheme)
         {
             Type type = obj.GetType();
             ITuple tuple = obj;
@@ -26,7 +26,7 @@ namespace Rusty.Serialization.Core.Converters
             return new(elementNodes);
         }
 
-        protected sealed override TupleT DeconvertValue(ListNode node, IConverterScheme scheme)
+        protected sealed override TupleT DeconvertRef(ListNode node, IConverterScheme scheme)
         {
             // Get constructor.
             Type type = typeof(TupleT);

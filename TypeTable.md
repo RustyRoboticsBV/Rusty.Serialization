@@ -3,29 +3,29 @@
 Below you can view the types that have built-in serialization/deserialization support, and what literal types they will serialize to.
 
 ## Built-In C# Types
-|C#|Serialized|
-|-|-|
-|bool|bool|
-|sbyte|int|
-|short|int|
-|int|int|
-|long|int|
-|byte|int|
-|ushort|int|
-|uint|int|
-|ulong|int|
-|float|real|
-|double|real|
-|decimal|real|
-|char|char|
-|string|string/null|
-|array|list/null|
-|byte[]|binary/null|
-|tuple|list|
-|nullable|*varies*|
-|enum|int|
-|struct|object|
-|class|object/null|
+|C#|.NET|Serialized|
+|-|-|-|
+|bool|System.Boolean|bool|
+|sbyte|System.SByte|int|
+|short|System.Int16|int|
+|int|System.Int32|int|
+|long|System.Int64|int|
+|byte|System.Byte|int|
+|ushort|System.UInt16|int|
+|uint|System.UInt32|int|
+|ulong|System.UInt64|int|
+|float|System.Single|real|
+|double|System.Double|real|
+|decimal|System.Decimal|real|
+|char|System.Char|char|
+|string|System.String|string/null|
+|array|T[]|list/null|
+|byte[]|System.Byte[]|binary/null|
+|tuple|System.ValueTuple<...>|list|
+|nullable|System.Nullable&lt;T&gt;|*varies*|
+|enum|System.Enum|int|
+|struct|System.ValueType|object|
+|class|System.Object|object/null|
 
 ## Other .NET Types
 ### System
@@ -42,8 +42,14 @@ Below you can view the types that have built-in serialization/deserialization su
 |TimeSpan|time||
 |DateTime|time||
 |DateTimeOffset|list|
+|Tuple<...>|list/null|
 |DateOnly|time|C# 10 or higher|
 |TimeOnly|time|C# 10 or higher|
+
+### System.Collections
+|C#|Serialized|
+|-|-|
+|BitArray|binary/null|
 
 ### System.Collections.Generic
 |C#|Serialized|
