@@ -9,7 +9,7 @@ namespace Rusty.Serialization.Core.Nodes
         /// <summary>
         /// Check if a character is in the allowed character set.
         /// </summary>
-        public static bool Check(char chr)
+        public static bool Check(int chr)
         {
             return (chr >= ' ' && chr <= '~')
                 || (chr >= '\t' && chr <= '\r')

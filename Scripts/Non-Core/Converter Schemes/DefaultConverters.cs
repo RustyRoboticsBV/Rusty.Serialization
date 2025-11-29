@@ -33,6 +33,9 @@ namespace Rusty.Serialization.Converters
 
             Add<Encoding, EncodingConverter>("enc");
 
+            // Char types.
+            Add<Rune, RuneConverter>("rune");
+
 #if GODOT
             Add<Godot.StringName, Gd.StringNameConverter>("GDsname");
             Add<Godot.NodePath, Gd.NodePathConverter>("GDnpath");

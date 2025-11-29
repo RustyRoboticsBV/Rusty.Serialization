@@ -32,9 +32,9 @@ namespace Rusty.Serialization.Core.Nodes
         /// <summary>
         /// Convert a character to an unicode hexcode.
         /// </summary>
-        public static string Serialize(char chr)
+        public static string Serialize(int chr)
         {
-            return ((long)chr).ToString("X");
+            return chr.ToString("X");
         }
     }
 }

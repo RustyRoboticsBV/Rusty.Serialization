@@ -85,6 +85,7 @@ Below you can view the types that have built-in serialization/deserialization su
 ### System.Text
 |C#|Serialized|
 |-|-|
+|Rune|char|
 |StringBuilder|string|
 |Encoding|string|
 

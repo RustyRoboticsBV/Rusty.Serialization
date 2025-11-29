@@ -23,7 +23,7 @@ namespace Rusty.Serialization.Serializers.CSCD
             else if (!CharUtility.Check(node.Value))
                 str = "\\[" + UnicodeUtility.Serialize(node.Value) + "]";
             else
-                str = node.Value.ToString(CultureInfo.InvariantCulture);
+                str = ((char)node.Value).ToString(CultureInfo.InvariantCulture);
             return $"'" + str + "'";
         }
 

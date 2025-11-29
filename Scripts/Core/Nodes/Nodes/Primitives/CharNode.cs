@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
@@ -6,13 +8,13 @@ namespace Rusty.Serialization.Core.Nodes
     public readonly struct CharNode : INode
     {
         /* Fields. */
-        private readonly char value;
+        private readonly int value;
 
         /* Public properties. */
-        public readonly char Value => value;
+        public readonly int Value => value;
 
         /* Constructors. */
-        public CharNode(char value)
+        public CharNode(int value)
         {
             this.value = value;
         }
@@ -20,7 +22,10 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override readonly string ToString()
         {
-            return "char: " + value;
+            if (value <= char.MaxValue)
+                return "char: " + (char)value;
+            else
+                return "char: " + new Rune(value);
         }
     }
 }
