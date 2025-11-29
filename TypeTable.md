@@ -52,18 +52,19 @@ Below you can view the types that have built-in serialization/deserialization su
 |BitArray|binary/null|
 
 ### System.Collections.Generic
-|C#|Serialized|
-|-|-|
-|List&lt;T&gt;|list/null|
-|Stack&lt;T&gt;|list/null|
-|Queue&lt;T&gt;|list/null|
-|LinkedList&lt;T&gt;|list/null|
-|HashSet&lt;T&gt;|list/null|
-|Dictionary<T,U>|dictionary/null|
-|KeyValuePair<T,U>|list/null|
-|SortedSet&lt;T&gt;|list/null|
-|SortedList<T,U>|dictionary/null|
-|SortedDictionary<T,U>|dictionary/null|
+|C#|Serialized|Notes|
+|-|-|-|
+|List&lt;T&gt;|list/null||
+|Stack&lt;T&gt;|list/null||
+|Queue&lt;T&gt;|list/null||
+|LinkedList&lt;T&gt;|list/null||
+|HashSet&lt;T&gt;|list/null||
+|Dictionary<T,U>|dictionary/null||
+|KeyValuePair<T,U>|list/null||
+|SortedSet&lt;T&gt;|list/null||
+|SortedList<T,U>|dictionary/null||
+|SortedDictionary<T,U>|dictionary/null||
+|PriorityQueue<T,U>|dictionary/null|C# 10 or higher|
 
 ### System.Numerics
 |C#|Serialized|

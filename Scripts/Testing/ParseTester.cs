@@ -88,14 +88,15 @@ namespace Rusty.Serialization.Testing
 
         public static void TestChar(string str, Result<char> expected)
         {
+            Result<int> expectedInt = new(expected.value != null ? (int)(char)expected.value : null, expected.thrown);
             try
             {
                 var node = (CharNode)Scheme.Parse(str);
-                Report(str, new(node.Value), expected, nameof(CharNode), null);
+                Report(str, new(node.Value), expectedInt, nameof(CharNode), null);
             }
             catch (Exception ex)
             {
-                Report(str, Throw, expected, nameof(CharNode), ex);
+                Report(str, Throw, expectedInt, nameof(CharNode), ex);
             }
         }
 

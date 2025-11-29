@@ -118,6 +118,7 @@ namespace Rusty.Serialization.Converters
 
             // Dictionary types.
             Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
+            Add(typeof(PriorityQueue<,>), typeof(PriorityQueueConverter<,>), "pque");
             Add(typeof(SortedList<,>), typeof(SortedListConverter<,>), "slst");
             Add(typeof(SortedDictionary<,>), typeof(SortedDictionaryConverter<,>), "sdic");
             Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
