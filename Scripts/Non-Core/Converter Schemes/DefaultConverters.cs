@@ -26,15 +26,16 @@ namespace Rusty.Serialization.Converters
             // Real types.
             Add<Half, HalfConverter>("f16");
 
+            // Char types.
+            Add<Rune, RuneConverter>("rune");
+
             // String types.
-            Add<StringBuilder, StringBuilderConverter>("sb");
+            Add<Type, TypeConverter>("type");
             Add<Uri, UriConverter>("uri");
             Add<Version, VersionConverter>("ver");
 
+            Add<StringBuilder, StringBuilderConverter>("sb");
             Add<Encoding, EncodingConverter>("enc");
-
-            // Char types.
-            Add<Rune, RuneConverter>("rune");
 
 #if GODOT
             Add<Godot.StringName, Gd.StringNameConverter>("GDsname");

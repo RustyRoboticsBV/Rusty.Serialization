@@ -10,23 +10,18 @@ namespace Rusty.Serialization.Core.Converters
     public struct TypeName
     {
         /* Fields. */
-        private readonly AliasRegistry context;
-        private readonly Type type;
-
         private string nameSpace;
         private string name;
         private TypeName[] genericArgs;
         private string arraySuffix;
 
         /* Constructors. */
-        public TypeName(Type type, AliasRegistry context)
+        public TypeName(Type type)
         {
-            this.context = context;
-            this.type = type;
             ParseType(type);
         }
 
-        public TypeName(string typeName, AliasRegistry context)
+        public TypeName(string typeName)
         {
             var result = TypeNameParser.Parse(typeName);
 
@@ -35,12 +30,9 @@ namespace Rusty.Serialization.Core.Converters
             genericArgs = new TypeName[result.GenericArgs.Count];
             for (int i = 0; i < genericArgs.Length; i++)
             {
-                genericArgs[i] = new(result.GenericArgs[i], null);
+                genericArgs[i] = new(result.GenericArgs[i]);
             }
             arraySuffix = result.ArraySuffix;
-
-            // Parse type.
-            this.context = context;
         }
 
         /* Conversion operators. */
@@ -122,7 +114,7 @@ namespace Rusty.Serialization.Core.Converters
             genericArgs = new TypeName[genericArgTypes.Length];
             for (int i = 0; i < genericArgTypes.Length; i++)
             {
-                genericArgs[i] = new(genericArgTypes[i], context);
+                genericArgs[i] = new(genericArgTypes[i]);
             }
 
             // Main name.
@@ -133,37 +125,6 @@ namespace Rusty.Serialization.Core.Converters
                 fullName = type.Name + '+' + fullName;
             }
             name = fullName;
-        }
-
-        private static TypeName[] ParseGenericArgs(string str, AliasRegistry context)
-        {
-            if (str.StartsWith('[') && str.EndsWith(']'))
-                str = str.Substring(1, str.Length - 2);
-
-            int depth = 0;
-            int termStart = 0;
-            List<string> terms = new();
-            for (int i = 0; i < str.Length; i++)
-            {
-                if (str[i] == '[')
-                    depth++;
-                else if (str[i] == ']')
-                    depth--;
-                else if (str[i] == ',' && depth == 0)
-                {
-                    terms.Add(str.Substring(termStart, i));
-                    termStart = i + 1;
-                }
-            }
-            terms.Add(str.Substring(termStart));
-
-            TypeName[] names = new TypeName[terms.Count];
-            for (int i = 0; i < names.Length; i++)
-            {
-                names[i] = new TypeName(terms[i], context);
-            }
-
-            return names;
         }
     }
 }

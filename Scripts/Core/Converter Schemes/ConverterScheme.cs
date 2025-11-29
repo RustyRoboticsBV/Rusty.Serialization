@@ -79,7 +79,7 @@ namespace Rusty.Serialization.Core.Converters
                 type = Aliasses.Get(targetNameOrAlias);
             else
             {
-                TypeName targetName = new(targetNameOrAlias, Aliasses);
+                TypeName targetName = new(targetNameOrAlias);
                 type = targetName.GetType();
             }
             return GetConverter(type);
@@ -128,7 +128,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Get a type's name.
         /// </summary>
-        public TypeName GetTypeName(Type type) => new(type, Aliasses);
+        public TypeName GetTypeName(Type type) => new(type);
 
         /// <summary>
         /// Get a type from a type name.
@@ -138,7 +138,7 @@ namespace Rusty.Serialization.Core.Converters
             if (Aliasses.Has(name))
                 return Aliasses.Get(name);
 
-            return (Type)new TypeName(name, Aliasses);
+            return (Type)new TypeName(name);
         }
     }
 }

@@ -31,6 +31,7 @@ Below you can view the types that have built-in serialization/deserialization su
 ### System
 |C#|Serialized|Notes|
 |-|-|-|
+|Type|string||
 |DBNull|null||
 |Half|real||
 |Index|int||

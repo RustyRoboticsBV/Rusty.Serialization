@@ -7,7 +7,7 @@ using Rusty.Serialization.Testing;
 
 //TypeNameParser.Test();
 string nstr = "System.Collections.Generic.Dictionary`2[System.Int32,System.Char][,][]";
-TypeName tn = new(nstr, null);
+TypeName tn = new(nstr);
 Type ttype = tn.ToType();
 Console.WriteLine(nstr);
 Console.WriteLine(tn);
