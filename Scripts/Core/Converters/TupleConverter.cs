@@ -40,7 +40,8 @@ namespace Rusty.Serialization.Core.Converters
             object[] values = new object[node.Elements.Length];
             for (int i = 0; i < values.Length; i++)
             {
-                values[i] = DeconvertNested<object>(node.Elements[i], scheme);
+                Type fieldType = type.GetFields()[i].FieldType;
+                values[i] = DeconvertNested(fieldType, node.Elements[i], scheme);
             }
 
             // Invoke constructor.

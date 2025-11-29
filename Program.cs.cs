@@ -4,6 +4,9 @@ using System.Text;
 using Rusty.Serialization;
 using Rusty.Serialization.Testing;
 
+TypeNameParser.Test();
+Console.ReadLine();
+
 DefaultContext context = new DefaultContext();
 
 var obj = new Test<char>();

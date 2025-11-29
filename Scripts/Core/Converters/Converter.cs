@@ -54,8 +54,8 @@ namespace Rusty.Serialization.Core.Converters
         {
             if (node is TypeNode typed)
             {
-                type = scheme.GetTypeFromName(typed.Name);
-                System.Console.WriteLine("Casting " + typed.Name + " to " + type);
+                Type nestedType = scheme.GetTypeFromName(typed.Name);
+                System.Console.WriteLine(type + " : " + typed.Name + " => " + (nestedType != null ? nestedType : "null") + "\n" + node);
                 return DeconvertNested(scheme.GetTypeFromName(typed.Name), typed.Value, scheme);
             }
             return scheme.Deconvert(type, node);

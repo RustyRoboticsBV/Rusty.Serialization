@@ -93,22 +93,15 @@ namespace Rusty.Serialization.Core.Converters
         {
             // Direct resolve.
             if (typeToAlias.TryGetValue(type, out var alias))
-            {
-                System.Console.WriteLine("WHEWEWEEE" + type + " " + alias);
                 return alias;
-            }
 
             // Resolve closed generic types.
             if (type.IsGenericType)
             {
                 Type genericDef = type.GetGenericTypeDefinition();
 
-                System.Console.WriteLine("GENERICDEF " + genericDef);
                 if (typeToAlias.TryGetValue(genericDef, out alias))
                     return alias;
-
-                //System.Console.WriteLine("BASENAME " + baseName);
-                //return baseName;
             }
 
             throw new ArgumentException($"No alias existed for type '{type}'.");

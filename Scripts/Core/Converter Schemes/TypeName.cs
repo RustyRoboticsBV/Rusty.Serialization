@@ -7,23 +7,166 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// Represents a type name.
     /// </summary>
-    public readonly struct TypeName
+    public struct TypeName
     {
         /* Fields. */
         private readonly AliasRegistry context;
         private readonly Type type;
 
-        private readonly string nameSpace;
-        private readonly string name;
-        private readonly TypeName[] genericArgs;
+        private string nameSpace;
+        private string name;
+        private TypeName[] genericArgs;
+        private string arraySuffix;
 
         /* Constructors. */
         public TypeName(Type type, AliasRegistry context)
         {
-            // Store type & context.
-            this.type = type;
             this.context = context;
+            this.type = type;
+            ParseType(type);
+        }
 
+        public TypeName(string typeName, AliasRegistry context)
+        {
+            System.Console.WriteLine(typeName);
+
+            if (typeName == "")
+            {
+                this.context = context;
+                type = null;
+                nameSpace = "";
+                name = "";
+                genericArgs = [];
+                return;
+            }
+
+            // Figure out namespace, main name, generic args and array suffix parts.
+            string copy = typeName;
+            int namespaceIndex = -1;
+            int genericsIndex = -1;
+            int genericsLength = 0;
+            int arrayIndex = -1;
+
+            int bracketDepth = 0;
+            int bracketStart = 0;
+            bool isGenericArgs = false;
+            for (int i = 0; i < copy.Length; i++)
+            {
+                if (copy[i] == '.' && bracketDepth == 0)
+                    namespaceIndex = i;
+                else if (copy[i] == '[')
+                {
+                    if (bracketDepth == 0)
+                        genericsIndex = i;
+                    bracketDepth++;
+                }
+                else if (copy[i] == ']')
+                {
+                    bracketDepth--;
+                    if (bracketDepth == 0)
+                    {
+                        if (!isGenericArgs || i < copy.Length - 1)
+                            arrayIndex = i + 1;
+                        else
+                            genericsLength = i - genericsIndex - 1;
+                        break;
+                    }
+                }
+                else if (bracketDepth > 0)
+                {
+                    if (!isGenericArgs && (copy[i] >= 'a' && copy[i] <= 'z' || copy[i] >= 'A' && copy[i] <= 'Z'
+                        || copy[i] == '_' || copy[i] == '`' || copy[i] == '.'))
+                    {
+                        isGenericArgs = true;
+                        genericsIndex = bracketStart;
+                    }
+                }
+            }
+
+            // Namespace.
+            if (namespaceIndex >= 0)
+            {
+                nameSpace = copy.Substring(0, namespaceIndex);
+                copy = copy.Substring(namespaceIndex + 1);
+            }
+            else
+                nameSpace = "";
+
+            // Generic arguments.
+            if (genericsIndex >= 0 && genericsIndex + 2 < copy.Length)
+            {
+                string generics = copy.Substring(genericsIndex + 2, 2);
+                copy = copy.Substring(0, genericsIndex);
+                genericArgs = ParseGenericArgs(generics, context);
+            }
+            else
+                genericArgs = [];
+
+            // Array suffix.
+            if (arrayIndex >= 0)
+                arraySuffix = copy.Substring(arrayIndex);
+
+            // Type name.
+            name = copy;
+
+            // Get type.
+            System.Console.WriteLine(typeName + "   ns:" + nameSpace + " n:" + name + " ga:" + genericArgs.Length);
+            type = Type.GetType(ToString());
+            if (type == null)
+                throw new Exception("Bad type name: " + ToString());
+
+            // Parse type.
+            this.context = context;
+        }
+
+        /* Conversion operators. */
+        public static implicit operator Type(TypeName tn) => tn.type;
+        public static implicit operator string(TypeName tn) => tn.ToString();
+
+        /* Public methods. */
+        public override readonly string ToString()
+        {
+            StringBuilder sb = new();
+
+            // Add namespace.
+            if (nameSpace.Length > 0)
+            {
+                sb.Append(nameSpace);
+                sb.Append('.');
+            }
+
+            // Add type.
+            sb.Append(name);
+
+            // Add generic type arguments.
+            if (genericArgs.Length > 0)
+            {
+                sb.Append("[");
+                for (int i = 0; i < genericArgs.Length; i++)
+                {
+                    if (i > 0)
+                        sb.Append(',');
+                    sb.Append(genericArgs[i]);
+                }
+                sb.Append("]");
+            }
+
+            return sb.ToString();
+        }
+
+        public override readonly int GetHashCode()
+        {
+            int hashcode = ((nameSpace.GetHashCode() ^ 11) + name.GetHashCode()) ^ 11;
+            foreach (TypeName type in genericArgs)
+            {
+                hashcode = hashcode ^ 11 + type.GetHashCode();
+            }
+            return hashcode;
+        }
+
+        /* Private methods. */
+        private void ParseType(Type type)
+        {
             // Handle null.
             if (type == null)
             {
@@ -54,131 +197,15 @@ namespace Rusty.Serialization.Core.Converters
             }
 
             // Main name.
-            string fullName = type.Name; 
+            string fullName = type.Name;
             while (type.DeclaringType != null)
             {
                 type = type.DeclaringType;
                 fullName = type.Name + '+' + fullName;
             }
             name = fullName;
-            System.Console.WriteLine("INSTANTIATING " + name + " " + ToString());
         }
 
-        public TypeName(string typeName, AliasRegistry context)
-        {
-            if (typeName == "")
-            {
-                this.context = context;
-                type = null;
-                nameSpace = "";
-                name = "";
-                genericArgs = [];
-                return;
-            }
-
-            // Parse type.
-            this.context = context;
-            System.Console.WriteLine("Trying to resolve type typeName " + typeName);
-            type = Type.GetType(typeName);
-            System.Console.WriteLine($"The result was {(type != null ? type : "null")}");
-
-            // Figure out namespace, main name and generic args parts.
-            int namespaceIndex = -1;
-            int genericsIndex = -1;
-
-            int genericDepth = 0;
-            for (int i = 0; i < typeName.Length; i++)
-            {
-                if (typeName[i] == '.' && genericsIndex == -1)
-                    namespaceIndex = i;
-                if (typeName[i] == '[')
-                {
-                    if (genericDepth == 0)
-                        genericsIndex = i;
-                    genericDepth++;
-                }
-                if (typeName[i] == ']')
-                    genericDepth--;
-            }
-
-            // Namespace.
-            if (namespaceIndex >= 0)
-            {
-                nameSpace = typeName.Substring(0, namespaceIndex);
-                typeName = typeName.Substring(namespaceIndex + 1);
-            }
-            else
-                nameSpace = "";
-
-            // Generic arguments.
-            if (genericsIndex >= 0 && genericsIndex + 2 < typeName.Length)
-            {
-                string generics = typeName.Substring(genericsIndex + 2);
-                typeName = typeName.Substring(0, genericsIndex);
-                genericArgs = ParseGenericArgs(generics, context);
-            }
-            else
-                genericArgs = [];
-
-            // Type name.
-            this.name = typeName;
-        }
-
-        /* Conversion operators. */
-        public static implicit operator Type(TypeName tn) => tn.type;
-        public static implicit operator string(TypeName tn) => tn.ToString();
-
-        /* Public methods. */
-        public override readonly string ToString()
-        {
-            StringBuilder sb = new();
-
-            // Add namespace.
-            if (nameSpace.Length > 0)
-            {
-                sb.Append(nameSpace);
-                sb.Append('.');
-            }
-
-            // Add type.
-            sb.Append(name);
-
-            // Apply alias.
-            if (context.Has(type))
-            {
-                System.Console.WriteLine(context);
-                System.Console.WriteLine("REPLACING NAME " + sb + " WITH " + context.Get(type));
-                sb.Clear();
-                sb.Append(context.Get(type));
-            }
-
-            // Add generic type arguments.
-            if (genericArgs.Length > 0)
-            {
-                sb.Append("[");
-                for (int i = 0; i < genericArgs.Length; i++)
-                {
-                    if (i > 0)
-                        sb.Append(',');
-                    sb.Append(genericArgs[i]);
-                }
-                sb.Append("]");
-            }
-
-            return sb.ToString();
-        }
-
-        public override readonly int GetHashCode()
-        {
-            int hashcode = ((nameSpace.GetHashCode() ^ 11) + name.GetHashCode()) ^ 11;
-            foreach (TypeName type in genericArgs)
-            {
-                hashcode = hashcode ^ 11 + type.GetHashCode();
-            }
-            return hashcode;
-        }
-
-        /* Private methods. */
         private static TypeName[] ParseGenericArgs(string str, AliasRegistry context)
         {
             if (str.StartsWith('[') && str.EndsWith(']'))
