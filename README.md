@@ -23,7 +23,7 @@ The module uses two steps in the serialization process.
 
 Both the converter and serializer layers can be freely swapped out.
 - The default converter layer has explicit support for various .NET, Godot and Unity data types (see [here](TypeTable.md) for a comprehensive list).
-- Three serializer schemes are available: JSON, XML and a custom format called CSCD (which is the default scheme).
+- The default serializer layer uses a custom serialization format (see below).
 
 ## Compact Serialized C# Data
 The module uses a custom serialization format, called Compact Serialized C# Data (CSCD), a JSON-like format that supports type labels and a wider variety of data types. It's designed to be compact, general and relatively easy to parse. See the specification document [here](FormatSpecification.md).
