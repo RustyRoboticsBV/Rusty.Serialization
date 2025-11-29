@@ -47,20 +47,24 @@ public static class TypeNameParser
     public static TypeNameParts Parse(string typeName)
     {
         var result = new TypeNameParts();
-        int pos = 0;
+
+        // Handle null and empty strings.
+        if (typeName == null)
+            return result;
+
+        typeName = typeName.Trim();
         int length = typeName.Length;
+        if (length == 0)
+            return result;
 
-        // Step 1: Extract the type name (up to first bracket)
-        StringBuilder nameBuilder = new StringBuilder();
-        while (pos < length && typeName[pos] != '[')
-        {
-            nameBuilder.Append(typeName[pos]);
-            pos++;
-        }
+        // Step 1: Extract the type name (up to first bracket).
+        int fullNameLength = typeName.IndexOf('[');
+        if (fullNameLength < 0)
+            fullNameLength = length;
 
-        string fullName = nameBuilder.ToString();
+        string fullName = typeName.Substring(0, fullNameLength);
 
-        // Split namespace and name
+        // Step 2: Split namespace and name.
         int lastDot = fullName.LastIndexOf('.');
         if (lastDot >= 0)
         {
@@ -72,36 +76,35 @@ public static class TypeNameParser
             result.Name = fullName;
         }
 
-        // Step 2: Parse brackets with depth counter
+        // Step 3: Parse brackets.
         var arraySuffixBuilder = new StringBuilder();
+        int pos = 0;
         while (pos < length && typeName[pos] == '[')
         {
             int startBracket = pos;
             int depth = 0;
             bool found = false;
-            pos--; // We'll increment in loop
+            pos--;
 
             for (int i = startBracket; i < length; i++)
             {
                 char c = typeName[i];
-                if (c == '[') depth++;
-                else if (c == ']') depth--;
+                if (c == '[')
+                    depth++;
+                else if (c == ']')
+                    depth--;
 
                 if (depth == 0)
                 {
                     string content = typeName.Substring(startBracket + 1, i - startBracket - 1);
 
-                    // Determine if generic args or array
+                    // Generic args.
                     if (ContainsLetter(content))
-                    {
-                        // Generic args
                         result.GenericArgs = SplitGenericArgs(content);
-                    }
+
+                    // Array suffix
                     else
-                    {
-                        // Array suffix
                         arraySuffixBuilder.Append(typeName.Substring(startBracket, i - startBracket + 1));
-                    }
 
                     pos = i + 1;
                     found = true;
@@ -109,7 +112,8 @@ public static class TypeNameParser
                 }
             }
 
-            if (!found) throw new ArgumentException("Mismatched brackets in type name.");
+            if (!found)
+                throw new ArgumentException("Mismatched brackets in type name.");
         }
 
         result.ArraySuffix = arraySuffixBuilder.ToString();
@@ -120,7 +124,8 @@ public static class TypeNameParser
     {
         foreach (char c in s)
         {
-            if (char.IsLetter(c) || c == '_') return true;
+            if (char.IsLetter(c) || c == '_')
+                return true;
         }
         return false;
     }
@@ -134,8 +139,10 @@ public static class TypeNameParser
         for (int i = 0; i < args.Length; i++)
         {
             char c = args[i];
-            if (c == '[') depth++;
-            else if (c == ']') depth--;
+            if (c == '[')
+                depth++;
+            else if (c == ']')
+                depth--;
 
             if (c == ',' && depth == 0)
             {
@@ -143,9 +150,7 @@ public static class TypeNameParser
                 sb.Clear();
             }
             else
-            {
                 sb.Append(c);
-            }
         }
 
         if (sb.Length > 0)
