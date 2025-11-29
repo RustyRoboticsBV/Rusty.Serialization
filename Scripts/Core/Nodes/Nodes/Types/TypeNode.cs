@@ -1,5 +1,3 @@
-using System;
-
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>

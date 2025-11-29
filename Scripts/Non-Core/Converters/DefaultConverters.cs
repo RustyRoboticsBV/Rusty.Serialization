@@ -59,6 +59,7 @@ namespace Rusty.Serialization.Converters
 
             // List types.
             Add<Range, RangeConverter>("rng");
+            Add<DateTimeOffset, DateTimeOffsetConverter>("dto");
 
             Add(typeof(List<>), typeof(ListConverter<>), "list");
             Add(typeof(LinkedList<>), typeof(LinkedListConverter<>), "lnls");

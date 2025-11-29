@@ -39,6 +39,7 @@ Below you can view the types that have built-in serialization/deserialization su
 |Guid|binary||
 |TimeSpan|time||
 |DateTime|time||
+|DateTimeOffset|list|
 |DateOnly|time|C# 10 or higher|
 |TimeOnly|time|C# 10 or higher|
 
