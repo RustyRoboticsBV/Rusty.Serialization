@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -131,7 +131,7 @@ namespace Rusty.Serialization.Converters
             // Object types.
 #if GODOT
             Add(typeof(Godot.Variant), typeof(Gd.VariantConverter), "GDvar");
-            Add(typeof(Godot.Resource), typeof(Gd.ResourceConverter), "GDres");
+            //Add(typeof(Godot.Resource), typeof(Gd.ResourceConverter), "GDres");
 #endif
         }
     }

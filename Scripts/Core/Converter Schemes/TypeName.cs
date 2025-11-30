@@ -1,5 +1,7 @@
+using Rusty.Serialization.Core.Nodes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Rusty.Serialization.Core.Converters
@@ -73,7 +75,33 @@ namespace Rusty.Serialization.Core.Converters
             return sb.ToString();
         }
 
-        public Type ToType() => Type.GetType(ToString());
+        public Type ToType()
+        {
+            string typeName = ToString();
+
+            // 1. Try standard Type.GetType first (works for system types)
+            Type type = Type.GetType(typeName);
+            if (type != null)
+                return type;
+
+            // 2. Search all currently loaded assemblies.
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = asm.GetType(typeName);
+                if (type != null)
+                    return type;
+            }
+
+            // 3. As a last resort, search by name only (ignores namespace conflicts).
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = asm.GetTypes().FirstOrDefault(t => t.FullName == typeName || t.Name == typeName);
+                if (type != null)
+                    return type;
+            }
+
+            return null; // not found
+        }
 
         public override readonly int GetHashCode()
         {

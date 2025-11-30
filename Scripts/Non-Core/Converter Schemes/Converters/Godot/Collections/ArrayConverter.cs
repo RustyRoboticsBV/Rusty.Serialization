@@ -1,4 +1,4 @@
-﻿#if GODOT
+#if GODOT
 using Godot;
 using Godot.Collections;
 using Rusty.Serialization.Core.Converters;
@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Converters.Gd
     /// <summary>
     /// A typed Godot array converter.
     /// </summary>
-    public sealed class ArrayConverter<T> : GenericListConverter<Array<T>, T>
+    public sealed class ArrayConverter<[MustBeVariant]T> : GenericListConverter<Array<T>, T>
     {
         /* Protected methods. */
         protected override Array<T> CreateObject(T[] elements) => new(elements);

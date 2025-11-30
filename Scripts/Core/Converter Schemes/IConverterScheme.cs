@@ -1,5 +1,5 @@
-﻿using Rusty.Serialization.Core.Nodes;
 using System;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -9,6 +9,11 @@ namespace Rusty.Serialization.Core.Converters
     public interface IConverterScheme
     {
         /* Public methods. */
+        /// <summary>
+        /// Add a converter for some target type.
+        /// </summary>
+        public void Add(Type targetT, Type converterT, string alias = null);
+
         /// <summary>
         /// Convert an object to an INode hierarchy.
         /// </summary>

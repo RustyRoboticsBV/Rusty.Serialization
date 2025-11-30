@@ -1,6 +1,9 @@
+using Godot;
+using Rusty.Serialization.Core.Nodes;
+using Rusty.Serialization.Serializers.CSCD;
 using System;
 using System.Collections.Generic;
-using Rusty.Serialization.Core.Nodes;
+using System.Xml.Linq;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -13,18 +16,11 @@ namespace Rusty.Serialization.Core.Converters
         /* Protected methods. */
         protected sealed override DictNode ConvertRef(DictionaryT obj, IConverterScheme scheme)
         {
-            Type keyType = typeof(KeyT);
-            Type valueType = typeof(ValueT);
-
             // Convert the elements to nodes.
             List<KeyValuePair<INode, INode>> nodePairs = new();
-            foreach (KeyValuePair<KeyT, ValueT> element in obj)
+            foreach (KeyValuePair<KeyT, ValueT> pair in obj)
             {
-                INode key = ConvertNested(keyType, element.Key, scheme);
-                INode value = ConvertNested(valueType, element.Value, scheme);
-
-                // Add pair.
-                nodePairs.Add(new(key, value));
+                nodePairs.Add(ConvertPair(pair, scheme));
             }
 
             // Create the node.
@@ -36,11 +32,26 @@ namespace Rusty.Serialization.Core.Converters
             DictionaryT obj = new();
             foreach (var pair in node.Pairs)
             {
-                KeyT key = DeconvertNested<KeyT>(pair.Key, scheme);
-                ValueT value = DeconvertNested<ValueT>(pair.Value, scheme);
-                obj[key] = value;
+                KeyValuePair<KeyT, ValueT> deconvertedPair = DeconvertPair(pair, scheme);
+                Godot.GD.Print(deconvertedPair.Key.ToString() + " : " + deconvertedPair.Value.ToString());
+                obj[deconvertedPair.Key] = deconvertedPair.Value;
             }
+            Godot.GD.Print(obj);
             return obj;
+        }
+
+        protected virtual KeyValuePair<INode, INode> ConvertPair(KeyValuePair<KeyT, ValueT> pair, IConverterScheme scheme)
+        {
+            INode key = ConvertNested(typeof(KeyT), pair.Key, scheme);
+            INode value = ConvertNested(typeof(ValueT), pair.Value, scheme);
+            return new(key, value);
+        }
+
+        protected virtual KeyValuePair<KeyT, ValueT> DeconvertPair(KeyValuePair<INode, INode> pair, IConverterScheme scheme)
+        {
+            KeyT key = DeconvertNested<KeyT>(pair.Key, scheme);
+            ValueT value = DeconvertNested<ValueT>(pair.Value, scheme);
+            return new(key, value);
         }
     }
 }

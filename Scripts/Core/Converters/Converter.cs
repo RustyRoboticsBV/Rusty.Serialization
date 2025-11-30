@@ -1,5 +1,7 @@
-﻿using System;
 using Rusty.Serialization.Core.Nodes;
+using System;
+using System.Reflection;
+using System.Linq;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -42,9 +44,30 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         protected U DeconvertNested<U>(INode node, IConverterScheme scheme)
         {
+            object obj;
+
+            // Unwrap type node.
             if (node is TypeNode typed)
-                return (U)DeconvertNested(scheme.GetTypeFromName(typed.Name), typed.Value, scheme);
-            return scheme.Deconvert<U>(node);
+            {
+                Type underlyingType = scheme.GetTypeFromName(typed.Name);
+                obj = DeconvertNested(underlyingType, typed.Value, scheme);
+            }
+
+            // Else, deconvert as-is.
+            else
+                obj = scheme.Deconvert<U>(node);
+
+            // If the object is of the correct type, return it.
+            if (obj is U u)
+                return u;
+
+            // Else, check if a conversion operator is available.
+            object converted = DoConversionOperator(typeof(U), obj);
+            if (converted is U typedConverted)
+                return typedConverted;
+
+            throw new InvalidCastException(
+                $"Cannot convert node value of type {obj?.GetType().Name} to {typeof(U).Name}.");
         }
 
         /// <summary>
@@ -55,10 +78,51 @@ namespace Rusty.Serialization.Core.Converters
             if (node is TypeNode typed)
             {
                 Type nestedType = scheme.GetTypeFromName(typed.Name);
-                System.Console.WriteLine(type + " : " + typed.Name + " => " + (nestedType != null ? nestedType : "null") + "\n" + node);
                 return DeconvertNested(scheme.GetTypeFromName(typed.Name), typed.Value, scheme);
             }
             return scheme.Deconvert(type, node);
+        }
+
+        /* Private methods. */
+        /// <summary>
+        /// Try to run an explicit or implicit conversion operator from some value to the target type.
+        /// </summary>
+        private static object DoConversionOperator(Type targetType, object value)
+        {
+            if (value == null)
+                return null;
+
+            Type sourceType = value.GetType();
+
+            // Look for an implicit operator on the target type
+            var method = targetType.GetMethods(
+                BindingFlags.Public | BindingFlags.Static)
+                .FirstOrDefault(m =>
+                    (m.Name == "op_Implicit" || m.Name == "op_Explicit") &&
+                    m.ReturnType == targetType &&
+                    m.GetParameters().Length == 1 &&
+                    m.GetParameters()[0].ParameterType.IsAssignableFrom(sourceType)
+                );
+
+            if (method != null)
+                return method.Invoke(null, new[] { value });
+
+            // Look for an implicit operator on the source type
+            method = sourceType.GetMethods(
+                BindingFlags.Public | BindingFlags.Static)
+                .FirstOrDefault(m =>
+                    (m.Name == "op_Implicit" || m.Name == "op_Explicit") &&
+                    m.ReturnType == targetType &&
+                    m.GetParameters().Length == 1 &&
+                    m.GetParameters()[0].ParameterType == sourceType
+                );
+
+            if (method != null)
+                return method.Invoke(null, new[] { value });
+
+            // No conversion found
+            throw new InvalidCastException(
+                $"No implicit conversion operator found from {sourceType} to {targetType}.");
         }
     }
 }

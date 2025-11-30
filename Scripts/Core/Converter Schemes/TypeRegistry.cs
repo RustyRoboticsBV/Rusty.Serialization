@@ -32,7 +32,8 @@ namespace Rusty.Serialization.Core.Converters
                 throw new Exception($"Type '{converter}' does not implement interface {nameof(IConverter)}!");
 
             // Only allow target and converter types with the same number of generic arguments.
-            if (target.GetGenericArguments().Length != converter.GetGenericArguments().Length)
+            if (target.IsGenericTypeDefinition && converter.IsGenericTypeDefinition
+                && target.GetGenericArguments().Length != converter.GetGenericArguments().Length)
             {
                 throw new Exception($"Target type '{target}' and converterType type '{converter}' did not have the same number of "
                     + "generic type arguments.");

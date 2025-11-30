@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -40,24 +40,6 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         /* Public methods. */
-        public static void Test()
-        {
-            var examples = new string[]
-            {
-            "System.Collections.Generic.List`1[System.Int32][,][]",
-            "System.Collections.Generic.List`1[System.Int32]",
-            "System.Int32[]",
-            "System.Int32",
-            "MyCustomType`2+MyNestedType`1[System.Char, System.Int32, System.Single]"
-            };
-
-            foreach (var example in examples)
-            {
-                var parsed = Parse(example);
-                Console.WriteLine(parsed);
-            }
-        }
-
         public static TypeNameParts Parse(string typeName)
         {
             var result = new TypeNameParts();
@@ -65,7 +47,7 @@ namespace Rusty.Serialization.Core.Converters
             int pos = 0;
             int length = typeName.Length;
 
-            // Step 1: Extract the type name (up to first bracket)
+            // Step 1: Extract the type name (up to first bracket).
             StringBuilder nameBuilder = new StringBuilder();
             while (pos < length && typeName[pos] != '[')
             {
@@ -75,7 +57,7 @@ namespace Rusty.Serialization.Core.Converters
 
             string fullName = nameBuilder.ToString();
 
-            // Step 1: Split namespace and name
+            // Step 2: Split namespace and name.
             int lastDot = fullName.LastIndexOf('.');
             if (lastDot >= 0)
             {
@@ -87,14 +69,14 @@ namespace Rusty.Serialization.Core.Converters
                 result.Name = fullName;
             }
 
-            // Step 2: Parse brackets with depth counter
+            // Step 3: Parse brackets with depth counter.
             var arraySuffixBuilder = new StringBuilder();
             while (pos < length && typeName[pos] == '[')
             {
                 int startBracket = pos;
                 int depth = 0;
                 bool found = false;
-                pos--; // We'll increment in loop
+                pos--;
 
                 for (int i = startBracket; i < length; i++)
                 {

@@ -135,10 +135,10 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         public Type GetTypeFromName(string name)
         {
-            if (Aliasses.Has(name))
-                return Aliasses.Get(name);
+            //if (Aliasses.Has(name))
+            //    return Aliasses.Get(name);
 
-            return (Type)new TypeName(name);
+            return new TypeName(name).ToType();
         }
     }
 }

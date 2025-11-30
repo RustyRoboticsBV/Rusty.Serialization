@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A generic class converter.
     /// </summary>
-    public sealed class ClassConverter<T> : ObjectConverter<T>
+    public class ClassConverter<T> : ObjectConverter<T>
         where T : class, new()
     {
         /* Protected methods. */

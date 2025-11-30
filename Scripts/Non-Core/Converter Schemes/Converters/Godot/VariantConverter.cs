@@ -1,4 +1,4 @@
-﻿#if GODOT
+#if GODOT
 using Godot;
 using Godot.Collections;
 using System;
@@ -46,6 +46,10 @@ namespace Rusty.Serialization.Converters.Gd
                     return ConvertNested(typeof(Variant), obj.AsVector3I(), scheme);
                 case Variant.Type.Vector4I:
                     return ConvertNested(typeof(Variant), obj.AsVector4I(), scheme);
+                case Variant.Type.Quaternion:
+                    return ConvertNested(typeof(Variant), obj.AsQuaternion(), scheme);
+                case Variant.Type.Plane:
+                    return ConvertNested(typeof(Variant), obj.AsPlane(), scheme);
                 case Variant.Type.Rect2:
                     return ConvertNested(typeof(Variant), obj.AsRect2(), scheme);
                 case Variant.Type.Rect2I:

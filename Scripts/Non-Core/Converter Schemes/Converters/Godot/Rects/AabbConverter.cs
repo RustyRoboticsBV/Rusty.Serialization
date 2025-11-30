@@ -1,4 +1,4 @@
-﻿#if GODOT
+#if GODOT
 using Godot;
 using System;
 using Rusty.Serialization.Core.Converters;

@@ -87,6 +87,7 @@ namespace Rusty.Serialization.Core.Converters
                         property.SetValue(obj, memberObj);
                     }
                 }
+                Godot.GD.Print(obj);
                 return obj;
             }
             throw new ArgumentException($"{GetType().Name} cannot deconvert nodes of valueType '{node.GetType()}'.");
