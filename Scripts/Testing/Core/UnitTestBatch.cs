@@ -9,6 +9,7 @@ namespace Rusty.Serialization.Testing
     public abstract class UnitTestBatch : UnitTest
     {
         /* Public properties. */
+        public string Name { get; set; } = "Batch Test";
         public int Successes { get; protected set; }
         public int Failures { get; protected set; }
         public int Invalid { get; protected set; }
@@ -62,16 +63,15 @@ namespace Rusty.Serialization.Testing
                         break;
                 }
             }
+            CheckResult<bool>(true, Failures == 0 && Invalid == 0);
         }
 
         public override string ToString()
         {
-            string str = "";
+            string str = Name + ":";
             for (int i = 0; i < Tests.Count; i++)
             {
-                if (i > 0)
-                    str += '\n';
-                str += "- " + Tests[i].ToString().Replace("\n", "\n  ");
+                str += "\n- " + Tests[i].ToString().Replace("\n", "\n  ");
             }
             str += "\n" + base.ToString();
             return str;
