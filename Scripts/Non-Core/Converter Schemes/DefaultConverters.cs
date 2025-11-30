@@ -150,6 +150,8 @@ namespace Rusty.Serialization.Converters
             Add(typeof(Godot.AudioStream), typeof(Gd.ResourcePathConverter<Godot.AudioStream>), "GDaud");
             Add(typeof(Godot.AudioBusLayout), typeof(Gd.ResourcePathConverter<Godot.AudioBusLayout>), "GDbus");
             Add(typeof(Godot.AudioEffect), typeof(Gd.ResourcePathConverter<Godot.AudioEffect>), "GDeff");
+            Add(typeof(Godot.TileSet), typeof(Gd.ResourcePathConverter<Godot.TileSet>), "GDtset");
+            Add(typeof(Godot.TileSetSource), typeof(Gd.ResourcePathConverter<Godot.TileSetSource>), "GDtsrc");
             Add(typeof(Godot.Script), typeof(Gd.ResourcePathConverter<Godot.Script>), "GDscr");
             Add(typeof(Godot.Shader), typeof(Gd.ResourcePathConverter<Godot.Shader>), "GDshd");
 #endif

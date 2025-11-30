@@ -146,5 +146,7 @@ The following resource types are serialized using their resource paths:
 |Godot.Animation|
 |Godot.AnimationLibrary|
 |Godot.AudioStream|
+|Godot.TileSet|
+|Godot.TileSetSource|
 |Godot.Script|
 |Godot.Shader|
