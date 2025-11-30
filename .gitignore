@@ -18,3 +18,7 @@ mono_crash.*.json
 bin/
 obj/
 .vs/
+
+# Ignore script meta files.
+Scripts/*.uid
+Scripts/*.meta
