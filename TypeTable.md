@@ -126,3 +126,22 @@ Below you can view the types that have built-in serialization/deserialization su
 |Basis|list|
 |Transform3D|list|
 |Projection|list|
+
+The following resource types are serialized using their resource paths:
+|Resource|
+|-|
+|Godot.PackedScene|
+|Godot.Texture|
+|Godot.Image|
+|Godot.SpriteFrames|
+|Godot.Material|
+|Godot.PhysicsMaterial|
+|Godot.Mesh|
+|Godot.MeshLibrary|
+|Godot.Font|
+|Godot.Theme|
+|Godot.Animation|
+|Godot.AnimationLibrary|
+|Godot.AudioStream|
+|Godot.Script|
+|Godot.Shader|

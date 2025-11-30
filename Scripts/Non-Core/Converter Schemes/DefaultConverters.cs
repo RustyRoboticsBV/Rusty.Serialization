@@ -132,6 +132,21 @@ namespace Rusty.Serialization.Converters
 #if GODOT
             Add(typeof(Godot.Variant), typeof(Gd.VariantConverter), "GDvar");
             Add(typeof(Godot.Resource), typeof(Gd.ResourceConverter<>), "GDres");
+            Add(typeof(Godot.PackedScene), typeof(Gd.ResourcePathConverter<Godot.PackedScene>), "GDscn");
+            Add(typeof(Godot.Texture), typeof(Gd.ResourcePathConverter<Godot.Texture>), "GDtex");
+            Add(typeof(Godot.Image), typeof(Gd.ResourcePathConverter<Godot.Image>), "GDimg");
+            Add(typeof(Godot.SpriteFrames), typeof(Gd.ResourcePathConverter<Godot.SpriteFrames>), "GDspf");
+            Add(typeof(Godot.Material), typeof(Gd.ResourcePathConverter<Godot.Material>), "GDmat");
+            Add(typeof(Godot.PhysicsMaterial), typeof(Gd.ResourcePathConverter<Godot.PhysicsMaterial>), "GDpmt");
+            Add(typeof(Godot.Mesh), typeof(Gd.ResourcePathConverter<Godot.Mesh>), "GDmsh");
+            Add(typeof(Godot.MeshLibrary), typeof(Gd.ResourcePathConverter<Godot.MeshLibrary>), "GDmlib");
+            Add(typeof(Godot.Font), typeof(Gd.ResourcePathConverter<Godot.Font>), "GDfnt");
+            Add(typeof(Godot.Theme), typeof(Gd.ResourcePathConverter<Godot.Theme>), "GDthm");
+            Add(typeof(Godot.Animation), typeof(Gd.ResourcePathConverter<Godot.Animation>), "GDanm");
+            Add(typeof(Godot.AnimationLibrary), typeof(Gd.ResourcePathConverter<Godot.AnimationLibrary>), "GDalib");
+            Add(typeof(Godot.AudioStream), typeof(Gd.ResourcePathConverter<Godot.AudioStream>), "GDaud");
+            Add(typeof(Godot.Script), typeof(Gd.ResourcePathConverter<Godot.Script>), "GDscr");
+            Add(typeof(Godot.Shader), typeof(Gd.ResourcePathConverter<Godot.Shader>), "GDshd");
 #endif
         }
     }
