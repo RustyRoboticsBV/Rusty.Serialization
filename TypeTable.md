@@ -2,6 +2,8 @@
 
 Below you can view the types that have built-in serialization/deserialization support, and what literal types they will serialize to.
 
+If an object of a type is serialized that is not in the table below, then the system will serialize *ALL* of its public, non-static, non-readonly fields and properties.
+
 ## Built-In C# Types
 |C#|.NET|Serialized|
 |-|-|-|
@@ -91,11 +93,11 @@ Below you can view the types that have built-in serialization/deserialization su
 |RectangleF|list|
 
 ### System.Text
-|C#|Serialized|
-|-|-|
-|Rune|char|
-|StringBuilder|string|
-|Encoding|string|
+|C#|Serialized|Notes|
+|-|-|-|
+|Rune|char|.NET 5 or higher|
+|StringBuilder|string||
+|Encoding|string||
 
 ## Godot Engine Types
 *These types are only available when compiling in a Godot context.*
@@ -130,29 +132,29 @@ Below you can view the types that have built-in serialization/deserialization su
 *The following resource types are serialized using only their resource path.*
 |Resource|
 |-|
-|Godot.PackedScene|
-|Godot.Sky|
-|Godot.Environment|
-|Godot.Texture|
-|Godot.Image|
-|Godot.SpriteFrames|
-|Godot.Material|
-|Godot.PhysicsMaterial|
-|Godot.Mesh|
-|Godot.MeshLibrary|
-|Godot.NavigationMesh|
-|Godot.Font|
-|Godot.Theme|
-|Godot.Animation|
-|Godot.AnimationLibrary|
-|Godot.Skin|
-|Godot.AudioStream|
-|Godot.AudioBusLayout|
-|Godot.AudioEffect|
-|Godot.TileSet|
-|Godot.TileSetSource|
-|Godot.Script|
-|Godot.Shader|
+|PackedScene|
+|Sky|
+|Environment|
+|Texture|
+|Image|
+|SpriteFrames|
+|Material|
+|PhysicsMaterial|
+|Mesh|
+|MeshLibrary|
+|NavigationMesh|
+|Font|
+|Theme|
+|Animation|
+|AnimationLibrary|
+|Skin|
+|AudioStream|
+|AudioBusLayout|
+|AudioEffect|
+|TileSet|
+|TileSetSource|
+|Script|
+|Shader|
 
 ## Unity Engine Types
 *These types are only available when compiling in a Unity context.*
