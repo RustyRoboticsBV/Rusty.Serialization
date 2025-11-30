@@ -127,7 +127,7 @@ Below you can view the types that have built-in serialization/deserialization su
 |Transform3D|list|
 |Projection|list|
 
-The following resource types are serialized using their resource paths:
+*The following resource types are serialized using only their resource path.*
 |Resource|
 |-|
 |Godot.PackedScene|
@@ -145,7 +145,10 @@ The following resource types are serialized using their resource paths:
 |Godot.Theme|
 |Godot.Animation|
 |Godot.AnimationLibrary|
+|Godot.Skin|
 |Godot.AudioStream|
+|Godot.AudioBusLayout|
+|Godot.AudioEffect|
 |Godot.TileSet|
 |Godot.TileSetSource|
 |Godot.Script|

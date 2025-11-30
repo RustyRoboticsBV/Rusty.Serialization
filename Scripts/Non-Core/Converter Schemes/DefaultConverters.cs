@@ -147,6 +147,7 @@ namespace Rusty.Serialization.Converters
             Add(typeof(Godot.Theme), typeof(Gd.ResourcePathConverter<Godot.Theme>), "GDthm");
             Add(typeof(Godot.Animation), typeof(Gd.ResourcePathConverter<Godot.Animation>), "GDanm");
             Add(typeof(Godot.AnimationLibrary), typeof(Gd.ResourcePathConverter<Godot.AnimationLibrary>), "GDalib");
+            Add(typeof(Godot.Skin), typeof(Gd.ResourcePathConverter<Godot.Skin>), "GDskin");
             Add(typeof(Godot.AudioStream), typeof(Gd.ResourcePathConverter<Godot.AudioStream>), "GDaud");
             Add(typeof(Godot.AudioBusLayout), typeof(Gd.ResourcePathConverter<Godot.AudioBusLayout>), "GDbus");
             Add(typeof(Godot.AudioEffect), typeof(Gd.ResourcePathConverter<Godot.AudioEffect>), "GDeff");
