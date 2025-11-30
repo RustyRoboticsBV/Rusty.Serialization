@@ -67,9 +67,9 @@ namespace Rusty.Serialization.Converters
             Add<Godot.Color, Gd.ColorConverter>("GDcol");
 #endif
 
-#if UNITY_5_OR_NEWER
-            Add<UnityEngine.Color, Converters.Unity.ColorConverter>("UNcol");
-            Add<UnityEngine.Color32, Converters.Unity.ColorConverter>("UNcol32");
+#if UNITY_5_3_OR_NEWER
+            Add<UnityEngine.Color, Unity.ColorConverter>("UNcol");
+            Add<UnityEngine.Color32, Unity.Color32Converter>("UNcol32");
 #endif
 
             // List types.
