@@ -119,6 +119,24 @@ namespace Rusty.Serialization.Converters
             Add<Godot.Projection, Gd.ProjectionConverter>("GDm4x4");
 #endif
 
+#if UNITY_5_3_OR_NEWER
+            Add<UnityEngine.LayerMask, Unity.LayerMaskConverter>("UNlmsk");
+            Add<UnityEngine.RangeInt, Unity.RangeIntConverter>("UNrngi");
+            Add<UnityEngine.Vector2, Unity.Vector2Converter>("UNv2f");
+            Add<UnityEngine.Vector3, Unity.Vector3Converter>("UNv3f");
+            Add<UnityEngine.Vector4, Unity.Vector4Converter>("UNv4f");
+            Add<UnityEngine.Vector2Int, Unity.Vector2IntConverter>("UNv2i");
+            Add<UnityEngine.Vector3Int, Unity.Vector3IntConverter>("UNv3i");
+            Add<UnityEngine.Quaternion, Unity.QuaternionConverter>("UNquat");
+            Add<UnityEngine.Plane, Unity.PlaneConverter>("UNpln");
+            Add<UnityEngine.Rect, Unity.RectConverter>("UNr2f");
+            Add<UnityEngine.RectInt, Unity.RectIntConverter>("UNr2i");
+            Add<UnityEngine.Bounds, Unity.BoundsConverter>("UNr3f");
+            Add<UnityEngine.BoundsInt, Unity.BoundsIntConverter>("UNr3i");
+            Add<UnityEngine.Matrix4x4, Unity.Matrix4x4Converter>("UNm4x4");
+            Add<UnityEngine.BoundingSphere, Unity.BoundingSphereConverter>("UNsphr");
+#endif
+
             // Dictionary types.
             Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
             Add(typeof(SortedList<,>), typeof(SortedListConverter<,>), "slst");

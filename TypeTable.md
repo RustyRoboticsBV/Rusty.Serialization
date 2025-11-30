@@ -159,5 +159,20 @@ Below you can view the types that have built-in serialization/deserialization su
 
 |C#|Serialized|
 |-|-|
+|LayerMask|bool|
+|RangeInt|list|
+|Vector2|list|
+|Vector2Int|list|
+|Vector3|list|
+|Vector3Int|list|
+|Vector4|list|
+|Quaternion|list|
+|Plane|list|
 |Color|color|
 |Color32|color|
+|Rect|list|
+|RectInt|list|
+|Bounds|list|
+|BoundsInt|list|
+|Matrix4x4|list|
+|BoundingSphere|list|
