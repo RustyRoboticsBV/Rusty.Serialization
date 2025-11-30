@@ -11,6 +11,9 @@ namespace Rusty.Serialization.Core.Converters
     public abstract class ObjectConverter<T> : Converter<T>
         where T : new()
     {
+        /* Protected properties. */
+        protected virtual HashSet<string> IgnoredMembers => [];
+
         /* Protected methods. */
         public override INode Convert(T obj, IConverterScheme scheme)
         {
@@ -87,14 +90,13 @@ namespace Rusty.Serialization.Core.Converters
                         property.SetValue(obj, memberObj);
                     }
                 }
-                Godot.GD.Print(obj);
                 return obj;
             }
             throw new ArgumentException($"{GetType().Name} cannot deconvert nodes of valueType '{node.GetType()}'.");
         }
 
         /* Private methods. */
-        private static MemberInfo[] GetPublicMembers(T obj)
+        private MemberInfo[] GetPublicMembers(T obj)
         {
             Type type = obj.GetType();
             List<MemberInfo> members = new();
@@ -103,7 +105,7 @@ namespace Rusty.Serialization.Core.Converters
             FieldInfo[] fields = type.GetFields();
             for (int i = 0; i < fields.Length; i++)
             {
-                if (fields[i].IsPublic && !fields[i].IsStatic)
+                if (fields[i].IsPublic && !fields[i].IsStatic && !IgnoredMembers.Contains(fields[i].Name))
                     members.Add(fields[i]);
             }
 
@@ -113,8 +115,12 @@ namespace Rusty.Serialization.Core.Converters
             {
                 MethodInfo getter = properties[i].GetMethod;
                 MethodInfo setter = properties[i].SetMethod;
-                if (properties[i].GetIndexParameters().Length == 0 && getter != null && getter.IsPublic && !getter.IsStatic && setter != null && setter.IsPublic && !setter.IsStatic)
+                if (properties[i].GetIndexParameters().Length == 0 && !IgnoredMembers.Contains(properties[i].Name)
+                    && getter != null && getter.IsPublic && !getter.IsStatic
+                    && setter != null && setter.IsPublic && !setter.IsStatic)
+                {
                     members.Add(properties[i]);
+                }
             }
 
             return members.ToArray();

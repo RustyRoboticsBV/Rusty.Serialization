@@ -33,10 +33,8 @@ namespace Rusty.Serialization.Core.Converters
             foreach (var pair in node.Pairs)
             {
                 KeyValuePair<KeyT, ValueT> deconvertedPair = DeconvertPair(pair, scheme);
-                Godot.GD.Print(deconvertedPair.Key.ToString() + " : " + deconvertedPair.Value.ToString());
                 obj[deconvertedPair.Key] = deconvertedPair.Value;
             }
-            Godot.GD.Print(obj);
             return obj;
         }
 
