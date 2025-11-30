@@ -1,6 +1,11 @@
 # Rusty Serialization
 A configurable C# serialization/deserialization module, with support for built-in C# types, as well as common API types from the Godot and Unity game engines. It's primarily meant for engine-agnostic tool development.
 
+## Version Requirements
+C# 9 or higher.
+- When used in Godot: Godot 4.0 or higher.
+- When used in Unity: Unity 2022.1 or higher.
+
 ## Usage
 Serializing:
 ```
