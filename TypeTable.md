@@ -31,9 +31,9 @@ Below you can view the types that have built-in serialization/deserialization su
 ### System
 |C#|Serialized|Notes|
 |-|-|-|
-|Type|string||
+|Type|string|.NET 5 or higher|
 |DBNull|null||
-|Half|real||
+|Half|real|.NET 5 or higher|
 |Index|int||
 |Range|list||
 |Version|string||
@@ -43,8 +43,8 @@ Below you can view the types that have built-in serialization/deserialization su
 |DateTime|time||
 |DateTimeOffset|list|
 |Tuple<...>|list/null|
-|DateOnly|time|C# 10 or higher|
-|TimeOnly|time|C# 10 or higher|
+|DateOnly|time|.NET 6 or higher|
+|TimeOnly|time|.NET 6 or higher|
 
 ### System.Collections
 |C#|Serialized|
@@ -64,7 +64,7 @@ Below you can view the types that have built-in serialization/deserialization su
 |SortedSet&lt;T&gt;|list/null||
 |SortedList<T,U>|dictionary/null||
 |SortedDictionary<T,U>|dictionary/null||
-|PriorityQueue<T,U>|dictionary/null|C# 10 or higher|
+|PriorityQueue<T,U>|dictionary/null|.NET 6 or higher|
 
 ### System.Numerics
 |C#|Serialized|
@@ -153,3 +153,11 @@ Below you can view the types that have built-in serialization/deserialization su
 |Godot.TileSetSource|
 |Godot.Script|
 |Godot.Shader|
+
+## Unity Engine Types
+*These types are only available when compiling in a Unity context.*
+
+|C#|Serialized|
+|-|-|
+|Color|color|
+|Color32|color|
