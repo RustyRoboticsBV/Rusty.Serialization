@@ -15,7 +15,7 @@ namespace Rusty.Serialization.Converters.System
         {
             INode key = ConvertNested(typeof(KeyT), obj.Key, nested);
             INode value = ConvertNested(typeof(ValueT), obj.Value, nested);
-            return new([new(key, value)]);
+            return new(new KeyValuePair<INode, INode>[1] { new(key, value) });
         }
 
         protected sealed override KeyValuePair<KeyT, ValueT> DeconvertValue(DictNode node, IConverterScheme nested)

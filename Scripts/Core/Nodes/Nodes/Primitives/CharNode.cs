@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
@@ -22,10 +20,10 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override readonly string ToString()
         {
-            if (value <= char.MaxValue)
+            if (value <= char.MaxValue && CharUtility.Check((char)value))
                 return "char: " + (char)value;
             else
-                return "char: " + new Rune(value);
+                return "char: \\u" + HexUtility.ToHexString(value);
         }
     }
 }

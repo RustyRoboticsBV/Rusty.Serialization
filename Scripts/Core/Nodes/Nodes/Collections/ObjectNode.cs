@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Constructors. */
         public ObjectNode(KeyValuePair<string, INode>[] members)
         {
-            this.members = members ?? [];
+            this.members = members ?? new KeyValuePair<string, INode>[0];
         }
 
         /* Public methods. */

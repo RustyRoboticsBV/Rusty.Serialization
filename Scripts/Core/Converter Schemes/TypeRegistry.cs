@@ -54,7 +54,7 @@ namespace Rusty.Serialization.Core.Converters
             Type converterType = ResolveConverter(targetType);
 
             // Close generic converters with 1 generic argument using the target type.
-            if (converterType.GetGenericArguments().Length == 1)
+            if (converterType.IsGenericTypeDefinition && converterType.GetGenericArguments().Length == 1)
                 converterType = converterType.MakeGenericType(targetType);
 
             // Construct a converter.

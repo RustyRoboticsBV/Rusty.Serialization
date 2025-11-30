@@ -22,7 +22,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override readonly string ToString()
         {
-            return $"binary: 0x{Convert.ToHexString(value)}";
+            return $"binary: 0x{HexUtility.ToHexString(value)}";
         }
     }
 }

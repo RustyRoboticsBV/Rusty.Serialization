@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Serializers.CSCD
         /* Public methods. */
         public override string Serialize(BinaryNode node, ISerializerScheme scheme)
         {
-            return $"0x{Convert.ToHexString(node.Value)}";
+            return $"0x{HexUtility.ToHexString(node.Value)}";
         }
 
         public override BinaryNode Parse(string text, ISerializerScheme scheme)
@@ -38,7 +38,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                     throw new ArgumentException("Binary literals must have an even length.");
 
                 // Parse as byte array.
-                byte[] bytes = Convert.FromHexString(contents);
+                byte[] bytes = HexUtility.BytesFromHexString(contents);
 
                 return new(bytes);
             }

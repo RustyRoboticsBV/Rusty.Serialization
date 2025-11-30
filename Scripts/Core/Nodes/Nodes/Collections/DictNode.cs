@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Constructors. */
         public DictNode(KeyValuePair<INode, INode>[] pairs)
         {
-            this.pairs = pairs ?? [];
+            this.pairs = pairs ?? new KeyValuePair<INode, INode>[0];
         }
 
         /* Public methods. */

@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Core.Converters
         where T : new()
     {
         /* Protected properties. */
-        protected virtual HashSet<string> IgnoredMembers => [];
+        protected virtual HashSet<string> IgnoredMembers => new();
 
         /* Protected methods. */
         public override INode Convert(T obj, IConverterScheme scheme)

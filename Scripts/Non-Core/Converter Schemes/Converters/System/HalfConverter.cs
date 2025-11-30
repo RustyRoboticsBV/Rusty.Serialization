@@ -1,3 +1,4 @@
+#if NET5_0_OR_GREATER
 using System;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Converters;
@@ -14,3 +15,4 @@ namespace Rusty.Serialization.Converters.System
         protected override Half DeconvertValue(RealNode node, IConverterScheme scheme) => (Half)node.Value;
     }
 }
+#endif

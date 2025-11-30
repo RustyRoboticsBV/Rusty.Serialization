@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿#if NET5_0_OR_GREATER
+using System.Text;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Converters;
 
@@ -14,3 +15,4 @@ namespace Rusty.Serialization.Converters.System
         protected override Rune DeconvertValue(CharNode node, IConverterScheme scheme) => new(node.Value);
     }
 }
+#endif

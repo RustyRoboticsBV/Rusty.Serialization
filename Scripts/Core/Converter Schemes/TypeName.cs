@@ -20,6 +20,10 @@ namespace Rusty.Serialization.Core.Converters
         /* Constructors. */
         public TypeName(Type type)
         {
+            nameSpace = "";
+            name = "";
+            genericArgs = new TypeName[0];
+            arraySuffix = "";
             ParseType(type);
         }
 
@@ -121,7 +125,7 @@ namespace Rusty.Serialization.Core.Converters
             {
                 nameSpace = "";
                 name = "null";
-                genericArgs = [];
+                genericArgs = new TypeName[0];
                 return;
             }
 
@@ -130,7 +134,7 @@ namespace Rusty.Serialization.Core.Converters
             {
                 nameSpace = "";
                 name = type.Name;
-                genericArgs = [];
+                genericArgs = new TypeName[0];
                 return;
             }
 

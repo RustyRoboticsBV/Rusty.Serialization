@@ -23,7 +23,7 @@ namespace Rusty.Serialization.Serializers.CSCD
 
             // Handle empty list.
             if (text.Length == 0)
-                return [];
+                return new();
 
             // Parse text.
             List<string> result = new();

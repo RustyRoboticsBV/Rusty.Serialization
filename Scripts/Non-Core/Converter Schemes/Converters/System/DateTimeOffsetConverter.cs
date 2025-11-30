@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Converters.System
             TimeSpan tz = obj.Offset;
             INode tzNode = new TimeNode(new(tz));
 
-            return new([dtNode, tzNode]);
+            return new(new INode[] { dtNode, tzNode });
         }
 
         protected override DateTimeOffset DeconvertValue(ListNode node, IConverterScheme scheme)

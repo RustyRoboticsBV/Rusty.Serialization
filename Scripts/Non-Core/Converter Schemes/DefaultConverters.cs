@@ -25,10 +25,13 @@ namespace Rusty.Serialization.Converters
             Add<Index, IndexConverter>("idx");
 
             // Real types.
+#if NET5_0_OR_GREATER
             Add<Half, HalfConverter>("f16");
-
+#endif
             // Char types.
+#if NET5_0_OR_GREATER
             Add<Rune, RuneConverter>("rune");
+#endif
 
             // String types.
             Add<Type, TypeConverter>("type");
@@ -118,10 +121,12 @@ namespace Rusty.Serialization.Converters
 
             // Dictionary types.
             Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>), "dict");
-            Add(typeof(PriorityQueue<,>), typeof(PriorityQueueConverter<,>), "pque");
             Add(typeof(SortedList<,>), typeof(SortedListConverter<,>), "slst");
             Add(typeof(SortedDictionary<,>), typeof(SortedDictionaryConverter<,>), "sdic");
             Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>), "kvp");
+#if NET6_0_OR_GREATER
+            Add(typeof(PriorityQueue<,>), typeof(PriorityQueueConverter<,>), "pque");
+#endif
 
 #if GODOT
             Add(typeof(Godot.Collections.Dictionary), typeof(Gd.DictionaryConverter), "GDdict");
