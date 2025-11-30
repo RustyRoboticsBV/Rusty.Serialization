@@ -20,5 +20,5 @@ obj/
 .vs/
 
 # Ignore script meta files.
-Scripts/*.uid
-Scripts/*.meta
+*.uid
+*.meta
