@@ -33,7 +33,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 ### System
 |C#|Serialized|Notes|
 |-|-|-|
-|Type|string|.NET 5 or higher|
+|Type|string||
 |DBNull|null||
 |Half|real|.NET 5 or higher|
 |Index|int||
