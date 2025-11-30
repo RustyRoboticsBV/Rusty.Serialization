@@ -38,11 +38,13 @@ namespace Rusty.Serialization.Testing
         /* Protected methods. */
         protected override UnitTestInput<bool> Evaluate()
         {
+            Log = "";
+
             // STEP 1: Serialize.
             Serialize = new(Input, ExpectedSerializeOutput, Context, PrettyPrint);
             Serialize.Run();
 
-            Log = "- " + Serialize.ToString();
+            Log += "- " + Serialize.ToString();
             if (Serialize.Failed)
                 return false;
 

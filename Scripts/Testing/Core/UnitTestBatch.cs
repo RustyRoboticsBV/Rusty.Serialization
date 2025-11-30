@@ -13,6 +13,14 @@ namespace Rusty.Serialization.Testing
         public int Failures { get; protected set; }
         public int Invalid { get; protected set; }
         public int Total => Successes + Failures + Invalid;
+
+        /* Public methods. */
+        public override string ToString()
+        {
+            return "Successes: " + Successes + " out of " + Total
+                + "\nFailures: " + Failures + " out of " + Total
+                + "\nInvalid: " + Invalid + " out of " + Total;
+        }
     }
 
     /// <summary>
@@ -63,8 +71,9 @@ namespace Rusty.Serialization.Testing
             {
                 if (i > 0)
                     str += '\n';
-                str += "- " + Tests[i].ToString();
+                str += "- " + Tests[i].ToString().Replace("\n", "\n  ");
             }
+            str += "\n" + base.ToString();
             return str;
         }
     }
