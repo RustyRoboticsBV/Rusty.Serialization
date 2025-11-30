@@ -103,7 +103,7 @@ Below you can view the types that have built-in serialization/deserialization su
 |C#|Serialized|
 |-|-|
 |Variant|*varies*|
-|Resource|string/null|
+|Resource|object/null|
 |Array|list/null|
 |Array&lt;T&gt;|list/null|
 |Dictionary|dictionary/null|
@@ -131,6 +131,8 @@ The following resource types are serialized using their resource paths:
 |Resource|
 |-|
 |Godot.PackedScene|
+|Godot.Sky|
+|Godot.Environment|
 |Godot.Texture|
 |Godot.Image|
 |Godot.SpriteFrames|
@@ -138,6 +140,7 @@ The following resource types are serialized using their resource paths:
 |Godot.PhysicsMaterial|
 |Godot.Mesh|
 |Godot.MeshLibrary|
+|Godot.NavigationMesh|
 |Godot.Font|
 |Godot.Theme|
 |Godot.Animation|
