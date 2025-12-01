@@ -134,7 +134,10 @@ namespace Rusty.Serialization.Converters
             Add<UnityEngine.Bounds, Unity.BoundsConverter>("UNr3f");
             Add<UnityEngine.BoundsInt, Unity.BoundsIntConverter>("UNr3i");
             Add<UnityEngine.Matrix4x4, Unity.Matrix4x4Converter>("UNm4x4");
+            Add<UnityEngine.FrustumPlanes, Unity.FrustumPlanesConverter>("UNfrpl");
             Add<UnityEngine.BoundingSphere, Unity.BoundingSphereConverter>("UNsphr");
+            Add<UnityEngine.Ray, Unity.RayConverter>("UNray3");
+            Add<UnityEngine.Ray2D, Unity.Ray2DConverter>("UNray2");
 #endif
 
             // Dictionary types.
