@@ -155,6 +155,12 @@ namespace Rusty.Serialization.Converters
 #endif
 
             // Object types.
+#if UNITY_5_3_OR_NEWER
+            Add<UnityEngine.Keyframe, StructConverter<UnityEngine.Keyframe>>("Ukeyf");
+            Add<UnityEngine.AnimationCurve, ClassConverter<UnityEngine.AnimationCurve>>("Uacurv");
+#endif
+
+            // Resource handling.
 #if GODOT
             Add(typeof(Godot.Variant), typeof(Gd.VariantConverter), "GDvar");
             Add(typeof(Godot.Resource), typeof(Gd.ResourceConverter<>), "GDres");

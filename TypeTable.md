@@ -178,3 +178,8 @@ If an object of a type is serialized that is not in the table below, then the sy
 |BoundsInt|list|
 |Matrix4x4|list|
 |BoundingSphere|list|
+|FrustumPlanes|list|
+|Ray|list|
+|Ray2D|list|
+|KeyFrame|object|
+|AnimationCurve|object|
