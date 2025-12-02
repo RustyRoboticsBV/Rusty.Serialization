@@ -18,7 +18,7 @@ C# 9 or higher.
 Serializing:
 ```
 MyClass obj = new();
-DefaultContext context = new();             // Contains serialization scheme for all built-in types.
+DefaultContext context = new(Format.Cscd);  // Contains the serialization scheme for all built-in types.
 string serialized = context.Serialize(obj); // Serializes all public properties and fields of MyClass.
 ```
 
