@@ -16,11 +16,8 @@ namespace Rusty.Serialization.Serializers.XML
         /* Public methods. */
         public override XmlElement ToXml(CharNode node, IXmlSerializerScheme scheme)
         {
-            string str;
-            if (node.Value <= char.MaxValue)
-                str = ((char)node.Value).ToString();
-            else
-                str = $"\\[{HexUtility.ToHexString(node.Value)}]";
+            string str = ((char)node.Value).ToString();
+            // TODO: deal with unicode characters above 0xFFFF.
             return XmlUtility.Pack(str, Tag);
         }
 
@@ -34,16 +31,12 @@ namespace Rusty.Serialization.Serializers.XML
             string contents = element.InnerText;
 
             // Parse contents.
-            int chr;
-            if (contents.StartsWith("\\[") && contents.EndsWith("]"))
-                chr = HexUtility.FromHexString(contents.Substring(2, contents.Length - 3));
-            else if (contents.Length > 1)
+            if (contents.Length > 1)
                 throw new Exception("Too many characters.");
-            else
-                chr = contents[0];
 
             // Return node.
-            return new(chr);
+            // TODO: deal with unicode characters above 0xFFFF.
+            return new(contents[0]);
         }
     }
 }
