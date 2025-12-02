@@ -66,7 +66,7 @@ namespace Rusty.Serialization.Serializers.XML
 
         public INode Parse(string serialized)
         {
-            throw new NotImplementedException();
+            return FromXml(XmlUtility.Parse(serialized));
         }
 
         public XmlElement ToXml(INode node)
@@ -106,7 +106,32 @@ namespace Rusty.Serialization.Serializers.XML
 
         public INode FromXml(XmlElement element)
         {
-            throw new NotImplementedException();
+            if (element.Name == Null.Tag)
+                return Null.FromXml(element, this);
+            else if (element.Name == Bool.Tag)
+                return Bool.FromXml(element, this);
+            else if (element.Name == Int.Tag)
+                return Int.FromXml(element, this);
+            else if (element.Name == Real.Tag)
+                return Real.FromXml(element, this);
+            else if (element.Name == Char.Tag)
+                return Char.FromXml(element, this);
+            else if (element.Name == String.Tag)
+                return String.FromXml(element, this);
+            else if (element.Name == Color.Tag)
+                return Color.FromXml(element, this);
+            else if (element.Name == Time.Tag)
+                return Time.FromXml(element, this);
+            else if (element.Name == Binary.Tag)
+                return Binary.FromXml(element, this);
+            else if (element.Name == List.Tag)
+                return List.FromXml(element, this);
+            else if (element.Name == Dict.Tag)
+                return Dict.FromXml(element, this);
+            else if (element.Name == Object.Tag)
+                return Object.FromXml(element, this);
+            else
+                throw new Exception($"Invalid XML element type {element.Name}.");
         }
     }
 }

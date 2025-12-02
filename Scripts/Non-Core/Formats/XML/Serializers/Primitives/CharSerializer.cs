@@ -37,7 +37,7 @@ namespace Rusty.Serialization.Serializers.XML
             int chr;
             if (contents.StartsWith("\\[") && contents.EndsWith("]"))
                 chr = HexUtility.FromHexString(contents.Substring(2, contents.Length - 3));
-            else if (contents.Length > 0)
+            else if (contents.Length > 1)
                 throw new Exception("Too many characters.");
             else
                 chr = contents[0];
