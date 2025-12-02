@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Converters
     {
         /* Protected methods. */
         protected override RealNode ConvertValue(decimal obj, IConverterScheme scheme) => new(obj);
-        protected override decimal DeconvertValue(RealNode node, IConverterScheme scheme) => node.Value;
+        protected override decimal DeconvertValue(RealNode node, IConverterScheme scheme) => node.Value.ToDecimal();
     }
 }

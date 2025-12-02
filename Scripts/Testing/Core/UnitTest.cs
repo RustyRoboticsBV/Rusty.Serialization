@@ -33,7 +33,7 @@ namespace Rusty.Serialization.Testing
             }
             else
             {
-                if (expectedInput.IsException)
+                if (actualInput.IsException)
                     Result = UnitTestResult.WrongException;
                 else
                 {

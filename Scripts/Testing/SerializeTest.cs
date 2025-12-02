@@ -1,5 +1,6 @@
 ﻿#if RUSTY_DEBUG
 using Rusty.Serialization.Core.Contexts;
+using System;
 
 namespace Rusty.Serialization.Testing
 {
@@ -50,9 +51,11 @@ namespace Rusty.Serialization.Testing
             {
                 serialized = Context.Serialize(Input, PrettyPrint);
             }
-            catch
+            catch (Exception ex)
             {
                 serialized = Throw.Exception;
+                // TODO: better exception reporting.
+                System.Console.WriteLine(ex);
             }
             return serialized;
         }

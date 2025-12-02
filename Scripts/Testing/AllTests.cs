@@ -1,7 +1,6 @@
 ﻿#if RUSTY_DEBUG
 using Rusty.Serialization.Core.Contexts;
 using System;
-using System.Collections.Generic;
 
 namespace Rusty.Serialization.Testing
 {
@@ -54,6 +53,38 @@ namespace Rusty.Serialization.Testing
                 (-67890, "-67890"),
                 (long.MaxValue, long.MaxValue.ToString()),
                 (long.MinValue, long.MinValue.ToString())
+            );
+
+            // Reals.
+            AddTest<float>("System.Single",
+                (0f, "."),
+                (123f, "123."),
+                (.5f, ".5"),
+                (123.5f, "123.5"),
+                (float.MaxValue, PeterO.Numbers.EDecimal.FromSingle(float.MaxValue).ToString() + '.'),
+                (float.MinValue, PeterO.Numbers.EDecimal.FromSingle(float.MinValue).ToString() + '.')
+            );
+            AddTest<double>("System.Double",
+                (0.0, "."),
+                (123, "123."),
+                (.5, ".5"),
+                (123.5, "123.5"),
+                (double.MaxValue, PeterO.Numbers.EDecimal.FromDouble(double.MaxValue).ToString() + '.'),
+                (double.MinValue, PeterO.Numbers.EDecimal.FromDouble(double.MinValue).ToString() + '.')
+            );
+            AddTest<decimal>("System.Decimal",
+                (0m, "."),
+                (123m, "123."),
+                (.5m, ".5"),
+                (123.5m, "123.5"),
+                (decimal.MaxValue, PeterO.Numbers.EDecimal.FromDecimal(decimal.MaxValue).ToString() + '.'),
+                (decimal.MinValue, PeterO.Numbers.EDecimal.FromDecimal(decimal.MinValue).ToString() + '.')
+            );
+
+            // String.
+            AddTest<string>("System.String",
+                ("", "\"\""),
+                ("abcdefg\t'\n\"", "\"abcdefg\\t'\\n\\\"\"")
             );
 
             // Time.

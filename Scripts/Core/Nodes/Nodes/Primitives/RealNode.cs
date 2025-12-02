@@ -6,13 +6,13 @@ namespace Rusty.Serialization.Core.Nodes
     public readonly struct RealNode : INode
     {
         /* Fields. */
-        private readonly decimal value;
+        private readonly PeterO.Numbers.EDecimal value;
 
         /* Public properties. */
-        public readonly decimal Value => value;
+        public readonly PeterO.Numbers.EDecimal Value => value;
 
         /* Constructors. */
-        public RealNode(decimal value)
+        public RealNode(PeterO.Numbers.EDecimal value)
         {
             this.value = value;
         }

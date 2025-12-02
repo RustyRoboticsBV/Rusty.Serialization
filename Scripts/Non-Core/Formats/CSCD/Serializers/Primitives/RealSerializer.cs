@@ -13,12 +13,12 @@ namespace Rusty.Serialization.Serializers.CSCD
         /* Public methods. */
         public override string Serialize(RealNode node, ISerializerScheme scheme)
         {
-            // Handle 0.
-            if (node.Value == 0)
-                return ".";
-
             // Parse raw decimal.
-            string text = node.Value.ToString(CultureInfo.InvariantCulture);
+            string text = node.Value.ToString();
+
+            // Handle 0.
+            if (text == "0")
+                return ".";
 
             // Make sure a decimal point exists.
             if (!text.Contains('.'))
@@ -76,7 +76,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                     throw new ArgumentException("Missing decimal dot.");
 
                 // Parse.
-                return new(decimal.Parse(trimmed, CultureInfo.InvariantCulture));
+                return new(PeterO.Numbers.EDecimal.FromString(trimmed));
             }
             catch (Exception ex)
             {
