@@ -1,6 +1,6 @@
 ﻿#if RUSTY_DEBUG
-using Rusty.Serialization.Core.Contexts;
 using System;
+using Rusty.Serialization.Core.Contexts;
 
 namespace Rusty.Serialization.Testing
 {
