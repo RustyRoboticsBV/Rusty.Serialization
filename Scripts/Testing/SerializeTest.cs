@@ -29,15 +29,15 @@ namespace Rusty.Serialization.Testing
                 case UnitTestResult.Uninitialized:
                     return $"INVALID: Call the {nameof(Run)} method.";
                 case UnitTestResult.CorrectResult:
-                    return $"SUCCESS: Correctly serialized '{Input}' to \"{ActualOutput}\".";
+                    return $"SUCCESS: Correctly serialized '{Input}' to \"{Str(ActualOutput)}\".";
                 case UnitTestResult.WrongResult:
-                    return $"FAILURE: Wrongly serialized '{Input}' to \"{ActualOutput}\" - expected \"{ExpectedOutput}\".";
+                    return $"FAILURE: Wrongly serialized '{Input}' to \"{Str(ActualOutput)}\" - expected \"{Str(ExpectedOutput)}\".";
                 case UnitTestResult.CorrectException:
                     return $"SUCCESS: Correctly threw exception for '{Input}'.";
                 case UnitTestResult.WrongException:
-                    return $"FAILURE: Wrongly threw exception for '{Input}' - expected output \"{ExpectedOutput}\".";
+                    return $"FAILURE: Wrongly threw exception for '{Input}' - expected output \"{Str(ExpectedOutput)}\".";
                 case UnitTestResult.TypeMismatch:
-                    return $"INVALID: Serialized '{Input}' to \"{ActualOutput}\" - expected \"{ExpectedOutput}\". This probably means your test is wrong.";
+                    return $"INVALID: Serialized '{Input}' to \"{Str(ActualOutput)}\" - expected \"{Str(ExpectedOutput)}\". This probably means your test is wrong.";
                 default:
                     return "";
             }
@@ -58,6 +58,23 @@ namespace Rusty.Serialization.Testing
                 System.Console.WriteLine(ex);
             }
             return serialized;
+        }
+
+        /* Private methods. */
+        private static string Str<T>(UnitTestInput<T> obj)
+        {
+            if (obj.Value is Array arr)
+            {
+                string str = "";
+                foreach (var element in arr)
+                {
+                    if (str.Length > 0)
+                        str += ", ";
+                    str += element.ToString();
+                }
+                return '[' + str + ']';
+            }
+            return obj.Value?.ToString();
         }
     }
 }

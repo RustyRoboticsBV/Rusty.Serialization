@@ -40,7 +40,24 @@ namespace Rusty.Serialization.Testing
         /* Public methods. */
         public override readonly string ToString() => value?.ToString() ?? "";
         public override readonly bool Equals(object obj) => obj is UnitTestInput<T> typed && Equals(typed);
-        public readonly bool Equals(UnitTestInput<T> obj) => value.Equals(obj.value);
+        public readonly bool Equals(UnitTestInput<T> obj)
+        {
+            if (value is Array arrA && obj.value is Array arrB)
+            {
+                if (arrA.Length != arrB.Length)
+                    return false;
+                for (int i = 0; i < arrA.Length; i++)
+                {
+                    object a = arrA.GetValue(i);
+                    object b = arrB.GetValue(i);
+                    if (!a.Equals(b))
+                        return false;
+                }
+                return true;
+            }
+            else
+                return value.Equals(obj.value);
+        }
         public readonly override int GetHashCode() => value != null ? value.GetHashCode() : 0;
     }
 }

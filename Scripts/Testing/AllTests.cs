@@ -81,10 +81,28 @@ namespace Rusty.Serialization.Testing
                 (decimal.MinValue, PeterO.Numbers.EDecimal.FromDecimal(decimal.MinValue).ToString() + '.')
             );
 
+            // Char.
+            AddTest<char>("System.Char",
+                ('a', "'a'"),
+                ('\'', "'''"),
+                ('\"', "'\"'"),
+                ('\t', "'\\t'"),
+                ('\n', "'\\n'"),
+                ('\0', "'\\0'"),
+                ('á', "'á'"),
+                ('\u263A', "'\\[263A]'")
+            );
+
             // String.
             AddTest<string>("System.String",
                 ("", "\"\""),
                 ("abcdefg\t'\n\"", "\"abcdefg\\t'\\n\\\"\"")
+            );
+
+            // Binary.
+            AddTest<byte[]>("System.Byte[]",
+                (Array.Empty<byte>(), "0x"),
+                (new byte[] { 0x12, 0x34, 0xAB }, "0x1234AB")
             );
 
             // Time.
