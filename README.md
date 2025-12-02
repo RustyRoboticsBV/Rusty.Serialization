@@ -1,8 +1,12 @@
 # Universal C# Serializer
+<p align="center">
+  <img src="Logo.svg" width="250">
+</p>
+
 A configurable, extendable, engine-agnostic C# serialization/deserialization module. It is designed primarily for game development, but can be used in any C# context.
 
-Features:
-- **Simple to use**: easy, one-line serialization and deserialization.
+Key features:
+- **Easy to use**: simple, one-line serialization and deserialization.
 - **Engine-agnostic**: can be used in plain C#, Godot or Unity.
 - **Broad type support**: supports a wide variety of types from the .NET, Godot and Unity APIs.
 - **Multiple formats**: includes support for JSON, XML and a custom, compact data format.
@@ -34,11 +38,13 @@ The module uses two steps in the serialization process.
 1. Convert between the C# object and an intermediate node-based representation.
 2. Serialize/deserialize the node-based representation to/from the serialized format.
 
-![A diagram of the architecture](Diagram.svg)
+<p align="center">
+  <img src="Diagram.svg">
+</p>
 
 Both the converter and serializer layers can be freely swapped out.
 - The default converter layer has explicit support for various .NET, Godot and Unity data types (see [here](TypeTable.md) for a comprehensive list).
 - The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported.
 
 ## Compact Serialized C# Data
-The module uses a custom serialization format, called Compact Serialized C# Data (CSCD). The format resembles JSON, but adds type labels and a wider variety of literal types. It's designed to be compact, general and unambiguous. See the specification document [here](FormatSpecification.md) for a more detailed description of the syntax.
+The module uses a custom serialization format, called Compact Serialized C# Data (CSCD). It's a human-readable format that resembles JSON, but adds type labels and a wider variety of literal types. It's designed to be compact, general and unambiguous. See the specification document [here](FormatSpecification.md) for a more detailed description of the syntax.
