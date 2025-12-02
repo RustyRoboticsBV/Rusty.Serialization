@@ -1,36 +1,165 @@
-using System;
 using System.Text;
+using System.Xml;
 
 namespace Rusty.Serialization.Serializers.XML
 {
     public static class XmlUtility
     {
-        public static string Pack(string str, string xmlTag, params (string, string)[] attributePairs)
-        {
-            StringBuilder attributes = new();
-            foreach (var attr in attributePairs)
-            {
-                attributes.Append(" \"" + attr.Item1 + "\"=\"" + attr.Item2 + '"');
-            }
+        /* Fields. */
+        /// <summary>
+        /// Used for creating elements.
+        /// </summary>
+        private static XmlDocument doc = new();
 
-            str = str?.Trim();
-            if (str == "")
-                return $"<{xmlTag}{attributes}/>";
-            /*System.Xml.XmlDocument doc = new();
-            System.Xml.XmlElement element = doc.CreateElement("char")
-            element.InnerText = str;
-            return doc.OuterXml;*/
-            return $"<{xmlTag}{attributes}>{str}</{xmlTag}>";
+        /* Public methods. */
+        /// <summary>
+        /// Create an XML element with some name and attributes.
+        /// </summary>
+        public static XmlElement Create(string name, params (string, string)[] attributePairs)
+        {
+            doc.RemoveAll();
+            XmlElement element = doc.CreateElement(name);
+            foreach (var attribute in attributePairs)
+            {
+                element.SetAttribute(attribute.Item1, attribute.Item2);
+            }
+            return element;
         }
 
-        public static string Unpack(string str, string xmlTag)
+        /// <summary>
+        /// Convert a string of text into an XML element.
+        /// </summary>
+        public static XmlElement Pack(string innerText, string name, params (string, string)[] attributePairs)
         {
-            str = str?.Trim();
-            if (str == $"<{xmlTag}/>")
-                return "";
-            if (!str.StartsWith($"<{xmlTag}>") || !str.EndsWith($"</{xmlTag}>"))
-                throw new ArgumentException($"Missing or malformed {xmlTag} tag.");
-            return str.Substring(xmlTag.Length + 2, str.Length - (xmlTag.Length * 2 + 5));
+            /*StringBuilder sb = new();
+            for (int i = 0; i < innerText.Length; i++)
+            {
+                char c = innerText[i];
+
+                if (c == 0x9 || c == 0xA || c == 0xD ||
+                    (c >= 0x20 && c <= 0xD7FF) ||
+                    (c >= 0xE000 && c <= 0xFFFD) ||
+                    (c >= 0x10000 && c <= 0x10FFFF))
+                {
+                    sb.Append(c);
+                }
+                else
+                    sb.Append($"\\[{c}]");
+            }*/
+
+            XmlElement element = Create(name);
+            element.InnerXml = innerText.ToString();
+            return element;
+        }
+
+        /// <summary>
+        /// Pack an XML element inside of another element.
+        /// </summary>
+        public static XmlElement Pack(XmlElement innerElement, string name, params (string, string)[] attributePairs)
+        {
+            XmlElement element = Create(name, attributePairs);
+            element.AppendChild(innerElement);
+            return element;
+        }
+
+        /// <summary>
+        /// Pack multiple XML elements inside of another element.
+        /// </summary>
+        public static XmlElement Pack(XmlElement[] innerElement, string name, params (string, string)[] attributePairs)
+        {
+            XmlElement element = Create(name, attributePairs);
+            foreach (var inner in innerElement)
+            {
+                element.AppendChild(inner);
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Parse a string of XML into a document object.
+        /// </summary>
+        public static XmlElement Parse(string xml)
+        {
+            XmlDocument doc = new();
+            doc.LoadXml(xml);
+
+            foreach (XmlNode node in doc)
+            {
+                if (node is XmlElement element)
+                    return element;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Create an XML document from an XML element.
+        /// </summary>
+        public static XmlDocument Doc(XmlElement element)
+        {
+            doc.RemoveAll();
+            XmlNode node = doc.ImportNode(element, true);
+            doc.AppendChild(node);
+            return doc;
+        }
+
+        /// <summary>
+        /// Print an XML document.
+        /// </summary>
+        public static string Print(XmlDocument doc)
+        {
+            var settings = new XmlWriterSettings
+            {
+                Indent = false,
+                IndentChars = "",
+                NewLineChars = "",
+                NewLineHandling = NewLineHandling.Replace
+            };
+
+            var sb = new StringBuilder();
+            using (var writer = XmlWriter.Create(sb, settings))
+            {
+                doc.Save(writer);
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Print an XML element.
+        /// </summary>
+        public static string Print(XmlElement element)
+        {
+            return Print(Doc(element));
+        }
+
+        /// <summary>
+        /// Pretty print an XML document.
+        /// </summary>
+        public static string PrettyPrint(XmlDocument doc)
+        {
+            var settings = new XmlWriterSettings
+            {
+                Indent = true,
+                IndentChars = "  ",
+                NewLineChars = "\n",
+                NewLineHandling = NewLineHandling.Replace
+            };
+
+            var sb = new StringBuilder();
+            using (var writer = XmlWriter.Create(sb, settings))
+            {
+                doc.Save(writer);
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Pretty print an XML element.
+        /// </summary>
+        public static string PrettyPrint(XmlElement element)
+        {
+            return PrettyPrint(Doc(element));
         }
     }
 }

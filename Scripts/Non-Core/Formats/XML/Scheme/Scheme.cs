@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Xml;
 using Rusty.Serialization.Core.Nodes;
-using Rusty.Serialization.Core.Serializers;
 
 namespace Rusty.Serialization.Serializers.XML
 {
     /// <summary>
     /// A CSCD serialization scheme.
     /// </summary>
-    public class Scheme : ISerializerScheme
+    public class Scheme : IXmlSerializerScheme
     {
         /* Public properties. */
         public bool PrettyPrint { get; set; }
@@ -66,60 +66,47 @@ namespace Rusty.Serialization.Serializers.XML
 
         public INode Parse(string serialized)
         {
-            if (serialized == null)
-                throw new ArgumentException("Cannot parse null strings.");
+            throw new NotImplementedException();
+        }
 
-            serialized = serialized.Trim();
-            if (serialized.Length == 0)
-                throw new ArgumentException("Cannot parse empty strings.");
-
-            // Type labels.
-            if (serialized.StartsWith('('))
-                return Type.Parse(serialized, this);
-
-            // Collections.
-            if (serialized.StartsWith('[') && serialized.EndsWith(']'))
-                return List.Parse(serialized, this);
-            if (serialized.StartsWith('{') && serialized.EndsWith('}'))
-                return Dict.Parse(serialized, this);
-            if (serialized.StartsWith('<') && serialized.EndsWith('>'))
-                return Object.Parse(serialized, this);
-
-            // Primitives.
-            if (serialized.StartsWith('t') || serialized.StartsWith("fa"))
-                return Bool.Parse(serialized, this);
-            if (serialized.StartsWith('n'))
-                return Null.Parse(serialized, this);
-            if (serialized.StartsWith('\'') && serialized.EndsWith('\''))
-                return Char.Parse(serialized, this);
-            if (serialized.StartsWith('"') && serialized.EndsWith('"'))
-                return String.Parse(serialized, this);
-            if (serialized.StartsWith('#'))
-                return Color.Parse(serialized, this);
-            if (serialized.StartsWith("0x"))
-                return Binary.Parse(serialized, this);
-            if (serialized.StartsWith('Y') || serialized.StartsWith("-Y")
-                || serialized.StartsWith('M') || serialized.StartsWith("-M")
-                || serialized.StartsWith('D') || serialized.StartsWith("-D")
-                || serialized.StartsWith('h') || serialized.StartsWith("-h")
-                || serialized.StartsWith('m') || serialized.StartsWith("-m")
-                || serialized.StartsWith('s') || serialized.StartsWith("-s")
-                || serialized.StartsWith('f') || serialized.StartsWith("-f"))
+        public XmlElement ToXml(INode node)
+        {
+            switch (node)
             {
-                return Time.Parse(serialized, this);
+                case NullNode n:
+                    return Null.ToXml(n, this);
+                case BoolNode b:
+                    return Bool.ToXml(b, this);
+                case IntNode i:
+                    return Int.ToXml(i, this);
+                case RealNode r:
+                    return Real.ToXml(r, this);
+                case CharNode c:
+                    return Char.ToXml(c, this);
+                case StringNode s:
+                    return String.ToXml(s, this);
+                case ColorNode col:
+                    return Color.ToXml(col, this);
+                case TimeNode t:
+                    return Time.ToXml(t, this);
+                case BinaryNode bin:
+                    return Binary.ToXml(bin, this);
+                case ListNode l:
+                    return List.ToXml(l, this);
+                case DictNode d:
+                    return Dict.ToXml(d, this);
+                case ObjectNode o:
+                    return Object.ToXml(o, this);
+                case TypeNode ty:
+                    return Type.ToXml(ty, this);
+                default:
+                    throw new ArgumentException($"Unknown node type '{node.GetType()}'.");
             }
+        }
 
-            bool startNumeric = (serialized[0] >= '0' && serialized[0] <= '9') || serialized[0] == '-' || serialized[0] == '.';
-            if (startNumeric)
-            {
-                if (serialized.Contains('.'))
-                    return Real.Parse(serialized, this);
-                else
-                    return Int.Parse(serialized, this);
-            }
-
-            // Invalid string.
-            throw new ArgumentException($"Invalid string '{serialized}'");
+        public INode FromXml(XmlElement element)
+        {
+            throw new NotImplementedException();
         }
     }
 }

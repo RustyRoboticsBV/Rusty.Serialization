@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Xml;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
 
@@ -8,35 +7,20 @@ namespace Rusty.Serialization.Serializers.XML
     /// <summary>
     /// An XML int serializer.
     /// </summary>
-    public class IntSerializer : Serializer<IntNode>
+    public class IntSerializer : XmlSerializer<IntNode>
     {
+        /* Public properties. */
+        public override string Tag => "int";
+
         /* Public methods. */
-        public override string Serialize(IntNode node, ISerializerScheme scheme)
+        public override XmlElement ToXml(IntNode node, IXmlSerializerScheme scheme)
         {
-            return XmlUtility.Pack(node.Value.ToString(CultureInfo.InvariantCulture), "int");
+            return XmlUtility.Pack(node.Value.ToString(), Tag);
         }
 
-        public override IntNode Parse(string text, ISerializerScheme scheme)
+        public override IntNode FromXml(XmlElement element, IXmlSerializerScheme scheme)
         {
-            // Remove whitespaces.
-            string trimmed = text?.Trim();
-
-            try
-            {
-                // Empty strings are not allowed.
-                if (string.IsNullOrEmpty(trimmed))
-                    throw new ArgumentException("Empty string.");
-
-                // Unpack XML.
-                string contents = XmlUtility.Unpack(trimmed, "int");
-
-                // Parse.
-                return new(decimal.Parse(contents, CultureInfo.InvariantCulture));
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException($"Could not parse string '{text}' as an integer:\n{ex.Message}");
-            }
+            throw new System.NotImplementedException();
         }
     }
 }

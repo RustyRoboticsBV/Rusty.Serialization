@@ -2,6 +2,8 @@
 using Rusty.Serialization.Core.Contexts;
 using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.Core.Serializers;
+using Rusty.Serialization.Serializers;
+using System;
 
 namespace Rusty.Serialization
 {
@@ -20,8 +22,29 @@ namespace Rusty.Serialization
         /// A CSCD serialization scheme.
         /// </summary>
         public static Serializers.CSCD.Scheme CscdScheme => new();
+        /// <summary>
+        /// An XML serialization scheme.
+        /// </summary>
+        public static Serializers.XML.Scheme XmlScheme => new();
 
         public override IConverterScheme ConverterScheme { get; set; } = DefaultConverters;
         public override ISerializerScheme SerializerScheme { get; set; } = CscdScheme;
+
+        /* Constructors. */
+        public DefaultContext(Format format = Format.Cscd)
+        {
+            switch (format)
+            {
+                case Format.Cscd:
+                    SerializerScheme = CscdScheme;
+                    break;
+                case Format.Json:
+                    throw new NotImplementedException();
+                    break;
+                case Format.Xml:
+                    SerializerScheme = XmlScheme;
+                    break;
+            }
+        }
     }
 }

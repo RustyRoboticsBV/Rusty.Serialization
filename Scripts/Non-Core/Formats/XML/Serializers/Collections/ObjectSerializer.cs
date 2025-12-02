@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Xml;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
 
@@ -9,114 +7,27 @@ namespace Rusty.Serialization.Serializers.XML
     /// <summary>
     /// An XML object serializer.
     /// </summary>
-    public class ObjectSerializer : Serializer<ObjectNode>
+    public class ObjectSerializer : XmlSerializer<ObjectNode>
     {
+        /* Public properties. */
+        public override string Tag => "obj";
+
         /* Public methods. */
-        public override string Serialize(ObjectNode node, ISerializerScheme scheme)
+        public override XmlElement ToXml(ObjectNode node, IXmlSerializerScheme scheme)
         {
-            if (node.Members == null)
-                throw new Exception("Cannot serialize object nodes whose members array are null.");
-
-            if (node.Members.Length == 0)
-                return "<object/>";
-
-            bool prettyPrint = scheme.PrettyPrint;
-            string tab = scheme.Tab;
-
-            // Add members.
-            StringBuilder sb = new();
-            for (int i = 0; i < node.Members.Length; i++)
+            XmlElement element = XmlUtility.Create(Tag);
+            foreach (var member in node.Members)
             {
-                string value = scheme.Serialize(node.Members[i].Value);
-
-                if (prettyPrint)
-                    sb.Append('\n' + tab);
-
-                // Key.
-                ValidateIdentifier(node.Members[i].Key);
-                sb.Append(node.Members[i].Key);
-
-                // Separator.
-                if (prettyPrint)
-                    sb.Append(' ');
-                sb.Append(':');
-                if (prettyPrint)
-                    sb.Append(' ');
-
-                // Value.
-                if (prettyPrint && i < node.Members.Length - 1)
-                    sb.Append(value.Replace("\n", "\n" + tab));
-                else
-                    sb.Append(value);
-
-                // Comma.
-                if (i < node.Members.Length - 1)
-                    sb.Append(',');
+                XmlElement value = scheme.ToXml(member.Value);
+                value.SetAttribute("name", member.Key);
+                element.AppendChild(value);
             }
-            if (prettyPrint)
-                sb.Append('\n');
-            return XmlUtility.Pack(sb.ToString(), "obj");
+            return element;
         }
 
-        public override ObjectNode Parse(string text, ISerializerScheme scheme)
+        public override ObjectNode FromXml(XmlElement element, IXmlSerializerScheme scheme)
         {
-            string trimmed = text?.Trim();
-
-            try
-            {
-                // Unpack XML.
-                string content = XmlUtility.Unpack(text, "obj");
-
-                // Split into terms.
-                List<string> terms = ParseUtility.Split(content);
-
-                // Handle empty objects.
-                if (terms.Count == 0)
-                    return new ObjectNode(null);
-
-                // Handle key:value pairs.
-                var pairs = new KeyValuePair<string, INode>[terms.Count];
-                for (int i = 0; i < terms.Count; i++)
-                {
-                    // Split into key and value.
-                    List<string> pairStrs = ParseUtility.Split(terms[i], ':');
-                    if (pairStrs.Count != 2)
-                        throw new Exception($"Malformed identifier-name pair.");
-
-                    // Get identifier.
-                    string identifier = pairStrs[0].Trim();
-                    ValidateIdentifier(identifier);
-
-                    // Get value.
-                    string valueStr = pairStrs[1].Trim();
-                    INode valueNode = scheme.Parse(valueStr);
-
-                    // Add key-value pair.
-                    pairs[i] = new KeyValuePair<string, INode>(identifier, valueNode);
-                }
-
-                return new ObjectNode(pairs);
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException($"Could not parse string '{text}' as an object:\n\n{ex.Message}");
-            }
-        }
-
-        /* Private methods. */
-        private static void ValidateIdentifier(string identifier)
-        {
-            for (int i = 0; i < identifier.Length; i++)
-            {
-                char c = identifier[i];
-                if (i == 0)
-                {
-                    if (!(c <= '~' && (c == '_' || char.IsLetter(c))))
-                        throw new ArgumentException($"Illegal identifier '{identifier}' (must start with letter or underscore).");
-                }
-                else if (!(c <= '~' && (c == '_' || char.IsLetter(c) || char.IsDigit(c))))
-                    throw new ArgumentException($"Illegal identifier '{identifier}' (must only contain letters, digits or underscores).");
-            }
+            throw new System.NotImplementedException();
         }
     }
 }
