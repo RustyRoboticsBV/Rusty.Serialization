@@ -1,6 +1,8 @@
-﻿using System.Xml;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
+using System;
+using System.Numerics;
+using System.Xml;
 
 namespace Rusty.Serialization.Serializers.XML
 {
@@ -27,7 +29,50 @@ namespace Rusty.Serialization.Serializers.XML
 
         public override TimeNode FromXml(XmlElement element, IXmlSerializerScheme scheme)
         {
-            throw new System.NotImplementedException();
+            // Enforce name.
+            if (element.Name != Tag)
+                throw new ArgumentException("Name wasn't " + Tag);
+
+            // Parse element.
+            BigInteger year = 0;
+            BigInteger month = 0;
+            BigInteger day = 0;
+            BigInteger hour = 0;
+            BigInteger minute = 0;
+            BigInteger second = 0;
+            BigInteger millisecond = 0;
+            foreach (XmlNode child in element)
+            {
+                if (child is XmlElement childElement)
+                {
+                    switch (childElement.Name)
+                    {
+                        case "Y":
+                            year = BigInteger.Parse(childElement.InnerText);
+                            break;
+                        case "M":
+                            month = BigInteger.Parse(childElement.InnerText);
+                            break;
+                        case "D":
+                            day = BigInteger.Parse(childElement.InnerText);
+                            break;
+                        case "h":
+                            hour = BigInteger.Parse(childElement.InnerText);
+                            break;
+                        case "m":
+                            minute = BigInteger.Parse(childElement.InnerText);
+                            break;
+                        case "s":
+                            second = BigInteger.Parse(childElement.InnerText);
+                            break;
+                        case "f":
+                            millisecond = BigInteger.Parse(childElement.InnerText);
+                            break;
+                    }
+                }
+            }
+
+            return new(new(year, month, day, hour, minute, second, millisecond));
         }
     }
 }

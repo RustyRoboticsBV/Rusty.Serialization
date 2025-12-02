@@ -1,6 +1,7 @@
-﻿using System.Xml;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
+using System.Collections.Generic;
+using System.Xml;
 
 namespace Rusty.Serialization.Serializers.XML
 {
@@ -25,7 +26,13 @@ namespace Rusty.Serialization.Serializers.XML
 
         public override ListNode FromXml(XmlElement element, IXmlSerializerScheme scheme)
         {
-            throw new System.NotImplementedException();
+            List<INode> elements = new();
+            foreach (var member in element.ChildNodes)
+            {
+                if (member is XmlElement childElement)
+                    elements.Add(scheme.FromXml(childElement));
+            }
+            return new(elements.ToArray());
         }
     }
 }

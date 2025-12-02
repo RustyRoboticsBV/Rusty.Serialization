@@ -1,6 +1,7 @@
-﻿using System.Xml;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
+using System;
+using System.Xml;
 
 namespace Rusty.Serialization.Serializers.XML
 {
@@ -24,7 +25,39 @@ namespace Rusty.Serialization.Serializers.XML
 
         public override ColorNode FromXml(XmlElement element, IXmlSerializerScheme scheme)
         {
-            throw new System.NotImplementedException();
+            // Enforce name.
+            if (element.Name != Tag)
+                throw new ArgumentException("Name wasn't " + Tag);
+
+            // Parse element.
+            byte r = 0;
+            byte g = 0;
+            byte b = 0;
+            byte a = 1;
+
+            foreach (XmlNode child in element)
+            {
+                if (child is XmlElement childElement)
+                {
+                    switch (childElement.Name)
+                    {
+                        case "r":
+                            r = byte.Parse(childElement.InnerText);
+                            break;
+                        case "g":
+                            g = byte.Parse(childElement.InnerText);
+                            break;
+                        case "b":
+                            b = byte.Parse(childElement.InnerText);
+                            break;
+                        case "a":
+                            a = byte.Parse(childElement.InnerText);
+                            break;
+                    }
+                }
+            }
+
+            return new(r, g, b, a);
         }
     }
 }

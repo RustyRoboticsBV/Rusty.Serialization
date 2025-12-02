@@ -1,7 +1,8 @@
-﻿using System.Text;
-using System.Xml;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
+using System.Collections.Generic;
+using System.Text;
+using System.Xml;
 
 namespace Rusty.Serialization.Serializers.XML
 {
@@ -34,7 +35,18 @@ namespace Rusty.Serialization.Serializers.XML
 
         public override DictNode FromXml(XmlElement element, IXmlSerializerScheme scheme)
         {
-            throw new System.NotImplementedException();
+            List<KeyValuePair<INode, INode>> elements = new();
+            foreach (var member in element.ChildNodes)
+            {
+                if (member is XmlElement childElement && childElement.Name == "element" && childElement.ChildNodes.Count == 2
+                     && childElement.ChildNodes[0] is XmlElement key && childElement.ChildNodes[1] is XmlElement value)
+                {
+                    INode keyNode = scheme.FromXml(key);
+                    INode valueNode = scheme.FromXml(value);
+                    elements.Add(new(keyNode, valueNode));
+                }
+            }
+            return new(elements.ToArray());
         }
     }
 }

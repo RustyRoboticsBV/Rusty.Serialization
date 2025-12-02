@@ -1,6 +1,8 @@
-﻿using System.Xml;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
+using System;
+using System.Numerics;
+using System.Xml;
 
 namespace Rusty.Serialization.Serializers.XML
 {
@@ -20,7 +22,12 @@ namespace Rusty.Serialization.Serializers.XML
 
         public override IntNode FromXml(XmlElement element, IXmlSerializerScheme scheme)
         {
-            throw new System.NotImplementedException();
+            // Enforce name.
+            if (element.Name != Tag)
+                throw new ArgumentException("Name wasn't " + Tag);
+
+            // Parse element.
+            return new(decimal.Parse(element.InnerText));
         }
     }
 }

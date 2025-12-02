@@ -1,6 +1,7 @@
-﻿using System.Xml;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
+using System;
+using System.Xml;
 
 namespace Rusty.Serialization.Serializers.XML
 {
@@ -20,7 +21,12 @@ namespace Rusty.Serialization.Serializers.XML
 
         public override RealNode FromXml(XmlElement element, IXmlSerializerScheme scheme)
         {
-            throw new System.NotImplementedException();
+            // Enforce name.
+            if (element.Name != Tag)
+                throw new ArgumentException("Name wasn't " + Tag);
+
+            // Parse element.
+            return new(PeterO.Numbers.EDecimal.FromString(element.InnerText));
         }
     }
 }

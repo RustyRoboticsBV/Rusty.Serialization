@@ -1,6 +1,7 @@
-﻿using System.Xml;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
+using System;
+using System.Xml;
 
 namespace Rusty.Serialization.Serializers.XML
 {
@@ -16,16 +17,33 @@ namespace Rusty.Serialization.Serializers.XML
         public override XmlElement ToXml(CharNode node, IXmlSerializerScheme scheme)
         {
             string str;
-            if (node.Value > char.MaxValue)
+            if (node.Value <= char.MaxValue)
                 str = ((char)node.Value).ToString();
             else
-                str = char.ConvertFromUtf32(node.Value);
+                str = $"\\[{HexUtility.ToHexString(node.Value)}]";
             return XmlUtility.Pack(str, Tag);
         }
 
         public override CharNode FromXml(XmlElement element, IXmlSerializerScheme scheme)
         {
-            throw new System.NotImplementedException();
+            // Enforce name.
+            if (element.Name != Tag)
+                throw new ArgumentException("Name wasn't " + Tag);
+
+            // Try to parse string.
+            string contents = element.InnerText;
+
+            // Parse contents.
+            int chr;
+            if (contents.StartsWith("\\[") && contents.EndsWith("]"))
+                chr = HexUtility.FromHexString(contents.Substring(2, contents.Length - 3));
+            else if (contents.Length > 0)
+                throw new Exception("Too many characters.");
+            else
+                chr = contents[0];
+
+            // Return node.
+            return new(chr);
         }
     }
 }
