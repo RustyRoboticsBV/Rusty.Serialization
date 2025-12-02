@@ -13,13 +13,7 @@ namespace Rusty.Serialization.Core.Contexts
     public abstract class Context : IContext
     {
         /* Public properties. */
-        /// <summary>
-        /// The converter scheme of this serialization context.
-        /// </summary>
         public virtual IConverterScheme ConverterScheme { get; set; }
-        /// <summary>
-        /// The serializer scheme of this serialization context.
-        /// </summary>
         public virtual ISerializerScheme SerializerScheme { get; set; }
 
         /* Public methods. */

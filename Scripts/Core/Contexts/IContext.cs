@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Serializers;
+using System;
 
 namespace Rusty.Serialization.Core.Contexts
 {
@@ -7,6 +9,16 @@ namespace Rusty.Serialization.Core.Contexts
     /// </summary>
     public interface IContext
     {
+        /* Public properties. */
+        /// <summary>
+        /// The converter scheme of this serialization context.
+        /// </summary>
+        public IConverterScheme ConverterScheme { get; set; }
+        /// <summary>
+        /// The serializer scheme of this serialization context.
+        /// </summary>
+        public ISerializerScheme SerializerScheme { get; set; }
+
         /* Public methods. */
         /// <summary>
         /// Serialize an object, using the current converter & serialization schemes.
