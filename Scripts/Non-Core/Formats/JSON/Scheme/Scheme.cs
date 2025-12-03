@@ -17,15 +17,36 @@ namespace Rusty.Serialization.Serializers.JSON
         public string Tab { get; set; } = "  ";
 
         /* Private properties. */
+        private NullSerializer Null { get; } = new();
+        private BoolSerializer Bool { get; } = new();
         private IntSerializer Int { get; } = new();
+        private RealSerializer Real { get; } = new();
+        private CharSerializer Char { get; } = new();
+        private StringSerializer String { get; } = new();
+        private ColorSerializer Color { get; } = new();
+        private ListSerializer List { get; } = new();
 
         /* Public methods. */
         public string Serialize(INode node)
         {
             switch (node)
             {
+                case NullNode n:
+                    return Null.Serialize(node, this);
+                case BoolNode b:
+                    return Bool.Serialize(node, this);
                 case IntNode i:
                     return Int.Serialize(node, this);
+                case RealNode r:
+                    return Real.Serialize(node, this);
+                case CharNode c:
+                    return Char.Serialize(node, this);
+                case StringNode s:
+                    return String.Serialize(node, this);
+                case ColorNode col:
+                    return Color.Serialize(node, this);
+                case ListNode list:
+                    return List.Serialize(node, this);
                 default:
                     // TODO: remove this.
                     return "";

@@ -23,6 +23,10 @@ namespace Rusty.Serialization
         /// </summary>
         public static Serializers.CSCD.Scheme CscdScheme => new();
         /// <summary>
+        /// A JSON serialization scheme.
+        /// </summary>
+        public static Serializers.JSON.Scheme JsonScheme => new();
+        /// <summary>
         /// An XML serialization scheme.
         /// </summary>
         public static Serializers.XML.Scheme XmlScheme => new();
@@ -39,7 +43,7 @@ namespace Rusty.Serialization
                     SerializerScheme = CscdScheme;
                     break;
                 case Format.Json:
-                    throw new NotImplementedException();
+                    SerializerScheme = JsonScheme;
                     break;
                 case Format.Xml:
                     SerializerScheme = XmlScheme;

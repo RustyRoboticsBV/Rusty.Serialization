@@ -4,27 +4,27 @@ using Rusty.Serialization.Core.Serializers;
 
 namespace Rusty.Serialization.Serializers.JSON
 {
-    public class IntSerializer : JsonSerializer<IntNode>
+    public class CharSerializer : JsonSerializer<CharNode>
     {
         /* Public properties. */
-        public override string Tag => "int";
+        public override string Tag => "char";
 
         /* Public methods. */
-        public override string Serialize(IntNode node, ISerializerScheme scheme)
+        public override string Serialize(CharNode node, ISerializerScheme scheme)
         {
-            JsonPrimitive<decimal> json = new(Tag, node.Value);
+            JsonPrimitive<string> json = new(Tag, ((char)node.Value).ToString());
             return NodeToText(json, scheme);
         }
 
-        public override IntNode Parse(string serialized, ISerializerScheme scheme)
+        public override CharNode Parse(string serialized, ISerializerScheme scheme)
         {
             // Don't allow empty strings.
             if (string.IsNullOrWhiteSpace(serialized))
                 throw new ArgumentException("String is null or empty.");
 
             // Deserialize.
-            var json = TextToNode<JsonPrimitive<decimal>>(serialized);
-            return new(json.value);
+            var json = TextToNode<JsonPrimitive<string>>(serialized);
+            return new(json.value[0]);
         }
     }
 }

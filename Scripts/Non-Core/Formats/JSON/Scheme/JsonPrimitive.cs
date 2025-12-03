@@ -6,15 +6,79 @@ namespace Rusty.Serialization.Serializers.JSON
     /// A representation of a JSON node that can be serialized and deserialized easily.
     /// </summary>
     [Serializable]
-    public struct JsonPrimitive<T>
+    public class JsonNode
+    {
+    }
+
+    public class JsonSnippet : JsonNode
+    {
+        public string text;
+
+        public JsonSnippet(string text)
+        {
+            this.text = text;
+        }
+    }
+
+    /// <summary>
+    /// A representation of a JSON node that can be serialized and deserialized easily.
+    /// </summary>
+    [Serializable]
+    public class JsonPrimitive<T> : JsonNode
     {
         public string type;
         public T value;
 
-        public JsonPrimitive(string type, T value)
+        public JsonPrimitive(string type, T value) : base()
         {
             this.type = type;
             this.value = value;
+        }
+    }
+
+    /// <summary>
+    /// A representation of a JSON node that can be serialized and deserialized easily.
+    /// </summary>
+    [Serializable]
+    public class JsonArray : JsonNode
+    {
+        public string type;
+        public JsonNode[] value;
+
+        public JsonArray(string type, JsonNode[] value) : base()
+        {
+            this.type = type;
+            this.value = value;
+        }
+    }
+
+    /// <summary>
+    /// A representation of a JSON node that can be serialized and deserialized easily.
+    /// </summary>
+    [Serializable]
+    public class JsonKeyValuePair<T, U> : JsonNode
+    {
+        public T key;
+        public U value;
+
+        public JsonKeyValuePair(T key, U value) : base()
+        {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    /// <summary>
+    /// A representation of a JSON node that can be serialized and deserialized easily.
+    /// </summary>
+    [Serializable]
+    public class JsonDictionary<T, U> : JsonNode
+    {
+        public JsonKeyValuePair<T, U>[] pairs;
+
+        public JsonDictionary(JsonKeyValuePair<T, U>[] pairs) : base()
+        {
+            this.pairs = pairs;
         }
     }
 }
