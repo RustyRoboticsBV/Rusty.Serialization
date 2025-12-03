@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Serializers.JSON
             StringBuilder sb = new();
             sb.Append('{');
             AddItem(sb, "type", "null", true, scheme.PrettyPrint, scheme.Tab);
-            sb.Append('}');
+            sb.Append("\n}");
             return sb.ToString();
         }
 

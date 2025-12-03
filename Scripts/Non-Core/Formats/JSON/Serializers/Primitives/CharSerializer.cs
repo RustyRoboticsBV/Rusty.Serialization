@@ -17,7 +17,7 @@ namespace Rusty.Serialization.Serializers.JSON
             sb.Append('{');
             AddItem(sb, "type", Tag, true, scheme.PrettyPrint, scheme.Tab);
             AddItem(sb, "value", node.Value <= char.MaxValue ? node.Value.ToString() : throw new Exception(), false, scheme.PrettyPrint, scheme.Tab);
-            sb.Append('}');
+            sb.Append("\n}");
             return sb.ToString();
         }
 

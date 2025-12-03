@@ -99,10 +99,6 @@ namespace Rusty.Serialization.Serializers.JSON
             sb.Append(value);
             if (quoteValue)
                 sb.Append('"');
-
-            // End on new line.
-            if (prettyPrint)
-                sb.Append('\n');
         }
 
         protected static string Indent(string str, string tab)
