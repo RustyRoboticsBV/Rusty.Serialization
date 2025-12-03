@@ -1,3 +1,4 @@
+#pragma warning disable 3021
 /*
 Written in 2013-2019 by Peter O.
 
@@ -10022,3 +10023,4 @@ namespace PeterO.Numbers {
     // End integer conversions
   }
 }
+#pragma warning restore 3021

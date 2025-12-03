@@ -1,3 +1,4 @@
+#pragma warning disable 3021
 /*
 Written by Peter O.
 Any copyright to this work is released to the Public Domain.
@@ -107,3 +108,4 @@ namespace PeterO.Numbers {
     int CompareTo(T thisValue, T otherValue);
   }
 }
+#pragma warning restore 3021

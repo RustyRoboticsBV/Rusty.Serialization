@@ -1,3 +1,4 @@
+#pragma warning disable 3021
 using System;
 
 namespace PeterO.Numbers {
@@ -968,3 +969,4 @@ namespace PeterO.Numbers {
     }
   }
 }
+#pragma warning restore 3021

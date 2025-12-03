@@ -1,3 +1,4 @@
+#pragma warning disable 3021
 /*
 Written by Peter O.
 Any copyright to this work is released to the Public Domain.
@@ -1149,3 +1150,4 @@ namespace PeterO.Numbers {
     }
   }
 }
+#pragma warning restore 3021

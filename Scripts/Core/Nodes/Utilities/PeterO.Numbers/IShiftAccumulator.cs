@@ -1,3 +1,4 @@
+#pragma warning disable 3021
 /*
 Written by Peter O.
 Any copyright to this work is released to the Public Domain.
@@ -45,3 +46,4 @@ namespace PeterO.Numbers {
     void ShiftToDigits(FastInteger bits, FastInteger preShift, bool truncate);
   }
 }
+#pragma warning restore 3021
