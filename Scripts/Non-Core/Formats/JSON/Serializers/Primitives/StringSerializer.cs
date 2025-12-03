@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
 
@@ -12,8 +13,12 @@ namespace Rusty.Serialization.Serializers.JSON
         /* Public methods. */
         public override string Serialize(StringNode node, ISerializerScheme scheme)
         {
-            JsonPrimitive<string> json = new(Tag, node.Value);
-            return NodeToText(json, scheme);
+            StringBuilder sb = new();
+            sb.Append('{');
+            AddItem(sb, "type", Tag, true, scheme.PrettyPrint, scheme.Tab);
+            AddItem(sb, "value", node.Value, true, scheme.PrettyPrint, scheme.Tab);
+            sb.Append('}');
+            return sb.ToString();
         }
 
         public override StringNode Parse(string serialized, ISerializerScheme scheme)

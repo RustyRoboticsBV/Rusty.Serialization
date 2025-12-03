@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
 
@@ -12,19 +13,17 @@ namespace Rusty.Serialization.Serializers.JSON
         /* Public methods. */
         public override string Serialize(BoolNode node, ISerializerScheme scheme)
         {
-            JsonPrimitive<bool> json = new(Tag, node.Value);
-            return NodeToText(json, scheme);
+            StringBuilder sb = new();
+            sb.Append('{');
+            AddItem(sb, "type", Tag, true, scheme.PrettyPrint, scheme.Tab);
+            AddItem(sb, "value", node.Value ? "true" : "false", false, scheme.PrettyPrint, scheme.Tab);
+            sb.Append('}');
+            return sb.ToString();
         }
 
         public override BoolNode Parse(string serialized, ISerializerScheme scheme)
         {
-            // Don't allow empty strings.
-            if (string.IsNullOrWhiteSpace(serialized))
-                throw new ArgumentException("String is null or empty.");
-
-            // Deserialize.
-            var json = TextToNode<JsonPrimitive<bool>>(serialized);
-            return new(json.value);
+            throw new NotImplementedException();
         }
     }
 }

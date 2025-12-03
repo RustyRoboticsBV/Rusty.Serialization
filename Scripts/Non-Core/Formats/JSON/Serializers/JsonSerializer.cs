@@ -3,6 +3,8 @@
 #endif
 
 using System;
+using System.Text;
+
 
 #if NET_JSON
 using System.Text.Json;
@@ -56,6 +58,56 @@ namespace Rusty.Serialization.Serializers.JSON
 #else
             throw new NotImplementedException();
 #endif
+        }
+
+        protected static void AddItem(StringBuilder sb, string name, string value, bool quoteValue, bool prettyPrint, string tab)
+        {
+            bool mustIndent = prettyPrint ? true : false;
+
+            // Process value for pretty-printing.
+            if (prettyPrint)
+                value = value.Replace("\n", "\n" + tab);
+
+            // Add comma if necessary.
+            char lastChar = sb[sb.Length - 1];
+            if (sb.Length > 0 && lastChar != '{')
+                sb.Append(',');
+
+            // Add linebreak.
+            if (sb.Length > 0 && prettyPrint && lastChar != '\n')
+                sb.Append('\n');
+
+            // Add indentation.
+            if (prettyPrint)
+                sb.Append(tab);
+
+            // Add name.
+            sb.Append('"');
+            sb.Append(name);
+            sb.Append('"');
+
+            // Add separator.
+            if (prettyPrint)
+                sb.Append(' ');
+            sb.Append(':');
+            if (prettyPrint)
+                sb.Append(' ');
+
+            // Add value.
+            if (quoteValue)
+                sb.Append('"');
+            sb.Append(value);
+            if (quoteValue)
+                sb.Append('"');
+
+            // End on new line.
+            if (prettyPrint)
+                sb.Append('\n');
+        }
+
+        protected static string Indent(string str, string tab)
+        {
+            return tab + str.Replace("\n", "\n" + tab);
         }
     }
 }
