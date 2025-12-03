@@ -10,6 +10,7 @@ namespace Rusty.Serialization.Serializers.JSON
     {
     }
 
+    [Serializable]
     public class JsonSnippet : JsonNode
     {
         public string text;
@@ -79,6 +80,24 @@ namespace Rusty.Serialization.Serializers.JSON
         public JsonDictionary(JsonKeyValuePair<T, U>[] pairs) : base()
         {
             this.pairs = pairs;
+        }
+    }
+
+    /// <summary>
+    /// A representation of a JSON node that can be serialized and deserialized easily.
+    /// </summary>
+    [Serializable]
+    public class JsonType : JsonNode
+    {
+        public string type;
+        public string name;
+        public JsonNode value;
+
+        public JsonType(string type, string name, JsonNode value) : base()
+        {
+            this.type = type;
+            this.name = name;
+            this.value = value;
         }
     }
 }

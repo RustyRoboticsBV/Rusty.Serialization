@@ -1,7 +1,4 @@
 using System;
-#if !UNITY_5_3_OR_NEWER
-using System.Text.Json;
-#endif
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
 
@@ -25,6 +22,8 @@ namespace Rusty.Serialization.Serializers.JSON
         private StringSerializer String { get; } = new();
         private ColorSerializer Color { get; } = new();
         private ListSerializer List { get; } = new();
+        private ObjectSerializer Object { get; } = new();
+        private TypeSerializer Type { get; } = new();
 
         /* Public methods. */
         public string Serialize(INode node)
@@ -47,6 +46,10 @@ namespace Rusty.Serialization.Serializers.JSON
                     return Color.Serialize(node, this);
                 case ListNode list:
                     return List.Serialize(node, this);
+                case ObjectNode obj:
+                    return Object.Serialize(node, this);
+                case TypeNode type:
+                    return Type.Serialize(node, this);
                 default:
                     // TODO: remove this.
                     return "";
