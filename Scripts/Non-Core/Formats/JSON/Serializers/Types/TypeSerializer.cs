@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Serializers.JSON
             AddItem(sb, "type", "type", true, scheme.PrettyPrint, scheme.Tab);
             AddItem(sb, "name", node.Name, true, scheme.PrettyPrint, scheme.Tab);
             AddItem(sb, "value", scheme.Serialize(node.Value), false, scheme.PrettyPrint, scheme.Tab);
-            sb.Append('}');
+            sb.Append("\n}");
             return sb.ToString();
         }
 

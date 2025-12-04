@@ -70,7 +70,7 @@ namespace Rusty.Serialization.Serializers.JSON
 
             // Add comma if necessary.
             char lastChar = sb[sb.Length - 1];
-            if (sb.Length > 0 && lastChar != '{')
+            if (sb.Length > 0 && lastChar != '{' && lastChar != '[')
                 sb.Append(',');
 
             // Add linebreak.
@@ -81,17 +81,20 @@ namespace Rusty.Serialization.Serializers.JSON
             if (prettyPrint)
                 sb.Append(tab);
 
-            // Add name.
-            sb.Append('"');
-            sb.Append(name);
-            sb.Append('"');
+            if (name != "")
+            {
+                // Add name.
+                sb.Append('"');
+                sb.Append(name);
+                sb.Append('"');
 
-            // Add separator.
-            if (prettyPrint)
-                sb.Append(' ');
-            sb.Append(':');
-            if (prettyPrint)
-                sb.Append(' ');
+                // Add separator.
+                if (prettyPrint)
+                    sb.Append(' ');
+                sb.Append(':');
+                if (prettyPrint)
+                    sb.Append(' ');
+            }
 
             // Add value.
             if (quoteValue)
