@@ -64,9 +64,10 @@ Of special note are:
 Using these nodes, any C# object can be represented unambiguously.
 
 ## Compact Serialized C# Data
-The module uses a custom serialization format, called Compact Serialized C# Data (CSCD). It's a human-readable format that resembles JSON, but adds IDs/references, type labels and a wider variety of literal types. This allows it to concisely express certain C# features that require more verbosity in JSON. It's designed to be compact, general and unambiguous.
+The module uses a custom serialization format, called Compact Serialized C# Data (CSCD). It's a human-readable format that resembles JSON, but adds IDs/references, type labels and a wider variety of literal types. This allows it to concisely express C# features that require more verbosity in JSON. The format is designed to be compact, general and unambiguous.
 
 Below is an example of a custom serialized object with pretty printing. See the specification document [here](FormatSpecification.md) for a more detailed description of the syntax.
+
 ```
 (MyType)<
     my_null: null,

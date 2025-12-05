@@ -1,5 +1,7 @@
 # CSCD Format Specification
-This document describes the syntax of a serialized data format, called *Compact Serialized C# Data* (CSCD for short). It's designed to be human-readable, compact, unambiguous and able to fully express any C# object. Values can be annotated with type and ID metadata, allowing parsers to reconstruct exact types with their reference links intact.
+This document describes the syntax of a serialized data format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing any C# object.
+
+While the format does not require an external schema, values may include optional type labels and ID metadata, enabling parsers to reconstruct exact types along with reference links.
 
 ## 1. General Formatting
 ### Character Set
@@ -12,27 +14,28 @@ Serialized data is expressed as a subset of the `ISO-8859-1` character set, and 
 When hexadecimal numbers are mentioned, their values may use both upper-case and lower-case characters (in other words, they are not case sensitive).
 
 ### Whitespace
-Whitespace is allowed between tokens for formatting reasons, but generally have no meaning.
+Whitespace is allowed between primitives and punctuation for formatting, but generally has no meaning. With the exception of spaces inside of character and string literals, spaces should simply be stripped during parsing.
 
 ## 2. Data Types
-Two categories of values are supported: primitives and collections. Additionally, values can be annotated with a type label and/or an ID.
+Two categories of values are supported: primitives and collections. Additionally, values can be annotated with metadata.
 
-Exactly one top-level value must be present in any string of serialized CSCD. This value may be of any type (including both primitives and collections). Optionally, the top-level value may be annotated with a type label.
+Exactly one top-level value must be present in any string of serialized CSCD. This value may be of any type (including both primitives and collections), and may optionally be annotated with metadata.
 
 ### 2.1. Metadata
-#### Type Labels
-Type labels can optionally placed before any value, and are written as a type name between `()` parentheses. Type labels act as hints for deserializers, telling them what kind of object was originally serialized. The format has no knowledge about what a type name actually *means*.
 
-Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters (whitespace characters between the outer parentheses and the name itself are allowed, but have no meaning). They are case-sensitive. Type labels may not be followed by an ID or by another type label - they must be followed by a value of some kind. They may be used inside collections.
+#### Type Labels
+Type labels can optionally placed before any value, and are written as a name between `()` parentheses. Type labels act as hints for deserializers, telling them what kind of object was originally serialized. The format has no knowledge about what a type name actually *means*.
+
+Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters. They are case-sensitive. Type labels may not be followed by an ID or by another type label - they must be followed by a value of some kind. They may be used inside collections.
 
 Serializers are encouraged to only generate type labels in situations where it would otherwise be ambiguous what kind of type was serialized.
 
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(  my_namespace.my_class<int>.my_struct<list<f64>>[] )`.
 
 #### IDs
-IDs can optionally be placed before any value, and are written as a name between `` ` `` backticks. Values that have been marked with an ID can be used in a reference literal (see the section on references below).
+IDs can optionally be placed before any value or type label, and are written as a name between `` ` `` backticks. Values that have been marked with an ID can be used in a reference literal (see the section on references below).
 
-ID names may only consist of letters, numbers and `_` underscores. IDs must be unique, and are always defined globally (in other words, there are no local scopes or namespaces). They are case-sensitive. Whitespace is allowed between the ID name and the outer backticks, but has no meaning. Whitespace inside the ID name itself is not allowed. IDs must be followed by either a value or a type label.
+ID names may only consist of letters, numbers and `_` underscores. IDs must be unique, and are always defined globally (in other words, there are no local scopes or namespaces). They are case-sensitive. IDs must be followed by either a value or a type label.
 
 Serializers are encouraged to only generate IDs in situations where a single object is referenced multiple times, or when cyclic references exist.
 
@@ -100,7 +103,7 @@ Each part represents a different unit:
 
 These prefixes are case-sensitive.
 
-Any positive integer number is allowed for each term, negative numbers are not. Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms can come in any order. Empty terms are not allowed (i.e. `YMD200`), and a term cannot appear more than once (i.e. `Y2Y2`).
+Any positive integer number is allowed for each term, negative numbers are not (i.e. `Y5M-2D5`). Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms may come in any order. Empty terms are not allowed (i.e. `YMD200`), and a term cannot appear more than once (i.e. `Y2Y2`).
 
 For example:
 - `Y1999M2D1h13` and `D1M2Y1999h13m0s0` are both valid representations of the date and time `February 1st 1999, 1 P.M.`.
