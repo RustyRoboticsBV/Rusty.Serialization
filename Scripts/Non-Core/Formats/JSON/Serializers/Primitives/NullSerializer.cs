@@ -17,6 +17,10 @@ namespace Rusty.Serialization.Serializers.JSON
 
         public override NullNode Parse(string serialized, ISerializerScheme scheme)
         {
+            // Trim.
+            serialized = serialized.Trim();
+
+            // Parse.
             if (serialized == "null")
                 return new();
             else

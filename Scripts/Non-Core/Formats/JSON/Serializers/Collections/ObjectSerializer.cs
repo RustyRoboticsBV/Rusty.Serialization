@@ -25,13 +25,13 @@ namespace Rusty.Serialization.Serializers.JSON
                 string key = node.Members[i].Key;
                 string value = scheme.Serialize(node.Members[i].Value);
 
-                OpenCollection(sb, '{');
+                OpenCollection(sb2, '{');
                 AddItem(sb2, "id", key, true, scheme.PrettyPrint, scheme.Tab);
                 AddItem(sb2, "value", value, false, scheme.PrettyPrint, scheme.Tab);
                 CloseCollection(sb2, '}', scheme.PrettyPrint);
 
                 // Add to list.
-                AddItem(sb, "", sb.ToString(), false, scheme.PrettyPrint, scheme.Tab);
+                AddItem(sb, "", sb2.ToString(), false, scheme.PrettyPrint, scheme.Tab);
             }
             CloseCollection(sb, ']', scheme.PrettyPrint);
 
