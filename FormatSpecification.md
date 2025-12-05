@@ -6,7 +6,7 @@ The CSCD format describes nested data structures.
 Serialized data is expressed as a subset of the `ISO-8859-1` character set, and may only contain the following characters:
 - ASCII whitespace characters: `0x20` (space), `0x09` (horizontal tab), `0x0A` (newline), `0x0B` (vertical tab), `0x0C` (form feed) and `0x0D` (carriage return).
 - ASCII letters, digits and punctuation: `0x21` (`!`) to `0x7E` (`~`).
-- Latin-1 Supplement letters, digits and punctuation: `0xA1` (`¡`) to `0xAC` (`¬`) and `0xAE` (`®`) to `0xFF` (`ÿ`).
+- Latin-1 Supplement letters, digits and punctuation: `0xA1` (`Â¡`) to `0xAC` (`Â¬`) and `0xAE` (`Â®`) to `0xFF` (`Ã¿`).
 
 ### Hexadecimals
 When hexadecimal numbers are mentioned, their values may use both upper-case and lower-case characters (in other words, they are not case sensitive).
@@ -15,11 +15,12 @@ When hexadecimal numbers are mentioned, their values may use both upper-case and
 Whitespace is allowed between tokens for formatting reasons, but generally have no meaning.
 
 ## 2. Data Types
-Two categories of values are supported: primitives and collections. Additionally, values can be annotated with type labels.
+Two categories of values are supported: primitives and collections. Additionally, values can be annotated with a type label and/or an ID.
 
 Exactly one top-level value must be present in any string of serialized CSCD. This value may be of any type (including both primitives and collections). Optionally, the top-level value may be annotated with a type label.
 
-### 2.1. Type Labels
+### 2.1. Metadata
+#### Type Labels
 Type labels can optionally placed before any value, and are written as a type name between `()` parentheses. Type labels act as hints for deserializers, telling them what kind of object was originally serialized. The format has no knowledge about what a type name actually *means*.
 
 Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters (whitespace characters between the outer parentheses and the name itself are allowed, but have no meaning). They are case-sensitive. Type labels may not be followed by another type label - they must be followed by a value of some kind. They may be used inside collections.
@@ -27,6 +28,15 @@ Type names may contain all characters from the allowed character set, except for
 Serializers are encouraged to only generate type labels in situations where it would otherwise be ambiguous what kind of type was serialized.
 
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(  my_namespace.my_class<int>.my_struct<list<f64>>[] )`.
+
+#### IDs
+IDs can optionally be placed before any value, and are written as a name between `` ` `` backticks. Values that have been marked with an ID can be used in a reference literal (see the section on references below). ID names may only consist of letters, numbers and `_` underscores. Whitespace is allowed between the ID name and the outer backticks, but has no meaning. Whitespace inside the ID name itself is not allowed.
+
+IDs must be unique, and are always defined globally (i.e., there are no local scopes or namespaces).
+
+If a value has both an ID and a type label, then the ID should come before the type label.
+
+Examples: `` `my_referenced_int`5``, `` `my_referenced_object`<a:0,b:"abc">``, `` `   my_referenced_typed_value`  (MyStringType)"abcdefg"``
 
 ### 2.2. Primitives
 
@@ -62,12 +72,12 @@ A few special character literals exist:
 - `'\0'`: expresses a null character.
 - `'\[#]'`: expresses a unicode character. # must be a hexadecimal number between `0` and `10FFFF`. Leading zeros are allowed.
 
-Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\[21ff]'`.
+Examples: `'A'`, `'Ã§'`, `'''`, `'\n'`, `'\[21ff]'`.
 
 #### Strings
 Strings must be enclosed in `"` double-quotes. Empty strings are allowed. The same character set is used as for character literals. The same special character rules apply as well, except that using unescaped double-quotes and backslashes is NOT allowed -  you MUST use `\"` and `\\` to represent them.
 
-Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\[21ff]\tarrow"`, `"C:\\path\\to\\file"`.
+Example: `"This is a \"string\"!"`, `"Â¡No hablÃ³ espaÃ±ol!"`, `"\[21ff]\tarrow"`, `"C:\\path\\to\\file"`.
 
 #### Colors
 Colors literals must start with a `#` hex sign, followed by the hexadecimal representation of the color. Four conventions are available:
@@ -104,6 +114,13 @@ Binary data literals store arbitrary data in hexadecimal format. They must start
 
 #### Null
 Null values are encoded with `null` literals. Like booleans, null values must be lower-case. Null values can be annotated with type labels like any other value.
+
+#### References
+Reference values are used to link to values that have been marked with an ID. They must start with an `&` ampersand, followed by the name of an ID (example: `&my_id`). This ID must exist elsewhere in the data.
+
+There are no scope limitations on where in the data an ID can be referenced: IDs that are defined before the reference, after the reference or inside a diffeernt nested collection are all allowed.
+
+References can be annotated with a type labels and even an ID of its own.
 
 ### 2.3. Collections
 
