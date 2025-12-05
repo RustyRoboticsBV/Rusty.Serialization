@@ -1,5 +1,5 @@
-# Data format Specification
-The CSCD format describes nested data structures.
+# CSCD Format Specification
+This document describes the syntax of a serialized data format, called *Compact Serialized C# Data* (CSCD for short). It's designed to be human-readable, compact, unambiguous and able to fully express any C# object. Values can be annotated with type and ID metadata, allowing parsers to reconstruct exact types with their reference links intact.
 
 ## 1. General Formatting
 ### Character Set
@@ -23,18 +23,18 @@ Exactly one top-level value must be present in any string of serialized CSCD. Th
 #### Type Labels
 Type labels can optionally placed before any value, and are written as a type name between `()` parentheses. Type labels act as hints for deserializers, telling them what kind of object was originally serialized. The format has no knowledge about what a type name actually *means*.
 
-Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters (whitespace characters between the outer parentheses and the name itself are allowed, but have no meaning). They are case-sensitive. Type labels may not be followed by another type label - they must be followed by a value of some kind. They may be used inside collections.
+Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters (whitespace characters between the outer parentheses and the name itself are allowed, but have no meaning). They are case-sensitive. Type labels may not be followed by an ID or by another type label - they must be followed by a value of some kind. They may be used inside collections.
 
 Serializers are encouraged to only generate type labels in situations where it would otherwise be ambiguous what kind of type was serialized.
 
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(  my_namespace.my_class<int>.my_struct<list<f64>>[] )`.
 
 #### IDs
-IDs can optionally be placed before any value, and are written as a name between `` ` `` backticks. Values that have been marked with an ID can be used in a reference literal (see the section on references below). ID names may only consist of letters, numbers and `_` underscores. Whitespace is allowed between the ID name and the outer backticks, but has no meaning. Whitespace inside the ID name itself is not allowed.
+IDs can optionally be placed before any value, and are written as a name between `` ` `` backticks. Values that have been marked with an ID can be used in a reference literal (see the section on references below).
 
-IDs must be unique, and are always defined globally (i.e., there are no local scopes or namespaces).
+ID names may only consist of letters, numbers and `_` underscores. IDs must be unique, and are always defined globally (in other words, there are no local scopes or namespaces). They are case-sensitive. Whitespace is allowed between the ID name and the outer backticks, but has no meaning. Whitespace inside the ID name itself is not allowed. IDs must be followed by either a value or a type label.
 
-If a value has both an ID and a type label, then the ID should come before the type label.
+Serializers are encouraged to only generate IDs in situations where a single object is referenced multiple times, or when cyclic references exist.
 
 Examples: `` `my_referenced_int`5``, `` `my_referenced_object`<a:0,b:"abc">``, `` `   my_referenced_typed_value`  (MyStringType)"abcdefg"``
 
