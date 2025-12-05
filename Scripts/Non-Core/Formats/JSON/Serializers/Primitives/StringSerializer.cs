@@ -10,14 +10,15 @@ namespace Rusty.Serialization.Serializers.JSON
         /* Public properties. */
         public override string Tag => "string";
 
+        /* Private properties. */
+        private static StringBuilder sb = new();
+
         /* Public methods. */
         public override string Serialize(StringNode node, ISerializerScheme scheme)
         {
-            StringBuilder sb = new();
-            sb.Append('{');
-            AddItem(sb, "type", Tag, true, scheme.PrettyPrint, scheme.Tab);
-            AddItem(sb, "value", node.Value, true, scheme.PrettyPrint, scheme.Tab);
-            sb.Append("\n}");
+            OpenCollection(sb, '{');
+            AddItem(sb, Tag, node.Value, true, scheme.PrettyPrint, scheme.Tab);
+            CloseCollection(sb, '}', scheme.PrettyPrint);
             return sb.ToString();
         }
 

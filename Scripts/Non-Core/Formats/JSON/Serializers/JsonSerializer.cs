@@ -2,7 +2,9 @@
 #define NET_JSON
 #endif
 
+#if !NET_JSON && !UNITY_5_3_OR_NEWER
 using System;
+#endif
 using System.Text;
 
 
@@ -30,6 +32,7 @@ namespace Rusty.Serialization.Serializers.JSON
         private JsonSerializerOptions Options { get; } = new();
 #endif
 
+        /* Protected methods. */
         /// <summary>
         /// Serialize a JSON node.
         /// </summary>
@@ -60,6 +63,13 @@ namespace Rusty.Serialization.Serializers.JSON
 #endif
         }
 
+        protected static void OpenCollection(StringBuilder sb, char chr)
+        {
+            if (sb.Length > 0)
+                sb.Clear();
+            sb.Append(chr);
+        }
+
         protected static void AddItem(StringBuilder sb, string name, string value, bool quoteValue, bool prettyPrint, string tab)
         {
             bool mustIndent = prettyPrint ? true : false;
@@ -69,12 +79,13 @@ namespace Rusty.Serialization.Serializers.JSON
                 value = value.Replace("\n", "\n" + tab);
 
             // Add comma if necessary.
-            char lastChar = sb[sb.Length - 1];
-            if (sb.Length > 0 && lastChar != '{' && lastChar != '[')
+            char lastChar = sb.Length > 0 ? sb[sb.Length - 1] : '\0';
+            char nextChar = value.Length > 0 ? value[0] : '\0';
+            if (sb.Length > 0 && (lastChar != '{' && nextChar != '{') && (lastChar != '[' && nextChar != '['))
                 sb.Append(',');
 
             // Add linebreak.
-            if (sb.Length > 0 && prettyPrint && lastChar != '\n')
+            if (sb.Length > 0 && prettyPrint && lastChar != '\n' && nextChar != '\n')
                 sb.Append('\n');
 
             // Add indentation.
@@ -104,9 +115,22 @@ namespace Rusty.Serialization.Serializers.JSON
                 sb.Append('"');
         }
 
-        protected static string Indent(string str, string tab)
+        protected static void CloseCollection(StringBuilder sb, char chr, bool prettyPrint)
         {
-            return tab + str.Replace("\n", "\n" + tab);
+            if (prettyPrint)
+            {
+                char lastChar = sb.Length > 0 ? sb[sb.Length - 1] : '\0';
+                if ((lastChar == '[' && chr == ']')
+                    || (lastChar == '{' && chr == '}')
+                    || (lastChar == '(' && chr == ')')
+                    || lastChar == chr)
+                {
+                    sb.Append(' ');
+                }
+                else
+                    sb.Append('\n');
+            }
+            sb.Append(chr);
         }
     }
 }

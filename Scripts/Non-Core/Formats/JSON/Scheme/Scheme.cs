@@ -22,6 +22,7 @@ namespace Rusty.Serialization.Serializers.JSON
         private StringSerializer String { get; } = new();
         private ColorSerializer Color { get; } = new();
         private ListSerializer List { get; } = new();
+        private DictSerializer Dict { get; } = new();
         private ObjectSerializer Object { get; } = new();
         private TypeSerializer Type { get; } = new();
 
@@ -46,6 +47,8 @@ namespace Rusty.Serialization.Serializers.JSON
                     return Color.Serialize(node, this);
                 case ListNode list:
                     return List.Serialize(node, this);
+                case DictNode dict:
+                    return Dict.Serialize(node, this);
                 case ObjectNode obj:
                     return Object.Serialize(node, this);
                 case TypeNode type:
