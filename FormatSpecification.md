@@ -51,7 +51,7 @@ Examples:
 - `-50` and `-00050` are both valid representations of the number `-50`.
 
 #### Reals
-Real numbers must contain a decimal point. Optionally, they may starts with a negative sign. Other than that, they may only consist of digits. If the integer part and/or the fractional part are equal to 0, they may be omitted. Leading and trailing zeros are allowed.
+Real numbers must contain a decimal point. Optionally, they may start with a negative sign. Other than that, they may only consist of digits. If the integer part and/or the fractional part are equal to 0, they may be omitted. Leading and trailing zeros are allowed.
 
 Examples:
 - `0.0`, `000.000`, `0.`, `.0` and `.` are all valid representations of the number `0.0`.
@@ -118,7 +118,7 @@ Null values are encoded with `null` literals. Like booleans, null values must be
 #### References
 Reference values are used to link to values that have been marked with an ID. They must start with an `&` ampersand, followed by the name of an ID (example: `&my_id`). This ID must exist elsewhere in the data.
 
-There are no scope limitations on where in the data an ID can be referenced: IDs that are defined before the reference, after the reference or inside a diffeernt nested collection are all allowed.
+There are no scope limitations on where in the data an ID can be referenced: IDs that are defined before the reference, after the reference or inside a different nested collection are all allowed.
 
 References can be annotated with a type labels and even an ID of its own.
 
@@ -134,7 +134,7 @@ Example: `[1,'2',"3"]`.
 #### Dictionaries
 Dictionaries are collections of key-value pairs. They are comma-delimited and enclosed with `{}` curly braces. Empty elements are not allowed (in other words, trailing commas are not allowed).
 
-Keys and values are seprated by `:` colons. Both keys and values may be of any type, including other collections, and dictionaries may contain keys and values of multiple types. To reduce parsing overhead and ensure maximum generality, keys are NOT required to be unique by the format.
+Keys and values are separated by `:` colons. Both keys and values may be of any type, including other collections, and dictionaries may contain keys and values of multiple types. To reduce parsing overhead and ensure maximum generality, keys are NOT required to be unique by the format.
 
 Note that dictionary keys can be annotated with type labels, as can their values.
 
