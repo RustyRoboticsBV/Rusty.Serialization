@@ -50,21 +50,10 @@ The module separates the serialization process into two steps.
 
 Both the converter and serializer layers can be freely swapped out.
 - The default converter layer has explicit support for various .NET, Godot and Unity data types (see [here](TypeTable.md) for a comprehensive list).
-- The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported.
-
-The following node types are available:
-- Primitives: `null`, `bool`, `int`, `real`, `char`, `string`, `color`, `time`, `binary`, `ref`.
-- Collections: `list`, `dict`, `object`.
-- Metadata: `type`, `id`.
-
-Of special note are:
-- `type`, which is used to disambiguify polymorphic types.
-- `id` and `ref`, which are used to express reference types.
-
-Using these nodes, any C# object can be represented unambiguously.
+- The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported, though input must be structured in a way that matches the parser's expectations (see [here](XmlSchema.md) for the XML conventions and [here](JsonSchema.md) for the JSON conventions).
 
 ## Compact Serialized C# Data
-The module uses a custom serialization format, called Compact Serialized C# Data (CSCD). It's a human-readable format that resembles JSON, but adds IDs/references, type labels and a wider variety of literal types. This allows it to concisely express C# features that require more verbosity in JSON. The format is designed to be compact, general and unambiguous.
+The module uses a custom serialization format called Compact Serialized C# Data (CSCD). CSCD is a human-readable format that supports references, type labels and a wide variety of literal types. This allows it to concisely represent complex C# objects that would require more verbosity in other formats. It is designed to be compact, general and unambiguous.
 
 Below is an example of a custom serialized object with pretty printing. See the specification document [here](FormatSpecification.md) for a more detailed description of the syntax.
 
@@ -73,7 +62,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_null: null,
     my_bool: true,
     my_int: 123,
-    my_float: .45,
+    my_real: .45,
     my_char: 'A',
     my_string: "abc",
     my_color: #F08080,

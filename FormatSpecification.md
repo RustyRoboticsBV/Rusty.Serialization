@@ -1,7 +1,7 @@
 # CSCD Format Specification
 This document describes the syntax of a serialized data format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing any C# object.
 
-While the format does not require an external schema, values may include optional type labels and ID metadata, enabling parsers to reconstruct exact types along with reference links.
+The format is self-describing and does not require an external schema. Values may be annotated with optional type labels and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference links.
 
 ## 1. General Formatting
 ### Character Set
@@ -110,7 +110,7 @@ For example:
 - `s1f100` and `m0f100s1` are both valid representations of the timespan `1 second and 100 milliseconds`.
 - `-Y100000` and `-Y100000M0D0h0m0s0f0` are both valid representations the year `-100,000 B.C.`.
 
-Note that timestamp literals do not have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
+Note that time literals do not have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
 
 #### Binary
 Binary data literals store arbitrary data in hexadecimal format. They must start with `0x`, followed by the hexadecimal representation of the data, for example: `0x0004BAF890`. The literal `0x` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.
