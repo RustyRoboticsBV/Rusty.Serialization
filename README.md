@@ -3,7 +3,7 @@
   <img src="Logo.svg" width="250">
 </p>
 
-A configurable, extendable, engine-agnostic C# serialization/deserialization module. It is designed primarily for game development, but can be used in any C# context.
+A configurable, extendable, engine-agnostic C# serialization/deserialization module. It is designed to simplify saving, loading, and transferring data in any C# context, with special focus on game development.
 
 Key features:
 - **Easy to use**: simple, one-line serialization and deserialization.
@@ -18,25 +18,31 @@ C# 9 or higher.
 - Godot 4.0 or higher (when used in Godot).
 - Unity 2022.1 or higher (when used in Unity).
 
-## Usage
-Serializing:
+## How To Use
+#### Installation
+Simply add the project folder to your C# project and add `using Rusty.Serialization` to your script - no further setup is needed.
+
+#### Serializing
 ```
 MyClass obj = new();
-DefaultContext context = new(Format.Cscd);  // Contains the serialization schema for all built-in types.
+DefaultContext context = new(Format.Cscd);  // Contains pre-defined serialization schema for all built-in types.
 string serialized = context.Serialize(obj); // Serializes all public properties and fields of MyClass.
 ```
 
-Deserializing:
+#### Deserializing
 ```
 obj = context.Deserialize<MyClass>(serialized); // Deserializes back to MyClass.
 ```
 
-If a type that lacks explicit support is serialized, then *all* public, non-static, non-readonly fields and properties are serialized.
+#### Notes
+- Types without explicit support automatically serialize using *all* fields and properties that are public, non-static and non-readonly.
+- Multiple references to the same object are preserved during serialization.
+- The same goes for cyclic references.
 
 ## Architecture
-The module uses two steps in the serialization process.
+The module separates the serialization process into two steps.
 1. Convert between the C# object and an intermediate node-based representation.
-2. Serialize/deserialize the node-based representation to/from the serialized format.
+2. Serialize/deserialize the node-based representation to/from the chosen format.
 
 <p align="center">
   <img src="Diagram.svg" alt="The structure of the serializer/deserializer architecture.">
@@ -47,11 +53,42 @@ Both the converter and serializer layers can be freely swapped out.
 - The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported.
 
 The following node types are available:
-- Primitives: `null`, `bool`, `int`, `real`, `char`, `string`, `color`, `time`, `binary`.
+- Primitives: `null`, `bool`, `int`, `real`, `char`, `string`, `color`, `time`, `binary`, `ref`.
 - Collections: `list`, `dict`, `object`.
-- Metadata: `type`.
+- Metadata: `type`, `id`.
+
+Of special note are:
+- `type`, which is used to disambiguify polymorphic types.
+- `id` and `ref`, which are used to express reference types.
 
 Using these nodes, any C# object can be represented unambiguously.
 
 ## Compact Serialized C# Data
-The module uses a custom serialization format, called Compact Serialized C# Data (CSCD). It's a human-readable format that resembles JSON, but adds type labels and a wider variety of literal types. This allows it to concisely express the intermediate node tree. It's designed to be compact, general and unambiguous. See the specification document [here](FormatSpecification.md) for a more detailed description of the syntax.
+The module uses a custom serialization format, called Compact Serialized C# Data (CSCD). It's a human-readable format that resembles JSON, but adds IDs/references, type labels and a wider variety of literal types. This allows it to concisely express certain C# features that require more verbosity in JSON. It's designed to be compact, general and unambiguous.
+
+Below is an example of a custom serialized object with pretty printing. See the specification document [here](FormatSpecification.md) for a more detailed description of the syntax.
+```
+(MyType)<
+    my_null: null,
+    my_bool: true,
+    my_int: 123,
+    my_float: .45,
+    my_char: 'A',
+    my_string: "abc",
+    my_color: #F08080,
+    my_time: Y1990M2D13,
+    my_bytes: 0x1234ABCD,
+    my_list: [1, 2., "def"],
+    my_dict: {
+        10: 1.0,
+        'A': 'ABC',
+        [1, 2, 3] : false
+    },
+    my_object: <
+        my_nested_object: `my_id` <
+            my_int: 0
+        >
+    >,
+    my_ref: &my_id
+>
+```
