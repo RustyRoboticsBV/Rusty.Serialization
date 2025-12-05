@@ -39,12 +39,19 @@ The module uses two steps in the serialization process.
 2. Serialize/deserialize the node-based representation to/from the serialized format.
 
 <p align="center">
-  <img src="Diagram.svg">
+  <img src="Diagram.svg" alt="The structure of the serializer/deserializer architecture.">
 </p>
 
 Both the converter and serializer layers can be freely swapped out.
 - The default converter layer has explicit support for various .NET, Godot and Unity data types (see [here](TypeTable.md) for a comprehensive list).
 - The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported.
 
+The following node types are available:
+- Primitives: `null`, `bool`, `int`, `real`, `char`, `string`, `color`, `time`, `binary`.
+- Collections: `list`, `dict`, `object`.
+- Metadata: `type`.
+
+Using these nodes, any C# object can be represented unambiguously.
+
 ## Compact Serialized C# Data
-The module uses a custom serialization format, called Compact Serialized C# Data (CSCD). It's a human-readable format that resembles JSON, but adds type labels and a wider variety of literal types. It's designed to be compact, general and unambiguous. See the specification document [here](FormatSpecification.md) for a more detailed description of the syntax.
+The module uses a custom serialization format, called Compact Serialized C# Data (CSCD). It's a human-readable format that resembles JSON, but adds type labels and a wider variety of literal types. This allows it to concisely express the intermediate node tree. It's designed to be compact, general and unambiguous. See the specification document [here](FormatSpecification.md) for a more detailed description of the syntax.
