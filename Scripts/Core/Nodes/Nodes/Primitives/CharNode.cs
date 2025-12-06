@@ -20,7 +20,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override readonly string ToString()
         {
-            if (value <= char.MaxValue && CharUtility.Check((char)value))
+            if (value <= char.MaxValue && char.IsControl((char)value))
                 return "char: " + (char)value;
             else
                 return "char: \\u" + HexUtility.ToHexString(value);

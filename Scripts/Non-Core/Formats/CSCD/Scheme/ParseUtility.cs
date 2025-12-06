@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Serializers.CSCD
         /// <summary>
         /// Takes a delimited string and parses it into a list of strings.
         /// </summary>
-        public static List<string> Split(string text, char delimiter = ',')
+        public static List<string> Split(string text, char quote = ',')
         {
             // Handle null.
             if (text == null)
@@ -64,7 +64,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                 else if (inType && c == ')')
                     inType = false;
 
-                else if (c == delimiter && depth == 0)
+                else if (c == quote && depth == 0)
                 {
                     string segment = text.Substring(start, i - start).Trim();
                     result.Add(segment);

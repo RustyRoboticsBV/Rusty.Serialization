@@ -35,7 +35,7 @@ namespace Rusty.Serialization.Testing
                 case UnitTestResult.CorrectException:
                     return $"SUCCESS: Correctly threw exception for '{Input}'.";
                 case UnitTestResult.WrongException:
-                    return $"FAILURE: Wrongly threw exception for '{Input}' - expected output \"{Str(ExpectedOutput)}\".";
+                    return $"FAILURE: Wrongly threw exception for '{Input}' - expected output \"{Str(ExpectedOutput)}\".\nException:{ActualOutput.Exception}";
                 case UnitTestResult.TypeMismatch:
                     return $"INVALID: Serialized '{Input}' to \"{Str(ActualOutput)}\" - expected \"{Str(ExpectedOutput)}\". This probably means your test is wrong.";
                 default:

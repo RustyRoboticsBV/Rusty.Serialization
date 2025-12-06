@@ -1,4 +1,5 @@
 ﻿#if RUSTY_DEBUG
+using System;
 using Rusty.Serialization.Core.Contexts;
 
 namespace Rusty.Serialization.Testing
@@ -32,7 +33,7 @@ namespace Rusty.Serialization.Testing
                 case UnitTestResult.CorrectException:
                     return $"SUCCESS: Correctly threw exception for \"{Input}\".";
                 case UnitTestResult.WrongException:
-                    return $"FAILURE: Wrongly threw exception for \"{Input}\" - expected output '{ExpectedOutput}'.";
+                    return $"FAILURE: Wrongly threw exception for \"{Input}\" - expected output '{ExpectedOutput}'.\nException: {ActualOutput.Exception}";
                 case UnitTestResult.TypeMismatch:
                     return $"INVALID: Parsed \"{Input}\" to '{ActualOutput}' - expected '{ExpectedOutput}'. This probably means your test is wrong.";
                 default:
@@ -48,9 +49,9 @@ namespace Rusty.Serialization.Testing
             {
                 parsed = Context.Deserialize<TypeT>(Input);
             }
-            catch
+            catch (Exception ex)
             {
-                parsed = Throw.Exception;
+                parsed = new(ex);
             }
             return parsed;
         }

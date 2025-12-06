@@ -9,22 +9,26 @@ namespace Rusty.Serialization.Core.Nodes
     internal static class UnicodeUtility
     {
         /// <summary>
+        /// Check if a character is a valid hexadecimal character.
+        /// </summary>
+        public static bool IsValid(char chr)
+        {
+            return chr >= 'A' && chr <= 'F'
+                    || chr >= 'a' && chr <= 'f'
+                    || chr >= '0' && chr <= '9';
+        }
+
+        /// <summary>
         /// Parse a hexidecimal representation into an unicode character.
         /// </summary>
         public static char Parse(string text)
         {
             if (text == null)
-                throw new ArgumentNullException("Cannot parse null as unicode character");
+                throw new ArgumentNullException("Cannot parse null as unicode chr");
             for (int i = 0; i < text.Length; i++)
             {
-                if (
-                    !(text[i] >= 'A' && text[i] <= 'F'
-                    || text[i] >= 'a' && text[i] <= 'f'
-                    || text[i] >= '0' && text[i] <= '9')
-                )
-                {
-                    throw new ArgumentException("Cannot parse unicode character. Not a valid hex number.");
-                }
+                if (!IsValid(text[i]))
+                    throw new ArgumentException("Cannot parse unicode chr. Not a valid hex number.");
             }
             return (char)int.Parse(text, NumberStyles.HexNumber);
         }

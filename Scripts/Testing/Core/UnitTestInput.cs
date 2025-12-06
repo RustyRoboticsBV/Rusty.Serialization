@@ -12,11 +12,12 @@ namespace Rusty.Serialization.Testing
         private readonly object value;
 
         /* Public properties. */
-        public static UnitTestInput<T> Null => new(null);
-        public static UnitTestInput<T> Exception => new(Throw.Exception);
+        public static UnitTestInput<T> Null => new((object)null);
+        public static UnitTestInput<T> Throw => new(Testing.Throw.Exception);
 
         public T Value => value is T typed ? typed : default;
-        public bool IsException => value is Throw;
+        public Exception Exception => value is Exception ex ? ex : null;
+        public bool IsException => value is Throw || value is Exception;
         public Type Type => value.GetType();
 
         /* Constructors. */
@@ -27,6 +28,7 @@ namespace Rusty.Serialization.Testing
 
         public UnitTestInput(T obj) : this((object)obj) { }
         public UnitTestInput(Throw obj) : this((object)obj) { }
+        public UnitTestInput(Exception ex) : this((object)ex) { }
 
         /* Conversion operators. */
         public static implicit operator T(UnitTestInput<T> input) => input.Value;

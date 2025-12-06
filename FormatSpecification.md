@@ -72,15 +72,14 @@ A few special character literals exist:
 - `'\\'`: alternative way of writing `'\'`.
 - `'\t'`: expresses a horizontal tab.
 - `'\n'`: expresses a newline.
-- `'\0'`: expresses a null character.
-- `'\[#]'`: expresses a unicode character. # must be a hexadecimal number between `0` and `10FFFF`. Leading zeros are allowed.
+- `'\#\'`: expresses a unicode character. # must be a hexadecimal number between `0` and `10FFFF`. Leading zeros are allowed.
 
-Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\[21ff]'`.
+Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\21FF\'`.
 
 #### Strings
 Strings must be enclosed in `"` double-quotes. Empty strings are allowed. The same character set is used as for character literals. The same special character rules apply as well, except that using unescaped double-quotes and backslashes is NOT allowed -  you MUST use `\"` and `\\` to represent them.
 
-Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\[21ff]\tarrow"`, `"C:\\path\\to\\file"`.
+Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF\tarrow"`, `"C:\\path\\to\\file"`.
 
 #### Colors
 Colors literals must start with a `#` hex sign, followed by the hexadecimal representation of the color. Four conventions are available:
