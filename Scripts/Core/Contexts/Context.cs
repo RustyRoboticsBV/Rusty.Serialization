@@ -40,14 +40,14 @@ namespace Rusty.Serialization.Core.Contexts
 
         public T Deserialize<T>(string serialized)
         {
-            INode node = SerializerScheme.Parse(serialized);
-            return ConverterScheme.Deconvert<T>(node);
+            NodeTree tree = SerializerScheme.ParseAsTree(serialized);
+            return ConverterScheme.Deconvert<T>(tree.Root);
         }
 
         public object Deserialize(Type type, string serialized)
         {
-            INode node = SerializerScheme.Parse(serialized);
-            return ConverterScheme.Deconvert(type, node);
+            NodeTree tree = SerializerScheme.ParseAsTree(serialized);
+            return ConverterScheme.Deconvert(type, tree.Root);
         }
     }
 }

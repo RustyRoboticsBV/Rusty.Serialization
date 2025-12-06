@@ -55,7 +55,6 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         public bool HasIdFor(object obj)
         {
-            System.Console.WriteLine(obj + " has key? " + Ids.ContainsKey(obj));
             return Ids.ContainsKey(obj);
         }
 

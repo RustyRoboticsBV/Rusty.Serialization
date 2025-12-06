@@ -30,7 +30,6 @@ namespace Rusty.Serialization.Serializers.CSCD
                     {
                         string hex = str.Substring(unicodeStart + 1, i - unicodeStart - 1);
                         int codePoint = HexUtility.FromHexString(hex);
-                        System.Console.WriteLine("CODE P: " + hex + " = " + codePoint);
                         builder.Append((char)HexUtility.FromHexString(hex));
                         unicodeStart = -1;
                     }
@@ -107,12 +106,6 @@ namespace Rusty.Serialization.Serializers.CSCD
             }
             if (unicodeStart >= 0)
                 throw new Exception("Unclosed unicode character.");
-
-            System.Console.WriteLine("!!!!! " + builder);
-            for (int i = 0; i < builder.ToString().Length; i++)
-            {
-                System.Console.WriteLine((int)builder.ToString()[i]);
-            }
 
             return builder.ToString();
         }

@@ -44,7 +44,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                 string value = trimmed.Substring(closeIndex + 1).Trim();
                 INode valueNode = null;
                 if (value.Length > 0)
-                    valueNode = scheme.Parse(value);
+                    valueNode = scheme.ParseAsNode(value);
 
                 // Return type node.
                 return new(name, valueNode);
@@ -62,7 +62,7 @@ namespace Rusty.Serialization.Serializers.CSCD
             {
                 char c = name[i];
                 if (c < '!' && c > '~' || c == '(' || c == ')')
-                    throw new ArgumentException($"Disallowed character '{c}' in type '{name}'.");
+                    throw new ArgumentException($"Illegal character '{c}' in type '{name}'.");
             }
         }
     }

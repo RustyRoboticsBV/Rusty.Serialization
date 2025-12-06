@@ -24,7 +24,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// The symbol table, used to track reference types during conversion.
         /// </summary>
-        private SymbolTable SymbolTable { get; } = new();
+        private SymbolTable SymbolTable { get; set; }
 
         /* Constructors. */
         public ConverterScheme()
@@ -102,6 +102,14 @@ namespace Rusty.Serialization.Core.Converters
 
         public INode Convert(object obj)
         {
+            // If the symbol table is null, this object is a root.
+            bool isRoot = false;
+            if (SymbolTable == null)
+            {
+                SymbolTable = new();
+                isRoot = true;
+            }
+
             // If the object is a reference and is present in the symbol table...
             bool isReferenceType = obj != null && !obj.GetType().IsValueType;
             if (isReferenceType && SymbolTable.HasObject(obj))
@@ -110,12 +118,17 @@ namespace Rusty.Serialization.Core.Converters
                 if (!SymbolTable.HasIdFor(obj))
                     WrapInId(SymbolTable.GetNode(obj), SymbolTable.GetOrCreateId(obj));
 
-                // Return a reference to the object.\
-                System.Console.WriteLine("NEW REFERENCE:\n" + new RefNode(SymbolTable.GetOrCreateId(obj)));
-                return new RefNode(SymbolTable.GetOrCreateId(obj));
+                // Return a reference to the object.
+                INode @ref = new RefNode(SymbolTable.GetOrCreateId(obj).ToString());
+
+                if (isRoot)
+                {
+                    NodeTree tree = new(@ref);
+                    return tree;
+                }
+                else
+                    return @ref;
             }
-            //else
-            //    System.Console.WriteLine(obj + " is not a reference type or is not present in the symbol table.");
 
             // Convert the object.
             IConverter converter = GetConverter(obj?.GetType());
@@ -125,7 +138,13 @@ namespace Rusty.Serialization.Core.Converters
             if (isReferenceType && !SymbolTable.HasObject(obj))
                 SymbolTable.Add(obj, node);
 
-            return node;
+            if (isRoot)
+            {
+                NodeTree tree = new(node);
+                return tree;
+            }
+            else
+                return node;
         }
 
         public T Deconvert<T>(INode node)
@@ -140,14 +159,8 @@ namespace Rusty.Serialization.Core.Converters
             return converter.Deconvert(node, this);
         }
 
-        /// <summary>
-        /// Get a type's name.
-        /// </summary>
         public TypeName GetTypeName(Type type) => new(type);
 
-        /// <summary>
-        /// Get a type from a type name.
-        /// </summary>
         public Type GetTypeFromName(string name)
         {
             //if (Aliasses.Has(name))
@@ -158,7 +171,7 @@ namespace Rusty.Serialization.Core.Converters
 
         public void ClearSymbolTable()
         {
-            SymbolTable.Clear();
+            SymbolTable = null;
         }
 
         /* Private methods. */
@@ -166,11 +179,11 @@ namespace Rusty.Serialization.Core.Converters
         {
             if (node.Parent != null && node.Parent is ICollectionNode collection)
             {
-                IdNode idNode = new(id, null);
+                IdNode idNode = new(id.ToString(), null);
                 collection.WrapChild(node, idNode);
                 return idNode;
             }
-            else
+            else // TODO: This throws an exception if the root node is ID-wrapped.
                 throw new ArgumentException($"Node has no parent: " + node);
         }
     }

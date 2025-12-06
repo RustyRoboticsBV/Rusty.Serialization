@@ -59,9 +59,13 @@ namespace Rusty.Serialization.Core.Converters
 
         public override T Deconvert(INode node, IConverterScheme scheme)
         {
-            if (node is TypeNode typeNode)
+            if (node is RefNode @ref)
+                return default; // TODO: implement
+            else if (node is TypeNode typeNode)
                 return Deconvert(typeNode.Value, scheme);
-            if (node is ObjectNode objNode)
+            else if (node is IdNode id)
+                return Deconvert(id.Value, scheme);
+            else if (node is ObjectNode objNode)
             {
                 // Create new object.
                 T obj = new();

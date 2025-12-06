@@ -7,12 +7,12 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public INode Parent { get; set; }
-        public ulong ID { get; set; }
+        public string ID { get; set; }
 
         /* Constructors. */
-        public RefNode(ulong id)
+        public RefNode(string id)
         {
-            ID = id;
+            ID = id.ToString() ?? "";
         }
 
         /* Public methods. */
@@ -24,7 +24,7 @@ namespace Rusty.Serialization.Core.Nodes
         public void Clear()
         {
             Parent = null;
-            ID = 0;
+            ID = "";
         }
     }
 }

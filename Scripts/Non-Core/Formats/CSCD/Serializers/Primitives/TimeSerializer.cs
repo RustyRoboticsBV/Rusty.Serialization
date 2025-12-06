@@ -150,7 +150,7 @@ namespace Rusty.Serialization.Serializers.CSCD
             }
             catch (Exception ex)
             {
-                throw new ArgumentException($"Could not parse string '{text}' as an integer:\n{ex.Message}");
+                throw new ArgumentException($"Could not parse string '{text}' as an timestamp:\n{ex.Message}");
             }
         }
 

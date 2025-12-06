@@ -59,8 +59,8 @@ namespace Rusty.Serialization.Serializers.CSCD
                         throw new Exception("Malformed key-index pair.");
 
                     // Parse keys and values.
-                    INode key = scheme.Parse(pairStrs[0].Trim());
-                    INode value = scheme.Parse(pairStrs[1].Trim());
+                    INode key = scheme.ParseAsNode(pairStrs[0].Trim());
+                    INode value = scheme.ParseAsNode(pairStrs[1].Trim());
                     pairs[i] = new(key, value);
                 }
 

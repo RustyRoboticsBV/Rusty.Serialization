@@ -15,6 +15,7 @@ namespace Rusty.Serialization.Serializers.CSCD
 
         /* Private properties. */
         private NullSerializer Null { get; } = new();
+        private RefSerializer Ref { get; } = new();
         private BoolSerializer Bool { get; } = new();
         private IntSerializer Int { get; } = new();
         private RealSerializer Real { get;  } = new();
@@ -27,14 +28,19 @@ namespace Rusty.Serialization.Serializers.CSCD
         private DictSerializer Dict { get; } = new();
         private ObjectSerializer Object { get; } = new();
         private TypeSerializer Type { get; } = new();
+        private IdSerializer Id { get; } = new();
 
         /* Public methods. */
         public string Serialize(INode node)
         {
             switch (node)
             {
+                case NodeTree tree:
+                    return Serialize(tree.Root);
                 case NullNode n:
                     return Null.Serialize(n, this);
+                case RefNode re:
+                    return Ref.Serialize(re, this);
                 case BoolNode b:
                     return Bool.Serialize(b, this);
                 case IntNode i:
@@ -59,12 +65,21 @@ namespace Rusty.Serialization.Serializers.CSCD
                     return Object.Serialize(o, this);
                 case TypeNode ty:
                     return Type.Serialize(ty, this);
+                case IdNode id:
+                    return Id.Serialize(id, this);
                 default:
                     throw new ArgumentException($"Unknown node type '{node.GetType()}'.");
             }
         }
 
-        public INode Parse(string serialized)
+        public NodeTree ParseAsTree(string serialized)
+        {
+            INode node = ParseAsNode(serialized);
+            NodeTree tree = new(node);
+            return tree;
+        }
+
+        public INode ParseAsNode(string serialized)
         {
             if (serialized == null)
                 throw new ArgumentException("Cannot parse null strings.");
@@ -73,9 +88,11 @@ namespace Rusty.Serialization.Serializers.CSCD
             if (serialized.Length == 0)
                 throw new ArgumentException("Cannot parse empty strings.");
 
-            // Type labels.
+            // Metadata.
             if (serialized.StartsWith('('))
                 return Type.Parse(serialized, this);
+            if (serialized.StartsWith('`'))
+                return Id.Parse(serialized, this);
 
             // Collections.
             if (serialized.StartsWith('[') && serialized.EndsWith(']'))
@@ -86,10 +103,12 @@ namespace Rusty.Serialization.Serializers.CSCD
                 return Object.Parse(serialized, this);
 
             // Primitives.
-            if (serialized.StartsWith('t') || serialized.StartsWith("fa"))
-                return Bool.Parse(serialized, this);
+            if (serialized.StartsWith('&'))
+                return Ref.Parse(serialized, this);
             if (serialized.StartsWith('n'))
                 return Null.Parse(serialized, this);
+            if (serialized.StartsWith('t') || serialized.StartsWith("fa"))
+                return Bool.Parse(serialized, this);
             if (serialized.StartsWith('\'') && serialized.EndsWith('\''))
                 return Char.Parse(serialized, this);
             if (serialized.StartsWith('"') && serialized.EndsWith('"'))

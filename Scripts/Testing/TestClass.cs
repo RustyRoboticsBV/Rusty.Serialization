@@ -66,11 +66,13 @@ namespace Rusty.Serialization.Testing
         public NestedClass l2 = null;
         public NestedClass l3 = new InheritedClass();
         public NestedStruct l4 = new();
+        public TestClass<T, U> l5 = null;
 
         /* Constructors. */
         public TestClass()
         {
             l2 = l1;
+            //l5 = this; // TODO: find a way to make this work - currently having the root object reference itself will break ID generation.
         }
     }
 }

@@ -24,8 +24,13 @@ namespace Rusty.Serialization.Core.Serializers
         public string Serialize(INode node);
 
         /// <summary>
+        /// Parse a string into a node tree.
+        /// </summary>
+        public NodeTree ParseAsTree(string serialized);
+
+        /// <summary>
         /// Parse a string into an INode hierarchy.
         /// </summary>
-        public INode Parse(string serialized);
+        public INode ParseAsNode(string serialized);
     }
 }

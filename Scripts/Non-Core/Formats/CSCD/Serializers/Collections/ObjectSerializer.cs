@@ -92,7 +92,7 @@ namespace Rusty.Serialization.Serializers.CSCD
 
                     // Get value.
                     string valueStr = pairStrs[1].Trim();
-                    INode valueNode = scheme.Parse(valueStr);
+                    INode valueNode = scheme.ParseAsNode(valueStr);
 
                     // Add key-value pair.
                     pairs[i] = new KeyValuePair<string, INode>(identifier, valueNode);

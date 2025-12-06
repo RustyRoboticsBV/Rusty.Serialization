@@ -44,6 +44,9 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         protected U DeconvertNested<U>(INode node, IConverterScheme scheme)
         {
+            if (node == null)
+                throw new ArgumentException("Cannot deconvert null reference node values.");
+            
             object obj;
 
             // Unwrap type node.
@@ -65,9 +68,11 @@ namespace Rusty.Serialization.Core.Converters
             object converted = DoConversionOperator(typeof(U), obj);
             if (converted is U typedConverted)
                 return typedConverted;
+            if (converted == null)
+                throw new Exception("The converted value should never be null.");
 
             throw new InvalidCastException(
-                $"Cannot convert node value of type {obj?.GetType().Name} to {typeof(U).Name}.");
+                $"Cannot deconvert node value {converted} of type {obj?.GetType().Name} to {typeof(U).Name}.");
         }
 
         /// <summary>

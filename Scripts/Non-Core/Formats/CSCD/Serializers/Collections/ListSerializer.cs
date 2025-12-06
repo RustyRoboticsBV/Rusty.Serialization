@@ -51,7 +51,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                 INode[] nodes = new INode[terms.Count];
                 for (int i = 0; i < terms.Count; i++)
                 {
-                    nodes[i] = scheme.Parse(terms[i]);
+                    nodes[i] = scheme.ParseAsNode(terms[i]);
                 }
 
                 // Create list node.

@@ -61,7 +61,14 @@ namespace Rusty.Serialization.Serializers.JSON
             throw new NotImplementedException();
         }
 
-        public INode Parse(string serialized)
+        public NodeTree ParseAsTree(string serialized)
+        {
+            INode node = ParseAsNode(serialized);
+            NodeTree tree = new(node);
+            return tree;
+        }
+
+        public INode ParseAsNode(string serialized)
         {
             throw new NotImplementedException();
         }

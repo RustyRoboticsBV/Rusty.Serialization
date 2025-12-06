@@ -7,13 +7,13 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public INode Parent { get; set; }
-        public ulong Index { get; set; }
+        public string Name { get; set; }
         public INode Value { get; set; }
 
         /* Constructors. */
-        public IdNode(ulong index, INode value)
+        public IdNode(string name, INode value)
         {
-            Index = index;
+            Name = name ?? "";
             Value = value;
 
             if (Value != null)
@@ -23,13 +23,13 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            return "ID: " + Index + "\n" + PrintUtility.PrintChild(Value);
+            return "ID: " + (Name ?? "(null)") + "\n" + PrintUtility.PrintChild(Value);
         }
 
         public void Clear()
         {
             Parent = null;
-            Index = 0;
+            Name = "";
             Value.Clear();
             Value = null;
         }

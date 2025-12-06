@@ -19,7 +19,12 @@ namespace Rusty.Serialization.Testing
             Context = context;
             PrettyPrint = prettyPrint;
 
-            Console.WriteLine(context.ConverterScheme.Convert(new TestClass<int, char>()));
+            TestClass<int, char> testObject = new();
+            System.Console.WriteLine(context.ConverterScheme.Convert(testObject));
+            string serialized = context.Serialize(testObject);
+            ObjectDumper.Print(testObject);
+            Console.WriteLine(serialized);
+            ObjectDumper.Print(context.Deserialize<TestClass<int, char>>(serialized));
 
             // Booleans.
             AddTest<bool>("System.Boolean",

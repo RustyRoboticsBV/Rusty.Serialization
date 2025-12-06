@@ -8,10 +8,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Pulblic methods. */
         public static string PrintNode(INode node)
         {
-            if (node == null)
-                return "(null)";
-            else
-                return node.ToString();
+            return node?.ToString() ?? "(null)";
         }
 
 
@@ -23,9 +20,9 @@ namespace Rusty.Serialization.Core.Nodes
         public static string PrintChild(string child, bool isLast = true)
         {
             if (isLast)
-                return '\u2514' + child.Replace("\n", "\n ");
+                return '\u2514' + (child?.Replace("\n", "\n ") ?? "(null)");
             else
-                return '\u251C' + child.Replace("\n", "\n\u2502");
+                return '\u251C' + (child?.Replace("\n", "\n\u2502") ?? "(null)");
         }
 
 
@@ -42,8 +39,8 @@ namespace Rusty.Serialization.Core.Nodes
         public static string PrintPair(string key, string value, bool isLast = true)
         {
             string pair = "{"
-                + "\n key: " + key.Replace("\n", "\n ")
-                + "\n val: " + value.Replace("\n", "\n ")
+                + "\n key: " + (key.Replace("\n", "\n ") ?? "(null)")
+                + "\n val: " + (value.Replace("\n", "\n ") ?? "(null)")
                 + "\n}";
             return PrintChild(pair, isLast);
         }

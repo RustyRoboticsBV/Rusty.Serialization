@@ -22,6 +22,12 @@ namespace Rusty.Serialization.Core.Converters
         {
             if (node is NullNode)
                 return null;
+            else if (node is RefNode @ref)
+                return default; // TODO: implement
+            else if (node is IdNode id)
+                return Deconvert(id.Value, scheme);
+            else if (node is TypeNode type)
+                return Deconvert(type.Value, scheme);
             else
                 return DeconvertNested<TargetT>(node, scheme);
             throw new Exception($"Cannot interpret nodes of type '{node.GetType()}'.");
