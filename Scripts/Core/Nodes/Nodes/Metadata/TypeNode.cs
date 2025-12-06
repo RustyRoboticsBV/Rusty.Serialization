@@ -33,5 +33,14 @@ namespace Rusty.Serialization.Core.Nodes
             Value?.ClearRecursive();
             Clear();
         }
+
+        /// <summary>
+        /// Wrap the value node inside of an ID node.
+        /// </summary>
+        public void WrapId(ulong id)
+        {
+            IdNode node = new(id, Value);
+            Value = node;
+        }
     }
 }

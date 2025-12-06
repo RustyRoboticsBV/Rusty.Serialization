@@ -49,5 +49,14 @@ namespace Rusty.Serialization.Core.Nodes
             // Clear this node.
             Clear();
         }
+
+        /// <summary>
+        /// Wrap a value child node inside of an ID node.
+        /// </summary>
+        public void WrapValueId(ulong id, int memberIndex)
+        {
+            IdNode node = new(id, Members[memberIndex].Value);
+            Members[memberIndex] = new(Members[memberIndex].Key, node);
+        }
     }
 }
