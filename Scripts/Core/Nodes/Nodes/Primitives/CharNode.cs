@@ -3,27 +3,31 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A character serializer node.
     /// </summary>
-    public readonly struct CharNode : INode
+    public class CharNode : INode
     {
-        /* Fields. */
-        private readonly int value;
-
         /* Public properties. */
-        public readonly int Value => value;
+        public int Value { get; set; }
 
         /* Constructors. */
         public CharNode(int value)
         {
-            this.value = value;
+            Value = value;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            if (value <= char.MaxValue && char.IsControl((char)value))
-                return "char: " + (char)value;
+            if (Value <= char.MaxValue && char.IsControl((char)Value))
+                return "char: " + (char)Value;
             else
-                return "char: \\u" + HexUtility.ToHexString(value);
+                return "char: \\u" + HexUtility.ToHexString(Value);
         }
+
+        public void Clear()
+        {
+            Value = 0;
+        }
+
+        public void ClearRecursive() => Clear();
     }
 }

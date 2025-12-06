@@ -33,7 +33,7 @@ namespace Rusty.Serialization.Core.Converters
 
                 return $"{OriginalName}"
                     + $"\n- Namespace: \"{Namespace}\""
-                    + $"\n- Name: \"{Name}\""
+                    + $"\n- index: \"{Name}\""
                     + $"\n- GenericArgs: {genericArgs}"
                     + $"\n- ArraySuffix: \"{ArraySuffix}\"";
             }
@@ -106,7 +106,7 @@ namespace Rusty.Serialization.Core.Converters
                     }
                 }
 
-                if (!found) throw new ArgumentException("Mismatched brackets in type name.");
+                if (!found) throw new ArgumentException("Mismatched brackets in type index.");
             }
 
             result.ArraySuffix = arraySuffixBuilder.ToString();

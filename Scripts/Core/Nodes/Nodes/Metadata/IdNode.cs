@@ -1,37 +1,37 @@
-using System;
-
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// An ID serializer node.
     /// </summary>
-    public readonly struct IdNode : INode
+    public class IdNode : INode
     {
-        /* Fields. */
-        private readonly ulong index;
-        private readonly INode value;
-
         /* Public properties. */
-        public readonly ulong ID => index;
-        public readonly INode Value => value;
+        public ulong Index { get; set; }
+        public INode Value { get; set; }
 
         /* Constructors. */
         public IdNode(ulong index, INode value)
         {
-            if (index == ulong.MaxValue)
-                throw new ArgumentException("Out of IDs!");
-            this.index = index;
-            this.value = value;
+            Index = index;
+            Value = value;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            if (value == null)
-                return "index: " + index + " (null)";
+            return "index: " + Index + "\n" + PrintUtility.PrintChild(Value);
+        }
 
-            string objStr = value.ToString().Replace("\n", "\n ");
-            return "index: " + index + "\n   => " + objStr;
+        public void Clear()
+        {
+            Index = 0;
+            Value = null;
+        }
+
+        public void ClearRecursive()
+        {
+            Value?.ClearRecursive();
+            Clear();
         }
     }
 }

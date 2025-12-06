@@ -36,7 +36,7 @@ namespace Rusty.Serialization.Serializers.JSON
         public override ListNode Parse(string serialized, ISerializerScheme scheme)
         {
             // TODO: implement
-            return new();
+            return null;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Rusty.Serialization.Serializers.CSCD
         public override string Serialize(ListNode node, ISerializerScheme scheme)
         {
             if (node.Elements == null)
-                throw new Exception("Cannot serialize list nodes whose elements array are null.");
+                throw new Exception("Cannot serialize list nodes whose Elements array are null.");
 
             if (node.Elements.Length == 0)
                 return "[]";
@@ -59,7 +59,7 @@ namespace Rusty.Serialization.Serializers.CSCD
             }
             catch (Exception ex)
             {
-                throw new ArgumentException($"Could not parse string '{text}' as a elements:\n\n{ex.Message}.");
+                throw new ArgumentException($"Could not parse string '{text}' as a Elements:\n\n{ex.Message}.");
             }
         }
     }

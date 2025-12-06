@@ -3,31 +3,35 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A type label serializer node.
     /// </summary>
-    public readonly struct TypeNode : INode
+    public class TypeNode : INode
     {
-        /* Fields. */
-        private readonly string name;
-        private readonly INode value;
-
         /* Public properties. */
-        public readonly string Name => name;
-        public readonly INode Value => value;
+        public string Name { get; set; }
+        public INode Value { get; set; }
 
         /* Constructors. */
         public TypeNode(string name, INode value)
         {
-            this.name = name;
-            this.value = value;
+            Name = name;
+            Value = value;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            if (value == null)
-                return "type: " + name + " (null)";
+            return "type: " + Name + "\n" + PrintUtility.PrintChild(Value);
+        }
 
-            string objStr = value.ToString().Replace("\n", "\n ");
-            return "type: " + name + "\n   => " + objStr;
+        public void Clear()
+        {
+            Name = "";
+            Value = null;
+        }
+
+        public void ClearRecursive()
+        {
+            Value?.ClearRecursive();
+            Clear();
         }
     }
 }

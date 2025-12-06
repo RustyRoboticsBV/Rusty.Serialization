@@ -84,7 +84,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                     // Split into key and value.
                     List<string> pairStrs = ParseUtility.Split(terms[i], ':');
                     if (pairStrs.Count != 2)
-                        throw new Exception($"Malformed identifier-name pair.");
+                        throw new Exception($"Malformed identifier-index pair.");
 
                     // Get identifier.
                     string identifier = pairStrs[0].Trim();

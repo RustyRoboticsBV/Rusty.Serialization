@@ -1,26 +1,32 @@
+using PeterO.Numbers;
+
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A real number serializer node.
     /// </summary>
-    public readonly struct RealNode : INode
+    public class RealNode : INode
     {
-        /* Fields. */
-        private readonly PeterO.Numbers.EDecimal value;
-
         /* Public properties. */
-        public readonly PeterO.Numbers.EDecimal Value => value;
+        public EDecimal Value { get; set; }
 
         /* Constructors. */
-        public RealNode(PeterO.Numbers.EDecimal value)
+        public RealNode(EDecimal value)
         {
-            this.value = value;
+            Value = value ?? 0;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            return "real: " + value;
+            return "real: " + (Value?.ToString() ?? "(null)");
         }
+
+        public void Clear()
+        {
+            Value = 0;
+        }
+
+        public void ClearRecursive() => Clear();
     }
 }

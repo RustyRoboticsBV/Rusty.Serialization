@@ -5,32 +5,49 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An object serializer node.
     /// </summary>
-    public readonly struct ObjectNode : INode
+    public class ObjectNode : INode
     {
-        /* Fields. */
-        private readonly KeyValuePair<string, INode>[] members;
-
         /* Public properties. */
-        public readonly KeyValuePair<string, INode>[] Members => members;
+        public KeyValuePair<string, INode>[] Members { get; set; }
 
         /* Constructors. */
         public ObjectNode(KeyValuePair<string, INode>[] members)
         {
-            this.members = members ?? new KeyValuePair<string, INode>[0];
+            Members = members ?? new KeyValuePair<string, INode>[0];
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            string header = $"object:";
+            if (Members == null)
+                return "object: (null)";
 
-            string str = header;
-            foreach (var member in members)
+            if (Members.Length == 0)
+                return "object: (empty)";
+
+            string str = "object:";
+            for (int i = 0; i < Members.Length; i++)
             {
-                string valStr = member.Value.ToString().Replace("\n", "\n ");
-                str += $"\n- {member.Key}: {valStr}";
+                str += '\n' + PrintUtility.PrintPair(Members[i].Key, Members[i].Value, i == Members.Length - 1);
             }
             return str;
+        }
+
+        public void Clear()
+        {
+            Members = null;
+        }
+
+        public void ClearRecursive()
+        {
+            // Clear child nodes.
+            for (int i = 0; i < Members.Length; i++)
+            {
+                Members[i].Value.ClearRecursive();
+            }
+
+            // Clear this node.
+            Clear();
         }
     }
 }

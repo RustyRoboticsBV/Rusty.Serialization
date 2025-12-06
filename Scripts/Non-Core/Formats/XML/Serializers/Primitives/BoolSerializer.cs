@@ -23,7 +23,7 @@ namespace Rusty.Serialization.Serializers.XML
         {
             // Enforce name.
             if (element.Name != Tag)
-                throw new ArgumentException("Name wasn't " + Tag);
+                throw new ArgumentException("index wasn't " + Tag);
 
             // Enforce 'true' or 'false'.
             if (element.InnerText != "true" && element.InnerText != "false")

@@ -26,7 +26,7 @@ namespace Rusty.Serialization.Serializers.JSON
                 string value = scheme.Serialize(node.Members[i].Value);
 
                 OpenCollection(sb2, '{');
-                AddItem(sb2, "id", key, true, scheme.PrettyPrint, scheme.Tab);
+                AddItem(sb2, "index", key, true, scheme.PrettyPrint, scheme.Tab);
                 AddItem(sb2, "value", value, false, scheme.PrettyPrint, scheme.Tab);
                 CloseCollection(sb2, '}', scheme.PrettyPrint);
 
@@ -45,7 +45,7 @@ namespace Rusty.Serialization.Serializers.JSON
         public override ObjectNode Parse(string serialized, ISerializerScheme scheme)
         {
             // TODO: implement
-            return new();
+            return null;
         }
     }
 }

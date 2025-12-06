@@ -3,27 +3,31 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An integer serializer node.
     /// </summary>
-    public readonly struct IntNode : INode
+    public class IntNode : INode
     {
-        /* Fields. */
-        private readonly decimal value;
-
         /* Public properties. */
-        public readonly decimal Value => value;
+        public decimal Value { get; set; }
 
         /* Constructors. */
         public IntNode(decimal value)
         {
             if (value < 0)
-                this.value = (long)value;
+                Value = (long)value;
             else
-                this.value = (ulong)value;
+                Value = (ulong)value;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            return "int: " + value;
+            return "int: " + Value;
         }
+
+        public void Clear()
+        {
+            Value = 0;
+        }
+
+        public void ClearRecursive() => Clear();
     }
 }

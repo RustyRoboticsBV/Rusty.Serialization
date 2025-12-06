@@ -45,7 +45,7 @@ namespace Rusty.Serialization.Serializers.JSON
         public override DictNode Parse(string serialized, ISerializerScheme scheme)
         {
             // TODO: implement
-            return new();
+            return null;
         }
     }
 }

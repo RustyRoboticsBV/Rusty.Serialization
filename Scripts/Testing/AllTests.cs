@@ -19,6 +19,8 @@ namespace Rusty.Serialization.Testing
             Context = context;
             PrettyPrint = prettyPrint;
 
+            Console.WriteLine(context.ConverterScheme.Convert(new TestClass<int, char>()));
+
             // Booleans.
             AddTest<bool>("System.Boolean",
                 (true, "true"),

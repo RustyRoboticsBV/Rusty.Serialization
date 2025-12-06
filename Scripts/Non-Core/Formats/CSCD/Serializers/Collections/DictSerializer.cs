@@ -56,7 +56,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                     // Split into key and value.
                     List<string> pairStrs = ParseUtility.Split(parsed[i], ':');
                     if (pairStrs.Count != 2)
-                        throw new Exception("Malformed key-name pair.");
+                        throw new Exception("Malformed key-index pair.");
 
                     // Parse keys and values.
                     INode key = scheme.Parse(pairStrs[0].Trim());

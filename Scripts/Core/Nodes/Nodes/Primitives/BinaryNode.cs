@@ -5,24 +5,28 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A binary string serializer node.
     /// </summary>
-    public readonly struct BinaryNode : INode
+    public class BinaryNode : INode
     {
-        /* Fields. */
-        private readonly byte[] value;
-
         /* Public properties. */
-        public readonly byte[] Value => value;
+        public byte[] Value { get; set; }
 
         /* Constructors. */
         public BinaryNode(byte[] value)
         {
-            this.value = value;
+            Value = value;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            return $"binary: 0x{HexUtility.ToHexString(value)}";
+            return $"binary: 0x{HexUtility.ToHexString(Value)}";
         }
+
+        public void Clear()
+        {
+            Value = null;
+        }
+
+        public void ClearRecursive() => Clear();
     }
 }

@@ -3,29 +3,49 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A list serializer node.
     /// </summary>
-    public readonly struct ListNode : INode
+    public class ListNode : INode
     {
-        /* Fields. */
-        private readonly INode[] elements;
-
         /* Public properties. */
-        public readonly INode[] Elements => elements;
+        public INode[] Elements { get; set; }
 
         /* Constructors. */
         public ListNode(INode[] elements)
         {
-            this.elements = elements;
+            Elements = elements;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            string str = "list: ";
-            for (int i = 0; i < elements.Length; i++)
+            if (Elements == null)
+                return "list: (null)";
+
+            if (Elements.Length == 0)
+                return "list: (empty)";
+
+            string str = "list:";
+            for (int i = 0; i < Elements.Length; i++)
             {
-                str += "\n- " + elements[i].ToString().Replace("\n", "\n  ");
+                str += '\n' + PrintUtility.PrintChild(Elements[i], i == Elements.Length - 1);
             }
             return str;
+        }
+
+        public void Clear()
+        {
+            Elements = null;
+        }
+
+        public void ClearRecursive()
+        {
+            // Clear child nodes.
+            for (int i = 0; i < Elements.Length; i++)
+            {
+                Elements[i].ClearRecursive();
+            }
+
+            // Clear this node.
+            Clear();
         }
     }
 }

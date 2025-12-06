@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A time serializer node.
     /// </summary>
-    public readonly struct TimeNode : INode
+    public class TimeNode : INode
     {
         /// <summary>
         /// An internal representation of a date-time-timezone tuple.
@@ -61,22 +61,26 @@ namespace Rusty.Serialization.Core.Nodes
             }
         }
 
-        /* Fields. */
-        private readonly Timestamp value;
-
         /* Public properties */
-        public readonly Timestamp Value => value;
+        public Timestamp Value { get; set; }
 
         /* Constructors. */
         public TimeNode(Timestamp value)
         {
-            this.value = value;
+            Value = value;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            return $"timestamp: " + value;
+            return $"timestamp: " + Value;
         }
+
+        public void Clear()
+        {
+            Value = new();
+        }
+
+        public void ClearRecursive() => Clear();
     }
 }

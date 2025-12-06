@@ -3,24 +3,28 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A reference serializer node.
     /// </summary>
-    public readonly struct RefNode : INode
+    public class RefNode : INode
     {
-        /* Fields. */
-        private readonly ulong id;
-
         /* Public properties. */
-        public readonly ulong ID => id;
+        public ulong ID { get; set; }
 
         /* Constructors. */
         public RefNode(ulong id)
         {
-            this.id = id;
+            ID = id;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            return "ref: " + id;
+            return "ref: " + ID;
         }
+
+        public void Clear()
+        {
+            ID = 0;
+        }
+
+        public void ClearRecursive() => Clear();
     }
 }

@@ -3,33 +3,37 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A color serializer node.
     /// </summary>
-    public struct ColorNode : INode
+    public class ColorNode : INode
     {
-        /* Fields. */
-        private readonly byte r;
-        private readonly byte g;
-        private readonly byte b;
-        private readonly byte a;
-
         /* Public properties. */
-        public readonly byte R => r;
-        public readonly byte G => g;
-        public readonly byte B => b;
-        public readonly byte A => a;
+        public byte R { get; set; }
+        public byte G { get; set; }
+        public byte B { get; set; }
+        public byte A { get; set; }
 
         /* Constructors. */
         public ColorNode(byte r, byte g, byte b, byte a)
         {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
+            R = r;
+            G = g;
+            B = b;
+            A = a;
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            return $"color: ({r},{g},{b},{a})";
+            return $"color: ({R},{G},{B},{A})";
         }
+
+        public void Clear()
+        {
+            R = 0;
+            G = 0;
+            B = 0;
+            A = 0;
+        }
+
+        public void ClearRecursive() => Clear();
     }
 }

@@ -27,7 +27,7 @@ namespace Rusty.Serialization.Serializers.XML
         {
             // Enforce name.
             if (element.Name != Tag)
-                throw new ArgumentException("Name wasn't " + Tag);
+                throw new ArgumentException("index wasn't " + Tag);
 
             // Parse element.
             byte r = 0;

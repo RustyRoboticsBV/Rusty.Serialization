@@ -3,24 +3,28 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A string serializer node.
     /// </summary>
-    public readonly struct StringNode : INode
+    public class StringNode : INode
     {
-        /* Fields. */
-        private readonly string value;
-
         /* Public properties. */
-        public readonly string Value => value;
+        public string Value { get; set; }
 
         /* Constructors. */
         public StringNode(string value)
         {
-            this.value = value;
+            Value = value ?? "";
         }
 
         /* Public methods. */
-        public override readonly string ToString()
+        public override string ToString()
         {
-            return "string: " + value;
+            return "string: " + (Value ?? "(null)");
         }
+
+        public void Clear()
+        {
+            Value = null;
+        }
+
+        public void ClearRecursive() => Clear();
     }
 }

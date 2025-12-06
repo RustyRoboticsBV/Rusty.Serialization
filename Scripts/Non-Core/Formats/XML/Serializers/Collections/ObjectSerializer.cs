@@ -19,7 +19,7 @@ namespace Rusty.Serialization.Serializers.XML
             foreach (var member in node.Members)
             {
                 XmlElement value = scheme.ToXml(member.Value);
-                value.SetAttribute("name", member.Key);
+                value.SetAttribute("index", member.Key);
                 element.AppendChild(value);
             }
             return element;
@@ -32,7 +32,7 @@ namespace Rusty.Serialization.Serializers.XML
             {
                 if (member is XmlElement childElement)
                 {
-                    string key = childElement.GetAttribute("name");
+                    string key = childElement.GetAttribute("index");
                     INode value = scheme.FromXml(childElement);
                     elements.Add(new(key, value));
                 }

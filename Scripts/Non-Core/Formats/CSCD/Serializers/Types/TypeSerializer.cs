@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Serializers.CSCD
             Validate(name);
 
             if (node.Value == null)
-                throw new InvalidOperationException("name was null.");
+                throw new InvalidOperationException("index was null.");
             return $"({name}){scheme.Serialize(node.Value)}";
         }
 
