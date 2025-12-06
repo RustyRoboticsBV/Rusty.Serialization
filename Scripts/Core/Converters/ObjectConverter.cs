@@ -20,8 +20,10 @@ namespace Rusty.Serialization.Core.Converters
             // Collect public members.
             MemberInfo[] members = GetPublicMembers(obj);
 
+            // Create node.
+            ObjectNode node = new(members.Length);
+
             // Collect identifiers and convert values to member nodes.
-            var memberPairs = new KeyValuePair<string, INode>[members.Length];
             for (int i = 0; i < members.Length; i++)
             {
                 MemberInfo member = members[i];
@@ -48,11 +50,11 @@ namespace Rusty.Serialization.Core.Converters
                 INode memberNode = ConvertNested(memberType, memberValue, scheme);
 
                 // Store finished identifier-node pair.
-                memberPairs[i] = new(memberstring, memberNode);
+                node.Members[i] = new(memberstring, memberNode);
+                memberNode.Parent = node;
             }
 
-            // Return finished object node.
-            return new ObjectNode(memberPairs);
+            return node;
         }
 
         public override T Deconvert(INode node, IConverterScheme scheme)

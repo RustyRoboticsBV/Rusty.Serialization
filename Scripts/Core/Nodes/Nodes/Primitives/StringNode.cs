@@ -6,6 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class StringNode : INode
     {
         /* Public properties. */
+        public INode Parent { get; set; }
         public string Value { get; set; }
 
         /* Constructors. */
@@ -22,9 +23,8 @@ namespace Rusty.Serialization.Core.Nodes
 
         public void Clear()
         {
+            Parent = null;
             Value = null;
         }
-
-        public void ClearRecursive() => Clear();
     }
 }

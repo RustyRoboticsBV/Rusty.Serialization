@@ -5,13 +5,12 @@ namespace Rusty.Serialization.Core.Nodes
     /// </summary>
     public interface INode
     {
+        /* Public properties. */
+        public INode Parent { get; set; }
+
+        /* Public methods. */
         /// <summary>
         /// Clear this node and all child nodes to their default state.
-        /// </summary>
-        public void ClearRecursive();
-
-        /// <summary>
-        /// Clear this node to its default state. This does not touch child nodes.
         /// </summary>
         public void Clear();
     }

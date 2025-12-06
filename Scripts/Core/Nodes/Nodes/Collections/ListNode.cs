@@ -1,3 +1,5 @@
+using System;
+
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
@@ -6,12 +8,21 @@ namespace Rusty.Serialization.Core.Nodes
     public class ListNode : INode
     {
         /* Public properties. */
+        public INode Parent { get; set; }
         public INode[] Elements { get; set; }
 
         /* Constructors. */
+        public ListNode(int capacity) : this(new INode[capacity]) { }
+
         public ListNode(INode[] elements)
         {
             Elements = elements;
+
+            for (int i = 0; i < Elements.Length; i++)
+            {
+                if (Elements[i] != null)
+                    Elements[i].Parent = this;
+            }
         }
 
         /* Public methods. */
@@ -33,28 +44,28 @@ namespace Rusty.Serialization.Core.Nodes
 
         public void Clear()
         {
+            Parent = null;
+            for (int i = 0; i < Elements.Length; i++)
+            {
+                Elements[i].Clear();
+            }
             Elements = null;
         }
 
-        public void ClearRecursive()
+        public void WrapChild(INode child, INode wrapper)
         {
-            // Clear child nodes.
-            for (int i = 0; i < Elements.Length; i++)
+            if (wrapper is IdNode id)
             {
-                Elements[i].ClearRecursive();
+                id.Value = child;
+                child.Parent = id;
+                for (int i = 0; i < Elements.Length; i++)
+                {
+                    if (Elements[i] == child)
+                        Elements[i] = id;
+                }
             }
-
-            // Clear this node.
-            Clear();
-        }
-
-        /// <summary>
-        /// Wrap an element child node inside of an ID node.
-        /// </summary>
-        public void WrapElementId(ulong id, int elementIndex)
-        {
-            IdNode node = new(id, Elements[elementIndex]);
-            Elements[elementIndex] = node;
+            else
+                throw new ArgumentException("We only allow child wrapping for ID nodes.");
         }
     }
 }

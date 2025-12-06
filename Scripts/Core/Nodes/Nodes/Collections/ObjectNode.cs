@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
@@ -5,15 +6,24 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An object serializer node.
     /// </summary>
-    public class ObjectNode : INode
+    public class ObjectNode : ICollectionNode
     {
         /* Public properties. */
+        public INode Parent { get; set; }
         public KeyValuePair<string, INode>[] Members { get; set; }
 
         /* Constructors. */
+        public ObjectNode(int capacity) : this(new KeyValuePair<string, INode>[capacity]) { }
+
         public ObjectNode(KeyValuePair<string, INode>[] members)
         {
             Members = members ?? new KeyValuePair<string, INode>[0];
+
+            for (int i = 0; i < Members.Length; i++)
+            {
+                if (Members[i].Value != null)
+                    Members[i].Value.Parent = this;
+            }
         }
 
         /* Public methods. */
@@ -35,28 +45,28 @@ namespace Rusty.Serialization.Core.Nodes
 
         public void Clear()
         {
+            Parent = null;
             Members = null;
-        }
-
-        public void ClearRecursive()
-        {
-            // Clear child nodes.
             for (int i = 0; i < Members.Length; i++)
             {
-                Members[i].Value.ClearRecursive();
+                Members[i].Value.Clear();
             }
-
-            // Clear this node.
-            Clear();
         }
 
-        /// <summary>
-        /// Wrap a value child node inside of an ID node.
-        /// </summary>
-        public void WrapValueId(ulong id, int memberIndex)
+        public void WrapChild(INode child, INode wrapper)
         {
-            IdNode node = new(id, Members[memberIndex].Value);
-            Members[memberIndex] = new(Members[memberIndex].Key, node);
+            if (wrapper is IdNode id)
+            {
+                id.Value = child;
+                child.Parent = id;
+                for (int i = 0; i < Members.Length; i++)
+                {
+                    if (Members[i].Value == child)
+                        Members[i] = new(Members[i].Key, id);
+                }
+            }
+            else
+                throw new ArgumentException("We only allow child wrapping for ID nodes.");
         }
     }
 }

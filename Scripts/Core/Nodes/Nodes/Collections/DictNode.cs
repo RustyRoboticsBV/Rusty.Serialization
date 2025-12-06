@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
@@ -5,15 +6,26 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A dictionary serializer node.
     /// </summary>
-    public class DictNode : INode
+    public class DictNode : ICollectionNode
     {
         /* Public properties. */
+        public INode Parent { get; set; }
         public KeyValuePair<INode, INode>[] Pairs { get; set; }
 
         /* Constructors. */
+        public DictNode(int capacity) : this(new KeyValuePair<INode, INode>[capacity]) { }
+
         public DictNode(KeyValuePair<INode, INode>[] pairs)
         {
             Pairs = pairs ?? new KeyValuePair<INode, INode>[0];
+
+            for (int i = 0; i < Pairs.Length; i++)
+            {
+                if (Pairs[i].Key != null)
+                    Pairs[i].Key.Parent = this;
+                if (Pairs[i].Value != null)
+                    Pairs[i].Value.Parent = this;
+            }
         }
 
         /* Public methods. */
@@ -35,38 +47,31 @@ namespace Rusty.Serialization.Core.Nodes
 
         public void Clear()
         {
+            Parent = null;
+            for (int i = 0; i < Pairs.Length; i++)
+            {
+                Pairs[i].Key.Clear();
+                Pairs[i].Value.Clear();
+            }
             Pairs = null;
         }
 
-        public void ClearRecursive()
+        public void WrapChild(INode child, INode wrapper)
         {
-            // Clear child nodes.
-            for (int i = 0; i < Pairs.Length; i++)
+            if (wrapper is IdNode id)
             {
-                Pairs[i].Key.ClearRecursive();
-                Pairs[i].Value.ClearRecursive();
+                id.Value = child;
+                child.Parent = id;
+                for (int i = 0; i < Pairs.Length; i++)
+                {
+                    if (Pairs[i].Key == child)
+                        Pairs[i] = new(id, Pairs[i].Value);
+                    if (Pairs[i].Value == child)
+                        Pairs[i] = new(Pairs[i].Key, id);
+                }
             }
-
-            // Clear this node.
-            Clear();
-        }
-
-        /// <summary>
-        /// Wrap a key child node inside of an ID node.
-        /// </summary>
-        public void WrapKeyId(ulong id, int keyIndex)
-        {
-            IdNode node = new(id, Pairs[keyIndex].Key);
-            Pairs[keyIndex] = new(node, Pairs[keyIndex].Value);
-        }
-
-        /// <summary>
-        /// Wrap a value child node inside of an ID node.
-        /// </summary>
-        public void WrapValueId(ulong id, int keyIndex)
-        {
-            IdNode node = new(id, Pairs[keyIndex].Value);
-            Pairs[keyIndex] = new(Pairs[keyIndex].Key, node);
+            else
+                throw new ArgumentException("We only allow child wrapping for ID nodes.");
         }
     }
 }

@@ -22,6 +22,9 @@ namespace Rusty.Serialization.Core.Contexts
         /// </summary>
         public string Serialize(object obj, bool prettyPrint = false)
         {
+            // Make sure the reference symbol table has been cleared.
+            ConverterScheme.ClearSymbolTable();
+
             // Convert to node.
             INode node = ConverterScheme.Convert(obj);
 

@@ -62,6 +62,7 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         /* Public properties */
+        public INode Parent { get; set; }
         public Timestamp Value { get; set; }
 
         /* Constructors. */
@@ -78,9 +79,8 @@ namespace Rusty.Serialization.Core.Nodes
 
         public void Clear()
         {
+            Parent = null;
             Value = new();
         }
-
-        public void ClearRecursive() => Clear();
     }
 }

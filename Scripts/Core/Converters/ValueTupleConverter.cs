@@ -15,15 +15,22 @@ namespace Rusty.Serialization.Core.Converters
         /* Protected methods. */
         protected sealed override ListNode ConvertValue(TupleT obj, IConverterScheme scheme)
         {
+            // Get tuple data.
             Type type = obj.GetType();
             ITuple tuple = obj;
-            INode[] elementNodes = new INode[tuple.Length];
+
+            // Create node.
+            ListNode node = new(tuple.Length);
+
+            // Convert tuple elements.
             for (int i = 0; i < tuple.Length; i++)
             {
                 Type fieldType = type.GetFields()[i].FieldType;
-                elementNodes[i] = ConvertNested(fieldType, tuple[i], scheme);
+                node.Elements[i] = ConvertNested(fieldType, tuple[i], scheme);
+                node.Elements[i].Parent = node;
             }
-            return new(elementNodes);
+
+            return node;
         }
 
         protected sealed override TupleT DeconvertValue(ListNode node, IConverterScheme scheme)

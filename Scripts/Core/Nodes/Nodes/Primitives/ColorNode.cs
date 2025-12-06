@@ -6,6 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class ColorNode : INode
     {
         /* Public properties. */
+        public INode Parent { get; set; }
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }
@@ -28,12 +29,11 @@ namespace Rusty.Serialization.Core.Nodes
 
         public void Clear()
         {
+            Parent = null;
             R = 0;
             G = 0;
             B = 0;
             A = 0;
         }
-
-        public void ClearRecursive() => Clear();
     }
 }

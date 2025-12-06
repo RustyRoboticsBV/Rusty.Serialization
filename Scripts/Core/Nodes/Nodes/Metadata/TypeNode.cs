@@ -6,6 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class TypeNode : INode
     {
         /* Public properties. */
+        public INode Parent { get; set; }
         public string Name { get; set; }
         public INode Value { get; set; }
 
@@ -14,6 +15,9 @@ namespace Rusty.Serialization.Core.Nodes
         {
             Name = name;
             Value = value;
+
+            if (Value != null)
+                Value.Parent = this;
         }
 
         /* Public methods. */
@@ -24,23 +28,10 @@ namespace Rusty.Serialization.Core.Nodes
 
         public void Clear()
         {
+            Parent = null;
             Name = "";
+            Value.Clear();
             Value = null;
-        }
-
-        public void ClearRecursive()
-        {
-            Value?.ClearRecursive();
-            Clear();
-        }
-
-        /// <summary>
-        /// Wrap the value node inside of an ID node.
-        /// </summary>
-        public void WrapId(ulong id)
-        {
-            IdNode node = new(id, Value);
-            Value = node;
         }
     }
 }

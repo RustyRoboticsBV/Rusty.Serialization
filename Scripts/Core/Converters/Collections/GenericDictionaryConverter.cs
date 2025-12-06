@@ -12,15 +12,22 @@ namespace Rusty.Serialization.Core.Converters
         /* Protected methods. */
         protected sealed override DictNode ConvertRef(DictionaryT obj, IConverterScheme scheme)
         {
+            // Create new node.
+            DictNode node = new(obj.Count);
+
             // Convert the elements to nodes.
-            List<KeyValuePair<INode, INode>> nodePairs = new();
+            int index = 0;
             foreach (KeyValuePair<KeyT, ValueT> pair in obj)
             {
-                nodePairs.Add(ConvertPair(pair, scheme));
+                var newPair = ConvertPair(pair, scheme);
+                newPair.Key.Parent = node;
+                newPair.Value.Parent = node;
+                node.Pairs[index] = newPair;
+                index++;
             }
 
             // Create the node.
-            return new(nodePairs.ToArray());
+            return node;
         }
 
         protected sealed override DictionaryT DeconvertRef(DictNode node, IConverterScheme scheme)

@@ -8,6 +8,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class RealNode : INode
     {
         /* Public properties. */
+        public INode Parent { get; set; }
         public EDecimal Value { get; set; }
 
         /* Constructors. */
@@ -24,9 +25,8 @@ namespace Rusty.Serialization.Core.Nodes
 
         public void Clear()
         {
+            Parent = null;
             Value = 0;
         }
-
-        public void ClearRecursive() => Clear();
     }
 }

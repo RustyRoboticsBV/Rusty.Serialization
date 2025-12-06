@@ -13,15 +13,26 @@ namespace Rusty.Serialization.Core.Converters
         /* Protected methods. */
         protected override ListNode ConvertRef(CollectionT obj, IConverterScheme scheme)
         {
-            // Convert the elements to nodes.
-            List<INode> elementNodes = new();
-            foreach (ElementT element in obj)
+            // Create node.
+            int count = 0;
+            foreach (ElementT elementT in obj)
             {
-                elementNodes.Add(ConvertNested(typeof(ElementT), element, scheme));
+                count++;
             }
 
-            // Create the node.
-            return new(elementNodes.ToArray());
+            ListNode node = new(count);
+
+            // Convert the elements to nodes.
+            int index = 0;
+            foreach (ElementT element in obj)
+            {
+                INode elementNode = ConvertNested(typeof(ElementT), element, scheme);
+                node.Elements[index] = elementNode;
+                elementNode.Parent = node;
+                index++;
+            }
+
+            return node;
         }
 
         protected override CollectionT DeconvertRef(ListNode node, IConverterScheme scheme)

@@ -1,5 +1,5 @@
-using System;
 using Rusty.Serialization.Core.Nodes;
+using System;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -21,6 +21,10 @@ namespace Rusty.Serialization.Core.Converters
         /// The registry of known type aliasses.
         /// </summary>
         private AliasRegistry Aliasses { get; } = new();
+        /// <summary>
+        /// The symbol table, used to track reference types during conversion.
+        /// </summary>
+        private SymbolTable SymbolTable { get; } = new();
 
         /* Constructors. */
         public ConverterScheme()
@@ -98,19 +102,30 @@ namespace Rusty.Serialization.Core.Converters
 
         public INode Convert(object obj)
         {
-            IConverter converter = GetConverter(obj?.GetType());
-            return converter.Convert(obj, this);
-        }
+            // If the object is a reference and is present in the symbol table...
+            bool isReferenceType = obj != null && !obj.GetType().IsValueType;
+            if (isReferenceType && SymbolTable.HasObject(obj))
+            {
+                // If there was no ID for the object yet, create one and wrap the original node.
+                if (!SymbolTable.HasIdFor(obj))
+                    WrapInId(SymbolTable.GetNode(obj), SymbolTable.GetOrCreateId(obj));
 
-        public INode Convert<T>(T obj) => Convert(ref obj);
+                // Return a reference to the object.\
+                System.Console.WriteLine("NEW REFERENCE:\n" + new RefNode(SymbolTable.GetOrCreateId(obj)));
+                return new RefNode(SymbolTable.GetOrCreateId(obj));
+            }
+            //else
+            //    System.Console.WriteLine(obj + " is not a reference type or is not present in the symbol table.");
 
-        public INode Convert<T>(ref T obj)
-        {
+            // Convert the object.
             IConverter converter = GetConverter(obj?.GetType());
-            if (converter is IConverter<T> typed)
-                return typed.Convert(obj, this);
-            else
-                return converter.Convert(obj, this);
+            INode node = converter.Convert(obj, this);
+
+            // Register in symbol table (if it's a reference type an it wasn't registered yet).
+            if (isReferenceType && !SymbolTable.HasObject(obj))
+                SymbolTable.Add(obj, node);
+
+            return node;
         }
 
         public T Deconvert<T>(INode node)
@@ -139,6 +154,24 @@ namespace Rusty.Serialization.Core.Converters
             //    return Aliasses.Get(name);
 
             return new TypeName(name).ToType();
+        }
+
+        public void ClearSymbolTable()
+        {
+            SymbolTable.Clear();
+        }
+
+        /* Private methods. */
+        private static IdNode WrapInId(INode node, ulong id)
+        {
+            if (node.Parent != null && node.Parent is ICollectionNode collection)
+            {
+                IdNode idNode = new(id, null);
+                collection.WrapChild(node, idNode);
+                return idNode;
+            }
+            else
+                throw new ArgumentException($"Node has no parent: " + node);
         }
     }
 }

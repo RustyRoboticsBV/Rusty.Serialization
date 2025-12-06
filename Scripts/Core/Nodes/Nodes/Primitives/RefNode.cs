@@ -6,6 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class RefNode : INode
     {
         /* Public properties. */
+        public INode Parent { get; set; }
         public ulong ID { get; set; }
 
         /* Constructors. */
@@ -22,9 +23,8 @@ namespace Rusty.Serialization.Core.Nodes
 
         public void Clear()
         {
+            Parent = null;
             ID = 0;
         }
-
-        public void ClearRecursive() => Clear();
     }
 }

@@ -6,6 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class IdNode : INode
     {
         /* Public properties. */
+        public INode Parent { get; set; }
         public ulong Index { get; set; }
         public INode Value { get; set; }
 
@@ -14,33 +15,23 @@ namespace Rusty.Serialization.Core.Nodes
         {
             Index = index;
             Value = value;
+
+            if (Value != null)
+                Value.Parent = this;
         }
 
         /* Public methods. */
         public override string ToString()
         {
-            return "index: " + Index + "\n" + PrintUtility.PrintChild(Value);
+            return "ID: " + Index + "\n" + PrintUtility.PrintChild(Value);
         }
 
         public void Clear()
         {
+            Parent = null;
             Index = 0;
+            Value.Clear();
             Value = null;
-        }
-
-        public void ClearRecursive()
-        {
-            Value?.ClearRecursive();
-            Clear();
-        }
-
-        /// <summary>
-        /// Wrap the value node inside of an ID node.
-        /// </summary>
-        public void WrapId(ulong id)
-        {
-            IdNode node = new(id, Value);
-            Value = node;
         }
     }
 }
