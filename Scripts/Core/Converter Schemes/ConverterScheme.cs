@@ -1,6 +1,5 @@
 using Rusty.Serialization.Core.Nodes;
 using System;
-using System.Xml.Linq;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -109,7 +108,7 @@ namespace Rusty.Serialization.Core.Converters
             // Create node tree.
             NodeTree tree = new();
 
-            INode node = ConvertToNode(obj, tree);
+            INode node = ConvertToNode(obj);
             while (node.Parent != null)
             {
                 node = node.Parent;
@@ -139,7 +138,7 @@ namespace Rusty.Serialization.Core.Converters
             return tree;
         }
 
-        public INode ConvertToNode(object obj, NodeTree tree)
+        public INode ConvertToNode(object obj)
         {
             // If the object is a reference and is present in the symbol table...
             bool isReferenceType = obj != null && !obj.GetType().IsValueType;
@@ -152,7 +151,7 @@ namespace Rusty.Serialization.Core.Converters
                     {
                         ulong newId = SymbolTable.GetOrCreateId(obj);
                         if (SymbolTable.HasNodeFor(obj))
-                            WrapInId(SymbolTable.GetNode(obj), newId, tree);
+                            WrapInId(SymbolTable.GetNode(obj), newId);
                     }
 
                     // Return a reference to the object.
@@ -167,7 +166,7 @@ namespace Rusty.Serialization.Core.Converters
 
             // Convert the object.
             IConverter converter = GetConverter(obj?.GetType());
-            INode node = converter.Convert(obj, this, tree);
+            INode node = converter.Convert(obj, this, null);
 
             // If there was no node in the symbol table yet, add one.
             if (isReferenceType && SymbolTable.HasObject(obj) && !SymbolTable.HasNodeFor(obj))
@@ -176,7 +175,7 @@ namespace Rusty.Serialization.Core.Converters
             // If there is an ID for this object, it was referenced by a child node.
             // Wrap it in an ID node.
             if (SymbolTable.HasIdFor(obj))
-                WrapInId(SymbolTable.GetNode(obj), SymbolTable.GetOrCreateId(obj), tree);
+                WrapInId(SymbolTable.GetNode(obj), SymbolTable.GetOrCreateId(obj));
             
             return node;
         }
@@ -209,7 +208,7 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         /* Private methods. */
-        private static IdNode WrapInId(INode node, ulong id, NodeTree root)
+        private static IdNode WrapInId(INode node, ulong id)
         {
             string name = id.ToString();
             if (node.Parent != null && node.Parent is ICollectionNode collection)

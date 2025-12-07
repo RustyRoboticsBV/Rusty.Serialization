@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Core.Converters
         where T : struct, Enum
     {
         /* Protected methods. */
-        protected override IntNode ConvertValue(T obj, IConverterScheme scheme, NodeTree tree) => new(System.Convert.ToInt32(obj));
+        protected override IntNode ConvertValue(T obj, IConverterScheme scheme, SymbolTable table) => new(System.Convert.ToInt32(obj));
 
         protected override T DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree)
         {

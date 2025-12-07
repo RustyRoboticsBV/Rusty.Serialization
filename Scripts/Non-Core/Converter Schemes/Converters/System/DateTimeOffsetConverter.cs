@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class DateTimeOffsetConverter : ValueConverter<DateTimeOffset, ListNode>
     {
         /* Protected methods. */
-        protected override ListNode ConvertValue(DateTimeOffset obj, IConverterScheme scheme, NodeTree tree)
+        protected override ListNode ConvertValue(DateTimeOffset obj, IConverterScheme scheme, SymbolTable table)
         {
             DateTime dt = obj.DateTime;
             INode dtNode = new TimeNode(new(dt));

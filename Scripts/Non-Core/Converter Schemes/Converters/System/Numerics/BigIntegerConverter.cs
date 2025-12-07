@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class BigIntegerConverter : ValueConverter<BigInteger, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode ConvertValue(BigInteger obj, IConverterScheme scheme, NodeTree tree) => new((decimal)obj);
+        protected override IntNode ConvertValue(BigInteger obj, IConverterScheme scheme, SymbolTable table) => new((decimal)obj);
         protected override BigInteger DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
     }
 }

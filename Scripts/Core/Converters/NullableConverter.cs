@@ -10,12 +10,12 @@ namespace Rusty.Serialization.Core.Converters
         where TargetT : struct
     {
         /* Public methods */
-        public override INode Convert(TargetT? obj, IConverterScheme scheme, NodeTree tree)
+        public override INode Convert(TargetT? obj, IConverterScheme scheme, SymbolTable table)
         {
             if (obj == null)
                 return new NullNode();
             else
-                return ConvertNested(obj.Value.GetType(), obj.Value, scheme, tree);
+                return ConvertNested(obj.Value.GetType(), obj.Value, scheme, table);
         }
 
         public override TargetT? Deconvert(INode node, IConverterScheme scheme, NodeTree tree)

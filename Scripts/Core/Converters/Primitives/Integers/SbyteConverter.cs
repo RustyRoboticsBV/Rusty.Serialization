@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class SbyteConverter : ValueConverter<sbyte, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode ConvertValue(sbyte obj, IConverterScheme scheme, NodeTree tree) => new(obj);
+        protected override IntNode ConvertValue(sbyte obj, IConverterScheme scheme, SymbolTable table) => new(obj);
         protected override sbyte DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree) => (sbyte)node.Value;
     }
 }

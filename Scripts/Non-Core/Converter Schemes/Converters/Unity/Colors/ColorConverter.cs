@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Converters.Unity
     public sealed class ColorConverter : ValueConverter<Color, ColorNode>
     {
         /* Protected methods. */
-        protected override ColorNode ConvertValue(Color obj, IConverterScheme scheme, NodeTree tree)
+        protected override ColorNode ConvertValue(Color obj, IConverterScheme scheme, SymbolTable table)
         {
             Color32 col32 = obj;
             return new(col32.r, col32.g, col32.b, col32.a);

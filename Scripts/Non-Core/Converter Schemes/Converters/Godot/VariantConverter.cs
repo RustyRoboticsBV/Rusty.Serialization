@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Converters.Gd
     public sealed class VariantConverter : ValueConverter<Variant, INode>
     {
         /* Protected methods. */
-        protected override INode ConvertValue(Variant obj, IConverterScheme scheme, NodeTree tree)
+        protected override INode ConvertValue(Variant obj, IConverterScheme scheme, SymbolTable table)
         {
             // Convert underlying value (this automatically wraps it in a type node).
             switch (obj.VariantType)

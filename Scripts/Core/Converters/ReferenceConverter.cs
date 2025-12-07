@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Core.Converters
         where NodeT : INode
     {
         /* Public methods */
-        public override INode Convert(TargetT obj, IConverterScheme scheme, NodeTree tree) => ConvertRef(obj, scheme, tree);
+        public override INode Convert(TargetT obj, IConverterScheme scheme, SymbolTable table) => ConvertRef(obj, scheme, table);
 
         public override TargetT Deconvert(INode node, IConverterScheme scheme, NodeTree tree)
         {
@@ -33,7 +33,7 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         /* Protected methods. */
-        protected abstract NodeT ConvertRef(TargetT obj, IConverterScheme scheme, NodeTree tree);
+        protected abstract NodeT ConvertRef(TargetT obj, IConverterScheme scheme, SymbolTable table);
         protected abstract TargetT DeconvertRef(NodeT node, IConverterScheme scheme, NodeTree tree);
     }
 }

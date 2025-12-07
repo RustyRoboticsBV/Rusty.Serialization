@@ -11,10 +11,10 @@ namespace Rusty.Serialization.Converters.System
     public sealed class KeyValuePairConverter<KeyT, ValueT> : ValueConverter<KeyValuePair<KeyT, ValueT>, DictNode>
     {
         /* Protected methods. */
-        protected sealed override DictNode ConvertValue(KeyValuePair<KeyT, ValueT> obj, IConverterScheme nested, NodeTree tree)
+        protected sealed override DictNode ConvertValue(KeyValuePair<KeyT, ValueT> obj, IConverterScheme nested, SymbolTable table)
         {
-            INode key = ConvertNested(typeof(KeyT), obj.Key, nested, tree);
-            INode value = ConvertNested(typeof(ValueT), obj.Value, nested, tree);
+            INode key = ConvertNested(typeof(KeyT), obj.Key, nested, table);
+            INode value = ConvertNested(typeof(ValueT), obj.Value, nested, table);
             return new(new KeyValuePair<INode, INode>[1] { new(key, value) });
         }
 

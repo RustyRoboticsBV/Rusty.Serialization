@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class UlongConverter : ValueConverter<ulong, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode ConvertValue(ulong obj, IConverterScheme scheme, NodeTree tree) => new(obj);
+        protected override IntNode ConvertValue(ulong obj, IConverterScheme scheme, SymbolTable table) => new(obj);
         protected override ulong DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree) => (ulong)node.Value;
     }
 }

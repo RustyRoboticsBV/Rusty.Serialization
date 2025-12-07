@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class TimeSpanConverter : ValueConverter<TimeSpan, TimeNode>
     {
         /* Protected methods. */
-        protected override TimeNode ConvertValue(TimeSpan obj, IConverterScheme scheme, NodeTree tree) => new(new(obj));
+        protected override TimeNode ConvertValue(TimeSpan obj, IConverterScheme scheme, SymbolTable table) => new(new(obj));
         protected override TimeSpan DeconvertValue(TimeNode node, IConverterScheme scheme, NodeTree tree)
             => new(node.Value.negative ? -(int)node.Value.day : (int)node.Value.day,
                 (int)node.Value.hour, (int)node.Value.minute, (int)node.Value.second, (int)node.Value.millisecond);

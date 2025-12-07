@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Converters.Unity
     public sealed class LayerMaskConverter : ValueConverter<LayerMask, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode ConvertValue(LayerMask obj, IConverterScheme scheme, NodeTree tree) => new(obj);
+        protected override IntNode ConvertValue(LayerMask obj, IConverterScheme scheme, SymbolTable table) => new(obj);
         protected override LayerMask DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree) => (int)node.Value;
     }
 }

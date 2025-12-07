@@ -13,12 +13,12 @@ namespace Rusty.Serialization.Core.Converters
         protected abstract int Length { get; }
 
         /* Protected methods. */
-        protected override ListNode ConvertValue(VectorT obj, IConverterScheme scheme, NodeTree tree)
+        protected override ListNode ConvertValue(VectorT obj, IConverterScheme scheme, SymbolTable table)
         {
             ListNode node = new(Length);
             for (int i = 0; i < Length; i++)
             {
-                node.Elements[i] = ConvertNested(typeof(ElementT), GetAt(ref obj, i), scheme, tree);
+                node.Elements[i] = ConvertNested(typeof(ElementT), GetAt(ref obj, i), scheme, table);
             }
             return node;
         }

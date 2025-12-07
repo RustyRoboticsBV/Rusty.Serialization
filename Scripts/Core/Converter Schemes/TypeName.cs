@@ -142,7 +142,6 @@ namespace Rusty.Serialization.Core.Converters
             nameSpace = type.Namespace ?? "";
 
             // Generic type arguments.
-            System.Console.WriteLine("NAME: " + type.FullName);
             Type[] genericArgTypes = type.GetGenericArguments();
             genericArgs = new TypeName[genericArgTypes.Length];
             for (int i = 0; i < genericArgTypes.Length; i++)

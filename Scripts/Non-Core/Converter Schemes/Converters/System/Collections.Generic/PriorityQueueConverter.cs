@@ -12,14 +12,14 @@ namespace Rusty.Serialization.Converters.System
     public sealed class PriorityQueueConverter<ElementT, PriorityT> : ReferenceConverter<PriorityQueue<ElementT, PriorityT>, DictNode>
     {
         /* Public methods. */
-        protected override DictNode ConvertRef(PriorityQueue<ElementT, PriorityT> obj, IConverterScheme scheme, NodeTree tree)
+        protected override DictNode ConvertRef(PriorityQueue<ElementT, PriorityT> obj, IConverterScheme scheme, SymbolTable table)
         {
             List<(ElementT, PriorityT)> elements = obj.UnorderedItems.ToList();
             var pairs = new KeyValuePair<INode, INode>[elements.Count];
             for (int i = 0; i < pairs.Length; i++)
             {
-                INode elementNode = ConvertNested(typeof(ElementT), elements[i].Item1, scheme, tree);
-                INode priorityNode = ConvertNested(typeof(PriorityT), elements[i].Item2, scheme, tree);
+                INode elementNode = ConvertNested(typeof(ElementT), elements[i].Item1, scheme, table);
+                INode priorityNode = ConvertNested(typeof(PriorityT), elements[i].Item2, scheme, table);
                 pairs[i] = new(elementNode, priorityNode);
             }
             return new(pairs);

@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Core.Converters
         where DictionaryT : class, IDictionary<KeyT, ValueT>, new()
     {
         /* Protected methods. */
-        protected sealed override DictNode ConvertRef(DictionaryT obj, IConverterScheme scheme, NodeTree tree)
+        protected sealed override DictNode ConvertRef(DictionaryT obj, IConverterScheme scheme, SymbolTable table)
         {
             // Create new node.
             DictNode node = new(obj.Count);
@@ -19,7 +19,7 @@ namespace Rusty.Serialization.Core.Converters
             int index = 0;
             foreach (KeyValuePair<KeyT, ValueT> pair in obj)
             {
-                var newPair = ConvertPair(pair, scheme, tree);
+                var newPair = ConvertPair(pair, scheme, table);
                 newPair.Key.Parent = node;
                 newPair.Value.Parent = node;
                 node.Pairs[index] = newPair;
@@ -41,10 +41,10 @@ namespace Rusty.Serialization.Core.Converters
             return obj;
         }
 
-        protected virtual KeyValuePair<INode, INode> ConvertPair(KeyValuePair<KeyT, ValueT> pair, IConverterScheme scheme, NodeTree tree)
+        protected virtual KeyValuePair<INode, INode> ConvertPair(KeyValuePair<KeyT, ValueT> pair, IConverterScheme scheme, SymbolTable table)
         {
-            INode key = ConvertNested(typeof(KeyT), pair.Key, scheme, tree);
-            INode value = ConvertNested(typeof(ValueT), pair.Value, scheme, tree);
+            INode key = ConvertNested(typeof(KeyT), pair.Key, scheme, table);
+            INode value = ConvertNested(typeof(ValueT), pair.Value, scheme, table);
             return new(key, value);
         }
 

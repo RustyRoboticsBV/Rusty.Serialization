@@ -9,14 +9,14 @@ namespace Rusty.Serialization.Core.Converters
         where T : class, new()
     {
         /* Protected methods. */
-        public override INode Convert(T obj, IConverterScheme scheme, NodeTree tree)
+        public override INode Convert(T obj, IConverterScheme scheme, SymbolTable table)
         {
             // Handle null.
             if (obj == null)
                 return new NullNode();
 
             // Handle non-null.
-            return base.Convert(obj, scheme, tree);
+            return base.Convert(obj, scheme, table);
         }
 
         public override T Deconvert(INode node, IConverterScheme scheme, NodeTree tree)

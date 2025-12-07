@@ -21,7 +21,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Convert an object to an INode hierarchy.
         /// </summary>
-        public INode ConvertToNode(object node, NodeTree root);
+        public INode ConvertToNode(object node);
 
         /// <summary>
         /// Deconvert an INode hierarchy to an object.

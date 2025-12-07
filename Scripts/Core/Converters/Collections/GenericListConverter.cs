@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Core.Converters
         where CollectionT : class, IEnumerable
     {
         /* Protected methods. */
-        protected override ListNode ConvertRef(CollectionT obj, IConverterScheme scheme, NodeTree tree)
+        protected override ListNode ConvertRef(CollectionT obj, IConverterScheme scheme, SymbolTable table)
         {
             // Create node.
             int count = 0;
@@ -26,7 +26,7 @@ namespace Rusty.Serialization.Core.Converters
             int index = 0;
             foreach (ElementT element in obj)
             {
-                INode elementNode = ConvertNested(typeof(ElementT), element, scheme, tree);
+                INode elementNode = ConvertNested(typeof(ElementT), element, scheme, table);
                 node.Elements[index] = elementNode;
                 elementNode.Parent = node;
                 index++;

@@ -14,10 +14,10 @@ namespace Rusty.Serialization.Core.Converters
         public Type TargetType => typeof(T);
 
         /* Public methods */
-        INode IConverter.Convert(object obj, IConverterScheme scheme, NodeTree tree) => Convert((T)obj, scheme, tree);
+        INode IConverter.Convert(object obj, IConverterScheme scheme, SymbolTable table) => Convert((T)obj, scheme, table);
         object IConverter.Deconvert(INode node, IConverterScheme scheme, NodeTree tree) => Deconvert(node, scheme, tree);
 
-        public abstract INode Convert(T obj, IConverterScheme scheme, NodeTree tree);
+        public abstract INode Convert(T obj, IConverterScheme scheme, SymbolTable table);
 
         public abstract T Deconvert(INode node, IConverterScheme scheme, NodeTree tree);
 
@@ -25,10 +25,10 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Convert an object into a node.
         /// </summary>
-        protected INode ConvertNested<U>(Type expectedType, U obj, IConverterScheme scheme, NodeTree tree)
+        protected INode ConvertNested<U>(Type expectedType, U obj, IConverterScheme scheme, SymbolTable table)
         {
             // Convert obj to node.
-            INode node = scheme.ConvertToNode(obj, tree);
+            INode node = scheme.ConvertToNode(obj);
 
             // Wrap inside of a type node if there was a mismatch.
             Type valueType = obj?.GetType();

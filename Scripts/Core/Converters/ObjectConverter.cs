@@ -15,7 +15,7 @@ namespace Rusty.Serialization.Core.Converters
         protected virtual HashSet<string> IgnoredMembers => new();
 
         /* Protected methods. */
-        public override INode Convert(T obj, IConverterScheme scheme, NodeTree tree)
+        public override INode Convert(T obj, IConverterScheme scheme, SymbolTable table)
         {
             // Collect public members.
             MemberInfo[] members = GetPublicMembers(obj);
@@ -47,7 +47,7 @@ namespace Rusty.Serialization.Core.Converters
                 string memberstring = member.Name;
 
                 // Create member node.
-                INode memberNode = ConvertNested(memberType, memberValue, scheme, tree);
+                INode memberNode = ConvertNested(memberType, memberValue, scheme, table);
 
                 // Store finished identifier-node pair.
                 node.Members[i] = new(memberstring, memberNode);

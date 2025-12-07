@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Emit a serializer node representation for some object.
         /// </summary>
-        public INode Convert(object obj, IConverterScheme scheme, NodeTree tree);
+        public INode Convert(object obj, IConverterScheme scheme, SymbolTable table);
 
         /// <summary>
         /// Emit a deserialized object from some serializer node.
@@ -35,7 +35,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Emit a serializer node representation for some object.
         /// </summary>
-        public INode Convert(T obj, IConverterScheme scheme, NodeTree tree);
+        public INode Convert(T obj, IConverterScheme scheme, SymbolTable table);
 
         /// <summary>
         /// Emit a deserialized object from some serializer node.

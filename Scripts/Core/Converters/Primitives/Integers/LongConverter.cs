@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class LongConverter : ValueConverter<long, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode ConvertValue(long obj, IConverterScheme scheme, NodeTree tree) => new(obj);
+        protected override IntNode ConvertValue(long obj, IConverterScheme scheme, SymbolTable table) => new(obj);
         protected override long DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree) => (long)node.Value;
     }
 }
