@@ -20,15 +20,41 @@ namespace Rusty.Serialization.Serializers.CSCD
             if (node.Pairs.Length == 0)
                 return "{}";
 
+            bool prettyPrint = scheme.PrettyPrint;
+            string tab = scheme.Tab;
+
+            // Add pairs.
             StringBuilder sb = new();
             for (int i = 0; i < node.Pairs.Length; i++)
             {
-                if (i > 0)
-                    sb.Append(',');
-                sb.Append(scheme.Serialize(node.Pairs[i].Key));
+                string key = scheme.Serialize(node.Pairs[i].Key);
+                string value = scheme.Serialize(node.Pairs[i].Value);
+
+                if (prettyPrint)
+                    sb.Append('\n' + tab);
+
+                // Key.
+                sb.Append(key);
+
+                // Separator.
+                if (prettyPrint)
+                    sb.Append(' ');
                 sb.Append(':');
-                sb.Append(scheme.Serialize(node.Pairs[i].Value));
+                if (prettyPrint)
+                    sb.Append(' ');
+
+                // Value.
+                if (prettyPrint && i < node.Pairs.Length - 1)
+                    sb.Append(value.Replace("\n", "\n" + tab));
+                else
+                    sb.Append(value);
+
+                // Comma.
+                if (i < node.Pairs.Length - 1)
+                    sb.Append(',');
             }
+            if (prettyPrint)
+                sb.Append('\n');
             return '{' + sb.ToString() + '}';
         }
 
@@ -56,7 +82,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                     // Split into key and value.
                     List<string> pairStrs = ParseUtility.Split(parsed[i], ':');
                     if (pairStrs.Count != 2)
-                        throw new Exception("Malformed key-index pair.");
+                        throw new Exception("Malformed key-value pair.");
 
                     // Parse keys and values.
                     INode key = scheme.ParseAsNode(pairStrs[0].Trim());
