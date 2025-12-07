@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Core.Converters
         where CollectionT : class, IEnumerable
     {
         /* Protected methods. */
-        protected override ListNode ConvertRef(CollectionT obj, IConverterScheme scheme)
+        protected override ListNode ConvertRef(CollectionT obj, IConverterScheme scheme, NodeTree tree)
         {
             // Create node.
             int count = 0;
@@ -26,7 +26,7 @@ namespace Rusty.Serialization.Core.Converters
             int index = 0;
             foreach (ElementT element in obj)
             {
-                INode elementNode = ConvertNested(typeof(ElementT), element, scheme);
+                INode elementNode = ConvertNested(typeof(ElementT), element, scheme, tree);
                 node.Elements[index] = elementNode;
                 elementNode.Parent = node;
                 index++;
@@ -35,12 +35,12 @@ namespace Rusty.Serialization.Core.Converters
             return node;
         }
 
-        protected override CollectionT DeconvertRef(ListNode node, IConverterScheme scheme)
+        protected override CollectionT DeconvertRef(ListNode node, IConverterScheme scheme, NodeTree tree)
         {
             ElementT[] elements = new ElementT[node.Elements.Length];
             for (int i = 0; i < node.Elements.Length; i++)
             {
-                elements[i] = DeconvertNested<ElementT>(node.Elements[i], scheme);
+                elements[i] = DeconvertNested<ElementT>(node.Elements[i], scheme, tree);
             }
             return CreateObject(elements);
         }

@@ -15,7 +15,7 @@ namespace Rusty.Serialization.Core.Converters
         protected virtual HashSet<string> IgnoredMembers => new();
 
         /* Protected methods. */
-        public override INode Convert(T obj, IConverterScheme scheme)
+        public override INode Convert(T obj, IConverterScheme scheme, NodeTree tree)
         {
             // Collect public members.
             MemberInfo[] members = GetPublicMembers(obj);
@@ -47,7 +47,7 @@ namespace Rusty.Serialization.Core.Converters
                 string memberstring = member.Name;
 
                 // Create member node.
-                INode memberNode = ConvertNested(memberType, memberValue, scheme);
+                INode memberNode = ConvertNested(memberType, memberValue, scheme, tree);
 
                 // Store finished identifier-node pair.
                 node.Members[i] = new(memberstring, memberNode);
@@ -57,14 +57,14 @@ namespace Rusty.Serialization.Core.Converters
             return node;
         }
 
-        public override T Deconvert(INode node, IConverterScheme scheme)
+        public override T Deconvert(INode node, IConverterScheme scheme, NodeTree tree)
         {
             if (node is RefNode @ref)
                 return default; // TODO: implement
             else if (node is TypeNode typeNode)
-                return Deconvert(typeNode.Value, scheme);
+                return Deconvert(typeNode.Value, scheme, tree);
             else if (node is IdNode id)
-                return Deconvert(id.Value, scheme);
+                return Deconvert(id.Value, scheme, tree);
             else if (node is ObjectNode objNode)
             {
                 // Create new object.
@@ -87,12 +87,12 @@ namespace Rusty.Serialization.Core.Converters
 
                     if (member is FieldInfo field)
                     {
-                        object memberObj = DeconvertNested(field.FieldType, memberNode, scheme);
+                        object memberObj = DeconvertNested(field.FieldType, memberNode, scheme, tree);
                         field.SetValue(obj, memberObj);
                     }
                     else if (member is PropertyInfo property)
                     {
-                        object memberObj = DeconvertNested(property.PropertyType, memberNode, scheme);
+                        object memberObj = DeconvertNested(property.PropertyType, memberNode, scheme, tree);
                         property.SetValue(obj, memberObj);
                     }
                 }

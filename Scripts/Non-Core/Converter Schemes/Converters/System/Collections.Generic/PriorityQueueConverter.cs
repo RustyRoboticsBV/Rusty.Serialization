@@ -12,26 +12,26 @@ namespace Rusty.Serialization.Converters.System
     public sealed class PriorityQueueConverter<ElementT, PriorityT> : ReferenceConverter<PriorityQueue<ElementT, PriorityT>, DictNode>
     {
         /* Public methods. */
-        protected override DictNode ConvertRef(PriorityQueue<ElementT, PriorityT> obj, IConverterScheme scheme)
+        protected override DictNode ConvertRef(PriorityQueue<ElementT, PriorityT> obj, IConverterScheme scheme, NodeTree tree)
         {
             List<(ElementT, PriorityT)> elements = obj.UnorderedItems.ToList();
             var pairs = new KeyValuePair<INode, INode>[elements.Count];
             for (int i = 0; i < pairs.Length; i++)
             {
-                INode elementNode = ConvertNested(typeof(ElementT), elements[i].Item1, scheme);
-                INode priorityNode = ConvertNested(typeof(PriorityT), elements[i].Item2, scheme);
+                INode elementNode = ConvertNested(typeof(ElementT), elements[i].Item1, scheme, tree);
+                INode priorityNode = ConvertNested(typeof(PriorityT), elements[i].Item2, scheme, tree);
                 pairs[i] = new(elementNode, priorityNode);
             }
             return new(pairs);
         }
 
-        protected override PriorityQueue<ElementT, PriorityT> DeconvertRef(DictNode node, IConverterScheme scheme)
+        protected override PriorityQueue<ElementT, PriorityT> DeconvertRef(DictNode node, IConverterScheme scheme, NodeTree tree)
         {
             PriorityQueue<ElementT, PriorityT> pqueue = new();
             for (int i = 0; i < node.Pairs.Length; i++)
             {
-                ElementT element = DeconvertNested<ElementT>(node.Pairs[i].Key, scheme);
-                PriorityT priority = DeconvertNested<PriorityT>(node.Pairs[i].Value, scheme);
+                ElementT element = DeconvertNested<ElementT>(node.Pairs[i].Key, scheme, tree);
+                PriorityT priority = DeconvertNested<PriorityT>(node.Pairs[i].Value, scheme, tree);
                 pqueue.Enqueue(element, priority);
             }
             return pqueue;

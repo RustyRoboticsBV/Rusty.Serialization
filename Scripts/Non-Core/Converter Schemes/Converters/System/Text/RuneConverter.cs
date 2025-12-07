@@ -11,8 +11,8 @@ namespace Rusty.Serialization.Converters.System
     public sealed class RuneConverter : ValueConverter<Rune, CharNode>
     {
         /* Protected methods. */
-        protected override CharNode ConvertValue(Rune obj, IConverterScheme scheme) => new(obj.Value);
-        protected override Rune DeconvertValue(CharNode node, IConverterScheme scheme) => new(node.Value);
+        protected override CharNode ConvertValue(Rune obj, IConverterScheme scheme, NodeTree tree) => new(obj.Value);
+        protected override Rune DeconvertValue(CharNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
     }
 }
 #endif

@@ -12,12 +12,12 @@ namespace Rusty.Serialization.Converters.Gd
         where T : Resource
     {
         /* Protected methods. */
-        protected override StringNode ConvertRef(T obj, IConverterScheme scheme)
+        protected override StringNode ConvertRef(T obj, IConverterScheme scheme, NodeTree tree)
         {
             return new(obj.ResourcePath);
         }
 
-        protected override T DeconvertRef(StringNode node, IConverterScheme scheme)
+        protected override T DeconvertRef(StringNode node, IConverterScheme scheme, NodeTree tree)
         {
             return (T)ResourceLoader.Load(node.Value);
         }

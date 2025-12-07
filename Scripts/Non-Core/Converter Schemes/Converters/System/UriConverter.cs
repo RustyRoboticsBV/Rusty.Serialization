@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class UriConverter : ReferenceConverter<Uri, StringNode>
     {
         /* Protected methods. */
-        protected override StringNode ConvertRef(Uri obj, IConverterScheme scheme) => new(obj.ToString());
-        protected override Uri DeconvertRef(StringNode node, IConverterScheme scheme) => new(node.Value);
+        protected override StringNode ConvertRef(Uri obj, IConverterScheme scheme, NodeTree tree) => new(obj.ToString());
+        protected override Uri DeconvertRef(StringNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
     }
 }

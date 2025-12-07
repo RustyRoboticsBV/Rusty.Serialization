@@ -11,19 +11,19 @@ namespace Rusty.Serialization.Converters.System
     public sealed class KeyValuePairConverter<KeyT, ValueT> : ValueConverter<KeyValuePair<KeyT, ValueT>, DictNode>
     {
         /* Protected methods. */
-        protected sealed override DictNode ConvertValue(KeyValuePair<KeyT, ValueT> obj, IConverterScheme nested)
+        protected sealed override DictNode ConvertValue(KeyValuePair<KeyT, ValueT> obj, IConverterScheme nested, NodeTree tree)
         {
-            INode key = ConvertNested(typeof(KeyT), obj.Key, nested);
-            INode value = ConvertNested(typeof(ValueT), obj.Value, nested);
+            INode key = ConvertNested(typeof(KeyT), obj.Key, nested, tree);
+            INode value = ConvertNested(typeof(ValueT), obj.Value, nested, tree);
             return new(new KeyValuePair<INode, INode>[1] { new(key, value) });
         }
 
-        protected sealed override KeyValuePair<KeyT, ValueT> DeconvertValue(DictNode node, IConverterScheme nested)
+        protected sealed override KeyValuePair<KeyT, ValueT> DeconvertValue(DictNode node, IConverterScheme nested, NodeTree tree)
         {
             if (node.Pairs.Length != 1)
                 throw new ArgumentException("Cannot deserialize dict node with length that isn't 1.");
-            KeyT key = DeconvertNested<KeyT>(node.Pairs[0].Key, nested);
-            ValueT value = DeconvertNested<ValueT>(node.Pairs[0].Value, nested);
+            KeyT key = DeconvertNested<KeyT>(node.Pairs[0].Key, nested, tree);
+            ValueT value = DeconvertNested<ValueT>(node.Pairs[0].Value, nested, tree);
             return new(key, value);
         }
     }

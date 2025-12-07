@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class ShortConverter : ValueConverter<short, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode ConvertValue(short obj, IConverterScheme scheme) => new(obj);
-        protected override short DeconvertValue(IntNode node, IConverterScheme scheme) => (short)node.Value;
+        protected override IntNode ConvertValue(short obj, IConverterScheme scheme, NodeTree tree) => new(obj);
+        protected override short DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree) => (short)node.Value;
     }
 }

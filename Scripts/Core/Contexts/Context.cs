@@ -26,12 +26,7 @@ namespace Rusty.Serialization.Core.Contexts
             ConverterScheme.ClearSymbolTable();
 
             // Convert to node.
-            INode node = ConverterScheme.Convert(obj);
-
-            // Wrap in type node.
-            Type objType = obj?.GetType();
-            string typeName = ConverterScheme.GetTypeName(objType);
-            node = new TypeNode(typeName, node);
+            NodeTree node = ConverterScheme.ConvertToTree(obj);
 
             // Serialize node.
             SerializerScheme.PrettyPrint = prettyPrint;
@@ -41,13 +36,13 @@ namespace Rusty.Serialization.Core.Contexts
         public T Deserialize<T>(string serialized)
         {
             NodeTree tree = SerializerScheme.ParseAsTree(serialized);
-            return ConverterScheme.Deconvert<T>(tree.Root);
+            return ConverterScheme.Deconvert<T>(tree.Root, tree);
         }
 
         public object Deserialize(Type type, string serialized)
         {
             NodeTree tree = SerializerScheme.ParseAsTree(serialized);
-            return ConverterScheme.Deconvert(type, tree.Root);
+            return ConverterScheme.Deconvert(type, tree.Root, tree);
         }
     }
 }

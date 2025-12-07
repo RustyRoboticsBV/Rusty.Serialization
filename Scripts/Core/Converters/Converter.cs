@@ -1,7 +1,7 @@
-using Rusty.Serialization.Core.Nodes;
 using System;
 using System.Reflection;
 using System.Linq;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -14,21 +14,21 @@ namespace Rusty.Serialization.Core.Converters
         public Type TargetType => typeof(T);
 
         /* Public methods */
-        INode IConverter.Convert(object obj, IConverterScheme scheme) => Convert((T)obj, scheme);
-        object IConverter.Deconvert(INode node, IConverterScheme scheme) => Deconvert(node, scheme);
+        INode IConverter.Convert(object obj, IConverterScheme scheme, NodeTree tree) => Convert((T)obj, scheme, tree);
+        object IConverter.Deconvert(INode node, IConverterScheme scheme, NodeTree tree) => Deconvert(node, scheme, tree);
 
-        public abstract INode Convert(T obj, IConverterScheme scheme);
+        public abstract INode Convert(T obj, IConverterScheme scheme, NodeTree tree);
 
-        public abstract T Deconvert(INode node, IConverterScheme scheme);
+        public abstract T Deconvert(INode node, IConverterScheme scheme, NodeTree tree);
 
         /* Protected methods. */
         /// <summary>
         /// Convert an object into a node.
         /// </summary>
-        protected INode ConvertNested<U>(Type expectedType, U obj, IConverterScheme scheme)
+        protected INode ConvertNested<U>(Type expectedType, U obj, IConverterScheme scheme, NodeTree tree)
         {
             // Convert obj to node.
-            INode node = scheme.Convert(obj);
+            INode node = scheme.ConvertToNode(obj, tree);
 
             // Wrap inside of a type node if there was a mismatch.
             Type valueType = obj?.GetType();
@@ -42,7 +42,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Deconvert an object into an element.
         /// </summary>
-        protected U DeconvertNested<U>(INode node, IConverterScheme scheme)
+        protected U DeconvertNested<U>(INode node, IConverterScheme scheme, NodeTree tree)
         {
             if (node == null)
                 throw new ArgumentException("Cannot deconvert null reference node values.");
@@ -53,12 +53,12 @@ namespace Rusty.Serialization.Core.Converters
             if (node is TypeNode typed)
             {
                 Type underlyingType = scheme.GetTypeFromName(typed.Name);
-                obj = DeconvertNested(underlyingType, typed.Value, scheme);
+                obj = DeconvertNested(underlyingType, typed.Value, scheme, tree);
             }
 
             // Else, deconvert as-is.
             else
-                obj = scheme.Deconvert<U>(node);
+                obj = scheme.Deconvert<U>(node, tree);
 
             // If the object is of the correct type, return it.
             if (obj is U u)
@@ -78,14 +78,14 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Deconvert an object into an element.
         /// </summary>
-        protected object DeconvertNested(Type type, INode node, IConverterScheme scheme)
+        protected object DeconvertNested(Type type, INode node, IConverterScheme scheme, NodeTree tree)
         {
             if (node is TypeNode typed)
             {
                 Type nestedType = scheme.GetTypeFromName(typed.Name);
-                return DeconvertNested(scheme.GetTypeFromName(typed.Name), typed.Value, scheme);
+                return DeconvertNested(scheme.GetTypeFromName(typed.Name), typed.Value, scheme, tree);
             }
-            return scheme.Deconvert(type, node);
+            return scheme.Deconvert(type, node, tree);
         }
 
         /* Private methods. */

@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Core.Converters
         where TupleT : struct, ITuple
     {
         /* Protected methods. */
-        protected sealed override ListNode ConvertValue(TupleT obj, IConverterScheme scheme)
+        protected sealed override ListNode ConvertValue(TupleT obj, IConverterScheme scheme, NodeTree tree)
         {
             // Get tuple data.
             Type type = obj.GetType();
@@ -26,14 +26,14 @@ namespace Rusty.Serialization.Core.Converters
             for (int i = 0; i < tuple.Length; i++)
             {
                 Type fieldType = type.GetFields()[i].FieldType;
-                node.Elements[i] = ConvertNested(fieldType, tuple[i], scheme);
+                node.Elements[i] = ConvertNested(fieldType, tuple[i], scheme, tree);
                 node.Elements[i].Parent = node;
             }
 
             return node;
         }
 
-        protected sealed override TupleT DeconvertValue(ListNode node, IConverterScheme scheme)
+        protected sealed override TupleT DeconvertValue(ListNode node, IConverterScheme scheme, NodeTree tree)
         {
             // Get constructor.
             Type type = typeof(TupleT);
@@ -48,7 +48,7 @@ namespace Rusty.Serialization.Core.Converters
             for (int i = 0; i < values.Length; i++)
             {
                 Type fieldType = type.GetFields()[i].FieldType;
-                values[i] = DeconvertNested(fieldType, node.Elements[i], scheme);
+                values[i] = DeconvertNested(fieldType, node.Elements[i], scheme, tree);
             }
 
             // Invoke constructor.

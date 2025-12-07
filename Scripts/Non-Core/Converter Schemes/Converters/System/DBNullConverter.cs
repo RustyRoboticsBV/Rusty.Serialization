@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class DBNullConverter : ReferenceConverter<DBNull, NullNode>
     {
         /* Protected methods. */
-        protected override NullNode ConvertRef(DBNull obj, IConverterScheme scheme) => new();
-        protected override DBNull DeconvertRef(NullNode node, IConverterScheme scheme) => DBNull.Value;
+        protected override NullNode ConvertRef(DBNull obj, IConverterScheme scheme, NodeTree tree) => new();
+        protected override DBNull DeconvertRef(NullNode node, IConverterScheme scheme, NodeTree tree) => DBNull.Value;
     }
 }

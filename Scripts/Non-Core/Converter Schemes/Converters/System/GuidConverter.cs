@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class GuidConverter : ValueConverter<Guid, BinaryNode>
     {
         /* Protected methods. */
-        protected override BinaryNode ConvertValue(Guid obj, IConverterScheme scheme) => new(obj.ToByteArray());
-        protected override Guid DeconvertValue(BinaryNode node, IConverterScheme scheme) => new(node.Value);
+        protected override BinaryNode ConvertValue(Guid obj, IConverterScheme scheme, NodeTree tree) => new(obj.ToByteArray());
+        protected override Guid DeconvertValue(BinaryNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
     }
 }

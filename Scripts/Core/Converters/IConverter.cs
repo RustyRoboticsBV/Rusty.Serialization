@@ -18,12 +18,12 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Emit a serializer node representation for some object.
         /// </summary>
-        public INode Convert(object obj, IConverterScheme scheme);
+        public INode Convert(object obj, IConverterScheme scheme, NodeTree tree);
 
         /// <summary>
         /// Emit a deserialized object from some serializer node.
         /// </summary>
-        public object Deconvert(INode node, IConverterScheme scheme);
+        public object Deconvert(INode node, IConverterScheme scheme, NodeTree tree);
     }
 
     /// <summary>
@@ -35,11 +35,11 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Emit a serializer node representation for some object.
         /// </summary>
-        public INode Convert(T obj, IConverterScheme scheme);
+        public INode Convert(T obj, IConverterScheme scheme, NodeTree tree);
 
         /// <summary>
         /// Emit a deserialized object from some serializer node.
         /// </summary>
-        public new T Deconvert(INode node, IConverterScheme scheme);
+        public new T Deconvert(INode node, IConverterScheme scheme, NodeTree tree);
     }
 }

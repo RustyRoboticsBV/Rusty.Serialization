@@ -11,8 +11,8 @@ namespace Rusty.Serialization.Converters.System
     public sealed class HalfConverter : ValueConverter<Half, RealNode>
     {
         /* Protected methods. */
-        protected override RealNode ConvertValue(Half obj, IConverterScheme scheme) => new((decimal)obj);
-        protected override Half DeconvertValue(RealNode node, IConverterScheme scheme) => (Half)node.Value.ToSingle();
+        protected override RealNode ConvertValue(Half obj, IConverterScheme scheme, NodeTree tree) => new((decimal)obj);
+        protected override Half DeconvertValue(RealNode node, IConverterScheme scheme, NodeTree tree) => (Half)node.Value.ToSingle();
     }
 }
 #endif

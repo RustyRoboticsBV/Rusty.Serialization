@@ -1,5 +1,6 @@
 using Rusty.Serialization.Core.Nodes;
 using System;
+using System.Xml.Linq;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -24,7 +25,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// The symbol table, used to track reference types during conversion.
         /// </summary>
-        private SymbolTable SymbolTable { get; set; }
+        private SymbolTable SymbolTable { get; } = new();
 
         /* Constructors. */
         public ConverterScheme()
@@ -100,63 +101,96 @@ namespace Rusty.Serialization.Core.Converters
             return instance;
         }
 
-        public INode Convert(object obj)
+        public NodeTree ConvertToTree(object obj)
         {
-            // If the symbol table is null, this object is a root.
-            bool isRoot = false;
-            if (SymbolTable == null)
+            // Clear symbol table.
+            SymbolTable.Clear();
+
+            // Create node tree.
+            NodeTree tree = new();
+
+            INode node = ConvertToNode(obj, tree);
+            while (node.Parent != null)
             {
-                SymbolTable = new();
-                isRoot = true;
+                node = node.Parent;
             }
 
+            tree.SetRoot(node);
+
+            // Wrap tree root in type node.
+            // (Unless it's an ID node, in which we case we insert a type node below it).
+            Type objType = obj?.GetType();
+            string typeName = GetTypeName(objType);
+            if (tree.Root is IdNode idNode)
+            {
+                TypeNode typeNode = new(typeName, idNode.Value);
+
+                idNode.Value = typeNode;
+                typeNode.Parent = idNode;
+            }
+            else
+            {
+                TypeNode typeNode = new(typeName, tree.Root);
+                tree.Root.Parent = typeNode;
+
+                tree.SetRoot(typeNode);
+            }
+
+            return tree;
+        }
+
+        public INode ConvertToNode(object obj, NodeTree tree)
+        {
             // If the object is a reference and is present in the symbol table...
             bool isReferenceType = obj != null && !obj.GetType().IsValueType;
-            if (isReferenceType && SymbolTable.HasObject(obj))
+            if (isReferenceType)
             {
-                // If there was no ID for the object yet, create one and wrap the original node.
-                if (!SymbolTable.HasIdFor(obj))
-                    WrapInId(SymbolTable.GetNode(obj), SymbolTable.GetOrCreateId(obj));
-
-                // Return a reference to the object.
-                INode @ref = new RefNode(SymbolTable.GetOrCreateId(obj).ToString());
-
-                if (isRoot)
+                if (SymbolTable.HasObject(obj))
                 {
-                    NodeTree tree = new(@ref);
-                    return tree;
+                    // If there was no ID for the object yet, create one and wrap the original node.
+                    if (!SymbolTable.HasIdFor(obj))
+                    {
+                        ulong newId = SymbolTable.GetOrCreateId(obj);
+                        if (SymbolTable.HasNodeFor(obj))
+                            WrapInId(SymbolTable.GetNode(obj), newId, tree);
+                    }
+
+                    // Return a reference to the object.
+                    string idName = SymbolTable.GetOrCreateId(obj).ToString();
+                    return new RefNode(idName);
                 }
+
+                // Register in symbol table (if it's a reference type an it wasn't registered yet).
                 else
-                    return @ref;
+                    SymbolTable.Add(obj);
             }
 
             // Convert the object.
             IConverter converter = GetConverter(obj?.GetType());
-            INode node = converter.Convert(obj, this);
+            INode node = converter.Convert(obj, this, tree);
 
-            // Register in symbol table (if it's a reference type an it wasn't registered yet).
-            if (isReferenceType && !SymbolTable.HasObject(obj))
-                SymbolTable.Add(obj, node);
+            // If there was no node in the symbol table yet, add one.
+            if (isReferenceType && SymbolTable.HasObject(obj) && !SymbolTable.HasNodeFor(obj))
+                SymbolTable.SetNode(obj, node);
 
-            if (isRoot)
-            {
-                NodeTree tree = new(node);
-                return tree;
-            }
-            else
-                return node;
+            // If there is an ID for this object, it was referenced by a child node.
+            // Wrap it in an ID node.
+            if (SymbolTable.HasIdFor(obj))
+                WrapInId(SymbolTable.GetNode(obj), SymbolTable.GetOrCreateId(obj), tree);
+            
+            return node;
         }
 
-        public T Deconvert<T>(INode node)
+        public T Deconvert<T>(INode node, NodeTree tree)
         {
             IConverter converter = GetConverter(typeof(T));
-            return (T)converter.Deconvert(node, this);
+            return (T)converter.Deconvert(node, this, tree);
         }
 
-        public object Deconvert(Type type, INode node)
+        public object Deconvert(Type type, INode node, NodeTree tree)
         {
             IConverter converter = GetConverter(type);
-            return converter.Deconvert(node, this);
+            return converter.Deconvert(node, this, tree);
         }
 
         public TypeName GetTypeName(Type type) => new(type);
@@ -171,20 +205,21 @@ namespace Rusty.Serialization.Core.Converters
 
         public void ClearSymbolTable()
         {
-            SymbolTable = null;
+            SymbolTable.Clear();
         }
 
         /* Private methods. */
-        private static IdNode WrapInId(INode node, ulong id)
+        private static IdNode WrapInId(INode node, ulong id, NodeTree root)
         {
+            string name = id.ToString();
             if (node.Parent != null && node.Parent is ICollectionNode collection)
             {
-                IdNode idNode = new(id.ToString(), null);
+                IdNode idNode = new(name, null);
                 collection.WrapChild(node, idNode);
                 return idNode;
             }
-            else // TODO: This throws an exception if the root node is ID-wrapped.
-                throw new ArgumentException($"Node has no parent: " + node);
+            else
+                return new(name, node);
         }
     }
 }

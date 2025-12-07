@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class FloatConverter : ValueConverter<float, RealNode>
     {
         /* Protected methods. */
-        protected override RealNode ConvertValue(float obj, IConverterScheme scheme) => new(PeterO.Numbers.EDecimal.FromSingle(obj));
-        protected override float DeconvertValue(RealNode node, IConverterScheme scheme) => (float)node.Value;
+        protected override RealNode ConvertValue(float obj, IConverterScheme scheme, NodeTree tree) => new(PeterO.Numbers.EDecimal.FromSingle(obj));
+        protected override float DeconvertValue(RealNode node, IConverterScheme scheme, NodeTree tree) => (float)node.Value;
     }
 }

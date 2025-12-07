@@ -31,7 +31,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Add an object and its corresponding node representation.
         /// </summary>
-        public void Add(object obj, INode node)
+        public void Add(object obj)
         {
             if (obj.GetType().IsValueType)
                 throw new ArgumentException($"Cannot add objects of value type '{obj.GetType()} to the symbol table!'");
@@ -39,7 +39,7 @@ namespace Rusty.Serialization.Core.Converters
             if (Nodes.ContainsKey(obj))
                 throw new ArgumentException($"Object '{obj}' was already in the symbol table!");
 
-            Nodes[obj] = node;
+            Nodes[obj] = null;
         }
 
         /// <summary>
@@ -55,7 +55,19 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         public bool HasIdFor(object obj)
         {
+            if (obj == null)
+                return false;
             return Ids.ContainsKey(obj);
+        }
+
+        /// <summary>
+        /// Return if an object has had an ID generated for it.
+        /// </summary>
+        public bool HasNodeFor(object obj)
+        {
+            if (Nodes.TryGetValue(obj, out INode node))
+                return node != null;
+            return false;
         }
 
         /// <summary>
@@ -80,7 +92,15 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         /// <summary>
-        /// Try to get the node corresponding to an object. Returns false if the object was not found.
+        /// Set the node for an object.
+        /// </summary>
+        public void SetNode(object obj, INode node)
+        {
+            Nodes[obj] = node;
+        }
+
+        /// <summary>
+        /// Try to get the node corresponding to an object.
         /// </summary>
         public INode GetNode(object obj)
         {

@@ -10,16 +10,17 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public INode Parent { get; set; }
-        public INode Root { get; set; }
+        public INode Root { get; private set; }
 
         /* Private properties. */
         private Dictionary<string, IdNode> IdLookup { get; set; }
 
         /* Constructors. */
+        public NodeTree() { }
+
         public NodeTree(INode root)
         {
-            Root = root;
-            root.Parent = this;
+            SetRoot(root);
         }
 
         /* Public methods. */
@@ -45,6 +46,15 @@ namespace Rusty.Serialization.Core.Nodes
             Root?.Clear();
             Root = null;
             Parent = null;
+        }
+
+        /// <summary>
+        /// Set the root of this tree.
+        /// </summary>
+        public void SetRoot(INode node)
+        {
+            node.Parent = this;
+            Root = node;
         }
 
         /// <summary>

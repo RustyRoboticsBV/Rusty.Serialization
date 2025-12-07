@@ -10,9 +10,9 @@ namespace Rusty.Serialization.Core.Converters
         where T : struct, Enum
     {
         /* Protected methods. */
-        protected override IntNode ConvertValue(T obj, IConverterScheme scheme) => new(System.Convert.ToInt32(obj));
+        protected override IntNode ConvertValue(T obj, IConverterScheme scheme, NodeTree tree) => new(System.Convert.ToInt32(obj));
 
-        protected override T DeconvertValue(IntNode node, IConverterScheme scheme)
+        protected override T DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree)
         {
             Type enumType = typeof(T);
             Type underlyingType = enumType.GetEnumUnderlyingType();

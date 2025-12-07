@@ -15,18 +15,22 @@ namespace Rusty.Serialization.Core.Converters
         public void Add(Type targetT, Type converterT, string alias = null);
 
         /// <summary>
+        /// Convert an object to a node tree.
+        /// </summary>
+        public NodeTree ConvertToTree(object node);
+        /// <summary>
         /// Convert an object to an INode hierarchy.
         /// </summary>
-        public INode Convert(object node);
+        public INode ConvertToNode(object node, NodeTree root);
 
         /// <summary>
         /// Deconvert an INode hierarchy to an object.
         /// </summary>
-        public T Deconvert<T>(INode node);
+        public T Deconvert<T>(INode node, NodeTree tree);
         /// <summary>
         /// Deconvert an INode hierarchy to an object.
         /// </summary>
-        public object Deconvert(Type type, INode node);
+        public object Deconvert(Type type, INode node, NodeTree tree);
 
         /// <summary>
         /// Get the typename of some object.

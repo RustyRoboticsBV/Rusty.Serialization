@@ -20,7 +20,7 @@ namespace Rusty.Serialization.Testing
             PrettyPrint = prettyPrint;
 
             TestClass<int, char> testObject = new();
-            System.Console.WriteLine(context.ConverterScheme.Convert(testObject));
+            System.Console.WriteLine(context.ConverterScheme.ConvertToTree(testObject));
             string serialized = context.Serialize(testObject);
             ObjectDumper.Print(testObject);
             Console.WriteLine(serialized);

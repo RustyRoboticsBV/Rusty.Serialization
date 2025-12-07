@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class StringBuilderConverter : ReferenceConverter<StringBuilder, StringNode>
     {
         /* Protected methods. */
-        protected override StringNode ConvertRef(StringBuilder obj, IConverterScheme scheme) => new(obj.ToString());
-        protected override StringBuilder DeconvertRef(StringNode node, IConverterScheme scheme) => new(node.Value);
+        protected override StringNode ConvertRef(StringBuilder obj, IConverterScheme scheme, NodeTree tree) => new(obj.ToString());
+        protected override StringBuilder DeconvertRef(StringNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
     }
 }

@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class BoolConverter : ValueConverter<bool, BoolNode>
     {
         /* Protected methods. */
-        protected override BoolNode ConvertValue(bool obj, IConverterScheme scheme) => new(obj);
-        protected override bool DeconvertValue(BoolNode node, IConverterScheme scheme) => node.Value;
+        protected override BoolNode ConvertValue(bool obj, IConverterScheme scheme, NodeTree tree) => new(obj);
+        protected override bool DeconvertValue(BoolNode node, IConverterScheme scheme, NodeTree tree) => node.Value;
     }
 }

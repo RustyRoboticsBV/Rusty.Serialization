@@ -72,7 +72,7 @@ namespace Rusty.Serialization.Testing
         public TestClass()
         {
             l2 = l1;
-            //l5 = this; // TODO: find a way to make this work - currently having the root object reference itself will break ID generation.
+            l5 = this; // TODO: find a way to make this work - currently having the root object reference itself will break ID generation.
         }
     }
 }

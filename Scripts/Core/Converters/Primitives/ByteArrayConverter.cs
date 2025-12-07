@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class ByteArrayConverter : ReferenceConverter<byte[], BinaryNode>
     {
         /* Protected methods. */
-        protected override BinaryNode ConvertRef(byte[] obj, IConverterScheme scheme) => new(obj);
-        protected override byte[] DeconvertRef(BinaryNode node, IConverterScheme scheme) => node.Value;
+        protected override BinaryNode ConvertRef(byte[] obj, IConverterScheme scheme, NodeTree tree) => new(obj);
+        protected override byte[] DeconvertRef(BinaryNode node, IConverterScheme scheme, NodeTree tree) => node.Value;
     }
 }
