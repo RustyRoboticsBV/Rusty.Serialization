@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Core.Nodes
         public string Value { get; set; }
 
         /* Constructors. */
-        public StringNode(string value)
+        public StringNode(string value = "")
         {
             Value = value ?? "";
         }

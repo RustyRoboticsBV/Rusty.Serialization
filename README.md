@@ -25,8 +25,8 @@ Simply add the project folder to your C# project and add `using Rusty.Serializat
 #### Serializing
 ```
 MyClass obj = new();
-DefaultContext context = new(Format.Cscd);  // Contains pre-defined serialization schema for all built-in types.
-string serialized = context.Serialize(obj); // Serializes all public properties and fields of MyClass.
+DefaultContext context = new(Format.Cscd);      // Contains pre-defined serialization schema for all built-in types.
+string serialized = context.Serialize(obj);     // Serializes all public properties and fields of MyClass.
 ```
 
 #### Deserializing
@@ -71,7 +71,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_list: [1, 2., "def"],
     my_dict: {
         10: 1.0,
-        'A': 'ABC',
+        'A': "ABC",
         [1, 2, 3] : false
     },
     my_object: <

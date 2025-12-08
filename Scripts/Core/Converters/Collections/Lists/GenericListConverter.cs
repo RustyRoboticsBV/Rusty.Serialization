@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -11,17 +10,19 @@ namespace Rusty.Serialization.Core.Converters
         where CollectionT : class, IEnumerable
     {
         /* Protected methods. */
-        protected override ListNode ConvertRef(CollectionT obj, IConverterScheme scheme, SymbolTable table)
+        protected override ListNode CreateNode(CollectionT obj, IConverterScheme scheme, SymbolTable table)
         {
-            // Create node.
             int count = 0;
             foreach (ElementT elementT in obj)
             {
                 count++;
             }
 
-            ListNode node = new(count);
+            return new(count);
+        }
 
+        protected override void AssignNode(ref ListNode node, CollectionT obj, IConverterScheme scheme, SymbolTable table)
+        {
             // Convert the elements to nodes.
             int index = 0;
             foreach (ElementT element in obj)
@@ -31,8 +32,6 @@ namespace Rusty.Serialization.Core.Converters
                 elementNode.Parent = node;
                 index++;
             }
-
-            return node;
         }
 
         protected override CollectionT DeconvertRef(ListNode node, IConverterScheme scheme, NodeTree tree)

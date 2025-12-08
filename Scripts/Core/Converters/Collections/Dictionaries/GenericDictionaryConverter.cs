@@ -10,24 +10,22 @@ namespace Rusty.Serialization.Core.Converters
         where DictionaryT : class, IDictionary<KeyT, ValueT>, new()
     {
         /* Protected methods. */
-        protected sealed override DictNode ConvertRef(DictionaryT obj, IConverterScheme scheme, SymbolTable table)
+        protected sealed override DictNode CreateNode(DictionaryT obj, IConverterScheme scheme, SymbolTable table)
         {
-            // Create new node.
-            DictNode node = new(obj.Count);
+            return new(obj.Count);
+        }
 
-            // Convert the elements to nodes.
+        protected sealed override void AssignNode(ref DictNode node, DictionaryT obj, IConverterScheme scheme, SymbolTable table)
+        {
             int index = 0;
             foreach (KeyValuePair<KeyT, ValueT> pair in obj)
             {
-                var newPair = ConvertPair(pair, scheme, table);
-                newPair.Key.Parent = node;
-                newPair.Value.Parent = node;
-                node.Pairs[index] = newPair;
+                KeyValuePair<INode, INode> nodePair = ConvertPair(pair, scheme, table);
+                nodePair.Key.Parent = node;
+                nodePair.Value.Parent = node;
+                node.Pairs[index] = nodePair;
                 index++;
             }
-
-            // Create the node.
-            return node;
         }
 
         protected sealed override DictionaryT DeconvertRef(DictNode node, IConverterScheme scheme, NodeTree tree)

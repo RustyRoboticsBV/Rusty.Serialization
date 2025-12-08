@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class VersionConverter : ReferenceConverter<Version, StringNode>
     {
         /* Protected methods. */
-        protected override StringNode ConvertRef(Version obj, IConverterScheme scheme, SymbolTable table) => new(obj.ToString());
+        protected override StringNode CreateNode(Version obj, IConverterScheme scheme, SymbolTable table) => new(obj.ToString());
         protected override Version DeconvertRef(StringNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
     }
 }

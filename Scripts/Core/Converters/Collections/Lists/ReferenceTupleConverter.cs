@@ -1,5 +1,6 @@
 ﻿using Rusty.Serialization.Core.Nodes;
 using System;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -14,14 +15,16 @@ namespace Rusty.Serialization.Core.Converters
         where TupleT : class, ITuple
     {
         /* Protected methods. */
-        protected sealed override ListNode ConvertRef(TupleT obj, IConverterScheme scheme, SymbolTable table)
+        protected override ListNode CreateNode(TupleT obj, IConverterScheme scheme, SymbolTable table)
+        {
+            return new(obj.Length);
+        }
+
+        protected override void AssignNode(ref ListNode node, TupleT obj, IConverterScheme scheme, SymbolTable table)
         {
             // Get tuple data.
             Type type = obj.GetType();
             ITuple tuple = obj;
-
-            // Create node.
-            ListNode node = new(tuple.Length);
 
             // Convert tuple elements.
             for (int i = 0; i < tuple.Length; i++)
@@ -30,11 +33,9 @@ namespace Rusty.Serialization.Core.Converters
                 node.Elements[i] = ConvertNested(fieldType, tuple[i], scheme, table);
                 node.Elements[i].Parent = node;
             }
-
-            return node;
         }
 
-        protected sealed override TupleT DeconvertRef(ListNode node, IConverterScheme scheme, NodeTree tree)
+        protected override TupleT DeconvertRef(ListNode node, IConverterScheme scheme, NodeTree tree)
         {
             // Get constructor.
             Type type = typeof(TupleT);

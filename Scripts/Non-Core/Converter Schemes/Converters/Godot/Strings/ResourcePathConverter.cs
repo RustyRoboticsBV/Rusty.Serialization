@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Converters.Gd
         where T : Resource
     {
         /* Protected methods. */
-        protected override StringNode ConvertRef(T obj, IConverterScheme scheme, SymbolTable table)
+        protected override StringNode CreateNode(T obj, IConverterScheme scheme, SymbolTable table)
         {
             return new(obj.ResourcePath);
         }

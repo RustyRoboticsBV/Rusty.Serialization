@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class EncodingConverter : ReferenceConverter<Encoding, StringNode>
     {
         /* Protected methods. */
-        protected override StringNode ConvertRef(Encoding obj, IConverterScheme scheme, SymbolTable table) => new(obj.WebName);
+        protected override StringNode CreateNode(Encoding obj, IConverterScheme scheme, SymbolTable table) => new(obj.WebName);
         protected override Encoding DeconvertRef(StringNode node, IConverterScheme scheme, NodeTree tree) => Encoding.GetEncoding(node.Value);
     }
 }
