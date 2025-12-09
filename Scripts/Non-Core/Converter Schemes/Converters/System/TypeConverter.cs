@@ -11,6 +11,6 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Protected methods. */
         protected override StringNode CreateNode(Type obj, IConverterScheme scheme, SymbolTable table) => new(obj.ToString());
-        protected override Type CreateObject(StringNode node, IConverterScheme scheme, NodeTree tree) => new TypeName(node.Value).ToType();
+        protected override Type CreateObject(StringNode node, IConverterScheme scheme, ParsingTable table) => new TypeName(node.Value).ToType();
     }
 }

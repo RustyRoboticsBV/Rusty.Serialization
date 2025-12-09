@@ -28,12 +28,12 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
-        protected sealed override DictionaryT CreateObject(DictNode node, IConverterScheme scheme, NodeTree tree)
+        protected sealed override DictionaryT CreateObject(DictNode node, IConverterScheme scheme, ParsingTable table)
         {
             DictionaryT obj = new();
             foreach (var pair in node.Pairs)
             {
-                KeyValuePair<KeyT, ValueT> deconvertedPair = DeconvertPair(pair, scheme, tree);
+                KeyValuePair<KeyT, ValueT> deconvertedPair = DeconvertPair(pair, scheme, table);
                 obj[deconvertedPair.Key] = deconvertedPair.Value;
             }
             return obj;
@@ -46,10 +46,10 @@ namespace Rusty.Serialization.Core.Converters
             return new(key, value);
         }
 
-        protected virtual KeyValuePair<KeyT, ValueT> DeconvertPair(KeyValuePair<INode, INode> pair, IConverterScheme scheme, NodeTree tree)
+        protected virtual KeyValuePair<KeyT, ValueT> DeconvertPair(KeyValuePair<INode, INode> pair, IConverterScheme scheme, ParsingTable table)
         {
-            KeyT key = DeconvertNested<KeyT>(pair.Key, scheme, tree);
-            ValueT value = DeconvertNested<ValueT>(pair.Value, scheme, tree);
+            KeyT key = DeconvertNested<KeyT>(pair.Key, scheme, table);
+            ValueT value = DeconvertNested<ValueT>(pair.Value, scheme, table);
             return new(key, value);
         }
     }

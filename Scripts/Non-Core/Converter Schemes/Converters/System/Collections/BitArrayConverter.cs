@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Protected methods. */
         protected override BinaryNode CreateNode(BitArray obj, IConverterScheme scheme, SymbolTable table) => new(ToByteArray(obj));
-        protected override BitArray CreateObject(BinaryNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
+        protected override BitArray CreateObject(BinaryNode node, IConverterScheme scheme, ParsingTable table) => new(node.Value);
 
         /* Private methods. */
         static byte[] ToByteArray(BitArray obj)

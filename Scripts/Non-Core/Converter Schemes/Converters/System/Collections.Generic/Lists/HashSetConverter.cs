@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class HashSetConverter<T> : GenericListConverter<HashSet<T>, T>
     {
         /* Protected methods. */
-        protected override HashSet<T> CreateObject(ListNode node, IConverterScheme scheme, NodeTree tree) => new();
+        protected override HashSet<T> CreateObject(ListNode node, IConverterScheme scheme, ParsingTable table) => new();
 
         protected override void AssignElements(HashSet<T> collection, T[] elements)
         {

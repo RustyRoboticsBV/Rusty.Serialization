@@ -11,6 +11,6 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Protected methods. */
         protected override BinaryNode ConvertValue(Guid obj, IConverterScheme scheme, SymbolTable table) => new(obj.ToByteArray());
-        protected override Guid DeconvertValue(BinaryNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
+        protected override Guid DeconvertValue(BinaryNode node, IConverterScheme scheme, ParsingTable table) => new(node.Value);
     }
 }

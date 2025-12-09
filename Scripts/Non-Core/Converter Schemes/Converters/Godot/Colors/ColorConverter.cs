@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Converters.Gd
         /* Protected methods. */
         protected override ColorNode ConvertValue(Color obj, IConverterScheme scheme, SymbolTable table)
             => new((byte)obj.R8, (byte)obj.G8, (byte)obj.B8, (byte)obj.A8);
-        protected override Color DeconvertValue(ColorNode node, IConverterScheme scheme, NodeTree tree)
+        protected override Color DeconvertValue(ColorNode node, IConverterScheme scheme, ParsingTable table)
             => new Color(node.R / 255f, node.G / 255f, node.B / 255f, node.A / 255f);
     }
 }

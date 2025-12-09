@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Converters.System
         /* Protected methods. */
         protected override TimeNode ConvertValue(TimeOnly obj, IConverterScheme scheme, SymbolTable table)
             => new(new(0, 0, 0, obj.Hour, obj.Minute, obj.Second, obj.Millisecond));
-        protected override TimeOnly DeconvertValue(TimeNode node, IConverterScheme scheme, NodeTree tree)
+        protected override TimeOnly DeconvertValue(TimeNode node, IConverterScheme scheme, ParsingTable table)
             => new((int)node.Value.hour, (int)node.Value.minute, (int)node.Value.second, (int)node.Value.millisecond);
     }
 }

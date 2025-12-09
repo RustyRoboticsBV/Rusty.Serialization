@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Core.Converters
         /* Protected methods. */
         protected override IntNode ConvertValue(T obj, IConverterScheme scheme, SymbolTable table) => new(System.Convert.ToInt32(obj));
 
-        protected override T DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree)
+        protected override T DeconvertValue(IntNode node, IConverterScheme scheme, ParsingTable table)
         {
             Type enumType = typeof(T);
             Type underlyingType = enumType.GetEnumUnderlyingType();

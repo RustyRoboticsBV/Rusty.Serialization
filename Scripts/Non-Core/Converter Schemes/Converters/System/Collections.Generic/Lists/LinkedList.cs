@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class LinkedListConverter<T> : GenericListConverter<LinkedList<T>, T>
     {
         /* Protected methods. */
-        protected override LinkedList<T> CreateObject(ListNode node, IConverterScheme scheme, NodeTree tree) => new();
+        protected override LinkedList<T> CreateObject(ListNode node, IConverterScheme scheme, ParsingTable table) => new();
 
         protected override void AssignElements(LinkedList<T> collection, T[] elements)
         {

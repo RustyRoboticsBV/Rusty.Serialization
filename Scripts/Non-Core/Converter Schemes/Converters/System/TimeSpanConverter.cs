@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Protected methods. */
         protected override TimeNode ConvertValue(TimeSpan obj, IConverterScheme scheme, SymbolTable table) => new(new(obj));
-        protected override TimeSpan DeconvertValue(TimeNode node, IConverterScheme scheme, NodeTree tree)
+        protected override TimeSpan DeconvertValue(TimeNode node, IConverterScheme scheme, ParsingTable table)
             => new(node.Value.negative ? -(int)node.Value.day : (int)node.Value.day,
                 (int)node.Value.hour, (int)node.Value.minute, (int)node.Value.second, (int)node.Value.millisecond);
     }

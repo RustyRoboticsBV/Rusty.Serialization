@@ -11,6 +11,6 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Protected methods. */
         protected override NullNode CreateNode(DBNull obj, IConverterScheme scheme, SymbolTable table) => new();
-        protected override DBNull CreateObject(NullNode node, IConverterScheme scheme, NodeTree tree) => DBNull.Value;
+        protected override DBNull CreateObject(NullNode node, IConverterScheme scheme, ParsingTable table) => DBNull.Value;
     }
 }

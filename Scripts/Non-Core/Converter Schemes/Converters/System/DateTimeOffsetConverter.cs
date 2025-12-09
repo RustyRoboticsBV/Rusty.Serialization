@@ -21,13 +21,13 @@ namespace Rusty.Serialization.Converters.System
             return new(new INode[] { dtNode, tzNode });
         }
 
-        protected override DateTimeOffset DeconvertValue(ListNode node, IConverterScheme scheme, NodeTree tree)
+        protected override DateTimeOffset DeconvertValue(ListNode node, IConverterScheme scheme, ParsingTable table)
         {
             if (node.Elements.Length != 2)
                 throw new ArgumentException("List node needs a length of 2.");
 
-            DateTime dt = DeconvertNested<DateTime>(node.Elements[0], scheme, tree);
-            TimeSpan tz = DeconvertNested<TimeSpan>(node.Elements[1], scheme, tree);
+            DateTime dt = DeconvertNested<DateTime>(node.Elements[0], scheme, table);
+            TimeSpan tz = DeconvertNested<TimeSpan>(node.Elements[1], scheme, table);
             return new(dt, tz);
         }
     }

@@ -1,5 +1,5 @@
-using Rusty.Serialization.Core.Nodes;
 using System;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -25,6 +25,10 @@ namespace Rusty.Serialization.Core.Converters
         /// The symbol table, used to track reference types during conversion.
         /// </summary>
         private SymbolTable SymbolTable { get; } = new();
+        /// <summary>
+        /// The parsing table, used to track reference types during conversion.
+        /// </summary>
+        private ParsingTable ParsingTable { get; } = new();
 
         /* Constructors. */
         public ConverterScheme()
@@ -144,16 +148,30 @@ namespace Rusty.Serialization.Core.Converters
             return converter.Convert(obj, this, SymbolTable);
         }
 
-        public T Deconvert<T>(INode node, NodeTree tree)
+        public T DeconvertTree<T>(NodeTree tree)
         {
-            IConverter converter = GetConverter(typeof(T));
-            return (T)converter.Deconvert(node, this, tree);
+            ParsingTable.Clear();
+            FindIds(tree);
+            return DeconvertNode<T>(tree.Root);
         }
 
-        public object Deconvert(Type type, INode node, NodeTree tree)
+        public object DeconvertTree(Type type, NodeTree tree)
+        {
+            ParsingTable.Clear();
+            FindIds(tree);
+            return DeconvertNode(type, tree.Root);
+        }
+
+        public T DeconvertNode<T>(INode node)
+        {
+            IConverter converter = GetConverter(typeof(T));
+            return (T)converter.Deconvert(node, this, ParsingTable);
+        }
+
+        public object DeconvertNode(Type type, INode node)
         {
             IConverter converter = GetConverter(type);
-            return converter.Deconvert(node, this, tree);
+            return converter.Deconvert(node, this, ParsingTable);
         }
 
         public TypeName GetTypeName(Type type) => new(type);
@@ -166,9 +184,44 @@ namespace Rusty.Serialization.Core.Converters
             return new TypeName(name).ToType();
         }
 
-        public void ClearSymbolTable()
+        /* Private methods. */
+        private void FindIds(NodeTree tree)
         {
-            SymbolTable.Clear();
+            ParsingTable.Clear();
+            FindIds(tree.Root, ParsingTable);
+        }
+
+        private void FindIds(INode node, ParsingTable table)
+        {
+            if (node is IdNode id)
+            {
+                table.Add(id);
+                FindIds(id.Value, table);
+            }
+            else if (node is TypeNode type)
+                FindIds(type.Value, table);
+            else if (node is ListNode list)
+            {
+                for (int i = 0; i < list.Elements.Length; i++)
+                {
+                    FindIds(list.Elements[i], table);
+                }
+            }
+            else if (node is DictNode dict)
+            {
+                for (int i = 0; i < dict.Pairs.Length; i++)
+                {
+                    FindIds(dict.Pairs[i].Key, table);
+                    FindIds(dict.Pairs[i].Value, table);
+                }
+            }
+            else if (node is ObjectNode obj)
+            {
+                for (int i = 0; i < obj.Members.Length; i++)
+                {
+                    FindIds(obj.Members[i].Value, table);
+                }
+            }
         }
     }
 }

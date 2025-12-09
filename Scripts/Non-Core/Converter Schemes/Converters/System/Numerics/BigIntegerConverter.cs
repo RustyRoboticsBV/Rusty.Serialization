@@ -11,6 +11,6 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Protected methods. */
         protected override IntNode ConvertValue(BigInteger obj, IConverterScheme scheme, SymbolTable table) => new((decimal)obj);
-        protected override BigInteger DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
+        protected override BigInteger DeconvertValue(IntNode node, IConverterScheme scheme, ParsingTable table) => new(node.Value);
     }
 }

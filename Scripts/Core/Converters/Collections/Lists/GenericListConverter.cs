@@ -34,13 +34,13 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
-        protected override void AssignObject(CollectionT obj, ListNode node, IConverterScheme scheme, NodeTree tree)
+        protected override void AssignObject(CollectionT obj, ListNode node, IConverterScheme scheme, ParsingTable table)
         {
             // Deconvert elements.
             ElementT[] elements = new ElementT[node.Elements.Length];
             for (int i = 0; i < node.Elements.Length; i++)
             {
-                elements[i] = DeconvertNested<ElementT>(node.Elements[i], scheme, tree);
+                elements[i] = DeconvertNested<ElementT>(node.Elements[i], scheme, table);
             }
 
             // Fill the collection.

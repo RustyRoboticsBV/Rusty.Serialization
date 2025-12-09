@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class StackConverter<T> : GenericListConverter<Stack<T>, T>
     {
         /* Protected methods. */
-        protected override Stack<T> CreateObject(ListNode node, IConverterScheme scheme, NodeTree tree) => new();
+        protected override Stack<T> CreateObject(ListNode node, IConverterScheme scheme, ParsingTable table) => new();
 
         protected override void AssignElements(Stack<T> collection, T[] elements)
         {

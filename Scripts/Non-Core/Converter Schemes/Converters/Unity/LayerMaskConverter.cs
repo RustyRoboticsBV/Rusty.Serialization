@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Converters.Unity
     {
         /* Protected methods. */
         protected override IntNode ConvertValue(LayerMask obj, IConverterScheme scheme, SymbolTable table) => new(obj);
-        protected override LayerMask DeconvertValue(IntNode node, IConverterScheme scheme, NodeTree tree) => (int)node.Value;
+        protected override LayerMask DeconvertValue(IntNode node, IConverterScheme scheme, ParsingTable table) => (int)node.Value;
     }
 }
 #endif

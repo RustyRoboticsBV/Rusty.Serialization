@@ -13,12 +13,12 @@ namespace Rusty.Serialization.Core.Converters
         /* Public methods */
         public override INode Convert(TargetT obj, IConverterScheme scheme, SymbolTable table) => ConvertValue(obj, scheme, table);
 
-        public override TargetT Deconvert(INode node, IConverterScheme scheme, NodeTree tree)
+        public override TargetT Deconvert(INode node, IConverterScheme scheme, ParsingTable table)
         {
             if (node is TypeNode type)
-                return DeconvertNested<TargetT>(type.Value, scheme, tree);
+                return DeconvertNested<TargetT>(type.Value, scheme, table);
             if (node is NodeT typed)
-                return DeconvertValue(typed, scheme, tree);
+                return DeconvertValue(typed, scheme, table);
             throw new Exception($"{GetType().Name} cannot interpret nodes of type '{node.GetType()}'.");
         }
 
@@ -30,6 +30,6 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Deconvert a node into a value.
         /// </summary>
-        protected abstract TargetT DeconvertValue(NodeT node, IConverterScheme scheme, NodeTree tree);
+        protected abstract TargetT DeconvertValue(NodeT node, IConverterScheme scheme, ParsingTable table);
     }
 }

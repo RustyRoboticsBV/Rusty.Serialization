@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Converters
     {
         /* Protected methods. */
         protected override BoolNode ConvertValue(bool obj, IConverterScheme scheme, SymbolTable table) => new(obj);
-        protected override bool DeconvertValue(BoolNode node, IConverterScheme scheme, NodeTree tree) => node.Value;
+        protected override bool DeconvertValue(BoolNode node, IConverterScheme scheme, ParsingTable table) => node.Value;
     }
 }

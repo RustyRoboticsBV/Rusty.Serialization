@@ -95,7 +95,7 @@ namespace Rusty.Serialization.Converters.Gd
             }
         }
 
-        protected override Variant DeconvertValue(INode node, IConverterScheme scheme, NodeTree tree)
+        protected override Variant DeconvertValue(INode node, IConverterScheme scheme, ParsingTable table)
         {
             return FromNode(node);
         }

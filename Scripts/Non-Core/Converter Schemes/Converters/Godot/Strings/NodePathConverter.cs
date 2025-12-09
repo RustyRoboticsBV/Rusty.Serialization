@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Converters.Gd
     {
         /* Protected methods. */
         protected override StringNode CreateNode(NodePath obj, IConverterScheme scheme, SymbolTable table) => new(obj);
-        protected override NodePath DeconvertRef(StringNode node, IConverterScheme scheme, NodeTree tree) => node.Value;
+        protected override NodePath DeconvertRef(StringNode node, IConverterScheme scheme, ParsingTable table) => node.Value;
     }
 }
 #endif

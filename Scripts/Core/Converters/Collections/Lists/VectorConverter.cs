@@ -23,14 +23,14 @@ namespace Rusty.Serialization.Core.Converters
             return node;
         }
 
-        protected override VectorT DeconvertValue(ListNode node, IConverterScheme scheme, NodeTree tree)
+        protected override VectorT DeconvertValue(ListNode node, IConverterScheme scheme, ParsingTable table)
         {
             if (node.Elements.Length != Length)
                 throw new ArgumentException($"Expected a list node with length '{Length}', received '{node.Elements.Length}'.");
             VectorT vector = new();
             for (int i = 0; i < Length; i++)
             {
-                SetAt(ref vector, i, DeconvertNested<ElementT>(node.Elements[i], scheme, tree));
+                SetAt(ref vector, i, DeconvertNested<ElementT>(node.Elements[i], scheme, table));
             }
             return vector;
         }

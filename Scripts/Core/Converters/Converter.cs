@@ -15,11 +15,11 @@ namespace Rusty.Serialization.Core.Converters
 
         /* Public methods */
         INode IConverter.Convert(object obj, IConverterScheme scheme, SymbolTable table) => Convert((T)obj, scheme, table);
-        object IConverter.Deconvert(INode node, IConverterScheme scheme, NodeTree tree) => Deconvert(node, scheme, tree);
+        object IConverter.Deconvert(INode node, IConverterScheme scheme, ParsingTable table) => Deconvert(node, scheme, table);
 
         public abstract INode Convert(T obj, IConverterScheme scheme, SymbolTable table);
 
-        public abstract T Deconvert(INode node, IConverterScheme scheme, NodeTree tree);
+        public abstract T Deconvert(INode node, IConverterScheme scheme, ParsingTable table);
 
         /* Protected methods. */
         /// <summary>
@@ -42,7 +42,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Deconvert an object into an element.
         /// </summary>
-        protected U DeconvertNested<U>(INode node, IConverterScheme scheme, NodeTree tree)
+        protected U DeconvertNested<U>(INode node, IConverterScheme scheme, ParsingTable table)
         {
             if (node == null)
                 throw new ArgumentException("Cannot deconvert null reference node values.");
@@ -53,12 +53,12 @@ namespace Rusty.Serialization.Core.Converters
             if (node is TypeNode typed)
             {
                 Type underlyingType = scheme.GetTypeFromName(typed.Name);
-                obj = DeconvertNested(underlyingType, typed.Value, scheme, tree);
+                obj = DeconvertNested(underlyingType, typed.Value, scheme, table);
             }
 
             // Else, deconvert as-is.
             else
-                obj = scheme.Deconvert<U>(node, tree);
+                obj = scheme.DeconvertNode<U>(node);
 
             // If the object is of the correct type, return it.
             if (obj is U u)
@@ -78,14 +78,14 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Deconvert an object into an element.
         /// </summary>
-        protected object DeconvertNested(Type type, INode node, IConverterScheme scheme, NodeTree tree)
+        protected object DeconvertNested(Type type, INode node, IConverterScheme scheme, ParsingTable table)
         {
             if (node is TypeNode typed)
             {
                 Type nestedType = scheme.GetTypeFromName(typed.Name);
-                return DeconvertNested(scheme.GetTypeFromName(typed.Name), typed.Value, scheme, tree);
+                return DeconvertNested(scheme.GetTypeFromName(typed.Name), typed.Value, scheme, table);
             }
-            return scheme.Deconvert(type, node, tree);
+            return scheme.DeconvertNode(type, node);
         }
 
         /* Private methods. */

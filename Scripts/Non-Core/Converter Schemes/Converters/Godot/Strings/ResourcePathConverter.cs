@@ -17,7 +17,7 @@ namespace Rusty.Serialization.Converters.Gd
             return new(obj.ResourcePath);
         }
 
-        protected override T DeconvertRef(StringNode node, IConverterScheme scheme, NodeTree tree)
+        protected override T DeconvertRef(StringNode node, IConverterScheme scheme, ParsingTable table)
         {
             return (T)ResourceLoader.Load(node.Value);
         }

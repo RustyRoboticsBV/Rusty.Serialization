@@ -17,7 +17,7 @@ namespace Rusty.Serialization.Converters.Unity
             return new(col32.r, col32.g, col32.b, col32.a);
         }
 
-        protected override Color DeconvertValue(ColorNode node, IConverterScheme scheme, NodeTree tree)
+        protected override Color DeconvertValue(ColorNode node, IConverterScheme scheme, ParsingTable table)
             => new Color32(node.R, node.G, node.B, node.A);
     }
 }

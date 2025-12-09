@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Protected methods. */
         protected override CharNode ConvertValue(Rune obj, IConverterScheme scheme, SymbolTable table) => new(obj.Value);
-        protected override Rune DeconvertValue(CharNode node, IConverterScheme scheme, NodeTree tree) => new(node.Value);
+        protected override Rune DeconvertValue(CharNode node, IConverterScheme scheme, ParsingTable table) => new(node.Value);
     }
 }
 #endif

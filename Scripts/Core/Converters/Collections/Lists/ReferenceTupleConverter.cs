@@ -1,10 +1,8 @@
-﻿using Rusty.Serialization.Core.Nodes;
-using System;
-using System.Data;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Xml.Linq;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -35,7 +33,7 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
-        protected override TupleT CreateObject(ListNode node, IConverterScheme scheme, NodeTree tree)
+        protected override TupleT CreateObject(ListNode node, IConverterScheme scheme, ParsingTable table)
         {
             // Get constructor.
             Type type = typeof(TupleT);
@@ -50,7 +48,7 @@ namespace Rusty.Serialization.Core.Converters
             for (int i = 0; i < values.Length; i++)
             {
                 Type fieldType = type.GetFields()[i].FieldType;
-                values[i] = DeconvertNested(fieldType, node.Elements[i], scheme, tree);
+                values[i] = DeconvertNested(fieldType, node.Elements[i], scheme, table);
             }
 
             // Invoke constructor.

@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Converters.System
         /* Protected methods. */
         protected override TimeNode ConvertValue(DateOnly obj, IConverterScheme scheme, SymbolTable table)
             => new(new(obj.Year, obj.Month, obj.Day, 0, 0, 0, 0));
-        protected override DateOnly DeconvertValue(TimeNode node, IConverterScheme scheme, NodeTree tree)
+        protected override DateOnly DeconvertValue(TimeNode node, IConverterScheme scheme, ParsingTable table)
             => new((int)node.Value.year, (int)node.Value.month, (int)node.Value.day);
     }
 }

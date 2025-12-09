@@ -24,13 +24,21 @@ namespace Rusty.Serialization.Core.Converters
         public INode ConvertToNode(object node);
 
         /// <summary>
-        /// Deconvert an INode hierarchy to an object.
+        /// Deconvert a node tree to an object.
         /// </summary>
-        public T Deconvert<T>(INode node, NodeTree tree);
+        public T DeconvertTree<T>(NodeTree tree);
+        /// <summary>
+        /// Deconvert a node tree to an object.
+        /// </summary>
+        public object DeconvertTree(Type type, NodeTree tree);
         /// <summary>
         /// Deconvert an INode hierarchy to an object.
         /// </summary>
-        public object Deconvert(Type type, INode node, NodeTree tree);
+        public T DeconvertNode<T>(INode node);
+        /// <summary>
+        /// Deconvert an INode hierarchy to an object.
+        /// </summary>
+        public object DeconvertNode(Type type, INode node);
 
         /// <summary>
         /// Get the typename of some object.
@@ -41,10 +49,5 @@ namespace Rusty.Serialization.Core.Converters
         /// Get a type from a type name.
         /// </summary>
         public Type GetTypeFromName(string typeName);
-
-        /// <summary>
-        /// Clear the scheme's current symbol table. This should ALWAYS be done before serialing a new object hierarchy.
-        /// </summary>
-        public void ClearSymbolTable();
     }
 }

@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class SortedSetConverter<T> : GenericListConverter<SortedSet<T>, T>
     {
         /* Protected methods. */
-        protected override SortedSet<T> CreateObject(ListNode node, IConverterScheme scheme, NodeTree tree) => new();
+        protected override SortedSet<T> CreateObject(ListNode node, IConverterScheme scheme, ParsingTable table) => new();
 
         protected override void AssignElements(SortedSet<T> collection, T[] elements)
         {

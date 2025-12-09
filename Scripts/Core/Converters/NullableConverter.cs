@@ -18,18 +18,18 @@ namespace Rusty.Serialization.Core.Converters
                 return ConvertNested(obj.Value.GetType(), obj.Value, scheme, table);
         }
 
-        public override TargetT? Deconvert(INode node, IConverterScheme scheme, NodeTree tree)
+        public override TargetT? Deconvert(INode node, IConverterScheme scheme, ParsingTable table)
         {
             if (node is NullNode)
                 return null;
             else if (node is RefNode @ref)
                 return default; // TODO: implement
             else if (node is IdNode id)
-                return Deconvert(id.Value, scheme, tree);
+                return Deconvert(id.Value, scheme, table);
             else if (node is TypeNode type)
-                return Deconvert(type.Value, scheme, tree);
+                return Deconvert(type.Value, scheme, table);
             else
-                return DeconvertNested<TargetT>(node, scheme, tree);
+                return DeconvertNested<TargetT>(node, scheme, table);
             throw new Exception($"Cannot interpret nodes of type '{node.GetType()}'.");
         }
     }

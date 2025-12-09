@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Converters
     {
         /* Protected methods. */
         protected override RealNode ConvertValue(float obj, IConverterScheme scheme, SymbolTable table) => new(PeterO.Numbers.EDecimal.FromSingle(obj));
-        protected override float DeconvertValue(RealNode node, IConverterScheme scheme, NodeTree tree) => (float)node.Value;
+        protected override float DeconvertValue(RealNode node, IConverterScheme scheme, ParsingTable table) => (float)node.Value;
     }
 }

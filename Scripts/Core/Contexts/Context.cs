@@ -22,9 +22,6 @@ namespace Rusty.Serialization.Core.Contexts
         /// </summary>
         public string Serialize(object obj, bool prettyPrint = false)
         {
-            // Make sure the reference symbol table has been cleared.
-            ConverterScheme.ClearSymbolTable();
-
             // Convert to node.
             NodeTree node = ConverterScheme.ConvertToTree(obj);
 
@@ -36,13 +33,13 @@ namespace Rusty.Serialization.Core.Contexts
         public T Deserialize<T>(string serialized)
         {
             NodeTree tree = SerializerScheme.ParseAsTree(serialized);
-            return ConverterScheme.Deconvert<T>(tree.Root, tree);
+            return ConverterScheme.DeconvertTree<T>(tree);
         }
 
         public object Deserialize(Type type, string serialized)
         {
             NodeTree tree = SerializerScheme.ParseAsTree(serialized);
-            return ConverterScheme.Deconvert(type, tree.Root, tree);
+            return ConverterScheme.DeconvertTree(type, tree);
         }
     }
 }

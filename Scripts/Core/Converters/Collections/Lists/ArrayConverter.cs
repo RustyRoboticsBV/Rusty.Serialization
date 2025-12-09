@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     public sealed class ArrayConverter<T> : GenericListConverter<T[], T>
     {
         /* Protected methods. */
-        protected override T[] CreateObject(ListNode node, IConverterScheme scheme, NodeTree tree)
+        protected override T[] CreateObject(ListNode node, IConverterScheme scheme, ParsingTable table)
             => new T[node.Elements.Length];
 
         protected override void AssignElements(T[] collection, T[] elements)

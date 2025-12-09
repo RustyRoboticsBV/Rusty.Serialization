@@ -18,12 +18,12 @@ namespace Rusty.Serialization.Converters.System
             return new(new KeyValuePair<INode, INode>[1] { new(key, value) });
         }
 
-        protected sealed override KeyValuePair<KeyT, ValueT> DeconvertValue(DictNode node, IConverterScheme nested, NodeTree tree)
+        protected sealed override KeyValuePair<KeyT, ValueT> DeconvertValue(DictNode node, IConverterScheme nested, ParsingTable table)
         {
             if (node.Pairs.Length != 1)
                 throw new ArgumentException("Cannot deserialize dict node with length that isn't 1.");
-            KeyT key = DeconvertNested<KeyT>(node.Pairs[0].Key, nested, tree);
-            ValueT value = DeconvertNested<ValueT>(node.Pairs[0].Value, nested, tree);
+            KeyT key = DeconvertNested<KeyT>(node.Pairs[0].Key, nested, table);
+            ValueT value = DeconvertNested<ValueT>(node.Pairs[0].Value, nested, table);
             return new(key, value);
         }
     }

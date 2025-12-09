@@ -56,52 +56,5 @@ namespace Rusty.Serialization.Core.Nodes
             node.Parent = this;
             Root = node;
         }
-
-        /// <summary>
-        /// Find an ID node corresponding to some ID.
-        /// </summary>
-        public IdNode FindId(string id)
-        {
-            if (IdLookup == null)
-            {
-                IdLookup = new();
-                FindAll(IdLookup, Root);
-            }
-
-            return IdLookup[id];
-        }
-
-        private void FindAll(Dictionary<string, IdNode> found, INode root)
-        {
-            if (root is IdNode id)
-            {
-                found[id.Name] = id;
-                FindAll(found, id.Value);
-            }
-            else if (root is TypeNode type)
-                FindAll(found, type.Value);
-            else if (root is ListNode list)
-            {
-                for (int i = 0; i < list.Elements.Length; i++)
-                {
-                    FindAll(found, list.Elements[i]);
-                }
-            }
-            else if (root is DictNode dict)
-            {
-                for (int i = 0; i < dict.Pairs.Length; i++)
-                {
-                    FindAll(found, dict.Pairs[i].Key);
-                    FindAll(found, dict.Pairs[i].Value);
-                }
-            }
-            else if (root is ObjectNode obj)
-            {
-                for (int i = 0; i < obj.Members.Length; i++)
-                {
-                    FindAll(found, obj.Members[i].Value);
-                }
-            }
-        }
     }
 }

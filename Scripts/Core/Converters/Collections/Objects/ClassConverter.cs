@@ -69,9 +69,9 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
-        protected override T CreateObject(ObjectNode node, IConverterScheme scheme, NodeTree tree) => new();
+        protected override T CreateObject(ObjectNode node, IConverterScheme scheme, ParsingTable table) => new();
 
-        protected override void AssignObject(T obj, ObjectNode node, IConverterScheme scheme, NodeTree tree)
+        protected override void AssignObject(T obj, ObjectNode node, IConverterScheme scheme, ParsingTable table)
         {
             // Collect members.
             if (Members == null)
@@ -92,12 +92,12 @@ namespace Rusty.Serialization.Core.Converters
                 // Deconvert field/property.
                 if (member is FieldInfo field)
                 {
-                    object memberObj = DeconvertNested(field.FieldType, memberNode, scheme, tree);
+                    object memberObj = DeconvertNested(field.FieldType, memberNode, scheme, table);
                     field.SetValue(obj, memberObj);
                 }
                 else if (member is PropertyInfo property)
                 {
-                    object memberObj = DeconvertNested(property.PropertyType, memberNode, scheme, tree);
+                    object memberObj = DeconvertNested(property.PropertyType, memberNode, scheme, table);
                     property.SetValue(obj, memberObj);
                 }
             }

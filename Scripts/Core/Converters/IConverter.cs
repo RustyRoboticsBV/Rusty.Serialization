@@ -23,7 +23,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Emit a deserialized object from some serializer node.
         /// </summary>
-        public object Deconvert(INode node, IConverterScheme scheme, NodeTree tree);
+        public object Deconvert(INode node, IConverterScheme scheme, ParsingTable table);
     }
 
     /// <summary>
@@ -40,6 +40,6 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Emit a deserialized object from some serializer node.
         /// </summary>
-        public new T Deconvert(INode node, IConverterScheme scheme, NodeTree tree);
+        public new T Deconvert(INode node, IConverterScheme scheme, ParsingTable table);
     }
 }

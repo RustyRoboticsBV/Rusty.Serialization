@@ -27,15 +27,15 @@ namespace Rusty.Serialization.Converters.System
             }
         }
 
-        protected override PriorityQueue<ElementT, PriorityT> CreateObject(DictNode node, IConverterScheme scheme, NodeTree tree)
+        protected override PriorityQueue<ElementT, PriorityT> CreateObject(DictNode node, IConverterScheme scheme, ParsingTable table)
             => new();
 
-        protected override void AssignObject(PriorityQueue<ElementT, PriorityT> obj, DictNode node, IConverterScheme scheme, NodeTree tree)
+        protected override void AssignObject(PriorityQueue<ElementT, PriorityT> obj, DictNode node, IConverterScheme scheme, ParsingTable table)
         {
             for (int i = 0; i < node.Pairs.Length; i++)
             {
-                ElementT element = DeconvertNested<ElementT>(node.Pairs[i].Key, scheme, tree);
-                PriorityT priority = DeconvertNested<PriorityT>(node.Pairs[i].Value, scheme, tree);
+                ElementT element = DeconvertNested<ElementT>(node.Pairs[i].Key, scheme, table);
+                PriorityT priority = DeconvertNested<PriorityT>(node.Pairs[i].Value, scheme, table);
                 obj.Enqueue(element, priority);
             }
         }

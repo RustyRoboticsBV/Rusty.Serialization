@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Protected methods. */
         protected override RealNode ConvertValue(Half obj, IConverterScheme scheme, SymbolTable table) => new((decimal)obj);
-        protected override Half DeconvertValue(RealNode node, IConverterScheme scheme, NodeTree tree) => (Half)node.Value.ToSingle();
+        protected override Half DeconvertValue(RealNode node, IConverterScheme scheme, ParsingTable table) => (Half)node.Value.ToSingle();
     }
 }
 #endif

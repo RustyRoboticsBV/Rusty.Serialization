@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Converters.System
     public sealed class QueueConverter<T> : GenericListConverter<Queue<T>, T>
     {
         /* Protected methods. */
-        protected override Queue<T> CreateObject(ListNode node, IConverterScheme scheme, NodeTree tree) => new();
+        protected override Queue<T> CreateObject(ListNode node, IConverterScheme scheme, ParsingTable table) => new();
 
         protected override void AssignElements(Queue<T> collection, T[] elements)
         {
