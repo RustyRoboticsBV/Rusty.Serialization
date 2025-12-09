@@ -140,44 +140,8 @@ namespace Rusty.Serialization.Core.Converters
 
         public INode ConvertToNode(object obj)
         {
-            // If the object is a reference and is present in the symbol table...
-            bool isReferenceType = obj != null && !obj.GetType().IsValueType;
-            if (isReferenceType)
-            {
-                if (SymbolTable.HasObject(obj))
-                {
-                    // If there was no ID for the object yet, create one and wrap the original node.
-                    if (!SymbolTable.HasIdFor(obj))
-                    {
-                        ulong newId = SymbolTable.GetOrCreateId(obj);
-                        if (SymbolTable.HasNodeFor(obj))
-                            WrapInId(SymbolTable.GetNode(obj), newId);
-                    }
-
-                    // Return a reference to the object.
-                    string idName = SymbolTable.GetOrCreateId(obj).ToString();
-                    return new RefNode(idName);
-                }
-
-                // Register in symbol table (if it's a reference type an it wasn't registered yet).
-                else
-                    SymbolTable.Add(obj);
-            }
-
-            // Convert the object.
             IConverter converter = GetConverter(obj?.GetType());
-            INode node = converter.Convert(obj, this, null);
-
-            // If there was no node in the symbol table yet, add one.
-            if (isReferenceType && SymbolTable.HasObject(obj) && !SymbolTable.HasNodeFor(obj))
-                SymbolTable.SetNode(obj, node);
-
-            // If there is an ID for this object, it was referenced by a child node.
-            // Wrap it in an ID node.
-            if (SymbolTable.HasIdFor(obj))
-                WrapInId(SymbolTable.GetNode(obj), SymbolTable.GetOrCreateId(obj));
-            
-            return node;
+            return converter.Convert(obj, this, SymbolTable);
         }
 
         public T Deconvert<T>(INode node, NodeTree tree)
@@ -205,20 +169,6 @@ namespace Rusty.Serialization.Core.Converters
         public void ClearSymbolTable()
         {
             SymbolTable.Clear();
-        }
-
-        /* Private methods. */
-        private static IdNode WrapInId(INode node, ulong id)
-        {
-            string name = id.ToString();
-            if (node.Parent != null && node.Parent is ICollectionNode collection)
-            {
-                IdNode idNode = new(name, null);
-                collection.WrapChild(node, idNode);
-                return idNode;
-            }
-            else
-                return new(name, node);
         }
     }
 }

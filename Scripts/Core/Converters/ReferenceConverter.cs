@@ -13,8 +13,35 @@ namespace Rusty.Serialization.Core.Converters
         /* Public methods */
         public sealed override INode Convert(TargetT obj, IConverterScheme scheme, SymbolTable table)
         {
+            // Handle null.
+            if (obj == null)
+                return new NullNode();
+
+            // If the object is a present in the symbol table...
+            if (table.HasObject(obj))
+            {
+                // If there was no ID for the object yet, create one and wrap the original node.
+                if (!table.HasIdFor(obj))
+                {
+                    ulong newId = table.GetOrCreateId(obj);
+                    if (table.HasNodeFor(obj))
+                        WrapInId(table.GetNode(obj), newId);
+                }
+
+                // Return a reference to the object.
+                string idName = table.GetOrCreateId(obj).ToString();
+                return new RefNode(idName);
+            }
+
+            // Else, register in symbol table.
+            else
+                table.Add(obj);
+
+            // Create node.
             NodeT node = CreateNode(obj, scheme, table);
+            table.SetNode(obj, node);
             AssignNode(ref node, obj, scheme, table);
+
             return node;
         }
 
@@ -61,5 +88,19 @@ namespace Rusty.Serialization.Core.Converters
         /// You can use this to separate the creation of the object from the assignment of its values.
         /// </summary>
         protected virtual void AssignObject(TargetT obj, NodeT node, IConverterScheme scheme, NodeTree tree) { }
+
+        /* Private methods. */
+        private static IdNode WrapInId(INode node, ulong id)
+        {
+            string name = id.ToString();
+            if (node.Parent != null && node.Parent is ICollectionNode collection)
+            {
+                IdNode idNode = new(name, null);
+                collection.WrapChild(node, idNode);
+                return idNode;
+            }
+            else
+                return new(name, node);
+        }
     }
 }
