@@ -11,6 +11,6 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Protected methods. */
         protected override StringNode CreateNode(Encoding obj, IConverterScheme scheme, SymbolTable table) => new(obj.WebName);
-        protected override Encoding DeconvertRef(StringNode node, IConverterScheme scheme, NodeTree tree) => Encoding.GetEncoding(node.Value);
+        protected override Encoding CreateObject(StringNode node, IConverterScheme scheme, NodeTree tree) => Encoding.GetEncoding(node.Value);
     }
 }

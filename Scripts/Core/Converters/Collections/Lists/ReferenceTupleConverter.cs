@@ -35,7 +35,7 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
-        protected override TupleT DeconvertRef(ListNode node, IConverterScheme scheme, NodeTree tree)
+        protected override TupleT CreateObject(ListNode node, IConverterScheme scheme, NodeTree tree)
         {
             // Get constructor.
             Type type = typeof(TupleT);

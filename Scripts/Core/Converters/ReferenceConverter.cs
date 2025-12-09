@@ -33,7 +33,11 @@ namespace Rusty.Serialization.Core.Converters
             else if (node is IdNode id)
                 return Deconvert(id.Value, scheme, tree);
             else if (node is NodeT typed)
-                return DeconvertRef(typed, scheme, tree);
+            {
+                TargetT obj = CreateObject(typed, scheme, tree);
+                AssignObject(obj, typed, scheme, tree);
+                return obj;
+            }
             throw new Exception($"{GetType().Name} cannot interpret node '{node}'.");
         }
 
@@ -47,6 +51,15 @@ namespace Rusty.Serialization.Core.Converters
         /// You can use this to separate the creation of the node from the assignment of its values.
         /// </summary>
         protected virtual void AssignNode(ref NodeT node, TargetT obj, IConverterScheme scheme, SymbolTable table) { }
-        protected abstract TargetT DeconvertRef(NodeT node, IConverterScheme scheme, NodeTree tree);
+
+        /// <summary>
+        /// Create a source object from a node and return it.
+        /// </summary>
+        protected abstract TargetT CreateObject(NodeT node, IConverterScheme scheme, NodeTree tree);
+        /// <summary>
+        /// Set the values of a created source object according to the state of some INode.
+        /// You can use this to separate the creation of the object from the assignment of its values.
+        /// </summary>
+        protected virtual void AssignObject(TargetT obj, NodeT node, IConverterScheme scheme, NodeTree tree) { }
     }
 }

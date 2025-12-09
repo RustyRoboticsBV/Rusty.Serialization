@@ -75,10 +75,10 @@ Below is an example of a custom serialized object with pretty printing. See the 
         [1, 2, 3] : false
     },
     my_object: <
-        my_nested_object: `my_id` <
+        my_nested_object_with_id: `my_id` <
             my_int: 0
         >
     >,
-    my_ref: &my_id
+    my_reference: &my_id
 >
 ```

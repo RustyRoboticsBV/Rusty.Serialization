@@ -28,7 +28,7 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
-        protected sealed override DictionaryT DeconvertRef(DictNode node, IConverterScheme scheme, NodeTree tree)
+        protected sealed override DictionaryT CreateObject(DictNode node, IConverterScheme scheme, NodeTree tree)
         {
             DictionaryT obj = new();
             foreach (var pair in node.Pairs)

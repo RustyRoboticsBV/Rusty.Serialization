@@ -13,6 +13,9 @@ namespace Rusty.Serialization.Converters.System
     {
         /* Public methods. */
         protected override DictNode CreateNode(PriorityQueue<ElementT, PriorityT> obj, IConverterScheme scheme, SymbolTable table)
+            => new(obj.Count);
+
+        protected override void AssignNode(ref DictNode node, PriorityQueue<ElementT, PriorityT> obj, IConverterScheme scheme, SymbolTable table)
         {
             List<(ElementT, PriorityT)> elements = obj.UnorderedItems.ToList();
             var pairs = new KeyValuePair<INode, INode>[elements.Count];
@@ -20,21 +23,21 @@ namespace Rusty.Serialization.Converters.System
             {
                 INode elementNode = ConvertNested(typeof(ElementT), elements[i].Item1, scheme, table);
                 INode priorityNode = ConvertNested(typeof(PriorityT), elements[i].Item2, scheme, table);
-                pairs[i] = new(elementNode, priorityNode);
+                node.Pairs[i] = new(elementNode, priorityNode);
             }
-            return new(pairs);
         }
 
-        protected override PriorityQueue<ElementT, PriorityT> DeconvertRef(DictNode node, IConverterScheme scheme, NodeTree tree)
+        protected override PriorityQueue<ElementT, PriorityT> CreateObject(DictNode node, IConverterScheme scheme, NodeTree tree)
+            => new();
+
+        protected override void AssignObject(PriorityQueue<ElementT, PriorityT> obj, DictNode node, IConverterScheme scheme, NodeTree tree)
         {
-            PriorityQueue<ElementT, PriorityT> pqueue = new();
             for (int i = 0; i < node.Pairs.Length; i++)
             {
                 ElementT element = DeconvertNested<ElementT>(node.Pairs[i].Key, scheme, tree);
                 PriorityT priority = DeconvertNested<PriorityT>(node.Pairs[i].Value, scheme, tree);
-                pqueue.Enqueue(element, priority);
+                obj.Enqueue(element, priority);
             }
-            return pqueue;
         }
     }
 }

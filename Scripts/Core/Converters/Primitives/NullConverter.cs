@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Converters
     {
         /* Protected methods. */
         protected override INode CreateNode(object obj, IConverterScheme scheme, SymbolTable table) => new NullNode();
-        protected override object DeconvertRef(INode node, IConverterScheme scheme, NodeTree tree) => null;
+        protected override object CreateObject(INode node, IConverterScheme scheme, NodeTree tree) => null;
     }
 }

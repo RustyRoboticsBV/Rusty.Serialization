@@ -75,7 +75,7 @@ A few special character literals exist:
 - `'\\'`: alternative way of writing `'\'`.
 - `'\t'`: expresses a horizontal tab.
 - `'\n'`: expresses a newline.
-- `'\#\'`: expresses a unicode character. # must be a hexadecimal number between `0` and `10FFFF`. Leading zeros are allowed.
+- `'\...\'`: expresses a unicode character. `...` must be a hexadecimal number between `0` and `10FFFF`. Leading zeros are allowed.
 
 Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\21FF\'`.
 

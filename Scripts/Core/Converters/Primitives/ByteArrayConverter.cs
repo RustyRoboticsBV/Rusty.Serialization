@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Converters
     {
         /* Protected methods. */
         protected override BinaryNode CreateNode(byte[] obj, IConverterScheme scheme, SymbolTable table) => new(obj);
-        protected override byte[] DeconvertRef(BinaryNode node, IConverterScheme scheme, NodeTree tree) => node.Value;
+        protected override byte[] CreateObject(BinaryNode node, IConverterScheme scheme, NodeTree tree) => node.Value;
     }
 }
