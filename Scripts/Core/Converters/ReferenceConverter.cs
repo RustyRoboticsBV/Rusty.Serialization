@@ -23,13 +23,12 @@ namespace Rusty.Serialization.Core.Converters
                 // If there was no ID for the object yet, create one and wrap the original node.
                 if (!table.HasIdFor(obj))
                 {
-                    ulong newId = table.GetOrCreateId(obj);
-                    if (table.HasNodeFor(obj))
-                        WrapInId(table.GetNode(obj), newId);
+                    ulong newId = table.CreateId(obj);
+                    WrapInId(table.GetNode(obj), newId);
                 }
 
                 // Return a reference to the object.
-                string idName = table.GetOrCreateId(obj).ToString();
+                string idName = table.GetId(obj).ToString();
                 return new RefNode(idName);
             }
 
@@ -45,7 +44,7 @@ namespace Rusty.Serialization.Core.Converters
             return node;
         }
 
-        public override TargetT Deconvert(INode node, IConverterScheme scheme, NodeTree tree)
+        public sealed override TargetT Deconvert(INode node, IConverterScheme scheme, NodeTree tree)
         {
             if (node is NullNode)
                 return null;

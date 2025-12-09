@@ -60,35 +60,27 @@ namespace Rusty.Serialization.Core.Converters
             return Ids.ContainsKey(obj);
         }
 
-        /// <summary>
-        /// Return if an object has had an ID generated for it.
-        /// </summary>
-        public bool HasNodeFor(object obj)
+        public ulong CreateId(object obj)
         {
-            if (Nodes.TryGetValue(obj, out INode node))
-                return node != null;
-            return false;
+            if (obj.GetType().IsValueType)
+                throw new ArgumentException($"Cannot add objects of value type '{obj.GetType()} to the symbol table!'");
+
+            // Create ID.
+            ulong newId = NextId;
+            Ids[obj] = newId;
+            NextId++;
+            return newId;
         }
 
         /// <summary>
         /// Get the ID of an object.
         /// </summary>
-        public ulong GetOrCreateId(object obj)
+        public ulong GetId(object obj)
         {
-            if (obj.GetType().IsValueType)
-                throw new ArgumentException($"Cannot add objects of value type '{obj.GetType()} to the symbol table!'");
-
-            if (!Nodes.ContainsKey(obj))
-                throw new ArgumentException($"Cannot get ID for unregistered object '{obj}'.");
-
             if (Ids.TryGetValue(obj, out ulong id))
                 return id;
 
-            // Create new ID.
-            ulong newId = NextId;
-            Ids[obj] = newId;
-            NextId++;
-            return newId;
+            throw new ArgumentException($"No ID available for object '{obj}'.");
         }
 
         /// <summary>
