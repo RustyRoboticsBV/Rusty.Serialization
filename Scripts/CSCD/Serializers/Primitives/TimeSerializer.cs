@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using System.Text;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
@@ -16,22 +15,22 @@ namespace Rusty.Serialization.CSCD
         {
             // Build string.
             StringBuilder str = new();
-            if (node.Value.negative)
+            if (node.Negative)
                 str.AppendLine("-");
-            if (node.Value.year != 0)
-                str.Append($"Y{node.Value.year}");
-            if (node.Value.month != 0)
-                str.Append($"M{node.Value.month}");
-            if (node.Value.day != 0)
-                str.Append($"D{node.Value.day}");
-            if (node.Value.hour != 0)
-                str.Append($"h{node.Value.hour}");
-            if (node.Value.minute != 0)
-                str.Append($"m{node.Value.minute}");
-            if (node.Value.second != 0)
-                str.Append($"s{node.Value.second}");
-            if (node.Value.millisecond != 0)
-                str.Append($"f{node.Value.millisecond}");
+            if (node.Year != 0)
+                str.Append($"Y{node.Year}");
+            if (node.Month != 0)
+                str.Append($"M{node.Month}");
+            if (node.Day != 0)
+                str.Append($"D{node.Day}");
+            if (node.Hour != 0)
+                str.Append($"h{node.Hour}");
+            if (node.Minute != 0)
+                str.Append($"m{node.Minute}");
+            if (node.Second != 0)
+                str.Append($"s{node.Second}");
+            if (node.Millisecond != 0)
+                str.Append($"f{node.Millisecond}");
             string serialized = str.ToString();
 
             // Handle all zeros.
@@ -56,14 +55,14 @@ namespace Rusty.Serialization.CSCD
                 // Check negative sign.
                 bool negative = trimmed.StartsWith('-');
 
-                // Interpret.
-                BigInteger? year = null;
-                BigInteger? month = null;
-                BigInteger? day = null;
-                BigInteger? hour = null;
-                BigInteger? minute = null;
-                BigInteger? second = null;
-                BigInteger? millisecond = null;
+                // Interpret terms.
+                ulong? year = null;
+                ulong? month = null;
+                ulong? day = null;
+                ulong? hour = null;
+                ulong? minute = null;
+                ulong? second = null;
+                ulong? millisecond = null;
 
                 for (int i = negative ? 1 : 0; i < trimmed.Length; i++)
                 {
@@ -125,37 +124,18 @@ namespace Rusty.Serialization.CSCD
                 second = second ?? 0;
                 millisecond = millisecond ?? 0;
 
-                // Apply negative sign.
-                if (negative)
-                {
-                    if (year > 0)
-                        year = -year;
-                    else if (month > 0)
-                        month = -month;
-                    else if (day > 0)
-                        day = -day;
-                    else if (hour > 0)
-                        hour = -hour;
-                    else if (minute > 0)
-                        minute = -minute;
-                    else if (second > 0)
-                        second = -second;
-                    else if (millisecond > 0)
-                        millisecond = -millisecond;
-                }
-
                 // Create node.
-                return new(new(year.Value, month.Value, day.Value,
-                    hour.Value, minute.Value, second.Value, millisecond.Value));
+                return new(negative, year.Value, month.Value, day.Value,
+                    hour.Value, minute.Value, second.Value, millisecond.Value);
             }
             catch (Exception ex)
             {
-                throw new ArgumentException($"Could not parse string '{text}' as an timestamp:\n{ex.Message}");
+                throw new ArgumentException($"Could not parse string '{text}' as a time:\n{ex.Message}");
             }
         }
 
         /* Private methods. */
-        private static BigInteger Parse(string str, ref int index)
+        private static ulong Parse(string str, ref int index)
         {
             int i;
             for (i = index + 1; i < str.Length; i++)
@@ -165,7 +145,7 @@ namespace Rusty.Serialization.CSCD
             }
             if (i == index + 1)
                 throw new Exception($"Empty term '{str[index]}'.");
-            BigInteger value = BigInteger.Parse(str.Substring(index + 1, i - (index + 1)));
+            ulong value = ulong.Parse(str.Substring(index + 1, i - (index + 1)));
             index = i - 1;
             return value;
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
 

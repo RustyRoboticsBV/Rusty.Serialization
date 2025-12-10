@@ -35,8 +35,6 @@ namespace Rusty.Serialization.CSCD
         {
             switch (node)
             {
-                case NodeTree tree:
-                    return Serialize(tree.Root);
                 case NullNode n:
                     return Null.Serialize(n, this);
                 case RefNode re:
