@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Rusty.Serialization.Serializers.CSCD
+namespace Rusty.Serialization.CSCD
 {
     /// <summary>
     /// An utility for parsing CSCD strings.

@@ -3,7 +3,7 @@ using System.Globalization;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
 
-namespace Rusty.Serialization.Serializers.CSCD
+namespace Rusty.Serialization.CSCD
 {
     /// <summary>
     /// A CSCD string serializer.

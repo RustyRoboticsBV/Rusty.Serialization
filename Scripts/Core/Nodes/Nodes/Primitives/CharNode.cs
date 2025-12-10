@@ -7,10 +7,10 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public INode Parent { get; set; }
-        public int Value { get; set; }
+        public string Value { get; set; } = "\0";
 
         /* Constructors. */
-        public CharNode(int value)
+        public CharNode(string value)
         {
             Value = value;
         }
@@ -18,16 +18,13 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            if (Value <= char.MaxValue && char.IsControl((char)Value))
-                return "char: " + (char)Value;
-            else
-                return "char: \\u" + HexUtility.ToHexString(Value);
+            return "char: " + Value;
         }
 
         public void Clear()
         {
             Parent = null;
-            Value = 0;
+            Value = "\0";
         }
     }
 }

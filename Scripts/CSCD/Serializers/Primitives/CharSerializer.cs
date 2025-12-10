@@ -3,7 +3,7 @@ using System.Globalization;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
 
-namespace Rusty.Serialization.Serializers.CSCD
+namespace Rusty.Serialization.CSCD
 {
     /// <summary>
     /// A CSCD char serializer.
@@ -13,15 +13,18 @@ namespace Rusty.Serialization.Serializers.CSCD
         /* Public methods. */
         public override string Serialize(CharNode node, ISerializerScheme scheme)
         {
+            if (!IsSingleCharacter(node.Value))
+                throw new ArgumentException("Invalid char node: " + node);
+
             string str = "";
-            if (node.Value == '\t')
+            if (node.Value == "\t")
                 str = "\\t";
-            else if (node.Value == '\n')
+            else if (node.Value == "\n")
                 str = "\\n";
-            else if (!CharUtility.Check(node.Value))
-                str = "\\" + UnicodeUtility.Serialize(node.Value) + "\\";
+            else if (!CharUtility.Check(node.Value[0]))
+                str = "\\" + UnicodeUtility.UnicodeToHex(node.Value) + "\\";
             else
-                str = ((char)node.Value).ToString(CultureInfo.InvariantCulture);
+                str = node.Value;
             return $"'" + str + "'";
         }
 
@@ -55,12 +58,30 @@ namespace Rusty.Serialization.Serializers.CSCD
                     throw new ArgumentException("Too many characters.");
 
                 // Return finished node.
-                return new CharNode(packed[0]);
+                return new CharNode(packed[0].ToString(CultureInfo.InvariantCulture));
             }
             catch (Exception ex)
             {
                 throw new ArgumentException($"Could not parse string '{text}' as a character:\n{ex.Message}");
             }
+        }
+
+        /* Private methods. */
+        private static bool IsSingleCharacter(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return false;
+
+            // Single BMP character.
+            if (str.Length == 1)
+                return true;
+
+            // Surrogate pair.
+            else if (str.Length == 2)
+                return char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1]);
+
+            // Any other length cannot be a single Unicode character.
+            return false;
         }
     }
 }

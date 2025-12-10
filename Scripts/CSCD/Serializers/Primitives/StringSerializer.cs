@@ -3,7 +3,7 @@ using System.Text;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
 
-namespace Rusty.Serialization.Serializers.CSCD
+namespace Rusty.Serialization.CSCD
 {
     /// <summary>
     /// A CSCD string serializer.
@@ -30,7 +30,7 @@ namespace Rusty.Serialization.Serializers.CSCD
 
                 // Handle unicode characters.
                 else if (!CharUtility.Check(c))
-                    str.Append("\\" + UnicodeUtility.Serialize(c) + "\\");
+                    str.Append("\\" + UnicodeUtility.CodePointToHex(c) + "\\");
 
                 // Otherwise, append character as-is.
                 else

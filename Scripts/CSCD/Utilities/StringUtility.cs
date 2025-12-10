@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using Rusty.Serialization.Core.Nodes;
 
-namespace Rusty.Serialization.Serializers.CSCD
+namespace Rusty.Serialization.CSCD
 {
     /// <summary>
     /// A utility for creating CSCD char and string literals.
@@ -29,8 +29,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                     if (unicodeStart >= 0)
                     {
                         string hex = str.Substring(unicodeStart + 1, i - unicodeStart - 1);
-                        int codePoint = HexUtility.FromHexString(hex);
-                        builder.Append((char)HexUtility.FromHexString(hex));
+                        builder.Append(UnicodeUtility.HextoUnicode(hex));
                         unicodeStart = -1;
                     }
 
@@ -63,7 +62,7 @@ namespace Rusty.Serialization.Serializers.CSCD
                             builder.Append('\n');
                             i++;
                         }
-                        else if (UnicodeUtility.IsValid(escape))
+                        else if (UnicodeUtility.IsHexCharacter(escape))
                         {
                             unicodeStart = i;
                             i++;
