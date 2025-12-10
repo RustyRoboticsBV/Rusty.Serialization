@@ -6,7 +6,7 @@ The format is self-describing and does not require an external schema. Values ma
 ## 1. General Formatting
 ### Character Set
 Serialized data is expressed as a subset of the `ISO-8859-1` character set, and may only contain the following characters:
-- ASCII whitespace characters: `0x20` (space), `0x09` (horizontal tab), `0x0A` (newline), `0x0B` (vertical tab), `0x0C` (form feed) and `0x0D` (carriage return).
+- ASCII whitespace characters: `0x20` (space), `0x09` (horizontal tab), `0x0A` (line feed), and `0x0D` (carriage return).
 - ASCII letters, digits and punctuation: `0x21` (`!`) to `0x7E` (`~`).
 - Latin-1 Supplement letters, digits and punctuation: `0xA1` (`¡`) to `0xAC` (`¬`) and `0xAE` (`®`) to `0xFF` (`ÿ`).
 
