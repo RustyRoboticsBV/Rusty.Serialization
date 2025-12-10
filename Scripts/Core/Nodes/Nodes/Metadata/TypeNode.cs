@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class TypeNode : INode
     {
         /* Public properties. */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public string Name { get; set; }
         public INode Value { get; set; }
 

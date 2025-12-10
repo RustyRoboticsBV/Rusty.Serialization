@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
@@ -6,10 +5,10 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A dictionary serializer node.
     /// </summary>
-    public class DictNode : ICollectionNode
+    public class DictNode : INode
     {
         /* Public properties. */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public KeyValuePair<INode, INode>[] Pairs { get; set; }
 
         /* Constructors. */
@@ -56,22 +55,30 @@ namespace Rusty.Serialization.Core.Nodes
             Pairs = null;
         }
 
-        public void WrapChild(INode child, INode wrapper)
+        /// <summary>
+        /// Get the index of a key node. Returns -1 if the node is not a key.
+        /// </summary>
+        public int IndexOfKey(INode key)
         {
-            if (wrapper is IdNode id)
+            for (int i = 0; i < Pairs.Length; i++)
             {
-                id.Value = child;
-                child.Parent = id;
-                for (int i = 0; i < Pairs.Length; i++)
-                {
-                    if (Pairs[i].Key == child)
-                        Pairs[i] = new(id, Pairs[i].Value);
-                    if (Pairs[i].Value == child)
-                        Pairs[i] = new(Pairs[i].Key, id);
-                }
+                if (Pairs[i].Key == key)
+                    return i;
             }
-            else
-                throw new ArgumentException("We only allow child wrapping for ID nodes.");
+            return -1;
+        }
+
+        /// <summary>
+        /// Get the index of a value node. Returns -1 if the node is not a value.
+        /// </summary>
+        public int IndexOfValue(INode value)
+        {
+            for (int i = 0; i < Pairs.Length; i++)
+            {
+                if (Pairs[i].Value == value)
+                    return i;
+            }
+            return -1;
         }
     }
 }

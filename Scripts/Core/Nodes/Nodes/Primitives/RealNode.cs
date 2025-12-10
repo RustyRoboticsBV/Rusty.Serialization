@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class RealNode : INode
     {
         /* Public properties. */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public EDecimal Value { get; set; }
 
         /* Constructors. */

@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class ColorNode : INode
     {
         /* Public properties. */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }

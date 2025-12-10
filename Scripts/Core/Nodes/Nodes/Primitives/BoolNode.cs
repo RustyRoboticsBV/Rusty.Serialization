@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class BoolNode : INode
     {
         /* Public properties. */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public bool Value { get; set; }
 
         /* Constructors. */

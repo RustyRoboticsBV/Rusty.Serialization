@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
@@ -6,10 +5,10 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An object serializer node.
     /// </summary>
-    public class ObjectNode : ICollectionNode
+    public class ObjectNode : INode
     {
         /* Public properties. */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public KeyValuePair<string, INode>[] Members { get; set; }
 
         /* Constructors. */
@@ -53,20 +52,17 @@ namespace Rusty.Serialization.Core.Nodes
             }
         }
 
-        public void WrapChild(INode child, INode wrapper)
+        /// <summary>
+        /// Get the index of a member node. Returns -1 if the node is not a member.
+        /// </summary>
+        public int IndexOf(INode member)
         {
-            if (wrapper is IdNode id)
+            for (int i = 0; i < Members.Length; i++)
             {
-                id.Value = child;
-                child.Parent = id;
-                for (int i = 0; i < Members.Length; i++)
-                {
-                    if (Members[i].Value == child)
-                        Members[i] = new(Members[i].Key, id);
-                }
+                if (Members[i].Value == member)
+                    return i;
             }
-            else
-                throw new ArgumentException("We only allow child wrapping for ID nodes.");
+            return -1;
         }
     }
 }

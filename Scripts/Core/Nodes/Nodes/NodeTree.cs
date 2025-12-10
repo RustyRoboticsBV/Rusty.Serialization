@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
@@ -6,10 +5,9 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A node tree that represents an object hierarchy.
     /// </summary>
-    public sealed class NodeTree : ICollectionNode
+    public sealed class NodeTree : ITreeElement
     {
         /* Public properties. */
-        public INode Parent { get; set; }
         public INode Root { get; private set; }
 
         /* Private properties. */
@@ -29,23 +27,10 @@ namespace Rusty.Serialization.Core.Nodes
             return "TREE:\n" + PrintUtility.PrintChild(Root);
         }
 
-        public void WrapChild(INode child, INode wrapper)
-        {
-            if (wrapper is IdNode id)
-            {
-                id.Value = child;
-                child.Parent = id;
-                Root = id;
-            }
-            else
-                throw new ArgumentException("We only allow child wrapping for ID nodes.");
-        }
-
         public void Clear()
         {
             Root?.Clear();
             Root = null;
-            Parent = null;
         }
 
         /// <summary>

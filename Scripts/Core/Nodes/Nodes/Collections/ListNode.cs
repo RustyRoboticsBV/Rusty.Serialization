@@ -1,5 +1,3 @@
-using System;
-
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
@@ -8,7 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class ListNode : INode
     {
         /* Public properties. */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public INode[] Elements { get; set; }
 
         /* Constructors. */
@@ -52,20 +50,17 @@ namespace Rusty.Serialization.Core.Nodes
             Elements = null;
         }
 
-        public void WrapChild(INode child, INode wrapper)
+        /// <summary>
+        /// Get the index of an element node. Returns -1 if the node is not an element.
+        /// </summary>
+        public int IndexOf(INode element)
         {
-            if (wrapper is IdNode id)
+            for (int i = 0; i < Elements.Length; i++)
             {
-                id.Value = child;
-                child.Parent = id;
-                for (int i = 0; i < Elements.Length; i++)
-                {
-                    if (Elements[i] == child)
-                        Elements[i] = id;
-                }
+                if (Elements[i] == element)
+                    return i;
             }
-            else
-                throw new ArgumentException("We only allow child wrapping for ID nodes.");
+            return -1;
         }
     }
 }

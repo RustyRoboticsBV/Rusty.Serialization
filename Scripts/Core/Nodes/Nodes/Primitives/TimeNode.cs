@@ -62,7 +62,7 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         /* Public properties */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public Timestamp Value { get; set; }
 
         /* Constructors. */

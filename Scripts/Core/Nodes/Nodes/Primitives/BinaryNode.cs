@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class BinaryNode : INode
     {
         /* Public properties. */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public byte[] Value { get; set; }
 
         /* Constructors. */

@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class IntNode : INode
     {
         /* Public properties. */
-        public INode Parent { get; set; }
+        public ITreeElement Parent { get; set; }
         public decimal Value { get; set; }
 
         /* Constructors. */
