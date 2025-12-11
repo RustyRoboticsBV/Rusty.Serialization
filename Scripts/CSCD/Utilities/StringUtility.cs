@@ -99,7 +99,7 @@ namespace Rusty.Serialization.CSCD
                     throw new ArgumentException("Illegal raw newline character. Use '\\n' instead.");
                 else
                 {
-                    string hex = HexUtility.ToHexString(c);
+                    string hex = UnicodeUtility.CodePointToHex(c);
                     throw new ArgumentException($"Illegal raw control character {hex}. Use '\\{hex}\\' instead.");
                 }
             }

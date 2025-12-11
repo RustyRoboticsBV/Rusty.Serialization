@@ -1,9 +1,11 @@
+using System;
+
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A list serializer node.
     /// </summary>
-    public class ListNode : INode
+    public class ListNode : IContainerNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
@@ -61,6 +63,20 @@ namespace Rusty.Serialization.Core.Nodes
                     return i;
             }
             return -1;
+        }
+
+        public void ReplaceChild(INode oldChild, INode newChild)
+        {
+            int index = IndexOf(oldChild);
+            if (index != -1)
+            {
+                if (oldChild.Parent == this)
+                    oldChild.Parent = null;
+                newChild.Parent = this;
+                Elements[index] = newChild;
+                return;
+            }
+            throw new ArgumentException($"'{oldChild}' was not a child of '{this}'.");
         }
     }
 }

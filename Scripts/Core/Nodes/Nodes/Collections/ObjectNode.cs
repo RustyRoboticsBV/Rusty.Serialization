@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
@@ -5,7 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An object serializer node.
     /// </summary>
-    public class ObjectNode : INode
+    public class ObjectNode : IContainerNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
@@ -63,6 +64,20 @@ namespace Rusty.Serialization.Core.Nodes
                     return i;
             }
             return -1;
+        }
+
+        public void ReplaceChild(INode oldChild, INode newChild)
+        {
+            int index = IndexOf(oldChild);
+            if (index != -1)
+            {
+                if (oldChild.Parent == this)
+                    oldChild.Parent = null;
+                newChild.Parent = this;
+                Members[index] = new(Members[index].Key, newChild);
+                return;
+            }
+            throw new ArgumentException($"'{oldChild}' was not a child of '{this}'.");
         }
     }
 }
