@@ -9,12 +9,12 @@ namespace Rusty.Serialization.Core.Converters
     public class CollectionConverter<CollectionT, ElementT> : CompositeReferenceConverter<CollectionT, ListNode>
         where CollectionT : class, ICollection<ElementT>, new()
     {
-        protected override ListNode CreateNode(CollectionT obj, CreateNodeContext context)
+        protected override ListNode CreateNode(CollectionT obj)
         {
             return new(obj.Count);
         }
 
-        protected override void AssignNode(ListNode node, CollectionT obj, CreateNodeContext context)
+        protected override void AssignNode(ListNode node, CollectionT obj, AssignNodeContext context)
         {
             int index = 0;
             foreach (ElementT element in obj)
@@ -34,7 +34,7 @@ namespace Rusty.Serialization.Core.Converters
             return obj;
         }
 
-        protected override void AssignObject(CollectionT obj, ListNode node, CreateObjectContext context)
+        protected override CollectionT FixReferences(CollectionT obj, ListNode node, FixReferencesContext context)
         {
             throw new System.NotImplementedException();
         }

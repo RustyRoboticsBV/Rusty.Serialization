@@ -10,11 +10,11 @@ namespace Rusty.Serialization.Core.Converters
         where NodeT : INode
     {
         /* Public methods. */
-        INode IConverter.CreateNode(object obj, CreateNodeContext context) => CreateNode((TargetT)obj, context);
+        INode IConverter.CreateNode(object obj) => CreateNode((TargetT)obj);
         object IConverter.CreateObject(INode node, CreateObjectContext context) => CreateObject((NodeT)node, context);
 
         /* Protected methods. */
-        protected abstract NodeT CreateNode(TargetT obj, CreateNodeContext context);
+        protected abstract NodeT CreateNode(TargetT obj);
         protected abstract TargetT CreateObject(NodeT node, CreateObjectContext context);
     }
 }

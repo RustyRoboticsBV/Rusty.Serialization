@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Core.Converters
         where T : struct, Enum
     {
         /* Protected methods. */
-        protected override IntNode CreateNode(T obj, CreateNodeContext context) => new(Convert.ToInt32(obj));
+        protected override IntNode CreateNode(T obj) => new(Convert.ToInt32(obj));
 
         protected override T CreateObject(IntNode node, CreateObjectContext context)
         {

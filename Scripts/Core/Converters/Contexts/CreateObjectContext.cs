@@ -1,8 +1,7 @@
-﻿using Rusty.Serialization.Core.Nodes;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -84,43 +83,6 @@ namespace Rusty.Serialization.Core.Converters
 
             throw new InvalidCastException(
                 $"Cannot deconvert node value {converted} of actualType {obj?.GetType()} to {expectedType}.");
-        }
-
-        public void AssignObject(object obj, INode node)
-        {
-            Type type = obj.GetType();
-            //System.Console.WriteLine("THE TYPE OF " + node + " IS " + type);
-
-            // Handle ID node.
-            if (node is IdNode idNode)
-                AssignObject(obj, idNode.Value);
-
-            // Unwrap type node.
-            else if (node is TypeNode typeNode)
-                AssignObject(obj, typeNode.Value);
-
-            // Else, assign as-is.
-            else
-            {
-                IConverter converter = ConverterInstances.Get(type);
-                if (converter == null)
-                {
-                    converter = ConverterTypes.Instantiate(type);
-                    ConverterInstances.Add(type, converter);
-                }
-
-                if (converter is ICompositeConverter referenceConverter)
-                    referenceConverter.AssignObject(obj, node, this);
-            }
-        }
-
-        /// <summary>
-        /// Get the reference type object corresponding to an ID. This method will not return properly until the second phase of
-        /// parsing - don't use it from IConverter.CreateObject!!!
-        /// </summary>
-        public object GetReference(string name)
-        {
-            return ParsingTable.GetParsed(name);
         }
 
         /* Private methods. */

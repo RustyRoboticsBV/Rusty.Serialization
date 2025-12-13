@@ -19,12 +19,29 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         /* Public methods. */
+        /// <summary>
+        /// Convert an object into a node tree.
+        /// </summary>
         public NodeTree Convert(object obj)
         {
-            Type type = obj.GetType();
+            return Convert(obj, obj.GetType());
+        }
 
+        /// <summary>
+        /// Convert an object into a node tree.
+        /// </summary>
+        public NodeTree Convert<T>(T obj)
+        {
+            return Convert(obj, typeof(T));
+        }
+
+        /// <summary>
+        /// Convert an object into a node tree.
+        /// </summary>
+        public NodeTree Convert(object obj, Type type)
+        {
             // Create context.
-            CreateNodeContext createNodeContext = new(ConverterTypes, InstanceTypes, SymbolTable);
+            AssignNodeContext createNodeContext = new(ConverterTypes, InstanceTypes, SymbolTable);
 
             // Create node hierarchy.
             INode root = createNodeContext.CreateNode(obj);
@@ -48,19 +65,34 @@ namespace Rusty.Serialization.Core.Converters
             return new(root);
         }
 
+        /// <summary>
+        /// Deconvert a node tree into an object.
+        /// </summary>
         public T Deconvert<T>(NodeTree tree) => (T)Deconvert(typeof(T), tree);
 
+        /// <summary>
+        /// Deconvert a node tree into an object.
+        /// </summary>
         public object Deconvert(Type type, NodeTree tree)
         {
             // Create context.
             CreateObjectContext createObjectContext = new(ConverterTypes, InstanceTypes, ParsingTable);
+            FixReferencesContext fixReferencesContext = new(ConverterTypes, InstanceTypes, ParsingTable);
 
             // Deconvert.
             object obj = createObjectContext.CreateObject(type, tree.Root);
-            createObjectContext.AssignObject(obj, tree.Root);
+            obj = fixReferencesContext.FixReferences(obj, tree.Root);
+
+            // Clear parsing table
+            ParsingTable.Clear();
+
+            // Return finished object.
             return obj;
         }
 
+        /// <summary>
+        /// Deconvert a node tree into an object.
+        /// </summary>
         public object Deconvert(NodeTree tree)
         {
             // ID-type root.

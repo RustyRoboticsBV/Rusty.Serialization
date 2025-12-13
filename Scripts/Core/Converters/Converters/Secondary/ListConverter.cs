@@ -9,7 +9,7 @@ namespace Rusty.Serialization.Core.Converters
     public class ListConverter<CollectionT, ElementT> : CollectionConverter<CollectionT, ElementT>
         where CollectionT : class, IList<ElementT>, new()
     {
-        protected override void AssignNode(ListNode node, CollectionT obj, CreateNodeContext context)
+        protected override void AssignNode(ListNode node, CollectionT obj, AssignNodeContext context)
         {
             for (int i = 0; i < obj.Count; i++)
             {
@@ -22,7 +22,7 @@ namespace Rusty.Serialization.Core.Converters
             throw new System.NotImplementedException();
         }
 
-        protected override void AssignObject(CollectionT obj, ListNode node, CreateObjectContext context)
+        protected override CollectionT FixReferences(CollectionT obj, ListNode node, FixReferencesContext context)
         {
             throw new System.NotImplementedException();
         }

@@ -15,17 +15,17 @@ namespace Rusty.Serialization.Core.Converters
             throw new System.NotImplementedException();
         }
 
-        protected override void AssignNode(ListNode node, T obj, CreateNodeContext context)
+        protected override void AssignNode(ListNode node, T obj, AssignNodeContext context)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override ListNode CreateNode(T obj, CreateNodeContext context)
+        protected override ListNode CreateNode(T obj)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override void AssignObject(T obj, ListNode node, CreateObjectContext context)
+        protected override T FixReferences(T obj, ListNode node, FixReferencesContext context)
         {
             throw new System.NotImplementedException();
         }

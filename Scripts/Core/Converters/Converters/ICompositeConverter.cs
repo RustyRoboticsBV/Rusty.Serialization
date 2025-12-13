@@ -11,11 +11,11 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Create the child nodes.
         /// </summary>
-        public void AssignNode(INode node, object obj, CreateNodeContext context);
+        public void AssignNode(INode node, object obj, AssignNodeContext context);
 
         /// <summary>
-        /// Create the child objects.
+        /// Fix the missing references of the created object.
         /// </summary>
-        public void AssignObject(object obj, INode node, CreateObjectContext context);
+        public object FixReferences(object obj, INode node, FixReferencesContext context);
     }
 }

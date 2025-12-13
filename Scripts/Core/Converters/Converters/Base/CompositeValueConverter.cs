@@ -3,10 +3,10 @@
 namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// A composite reference type converter.
+    /// A composite value type converter.
     /// </summary>
-    public abstract class CompositeReferenceConverter<TargetT, NodeT> : ReferenceConverter<TargetT, NodeT>, ICompositeConverter
-        where TargetT : class
+    public abstract class CompositeValueConverter<TargetT, NodeT> : ValueConverter<TargetT, NodeT>, ICompositeConverter
+        where TargetT : struct
         where NodeT : INode
     {
         /* Public methods. */

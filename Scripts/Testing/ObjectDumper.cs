@@ -27,8 +27,8 @@ namespace Rusty.Serialization.Testing
 
             Type type = obj.GetType();
 
-            // Value types: print directly.
-            if (type.IsValueType)
+            // Simple value types: print directly.
+            if (IsSimple(type))
             {
                 Console.WriteLine($"{indentStr}{name}: ({type.Name}) {obj}");
                 return;
@@ -76,7 +76,7 @@ namespace Rusty.Serialization.Testing
                 if (prop.SetMethod == null)
                     continue;
 
-                // Skip indexers
+                // Skip indexers.
                 if (prop.GetIndexParameters().Length > 0)
                     continue;
 
@@ -104,6 +104,16 @@ namespace Rusty.Serialization.Testing
         {
             public new bool Equals(object x, object y) => ReferenceEquals(x, y);
             public int GetHashCode(object obj) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
+        }
+
+        /// <summary>
+        /// Check if a type is a simple type.
+        /// </summary>
+        private static bool IsSimple(Type type)
+        {
+            return type.IsPrimitive
+                || type.IsEnum
+                || type == typeof(decimal);
         }
     }
 }

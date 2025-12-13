@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Core.Converters
         private MemberInfo[] Members { get; set; }
 
         /* Protected methods. */
-        protected override ObjectNode CreateNode(T obj, CreateNodeContext context)
+        protected override ObjectNode CreateNode(T obj)
         {
             // Collect members.
             if (Members == null)
@@ -28,7 +28,7 @@ namespace Rusty.Serialization.Core.Converters
             return new(Members.Length);
         }
 
-        protected override void AssignNode(ObjectNode node, T obj, CreateNodeContext context)
+        protected override void AssignNode(ObjectNode node, T obj, AssignNodeContext context)
         {
             // Collect members.
             if (Members == null)
@@ -103,13 +103,13 @@ namespace Rusty.Serialization.Core.Converters
             return obj;
         }
 
-        protected override void AssignObject(T obj, ObjectNode node, CreateObjectContext context)
+        protected override T FixReferences(T obj, ObjectNode node, FixReferencesContext context)
         {
             // Collect members.
             if (Members == null)
                 Members = GetPublicMembers(typeof(T));
 
-            // Assign non-ref.
+            // Fix member references.
             for (int i = 0; i < Members.Length; i++)
             {
                 MemberInfo member = Members[i];
@@ -118,21 +118,43 @@ namespace Rusty.Serialization.Core.Converters
                 string memberIdentifier = node.Members[i].Key;
 
                 INode memberNode = node.Members[i].Value;
-                if (!(memberNode is RefNode refNode))
-                    continue;
 
                 if (memberIdentifier != member.Name)
                     throw new Exception($"Mismatch between members {i}: '{member.Name}' and '{memberIdentifier}'.");
 
-                // Retrieve reference object.
-                object memberObj = context.GetReference(refNode.ID);
+                // If a ref node, get its value.
+                if (memberNode is RefNode refNode)
+                {
+                    // Retrieve reference object.
+                    object memberObj = context.GetReference(refNode.ID);
 
-                // Deconvert field/property.
-                if (member is FieldInfo field)
-                    field.SetValue(obj, memberObj);
-                else if (member is PropertyInfo property)
-                    property.SetValue(obj, memberObj);
+                    // Deconvert field/property.
+                    if (member is FieldInfo field)
+                        field.SetValue(obj, memberObj);
+                    else if (member is PropertyInfo property)
+                        property.SetValue(obj, memberObj);
+                }
+
+                // If not a ref node, fix member's references.
+                else
+                {
+                    object memberObj = null;
+                    if (member is FieldInfo field)
+                    {
+                        memberObj = field.GetValue(obj);
+                        memberObj = context.FixReferences(memberObj, memberNode);
+                        field.SetValue(obj, memberObj);
+                    }
+                    else if (member is PropertyInfo property)
+                    {
+                        memberObj = property.GetValue(obj);
+                        memberObj = context.FixReferences(memberObj, memberNode);
+                        property.SetValue(obj, memberObj);
+                    }
+                }
             }
+
+            return obj;
         }
 
         /* Private methods. */

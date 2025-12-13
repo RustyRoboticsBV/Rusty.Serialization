@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// The context needed by INode.CreateNode.
     /// </summary>
-    public class CreateNodeContext
+    public class AssignNodeContext
     {
         /* Public properties. */
         public TypeRegistry ConverterTypes { get; private set; }
@@ -14,7 +14,7 @@ namespace Rusty.Serialization.Core.Converters
         public SymbolTable SymbolTable { get; private set; }
 
         /* Constructors. */
-        public CreateNodeContext(TypeRegistry converterTypes, InstanceRegistry instanceTypes, SymbolTable symbolTable)
+        public AssignNodeContext(TypeRegistry converterTypes, InstanceRegistry instanceTypes, SymbolTable symbolTable)
         {
             ConverterTypes = converterTypes;
             ConverterInstances = instanceTypes;
@@ -67,7 +67,7 @@ namespace Rusty.Serialization.Core.Converters
             }
 
             // Convert.
-            targetNode = converter.CreateNode(obj, this);
+            targetNode = converter.CreateNode(obj);
             INode rootNode = targetNode;
 
             // Wrap in type node if the types don't match.

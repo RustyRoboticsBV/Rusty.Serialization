@@ -24,13 +24,26 @@ class A
 {
     public int a;
     public int b { get; set; } = 1;
-    public A c {get; set; }
+    public A c { get; set; }
     public string d = null;
     public string e = "ABC";
+
+    public struct NestedStruct
+    {
+        public A a;
+        public A b;
+        public string c;
+        public string d;
+    }
+    public NestedStruct f = new();
 
     public A()
     {
         d = e;
         c = this;
+        f.a = this;
+        f.b = this;
+        f.c = "ABC";
+        f.d = "DEF";
     }
 }
