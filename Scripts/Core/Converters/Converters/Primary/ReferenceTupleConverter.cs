@@ -10,22 +10,22 @@ namespace Rusty.Serialization.Core.Converters
         where T : class, ITuple, new()
     {
         /* Protected methods. */
+        protected override ListNode CreateNode(T obj, CreateNodeContext context)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override T FixReferences(T obj, ListNode node, FixReferencesContext context)
+        {
+            throw new System.NotImplementedException();
+        }
+
         protected override T CreateObject(ListNode node, CreateObjectContext context)
         {
             throw new System.NotImplementedException();
         }
 
         protected override void AssignNode(ListNode node, T obj, AssignNodeContext context)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override ListNode CreateNode(T obj)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override T FixReferences(T obj, ListNode node, FixReferencesContext context)
         {
             throw new System.NotImplementedException();
         }

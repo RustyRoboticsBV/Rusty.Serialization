@@ -9,6 +9,7 @@ namespace Rusty.Serialization.Core.Converters
     public class ListConverter<CollectionT, ElementT> : CollectionConverter<CollectionT, ElementT>
         where CollectionT : class, IList<ElementT>, new()
     {
+        /* Protected methods. */
         protected override void AssignNode(ListNode node, CollectionT obj, AssignNodeContext context)
         {
             for (int i = 0; i < obj.Count; i++)

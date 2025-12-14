@@ -7,7 +7,7 @@ namespace Rusty.Serialization.Core.Converters
     /// </summary>
     public sealed class ArrayConverter<T> : CompositeReferenceConverter<T[], ListNode>
     {
-        protected override ListNode CreateNode(T[] obj)
+        protected override ListNode CreateNode(T[] obj, CreateNodeContext context)
         {
             return new(obj.Length);
         }

@@ -9,7 +9,8 @@ namespace Rusty.Serialization.Core.Converters
     public class CollectionConverter<CollectionT, ElementT> : CompositeReferenceConverter<CollectionT, ListNode>
         where CollectionT : class, ICollection<ElementT>, new()
     {
-        protected override ListNode CreateNode(CollectionT obj)
+        /* Protected methods. */
+        protected override ListNode CreateNode(CollectionT obj, CreateNodeContext context)
         {
             return new(obj.Count);
         }

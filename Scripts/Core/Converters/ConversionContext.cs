@@ -40,11 +40,12 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         public NodeTree Convert(object obj, Type type)
         {
-            // Create context.
-            AssignNodeContext createNodeContext = new(ConverterTypes, InstanceTypes, SymbolTable);
+            // Create contexts.
+            CreateNodeContext createNodeContext = new();
+            AssignNodeContext assignNodeContext = new(ConverterTypes, InstanceTypes, SymbolTable, createNodeContext);
 
             // Create node hierarchy.
-            INode root = createNodeContext.CreateNode(obj);
+            INode root = assignNodeContext.CreateNode(obj);
 
             // Wrap the root node in a type node.
             INode rootParent = (INode)root.Parent;
@@ -75,7 +76,7 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         public object Deconvert(Type type, NodeTree tree)
         {
-            // Create context.
+            // Create contexts.
             CreateObjectContext createObjectContext = new(ConverterTypes, InstanceTypes, ParsingTable);
             FixReferencesContext fixReferencesContext = new(ConverterTypes, InstanceTypes, ParsingTable);
 

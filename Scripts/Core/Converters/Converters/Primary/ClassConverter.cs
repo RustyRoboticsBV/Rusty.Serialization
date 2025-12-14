@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Core.Converters
         private MemberInfo[] Members { get; set; }
 
         /* Protected methods. */
-        protected override ObjectNode CreateNode(T obj)
+        protected override ObjectNode CreateNode(T obj, CreateNodeContext context)
         {
             // Collect members.
             if (Members == null)

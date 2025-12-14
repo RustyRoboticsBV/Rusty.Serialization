@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Core.Converters
         where T : struct, ITuple
     {
         /* Protected methods. */
-        protected override ListNode CreateNode(T obj)
+        protected override ListNode CreateNode(T obj, CreateNodeContext context)
         {
             throw new System.NotImplementedException();
         }

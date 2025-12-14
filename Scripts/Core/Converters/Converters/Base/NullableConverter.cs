@@ -9,7 +9,7 @@ namespace Rusty.Serialization.Core.Converters
         where T : struct
     {
         /* Public methods. */
-        public INode CreateNode(object obj)
+        public INode CreateNode(object obj, CreateNodeContext context)
         {
             return null; // TODO: IMPLEMENT NULLABLE CONVERTER.
         }
