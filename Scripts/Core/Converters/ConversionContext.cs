@@ -41,8 +41,9 @@ namespace Rusty.Serialization.Core.Converters
         public NodeTree Convert(object obj, Type type)
         {
             // Create contexts.
-            CreateNodeContext createNodeContext = new();
+            CreateNodeContext createNodeContext = new(ConverterTypes, InstanceTypes, SymbolTable, null);
             AssignNodeContext assignNodeContext = new(ConverterTypes, InstanceTypes, SymbolTable, createNodeContext);
+            createNodeContext.AssignNodeContext = assignNodeContext;
 
             // Create node hierarchy.
             INode root = assignNodeContext.CreateNode(obj);
