@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A composite reference type converter.
     /// </summary>
-    public abstract class CompositeReferenceConverter<TargetT, NodeT> : ReferenceConverter<TargetT, NodeT>, ICompositeConverter
+    public abstract class CompositeReferenceConverter<TargetT, NodeT> : Converter<TargetT, NodeT>, ICompositeConverter
         where TargetT : class
         where NodeT : INode
     {

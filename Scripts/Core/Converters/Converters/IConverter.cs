@@ -14,7 +14,7 @@ namespace Rusty.Serialization.Core.Converters
         public INode CreateNode(object obj, CreateNodeContext context);
 
         /// <summary>
-        /// Create an object from a node. References child nodes are not handled yet.
+        /// Create an object from a node.
         /// </summary>
         public object CreateObject(INode node, CreateObjectContext context);
     }

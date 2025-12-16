@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A composite value type converter.
     /// </summary>
-    public abstract class CompositeValueConverter<TargetT, NodeT> : ValueConverter<TargetT, NodeT>, ICompositeConverter
+    public abstract class CompositeValueConverter<TargetT, NodeT> : Converter<TargetT, NodeT>, ICompositeConverter
         where TargetT : struct
         where NodeT : INode
     {

@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A string converter.
     /// </summary>
-    public sealed class StringConverter : ReferenceConverter<string, StringNode>
+    public sealed class StringConverter : Converter<string, StringNode>
     {
         /* Protected methods. */
         protected override StringNode CreateNode(string obj, CreateNodeContext context) => new(obj);

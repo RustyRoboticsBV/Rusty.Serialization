@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A value tuple type converter.
     /// </summary>
-    public sealed class ValueTupleConverter<T> : ValueConverter<T, ListNode>
+    public sealed class ValueTupleConverter<T> : Converter<T, ListNode>
         where T : struct, ITuple
     {
         /* Protected methods. */

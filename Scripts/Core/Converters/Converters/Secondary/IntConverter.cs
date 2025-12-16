@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// An integer converter.
     /// </summary>
-    public sealed class IntConverter : ValueConverter<int, IntNode>
+    public sealed class IntConverter : Converter<int, IntNode>
     {
         /* Protected methods. */
         protected override IntNode CreateNode(int obj, CreateNodeContext context) => new(obj);

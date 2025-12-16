@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// An enum type converter.
     /// </summary>
-    public sealed class EnumConverter<T> : ValueConverter<T, IntNode>
+    public sealed class EnumConverter<T> : Converter<T, IntNode>
         where T : struct, Enum
     {
         /* Protected methods. */
