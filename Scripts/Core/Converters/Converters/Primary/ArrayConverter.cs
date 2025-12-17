@@ -22,12 +22,21 @@ namespace Rusty.Serialization.Core.Converters
 
         protected override T[] CreateObject(ListNode node, CreateObjectContext context)
         {
-            throw new System.NotImplementedException();
+            T[] array = new T[node.Elements.Length];
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] = context.CreateObject<T>(node.Elements[i]);
+            }
+            return array;
         }
 
         protected override T[] FixReferences(T[] obj, ListNode node, FixReferencesContext context)
         {
-            throw new System.NotImplementedException();
+            for (int i = 0; i < obj.Length; i++)
+            {
+                context.FixReferences(obj[i], node.Elements[i]);
+            }
+            return obj;
         }
     }
 }

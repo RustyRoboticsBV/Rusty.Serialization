@@ -121,7 +121,7 @@ namespace Rusty.Serialization.CSCD
                 || serialized.StartsWith('h') || serialized.StartsWith("-h")
                 || serialized.StartsWith('m') || serialized.StartsWith("-m")
                 || serialized.StartsWith('s') || serialized.StartsWith("-s")
-                || serialized.StartsWith('f') || serialized.StartsWith("-f"))
+                || serialized.StartsWith('f') || serialized.StartsWith("-g"))
             {
                 return Time.Parse(serialized, this);
             }

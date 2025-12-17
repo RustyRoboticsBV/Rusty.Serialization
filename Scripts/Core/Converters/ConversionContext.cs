@@ -14,7 +14,19 @@ namespace Rusty.Serialization.Core.Converters
         /* Constructors. */
         public ConversionContext()
         {
+            ConverterTypes.Add<bool, BoolConverter>();
+            ConverterTypes.Add<sbyte, SbyteConverter>();
+            ConverterTypes.Add<short, ShortConverter>();
             ConverterTypes.Add<int, IntConverter>();
+            ConverterTypes.Add<long, LongConverter>();
+            ConverterTypes.Add<byte, ByteConverter>();
+            ConverterTypes.Add<ushort, UshortConverter>();
+            ConverterTypes.Add<uint, UintConverter>();
+            ConverterTypes.Add<ulong, UlongConverter>();
+            ConverterTypes.Add<float, FloatConverter>();
+            ConverterTypes.Add<double, DoubleConverter>();
+            ConverterTypes.Add<decimal, DecimalConverter>();
+            ConverterTypes.Add<char, CharConverter>();
             ConverterTypes.Add<string, StringConverter>();
         }
 

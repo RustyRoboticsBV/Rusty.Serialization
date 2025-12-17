@@ -30,7 +30,7 @@ namespace Rusty.Serialization.CSCD
             if (node.Second != 0)
                 str.Append($"s{node.Second}");
             if (node.Millisecond != 0)
-                str.Append($"f{node.Millisecond}");
+                str.Append($"g{node.Millisecond}");
             string serialized = str.ToString();
 
             // Handle all zeros.
@@ -108,7 +108,7 @@ namespace Rusty.Serialization.CSCD
                             if (millisecond == null)
                                 millisecond = Parse(trimmed, ref i);
                             else
-                                throw new ArgumentException("Duplicate f.");
+                                throw new ArgumentException("Duplicate g.");
                             break;
                         default:
                             throw new ArgumentException($"Invalid term '{trimmed[i]}'.");

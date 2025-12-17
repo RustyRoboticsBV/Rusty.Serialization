@@ -27,6 +27,7 @@ class A
     public A c { get; set; }
     public string d = null;
     public string e = "ABC";
+    public char[] f = new char[] { 'a', 'B', 'c'};
 
     public struct NestedStruct
     {
@@ -35,15 +36,15 @@ class A
         public string c;
         public string d;
     }
-    public NestedStruct f = new();
+    public NestedStruct g = new();
 
     public A()
     {
         d = e;
         c = this;
-        f.a = this;
-        f.b = this;
-        f.c = "ABC";
-        f.d = "DEF";
+        g.a = this;
+        g.b = this;
+        g.c = "ABC";
+        g.d = "DEF";
     }
 }
