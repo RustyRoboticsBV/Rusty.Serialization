@@ -67,7 +67,7 @@ Examples:
 #### Characters
 Characters must be enclosed in `'` single-quotes. Only a single character may be stored inside. Empty character literals are not allowed.
 
-The following characters from the character set may not appear in a character literal: `0x09` (horizontal tab), `0x0A` (newline), `0x0B` (vertical tab), `0x0C` (form feed) and `0x0D` (carriage return).
+The following characters from the character set may not appear in a character literal: `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return).
 
 A few special character literals exist:
 - `'\''`: alternative way of writing `'''`.
