@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
+using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -25,6 +26,33 @@ namespace Rusty.Serialization.Core.Converters
                 node.Pairs[index] = new(key, value);
                 index++;
             }
+        }
+
+        protected override DictT CreateObject(DictNode node, CreateObjectContext context)
+        {
+            List<KeyValuePair<KeyT, ValueT>> pairs = new();
+            for (int i = 0; i < node.Count; i++)
+            {
+                KeyT key = context.CreateObject<KeyT>(node.GetKeyAt(i));
+                ValueT value = context.CreateObject<ValueT>(node.GetValueAt(i));
+                if (key == null)
+                    continue;
+                pairs.Add(new(key, value));
+            }
+            return CreateObjectFromElements(pairs);
+        }
+
+        protected override DictT FixReferences(DictT obj, DictNode node, FixReferencesContext context)
+        {
+            List<KeyValuePair<KeyT, ValueT>> pairs = new();
+            int index = 0;
+            foreach (var pair in obj)
+            {
+                KeyT key = (KeyT)context.FixReferences(pair.Key, node.GetKeyAt(index));
+                ValueT value = (ValueT)context.FixReferences(pair.Value, node.GetValueAt(index));
+                index++;
+            }
+            return CreateObjectFromElements(pairs);
         }
     }
 }

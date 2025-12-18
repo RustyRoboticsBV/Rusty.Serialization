@@ -51,6 +51,13 @@ class A
     public int[] j1 = [1, 2, 3];
     public System.Collections.Generic.List<int> j2 = [4, 5, 6];
 
+    public System.Collections.Generic.Dictionary<string, int> k = new System.Collections.Generic.Dictionary<string, int>()
+    {
+        { "ABC", 123 },
+        { "DEF", 456 },
+        { "GHI", 789 }
+    };
+
     public A()
     {
         f2 = f1;

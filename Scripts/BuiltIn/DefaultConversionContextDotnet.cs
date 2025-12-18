@@ -16,6 +16,8 @@ namespace Rusty.Serialization
         {
             ConverterTypes.Add<Color, ColorConverter>();
             ConverterTypes.Add<DateTime, DateTimeConverter>();
+            ConverterTypes.Add(typeof(List<>), typeof(ListConverter<>));
+            //ConverterTypes.Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
         }
     }
 }

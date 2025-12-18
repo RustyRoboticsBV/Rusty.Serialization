@@ -56,7 +56,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Create a object from an array of elements.
         /// </summary>
-        protected virtual EnumerableT CreateObjectFromElements(ElementT[] elements)
+        protected virtual EnumerableT CreateObjectFromElements(ICollection<ElementT> elements)
         {
             return (EnumerableT)Activator.CreateInstance(typeof(EnumerableT), elements);
         }
