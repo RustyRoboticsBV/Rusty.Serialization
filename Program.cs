@@ -1,9 +1,9 @@
-﻿using Rusty.Serialization.Core.Converters;
+﻿using Rusty.Serialization;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Testing;
 using System;
 
-ConversionContext context = new();
+DefaultConversionContext context = new();
 A a = new();
 ObjectDumper.Print(a);
 
@@ -22,29 +22,37 @@ Console.WriteLine(tree);
 
 class A
 {
-    public int a;
-    public int b { get; set; } = 1;
-    public A c { get; set; }
-    public string d = null;
-    public string e = "ABC";
-    public char[] f = new char[] { 'a', 'B', 'c'};
+    public bool a;
 
-    public struct NestedStruct
-    {
-        public A a;
-        public A b;
-        public string c;
-        public string d;
-    }
-    public NestedStruct g = new();
+    public sbyte b1;
+    public short b2;
+    public int b3;
+    public long b4;
+    public byte b5;
+    public ushort b6;
+    public uint b7;
+    public ulong b8;
+
+    public float c1;
+    public double c2;
+    public decimal c3;
+
+    public char e;
+
+    public string f1 = "ABC";
+    public string f2 = "DEF";
+
+    public System.Drawing.Color g = System.Drawing.Color.Red;
+
+    public DateTime h = new(1997, 2, 13, 13, 30, 10);
+
+    public byte[] i = [0x01, 0x23, 0x45, 0xAB];
+
+    public int[] j1 = [1, 2, 3];
+    public System.Collections.Generic.List<int> j2 = [4, 5, 6];
 
     public A()
     {
-        d = e;
-        c = this;
-        g.a = this;
-        g.b = this;
-        g.c = "ABC";
-        g.d = "DEF";
+        f2 = f1;
     }
 }

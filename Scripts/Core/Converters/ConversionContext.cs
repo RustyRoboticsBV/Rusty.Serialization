@@ -3,6 +3,9 @@ using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
+    /// <summary>
+    /// A context for object-node conversions.
+    /// </summary>
     public class ConversionContext
     {
         /* Public properties. */
@@ -28,7 +31,7 @@ namespace Rusty.Serialization.Core.Converters
             ConverterTypes.Add<decimal, DecimalConverter>();
             ConverterTypes.Add<char, CharConverter>();
             ConverterTypes.Add<string, StringConverter>();
-            ConverterTypes.Add<byte[], ByteConverter>();
+            ConverterTypes.Add<byte[], ByteArrayConverter>();
         }
 
         /* Public methods. */

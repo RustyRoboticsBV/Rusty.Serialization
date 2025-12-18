@@ -5,4 +5,9 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="Scripts\BuiltIn\.NET\ColorConverter.cs" />
+    <Compile Include="Scripts\BuiltIn\.NET\DateTimeConverter.cs" />
+  </ItemGroup>
+
 </Project>
