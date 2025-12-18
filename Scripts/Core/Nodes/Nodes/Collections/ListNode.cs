@@ -5,11 +5,12 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A list serializer node.
     /// </summary>
-    public class ListNode : IContainerNode
+    public class ListNode : ICollectionNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
         public INode[] Elements { get; set; }
+        public int Count => Elements.Length;
 
         /* Constructors. */
         public ListNode(int capacity) : this(new INode[capacity]) { }
@@ -63,6 +64,11 @@ namespace Rusty.Serialization.Core.Nodes
                     return i;
             }
             return -1;
+        }
+
+        public INode GetValueAt(int index)
+        {
+            return Elements[index];
         }
 
         public void ReplaceChild(INode oldChild, INode newChild)

@@ -6,11 +6,12 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A dictionary serializer node.
     /// </summary>
-    public class DictNode : IContainerNode
+    public class DictNode : IDictionaryNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
         public KeyValuePair<INode, INode>[] Pairs { get; set; }
+        public int Count => Pairs.Length;
 
         /* Constructors. */
         public DictNode(int capacity) : this(new KeyValuePair<INode, INode>[capacity]) { }
@@ -80,6 +81,16 @@ namespace Rusty.Serialization.Core.Nodes
                     return i;
             }
             return -1;
+        }
+
+        public INode GetKeyAt(int index)
+        {
+            return Pairs[index].Key;
+        }
+
+        public INode GetValueAt(int index)
+        {
+            return Pairs[index].Value;
         }
 
         public void ReplaceChild(INode oldChild, INode newChild)

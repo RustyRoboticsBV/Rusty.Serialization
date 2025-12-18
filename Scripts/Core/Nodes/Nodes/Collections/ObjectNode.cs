@@ -6,11 +6,12 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An object serializer node.
     /// </summary>
-    public class ObjectNode : IContainerNode
+    public class ObjectNode : ICollectionNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
         public KeyValuePair<string, INode>[] Members { get; set; }
+        public int Count => Members.Length;
 
         /* Constructors. */
         public ObjectNode(int capacity) : this(new KeyValuePair<string, INode>[capacity]) { }
@@ -64,6 +65,11 @@ namespace Rusty.Serialization.Core.Nodes
                     return i;
             }
             return -1;
+        }
+
+        public INode GetValueAt(int index)
+        {
+            return Members[index].Value;
         }
 
         public void ReplaceChild(INode oldChild, INode newChild)

@@ -6,9 +6,9 @@ using Rusty.Serialization.Core.Nodes;
 namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// A struct type converter.
+    /// A struct converter.
     /// </summary>
-    public class StructConverter<T> : CompositeValueConverter<T, ObjectNode>
+    public class StructConverter<T> : CompositeConverter<T, ObjectNode>
         where T : struct
     {
         /* Protected properties. */

@@ -3,10 +3,9 @@
 namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// A composite value type converter.
+    /// A composite type converter.
     /// </summary>
-    public abstract class CompositeValueConverter<TargetT, NodeT> : Converter<TargetT, NodeT>, ICompositeConverter
-        where TargetT : struct
+    public abstract class CompositeConverter<TargetT, NodeT> : Converter<TargetT, NodeT>, ICompositeConverter
         where NodeT : INode
     {
         /* Public methods. */
@@ -14,7 +13,13 @@ namespace Rusty.Serialization.Core.Converters
         object ICompositeConverter.FixReferences(object obj, INode node, FixReferencesContext context) => FixReferences((TargetT)obj, (NodeT)node, context);
 
         /* Protected methods. */
+        /// <summary>
+        /// Create the child nodes.
+        /// </summary>
         protected abstract void AssignNode(NodeT node, TargetT obj, AssignNodeContext context);
+        /// <summary>
+        /// Fix the the missing references of the created object.
+        /// </summary>
         protected abstract TargetT FixReferences(TargetT obj, NodeT node, FixReferencesContext context);
     }
 }

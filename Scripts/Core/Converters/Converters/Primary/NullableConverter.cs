@@ -3,7 +3,7 @@
 namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// A nullable type converter.
+    /// A nullable converter.
     /// </summary>
     public sealed class NullableConverter<ValueT> : Converter<ValueT?, INode>
         where ValueT : struct

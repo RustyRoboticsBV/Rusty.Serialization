@@ -4,7 +4,7 @@ using Rusty.Serialization.Core.Nodes;
 namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// An enum type converter.
+    /// An enum converter.
     /// </summary>
     public sealed class EnumConverter<T> : Converter<T, IntNode>
         where T : struct, Enum

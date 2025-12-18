@@ -28,6 +28,7 @@ namespace Rusty.Serialization.Core.Converters
             ConverterTypes.Add<decimal, DecimalConverter>();
             ConverterTypes.Add<char, CharConverter>();
             ConverterTypes.Add<string, StringConverter>();
+            ConverterTypes.Add<byte[], ByteConverter>();
         }
 
         /* Public methods. */

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -100,16 +101,8 @@ namespace Rusty.Serialization.Core.Converters
             }
 
             // Resolve tuple types.
-            if (targetType.IsValueType && targetType.IsGenericType &&
-                targetType.FullName!.StartsWith("System.ValueTuple`"))
-            {
-                return typeof(ValueTupleConverter<>).MakeGenericType(targetType);
-            }
-            if (targetType.IsClass && targetType.IsGenericType &&
-                targetType.FullName!.StartsWith("System.Tuple`"))
-            {
-                return typeof(ReferenceTupleConverter<>).MakeGenericType(targetType);
-            }
+            if (typeof(ITuple).IsAssignableFrom(targetType))
+                return typeof(TupleConverter<>).MakeGenericType(targetType);
 
             // Resolve closed generic types.
             if (targetType.IsGenericType)
