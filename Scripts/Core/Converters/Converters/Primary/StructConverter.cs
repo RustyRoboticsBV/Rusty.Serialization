@@ -66,6 +66,23 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
+        protected override void CollectTypes(ObjectNode node, CollectTypesContext context)
+        {
+            // Collect members.
+            if (Members == null)
+                Members = GetPublicMembers(typeof(T));
+
+            // Collect member types.
+            for (int i = 0; i < Members.Length; i++)
+            {
+                MemberInfo member = Members[i];
+                if (member is FieldInfo field)
+                    context.CollectTypes(node.Members[i].Value, field.FieldType);
+                else if (member is PropertyInfo property)
+                    context.CollectTypes(node.Members[i].Value, property.PropertyType);
+            }
+        }
+
         protected override T CreateObject(ObjectNode node, CreateObjectContext context)
         {
             // Collect members.

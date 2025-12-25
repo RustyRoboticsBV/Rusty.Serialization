@@ -28,6 +28,15 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
+        protected override void CollectTypes(ListNode node, CollectTypesContext context)
+        {
+            for (int i = 0; i < node.Elements.Length; i++)
+            {
+                Type elementType = GetFields()[i].FieldType;
+                context.CollectTypes(node.Elements[i], elementType);
+            }
+        }
+
         protected override T CreateObject(ListNode node, CreateObjectContext context)
         {
             object[] values = new object[node.Elements.Length];

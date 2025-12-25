@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// An target type to IConverter type registry.
     /// </summary>
-    public class TypeRegistry
+    public class ConverterTypeRegistry
     {
         /* Private properties. */
         private Dictionary<Type, Type> targetToConverter = new();

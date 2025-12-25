@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An ID serializer node.
     /// </summary>
-    public class IdNode : IContainerNode
+    public class IdNode : IMetadataNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }

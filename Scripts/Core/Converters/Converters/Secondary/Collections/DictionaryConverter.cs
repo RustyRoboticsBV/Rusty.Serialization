@@ -1,4 +1,6 @@
 ﻿using Rusty.Serialization.Core.Nodes;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
@@ -25,6 +27,18 @@ namespace Rusty.Serialization.Core.Converters
                 INode value = context.CreateNode(typeof(DictT), pair.Value);
                 node.Pairs[index] = new(key, value);
                 index++;
+            }
+        }
+
+        protected override void CollectTypes(DictNode node, CollectTypesContext context)
+        {
+            Type keyType = typeof(DictT).GetGenericArguments()[0];
+            Type valueType = typeof(DictT).GetGenericArguments()[1];
+
+            for (int i = 0; i < node.Pairs.Length; i++)
+            {
+                context.CollectTypes(node.Pairs[i].Key, keyType);
+                context.CollectTypes(node.Pairs[i].Value, valueType);
             }
         }
 

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -22,6 +24,16 @@ namespace Rusty.Serialization.Core.Converters
             {
                 node.Elements[index] = context.CreateNode(typeof(SetT), element);
                 index++;
+            }
+        }
+
+        protected override void CollectTypes(ListNode node, CollectTypesContext context)
+        {
+            Type elementType = typeof(SetT).GetGenericArguments()[0];
+
+            for (int i = 0; i < node.Elements.Length; i++)
+            {
+                context.CollectTypes(node.Elements[i], elementType);
             }
         }
     }

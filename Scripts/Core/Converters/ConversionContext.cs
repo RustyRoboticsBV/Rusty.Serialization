@@ -9,29 +9,40 @@ namespace Rusty.Serialization.Core.Converters
     public class ConversionContext
     {
         /* Public properties. */
-        public TypeRegistry ConverterTypes { get; private set; } = new();
-        public InstanceRegistry InstanceTypes { get; private set; } = new();
+        public ConverterRegistry Converters { get; private set; } = new();
+
         public SymbolTable SymbolTable { get; private set; } = new();
+        public CreateNodeContext CreateNodeContext { get; private set; }
+        public AssignNodeContext AssignNodeContext { get; private set; }
+
+        public NodeTypeTable NodeTypeTable { get; private set; } = new();
         public ParsingTable ParsingTable { get; private set; } = new();
+        public CollectTypesContext CollectTypesContext { get; private set; }
 
         /* Constructors. */
         public ConversionContext()
         {
-            ConverterTypes.Add<bool, BoolConverter>();
-            ConverterTypes.Add<sbyte, SbyteConverter>();
-            ConverterTypes.Add<short, ShortConverter>();
-            ConverterTypes.Add<int, IntConverter>();
-            ConverterTypes.Add<long, LongConverter>();
-            ConverterTypes.Add<byte, ByteConverter>();
-            ConverterTypes.Add<ushort, UshortConverter>();
-            ConverterTypes.Add<uint, UintConverter>();
-            ConverterTypes.Add<ulong, UlongConverter>();
-            ConverterTypes.Add<float, FloatConverter>();
-            ConverterTypes.Add<double, DoubleConverter>();
-            ConverterTypes.Add<decimal, DecimalConverter>();
-            ConverterTypes.Add<char, CharConverter>();
-            ConverterTypes.Add<string, StringConverter>();
-            ConverterTypes.Add<byte[], ByteArrayConverter>();
+            // Create sub-contexts.
+            CreateNodeContext = new(this);
+            AssignNodeContext = new(this);
+            CollectTypesContext = new(this);
+
+            // Register built-in converters.
+            Converters.Add<bool, BoolConverter>();
+            Converters.Add<sbyte, SbyteConverter>();
+            Converters.Add<short, ShortConverter>();
+            Converters.Add<int, IntConverter>();
+            Converters.Add<long, LongConverter>();
+            Converters.Add<byte, ByteConverter>();
+            Converters.Add<ushort, UshortConverter>();
+            Converters.Add<uint, UintConverter>();
+            Converters.Add<ulong, UlongConverter>();
+            Converters.Add<float, FloatConverter>();
+            Converters.Add<double, DoubleConverter>();
+            Converters.Add<decimal, DecimalConverter>();
+            Converters.Add<char, CharConverter>();
+            Converters.Add<string, StringConverter>();
+            Converters.Add<byte[], ByteArrayConverter>();
         }
 
         /* Public methods. */
@@ -56,17 +67,15 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         public NodeTree Convert(object obj, Type type)
         {
-            // Create contexts.
-            CreateNodeContext createNodeContext = new(ConverterTypes, InstanceTypes, SymbolTable, null);
-            AssignNodeContext assignNodeContext = new(ConverterTypes, InstanceTypes, SymbolTable, createNodeContext);
-            createNodeContext.AssignNodeContext = assignNodeContext;
+            // Clear previous resources.
+            SymbolTable.Clear();
 
             // Create node hierarchy.
-            INode root = assignNodeContext.CreateNode(obj);
+            INode root = CreateNodeContext.CreateNode(obj);
 
             // Wrap the root node in a type node.
             INode rootParent = (INode)root.Parent;
-            TypeNode typeNode = new(new TypeName(obj.GetType()), root);
+            TypeNode typeNode = new(new TypeName(obj != null ? obj.GetType() : type), root);
             if (rootParent is IContainerNode container)
                 container.ReplaceChild(root, typeNode);
 
@@ -75,9 +84,6 @@ namespace Rusty.Serialization.Core.Converters
             {
                 root = (INode)root.Parent;
             }
-
-            // Clear symbol table.
-            SymbolTable.Clear();
 
             // Create node tree.
             return new(root);
@@ -93,19 +99,14 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         public object Deconvert(Type type, NodeTree tree)
         {
-            // Create contexts.
-            CreateObjectContext createObjectContext = new(ConverterTypes, InstanceTypes, ParsingTable);
-            FixReferencesContext fixReferencesContext = new(ConverterTypes, InstanceTypes, ParsingTable);
+            // Clear previous resources.
+            NodeTypeTable.Clear();
 
-            // Deconvert.
-            object obj = createObjectContext.CreateObject(type, tree.Root);
-            obj = fixReferencesContext.FixReferences(obj, tree.Root);
+            // Collect the type of each node.
+            CollectTypesContext.CollectTypes(tree.Root, type);
+            NodeTypeTable.ResolveRefs();
 
-            // Clear parsing table
-            ParsingTable.Clear();
-
-            // Return finished object.
-            return obj;
+            return null;
         }
 
         /// <summary>
@@ -128,7 +129,7 @@ namespace Rusty.Serialization.Core.Converters
             }
 
             else
-                throw new ArgumentException("Cannot parse node trees that don't start with a type.");
+                throw new ArgumentException("Cannot parse node tree due to ambiguous root type:\n" + tree);
         }
     }
 }

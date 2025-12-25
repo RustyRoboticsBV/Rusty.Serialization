@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A type label serializer node.
     /// </summary>
-    public class TypeNode : IContainerNode
+    public class TypeNode : IMetadataNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }

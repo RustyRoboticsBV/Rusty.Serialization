@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// An target type to IConverter instance registry.
     /// </summary>
-    public class InstanceRegistry
+    public class ConverterInstanceRegistry
     {
         /* Private properties. */
         private Dictionary<Type, IConverter> targetToConverter = new();
@@ -27,11 +27,19 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         public IConverter Get(Type targetType)
         {
-            if (targetType == null)
-                targetType = typeof(object);
             if (targetToConverter.TryGetValue(targetType, out IConverter converter))
                 return converter;
             return null;
+        }
+
+        /// <summary>
+        /// Check a converter for some type if it exists.
+        /// </summary>
+        public bool Has(Type targetType)
+        {
+            if (targetType == null)
+                return false;
+            return targetToConverter.ContainsKey(targetType);
         }
     }
 }

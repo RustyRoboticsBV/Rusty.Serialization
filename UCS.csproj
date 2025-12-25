@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Scripts\BuiltIn\.NET\ColorConverter.cs" />
-    <Compile Include="Scripts\BuiltIn\.NET\DateTimeConverter.cs" />
-    <Compile Include="Scripts\BuiltIn\.NET\Collections\ListConverter.cs" />
+    <Compile Remove="Scripts\BuiltIn\**" />
+    <EmbeddedResource Remove="Scripts\BuiltIn\**" />
+    <None Remove="Scripts\BuiltIn\**" />
   </ItemGroup>
 
 </Project>

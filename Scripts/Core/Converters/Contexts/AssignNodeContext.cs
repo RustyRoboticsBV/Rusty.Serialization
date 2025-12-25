@@ -4,25 +4,15 @@ using Rusty.Serialization.Core.Nodes;
 namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// The context needed by INode.CreateNode.
+    /// A context for the IConverter.AssignNode method.
     /// </summary>
-    public class AssignNodeContext
+    public class AssignNodeContext : SubContext
     {
-        /* Public properties. */
-        public TypeRegistry ConverterTypes { get; private set; }
-        public InstanceRegistry ConverterInstances { get; private set; }
-        public SymbolTable SymbolTable { get; private set; }
-        public CreateNodeContext CreateNodeContext { get; private set; }
+        /* Private properties. */
+        private CreateNodeContext CreateNodeContext => Context.CreateNodeContext;
 
         /* Constructors. */
-        public AssignNodeContext(TypeRegistry converterTypes, InstanceRegistry instanceTypes, SymbolTable symbolTable,
-            CreateNodeContext createNodeContext)
-        {
-            ConverterTypes = converterTypes;
-            ConverterInstances = instanceTypes;
-            SymbolTable = symbolTable;
-            CreateNodeContext = createNodeContext;
-        }
+        public AssignNodeContext(ConversionContext context) : base(context) { }
 
         /* Public methods. */
         /// <summary>
@@ -61,15 +51,8 @@ namespace Rusty.Serialization.Core.Converters
                 return new RefNode(SymbolTable.GetIdFor(obj).ToString());
             }
 
-            // Get converter.
-            IConverter converter = ConverterInstances.Get(actualType);
-            if (converter == null)
-            {
-                converter = ConverterTypes.Instantiate(actualType);
-                ConverterInstances.Add(actualType, converter);
-            }
-
             // Convert.
+            IConverter converter = Converters.Get(actualType);
             targetNode = converter.CreateNode(obj, CreateNodeContext);
             INode rootNode = targetNode;
 

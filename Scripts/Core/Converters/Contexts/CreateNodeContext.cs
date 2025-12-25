@@ -3,29 +3,22 @@ using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
-    public class CreateNodeContext
+    /// <summary>
+    /// A context for the IConverter.CreateNode method.
+    /// </summary>
+    public class CreateNodeContext : SubContext
     {
-        /* Public properties. */
-        public TypeRegistry ConverterTypes { get; private set; }
-        public InstanceRegistry ConverterInstances { get; private set; }
-        public SymbolTable SymbolTable { get; private set; }
-        public AssignNodeContext AssignNodeContext { get; internal set; } // TODO: internal setter is bad.
+        /* Private properties. */
+        private AssignNodeContext AssignNodeContext => Context.AssignNodeContext;
 
         /* Constructors. */
-        public CreateNodeContext(TypeRegistry converterTypes, InstanceRegistry instanceTypes, SymbolTable symbolTable,
-            AssignNodeContext assignNodeContext)
-        {
-            ConverterTypes = converterTypes;
-            ConverterInstances = instanceTypes;
-            SymbolTable = symbolTable;
-            AssignNodeContext = assignNodeContext;
-        }
+        public CreateNodeContext(ConversionContext context) : base(context) { }
 
         /* Public methods. */
         /// <summary>
         /// Create a node from an object of some type.
         /// </summary>
-        public INode CreateNode(object obj) => CreateNode(obj.GetType(), obj);
+        public INode CreateNode(object obj) => CreateNode(obj?.GetType(), obj);
 
         /// <summary>
         /// Create a node from an object of some type.
@@ -58,15 +51,8 @@ namespace Rusty.Serialization.Core.Converters
                 return new RefNode(SymbolTable.GetIdFor(obj).ToString());
             }
 
-            // Get converter.
-            IConverter converter = ConverterInstances.Get(actualType);
-            if (converter == null)
-            {
-                converter = ConverterTypes.Instantiate(actualType);
-                ConverterInstances.Add(actualType, converter);
-            }
-
             // Convert.
+            IConverter converter = Converters.Get(actualType);
             targetNode = converter.CreateNode(obj, this);
             INode rootNode = targetNode;
 

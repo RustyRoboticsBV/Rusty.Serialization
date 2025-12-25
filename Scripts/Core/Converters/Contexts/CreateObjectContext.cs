@@ -8,12 +8,12 @@ namespace Rusty.Serialization.Core.Converters
     public class CreateObjectContext
     {
         /* Public properties. */
-        public TypeRegistry ConverterTypes { get; private set; }
-        public InstanceRegistry ConverterInstances { get; private set; }
+        public ConverterTypeRegistry ConverterTypes { get; private set; }
+        public ConverterInstanceRegistry ConverterInstances { get; private set; }
         public ParsingTable ParsingTable { get; private set; }
 
         /* Constructors. */
-        public CreateObjectContext(TypeRegistry converterTypes, InstanceRegistry instanceTypes, ParsingTable parsingTable)
+        public CreateObjectContext(ConverterTypeRegistry converterTypes, ConverterInstanceRegistry instanceTypes, ParsingTable parsingTable)
         {
             ConverterTypes = converterTypes;
             ConverterInstances = instanceTypes;
