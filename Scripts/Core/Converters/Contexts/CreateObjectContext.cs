@@ -65,7 +65,7 @@ namespace Rusty.Serialization.Core.Converters
                 obj = converter.CreateObject(node, this);
 
                 if (converter is ICompositeConverter composite)
-                    composite.AssignObject(obj, node, Context.AssignObjectContext);
+                    obj = composite.AssignObject(obj, node, Context.AssignObjectContext);
             }
 
             // If the object is of the correct type, return it.

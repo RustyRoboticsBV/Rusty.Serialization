@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Core.Converters
     /// A tuple converter.
     /// </summary>
     public sealed class TupleConverter<T> : CompositeConverter<T, ListNode>
-        where T : ITuple
+        where T : struct, ITuple
     {
         /* Private properties. */
         FieldInfo[] Fields { get; set; } = null;
@@ -32,7 +32,6 @@ namespace Rusty.Serialization.Core.Converters
         protected override void CollectTypes(ListNode node, CollectTypesContext context)
         {
             FieldInfo[] fields = GetFields();
-            System.Console.WriteLine(fields.Length + " " + node.Count);
             for (int i = 0; i < node.Count; i++)
             {
                 Type elementType = fields[i].FieldType;
@@ -40,19 +39,18 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
-        protected override T CreateObject(ListNode node, CreateObjectContext context)
-            => (T)RuntimeHelpers.GetUninitializedObject(typeof(T));
+        protected override T CreateObject(ListNode node, CreateObjectContext context) => new();
 
         protected override T AssignObject(T obj, ListNode node, AssignObjectContext context)
         {
+            object boxed = obj;
             FieldInfo[] fields = GetFields();
-            for (int i = 0; i < obj.Length; i++)
+            for (int i = 0; i < obj.Length && i < node.Count; i++)
             {
-                Type type = fields[i].FieldType;
-                object element = context.CreateChildObject(type, node.Elements[i]);
-                SetTupleField(obj, fields[i], element);
+                object element = context.CreateChildObject(fields[i].FieldType, node.GetValueAt(i));
+                fields[i].SetValue(boxed, element);
             }
-            return obj;
+            return (T)boxed;
         }
 
         /* Private methods. */
@@ -61,17 +59,11 @@ namespace Rusty.Serialization.Core.Converters
             if (Fields == null)
             {
                 Fields = typeof(T)
-                    .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetFields()
                     .OrderBy(f => f.Name)
                     .ToArray();
             }
             return Fields;
-        }
-
-        static void SetTupleField(ITuple tuple, FieldInfo field, object value)
-        {
-            TypedReference tr = __makeref(tuple);
-            field.SetValueDirect(tr, value);
         }
     }
 }

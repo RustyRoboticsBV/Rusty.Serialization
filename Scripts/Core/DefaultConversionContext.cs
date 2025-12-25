@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.DotNet;
 
 namespace Rusty.Serialization
 {
@@ -7,7 +8,8 @@ namespace Rusty.Serialization
     {
         public DefaultConversionContext() : base()
         {
-            Converters.Add(typeof(Dictionary<,>), typeof(DotNet.DictionaryConverter<,>));
+            Converters.Add(typeof(List<>), typeof(ListConverter<>));
+            Converters.Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
         }
     }
 }

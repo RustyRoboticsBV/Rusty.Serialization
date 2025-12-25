@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Create a node from an object of some type.
         /// </summary>
-        public INode CreateNode(object obj) => CreateNode(obj.GetType(), obj);
+        public INode CreateNode(object obj) => CreateNode(obj?.GetType(), obj);
 
         /// <summary>
         /// Create a node from an object of some type.

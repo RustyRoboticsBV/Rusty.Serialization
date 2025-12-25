@@ -44,7 +44,6 @@ If an object of a type is serialized that is not in the table below, then the sy
 |TimeSpan|time||
 |DateTime|time||
 |DateTimeOffset|list|
-|Tuple<...>|list/null|
 |DateOnly|time|.NET 6 or higher|
 |TimeOnly|time|.NET 6 or higher|
 

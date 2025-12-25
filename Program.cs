@@ -50,8 +50,8 @@ class A
 
     public int[] j1 = [1, 2, 3];
     public System.Collections.Generic.List<int> j2 = [4, 5, 6];
-    //public (char, string) j3 = ('a', "ABC");
-    //public (int, float, (char, string)) j4 = (0, 1.1f, ('a', "ABC"));
+    public (char, string) j3 = ('a', "ABC");
+    public (int, float, (char, string)) j4 = (0, 1.1f, ('a', "ABC"));
 
     public System.Collections.Generic.Dictionary<string, int> k = new System.Collections.Generic.Dictionary<string, int>()
     {
