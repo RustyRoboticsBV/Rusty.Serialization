@@ -127,7 +127,7 @@ namespace Rusty.Serialization.Core.Converters
 
             // Resolve unregistered struct type.
             if (targetType.IsValueType)
-                return typeof(StructConverter<>).MakeGenericType(targetType);
+                return typeof(ClassConverter<>).MakeGenericType(targetType);
 
             // Resolve unregistered class type.
             if (targetType.IsClass)

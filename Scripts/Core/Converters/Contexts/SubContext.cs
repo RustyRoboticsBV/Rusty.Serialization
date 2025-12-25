@@ -10,6 +10,7 @@
         protected ConverterRegistry Converters => Context.Converters;
         protected SymbolTable SymbolTable => Context.SymbolTable;
         protected NodeTypeTable NodeTypeTable => Context.NodeTypeTable;
+        protected ParsingTable ParsingTable => Context.ParsingTable;
 
         /* Constructors. */
         protected SubContext(ConversionContext context)

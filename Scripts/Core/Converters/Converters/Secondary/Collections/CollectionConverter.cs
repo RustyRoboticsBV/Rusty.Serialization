@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
@@ -11,6 +12,17 @@ namespace Rusty.Serialization.Core.Converters
         where NodeT : ICollectionNode
     {
         /* Protected methods. */
+        protected override CollectionT AssignObject(CollectionT obj, NodeT node, AssignObjectContext context)
+        {
+            Type elementType = typeof(ElementT);
+            for (int i = 0; i < node.Count; i++)
+            {
+                ElementT element = context.CreateChildObject<ElementT>(node.GetValueAt(i));
+                obj.Add(element);
+            }
+            return obj;
+        }
+
         protected override int GetCount(CollectionT obj) => obj.Count;
     }
 }

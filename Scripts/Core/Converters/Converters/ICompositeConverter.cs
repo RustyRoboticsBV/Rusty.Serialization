@@ -16,6 +16,6 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Fix the missing references of the created object.
         /// </summary>
-        public object FixReferences(object obj, INode node, FixReferencesContext context);
+        public object AssignObject(object obj, INode node, AssignObjectContext context);
     }
 }

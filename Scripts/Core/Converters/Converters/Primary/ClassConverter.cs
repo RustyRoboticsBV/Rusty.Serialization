@@ -9,7 +9,6 @@ namespace Rusty.Serialization.Core.Converters
     /// A class converter.
     /// </summary>
     public class ClassConverter<T> : CompositeConverter<T, ObjectNode>
-        where T : class, new()
     {
         /* Protected properties. */
         protected virtual HashSet<string> IgnoredMembers => new();
@@ -83,14 +82,13 @@ namespace Rusty.Serialization.Core.Converters
             }
         }
 
-        protected override T CreateObject(ObjectNode node, CreateObjectContext context)
+        protected override T CreateObject(ObjectNode node, CreateObjectContext context) => (T)Activator.CreateInstance(typeof(T));
+
+        protected override T AssignObject(T obj, ObjectNode node, AssignObjectContext context)
         {
             // Collect members.
             if (Members == null)
                 Members = GetPublicMembers(typeof(T));
-
-            // Create object.
-            T obj = new();
 
             // Assign non-ref.
             for (int i = 0; i < Members.Length; i++)
@@ -107,67 +105,13 @@ namespace Rusty.Serialization.Core.Converters
                 // Deconvert field/property.
                 if (member is FieldInfo field)
                 {
-                    object memberObj = context.CreateObject(field.FieldType, memberNode);
+                    object memberObj = context.CreateChildObject(field.FieldType, memberNode);
                     field.SetValue(obj, memberObj);
                 }
                 else if (member is PropertyInfo property)
                 {
-                    object memberObj = context.CreateObject(property.PropertyType, memberNode);
+                    object memberObj = context.CreateChildObject(property.PropertyType, memberNode);
                     property.SetValue(obj, memberObj);
-                }
-            }
-
-            return obj;
-        }
-
-        protected override T FixReferences(T obj, ObjectNode node, FixReferencesContext context)
-        {
-            // Collect members.
-            if (Members == null)
-                Members = GetPublicMembers(typeof(T));
-
-            // Fix member references.
-            for (int i = 0; i < Members.Length; i++)
-            {
-                MemberInfo member = Members[i];
-
-                // Match INode with member.
-                string memberIdentifier = node.Members[i].Key;
-
-                INode memberNode = node.Members[i].Value;
-
-                if (memberIdentifier != member.Name)
-                    throw new Exception($"Mismatch between members {i}: '{member.Name}' and '{memberIdentifier}'.");
-
-                // If a ref node, get its value.
-                if (memberNode is RefNode refNode)
-                {
-                    // Retrieve reference object.
-                    object memberObj = context.GetReference(refNode.ID);
-
-                    // Deconvert field/property.
-                    if (member is FieldInfo field)
-                        field.SetValue(obj, memberObj);
-                    else if (member is PropertyInfo property)
-                        property.SetValue(obj, memberObj);
-                }
-
-                // If not a ref node, fix member's references.
-                else
-                {
-                    object memberObj = null;
-                    if (member is FieldInfo field)
-                    {
-                        memberObj = field.GetValue(obj);
-                        memberObj = context.FixReferences(memberObj, memberNode);
-                        field.SetValue(obj, memberObj);
-                    }
-                    else if (member is PropertyInfo property)
-                    {
-                        memberObj = property.GetValue(obj);
-                        memberObj = context.FixReferences(memberObj, memberNode);
-                        property.SetValue(obj, memberObj);
-                    }
                 }
             }
 

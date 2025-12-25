@@ -43,30 +43,19 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         protected override DictT CreateObject(DictNode node, CreateObjectContext context)
+            => (DictT)Activator.CreateInstance(typeof(DictT));
+
+        protected override DictT AssignObject(DictT obj, DictNode node, AssignObjectContext context)
         {
-            List<KeyValuePair<KeyT, ValueT>> pairs = new();
             for (int i = 0; i < node.Count; i++)
             {
-                KeyT key = context.CreateObject<KeyT>(node.GetKeyAt(i));
-                ValueT value = context.CreateObject<ValueT>(node.GetValueAt(i));
-                if (key == null)
-                    continue;
-                pairs.Add(new(key, value));
+                KeyT key = (KeyT)context.CreateChildObject(typeof(KeyT), node.GetKeyAt(i));
+                ValueT value = (ValueT)context.CreateChildObject(typeof(ValueT), node.GetValueAt(i));
+                obj.Add(key, value);
             }
-            return CreateObjectFromElements(pairs);
-        }
-
-        protected override DictT FixReferences(DictT obj, DictNode node, FixReferencesContext context)
-        {
-            List<KeyValuePair<KeyT, ValueT>> pairs = new();
-            int index = 0;
-            foreach (var pair in obj)
-            {
-                KeyT key = (KeyT)context.FixReferences(pair.Key, node.GetKeyAt(index));
-                ValueT value = (ValueT)context.FixReferences(pair.Value, node.GetValueAt(index));
-                index++;
-            }
-            return CreateObjectFromElements(pairs);
+            System.Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAA");
+            Rusty.Serialization.Testing.ObjectDumper.Print(obj);
+            return obj;
         }
     }
 }

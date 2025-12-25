@@ -10,7 +10,7 @@ namespace Rusty.Serialization.Core.Converters
     {
         /* Public methods. */
         void ICompositeConverter.AssignNode(INode node, object obj, AssignNodeContext context) => AssignNode((NodeT)node, (TargetT)obj, context);
-        object ICompositeConverter.FixReferences(object obj, INode node, FixReferencesContext context) => FixReferences((TargetT)obj, (NodeT)node, context);
+        object ICompositeConverter.AssignObject(object obj, INode node, AssignObjectContext context) => AssignObject((TargetT)obj, (NodeT)node, context);
 
         /* Protected methods. */
         /// <summary>
@@ -20,6 +20,6 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Fix the the missing references of the created object.
         /// </summary>
-        protected abstract TargetT FixReferences(TargetT obj, NodeT node, FixReferencesContext context);
+        protected abstract TargetT AssignObject(TargetT obj, NodeT node, AssignObjectContext context);
     }
 }

@@ -22,22 +22,22 @@ Console.WriteLine(tree);
 
 class A
 {
-    public bool a;
+    public bool a = true;
 
-    public sbyte b1;
-    public short b2;
-    public int b3;
-    public long b4;
-    public byte b5;
-    public ushort b6;
-    public uint b7;
-    public ulong b8;
+    public sbyte b1 = 1;
+    public short b2 = 2;
+    public int b3 = 3;
+    public long b4 = 4;
+    public byte b5 = 5;
+    public ushort b6 = 6;
+    public uint b7 = 7 ;
+    public ulong b8 = 8;
 
-    public float c1;
-    public double c2;
-    public decimal c3;
+    public float c1 = 1.1f;
+    public double c2 = 2.2;
+    public decimal c3 = 3.3m;
 
-    public char e;
+    public char e = 'a';
 
     public string f1 = "ABC";
     public string f2 = "DEF";
@@ -50,6 +50,8 @@ class A
 
     public int[] j1 = [1, 2, 3];
     public System.Collections.Generic.List<int> j2 = [4, 5, 6];
+    //public (char, string) j3 = ('a', "ABC");
+    //public (int, float, (char, string)) j4 = (0, 1.1f, ('a', "ABC"));
 
     public System.Collections.Generic.Dictionary<string, int> k = new System.Collections.Generic.Dictionary<string, int>()
     {

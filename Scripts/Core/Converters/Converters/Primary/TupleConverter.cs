@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Rusty.Serialization.Core.Nodes;
@@ -30,48 +31,47 @@ namespace Rusty.Serialization.Core.Converters
 
         protected override void CollectTypes(ListNode node, CollectTypesContext context)
         {
-            for (int i = 0; i < node.Elements.Length; i++)
+            FieldInfo[] fields = GetFields();
+            System.Console.WriteLine(fields.Length + " " + node.Count);
+            for (int i = 0; i < node.Count; i++)
             {
-                Type elementType = GetFields()[i].FieldType;
+                Type elementType = fields[i].FieldType;
                 context.CollectTypes(node.Elements[i], elementType);
             }
         }
 
         protected override T CreateObject(ListNode node, CreateObjectContext context)
-        {
-            object[] values = new object[node.Elements.Length];
-            for (int i = 0; i < values.Length; i++)
-            {
-                Type type = GetFields()[i].FieldType;
-                values[i] = context.CreateObject(type, node.Elements[i]);
-            }
-            return CreateTuple(values);
-        }
+            => (T)RuntimeHelpers.GetUninitializedObject(typeof(T));
 
-        protected override T FixReferences(T obj, ListNode node, FixReferencesContext context)
+        protected override T AssignObject(T obj, ListNode node, AssignObjectContext context)
         {
-            object[] values = new object[node.Elements.Length];
-            for (int i = 0; i < values.Length; i++)
+            FieldInfo[] fields = GetFields();
+            for (int i = 0; i < obj.Length; i++)
             {
-                values[i] = context.FixReferences(obj[i], node.Elements[i]);
+                Type type = fields[i].FieldType;
+                object element = context.CreateChildObject(type, node.Elements[i]);
+                SetTupleField(obj, fields[i], element);
             }
-            return CreateTuple(values);
+            return obj;
         }
 
         /* Private methods. */
         private FieldInfo[] GetFields()
         {
             if (Fields == null)
-                Fields = typeof(T).GetFields();
+            {
+                Fields = typeof(T)
+                    .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                    .OrderBy(f => f.Name)
+                    .ToArray();
+            }
             return Fields;
         }
 
-        /// <summary>
-        /// Create a tuple object.
-        /// </summary>
-        private static T CreateTuple(object[] values)
+        static void SetTupleField(ITuple tuple, FieldInfo field, object value)
         {
-            return (T)Activator.CreateInstance(typeof(T), values)!;
+            TypedReference tr = __makeref(tuple);
+            field.SetValueDirect(tr, value);
         }
     }
 }

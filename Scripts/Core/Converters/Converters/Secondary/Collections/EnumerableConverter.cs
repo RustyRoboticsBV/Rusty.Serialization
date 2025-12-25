@@ -1,8 +1,6 @@
-﻿using Rusty.Serialization.Core.Nodes;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -20,26 +18,7 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         protected override EnumerableT CreateObject(NodeT node, CreateObjectContext context)
-        {
-            ElementT[] elements = new ElementT[node.Count];
-            for (int i = 0; i < node.Count; i++)
-            {
-                elements[i] = context.CreateObject<ElementT>(node.GetValueAt(i));
-            }
-            return CreateObjectFromElements(elements);
-        }
-
-        protected override EnumerableT FixReferences(EnumerableT obj, NodeT node, FixReferencesContext context)
-        {
-            ElementT[] elements = new ElementT[node.Count];
-            int index = 0;
-            foreach (ElementT element in obj)
-            {
-                elements[index] = (ElementT)context.FixReferences(element, node.GetValueAt(index));
-                index++;
-            }
-            return CreateObjectFromElements(elements);
-        }
+            => (EnumerableT)Activator.CreateInstance(typeof(EnumerableT));
 
         /// <summary>
         /// Get the number of elements in a collection.
@@ -52,14 +31,6 @@ namespace Rusty.Serialization.Core.Converters
                 count++;
             }
             return count;
-        }
-
-        /// <summary>
-        /// Create a object from an array of elements.
-        /// </summary>
-        protected virtual EnumerableT CreateObjectFromElements(ICollection<ElementT> elements)
-        {
-            return (EnumerableT)Activator.CreateInstance(typeof(EnumerableT), elements);
         }
     }
 }

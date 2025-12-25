@@ -9,7 +9,7 @@ Key features:
 - **Easy to use**: simple, one-line serialization and deserialization.
 - **Engine-agnostic**: can be used in plain C#, Godot or Unity.
 - **Broad type support**: supports a wide variety of types from the .NET, Godot and Unity APIs.
-- **Multiple formats**: includes support for JSON, XML and a custom, compact data format.
+- **Multiple formats**: includes support for JSON, XML and a custom, compact data format called CSCD.
 - **Flexible type handling**: handles arbitrary types that lack explicit support.
 - **Extendible design**: can be extended to provide support for additional types or data formats.
 
@@ -36,8 +36,7 @@ obj = context.Deserialize<MyClass>(serialized); // Deserializes back to MyClass.
 
 #### Notes
 - Types without explicit support automatically serialize using *all* fields and properties that are public, non-static and non-readonly.
-- Multiple references to the same object are preserved during serialization.
-- The same goes for cyclic references.
+- Multiple references to the same object and cyclic references are preserved during serialization.
 
 ## Architecture
 The module separates the serialization process into two steps.

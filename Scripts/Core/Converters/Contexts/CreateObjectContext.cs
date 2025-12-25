@@ -5,20 +5,10 @@ using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
-    public class CreateObjectContext
+    public class CreateObjectContext : SubContext
     {
-        /* Public properties. */
-        public ConverterTypeRegistry ConverterTypes { get; private set; }
-        public ConverterInstanceRegistry ConverterInstances { get; private set; }
-        public ParsingTable ParsingTable { get; private set; }
-
         /* Constructors. */
-        public CreateObjectContext(ConverterTypeRegistry converterTypes, ConverterInstanceRegistry instanceTypes, ParsingTable parsingTable)
-        {
-            ConverterTypes = converterTypes;
-            ConverterInstances = instanceTypes;
-            ParsingTable = parsingTable;
-        }
+        public CreateObjectContext(ConversionContext context) : base(context) { }
 
         /* Public methods. */
         /// <summary>
@@ -38,7 +28,18 @@ namespace Rusty.Serialization.Core.Converters
 
             // Do nothing for reference nodes.
             if (node is RefNode refNode)
-                return null;
+            {
+                if (ParsingTable.HasParsed(refNode.ID))
+                    return ParsingTable.GetParsed(refNode.ID);
+                else
+                {
+                    IdNode id = NodeTypeTable.GetId(refNode);
+                    Type idType = NodeTypeTable.GetType(id);
+                    object parsed = CreateObject(idType, id);
+                    ParsingTable.SetParsed(refNode.ID, parsed);
+                    return parsed;
+                }
+            }
 
             // Handle ID node.
             if (node is IdNode idNode)
@@ -59,14 +60,12 @@ namespace Rusty.Serialization.Core.Converters
             // Else, deconvert as-is.
             else
             {
-                IConverter converter = ConverterInstances.Get(expectedType);
-                if (converter == null)
-                {
-                    converter = ConverterTypes.Instantiate(expectedType);
-                    ConverterInstances.Add(expectedType, converter);
-                }
+                IConverter converter = Converters.Get(expectedType);
 
                 obj = converter.CreateObject(node, this);
+
+                if (converter is ICompositeConverter composite)
+                    composite.AssignObject(obj, node, Context.AssignObjectContext);
             }
 
             // If the object is of the correct type, return it.

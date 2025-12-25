@@ -18,6 +18,8 @@ namespace Rusty.Serialization.Core.Converters
         public NodeTypeTable NodeTypeTable { get; private set; } = new();
         public ParsingTable ParsingTable { get; private set; } = new();
         public CollectTypesContext CollectTypesContext { get; private set; }
+        public CreateObjectContext CreateObjectContext { get; private set; }
+        public AssignObjectContext AssignObjectContext { get; private set; }
 
         /* Constructors. */
         public ConversionContext()
@@ -26,6 +28,8 @@ namespace Rusty.Serialization.Core.Converters
             CreateNodeContext = new(this);
             AssignNodeContext = new(this);
             CollectTypesContext = new(this);
+            CreateObjectContext = new(this);
+            AssignObjectContext = new(this);
 
             // Register built-in converters.
             Converters.Add<bool, BoolConverter>();
@@ -106,7 +110,8 @@ namespace Rusty.Serialization.Core.Converters
             CollectTypesContext.CollectTypes(tree.Root, type);
             NodeTypeTable.ResolveRefs();
 
-            return null;
+            // Deconvert.
+            return CreateObjectContext.CreateObject(type, tree.Root);
         }
 
         /// <summary>

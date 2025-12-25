@@ -90,6 +90,14 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         /// <summary>
+        /// Get an ID node.
+        /// </summary>
+        public IdNode GetId(RefNode @ref)
+        {
+            return Ids[@ref.ID];
+        }
+
+        /// <summary>
         /// Validate that all nodes in a tree have been collected.
         /// </summary>
         public bool Validate(NodeTree tree)
