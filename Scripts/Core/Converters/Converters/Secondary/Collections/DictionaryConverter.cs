@@ -53,8 +53,6 @@ namespace Rusty.Serialization.Core.Converters
                 ValueT value = (ValueT)context.CreateChildObject(typeof(ValueT), node.GetValueAt(i));
                 obj.Add(key, value);
             }
-            System.Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAA");
-            Rusty.Serialization.Testing.ObjectDumper.Print(obj);
             return obj;
         }
     }

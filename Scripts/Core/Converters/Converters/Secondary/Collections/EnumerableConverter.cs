@@ -18,7 +18,9 @@ namespace Rusty.Serialization.Core.Converters
         }
 
         protected override EnumerableT CreateObject(NodeT node, CreateObjectContext context)
-            => (EnumerableT)Activator.CreateInstance(typeof(EnumerableT));
+        {
+            return (EnumerableT)Activator.CreateInstance(typeof(EnumerableT));
+        }
 
         /// <summary>
         /// Get the number of elements in a collection.
