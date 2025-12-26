@@ -49,9 +49,9 @@ class A
     public byte[] i = [0x01, 0x23, 0x45, 0xAB];
 
     public int[] j1 = [1, 2, 3];
-    public System.Collections.Generic.List<int> j2 = [4, 5, 6];
-    public (char, string) j3 = ('a', "ABC");
-    public (int, float, (char, string)) j4 = (0, 1.1f, ('a', "ABC"));
+    public (int, float, (char, string)) j2 = (0, 1.1f, ('a', "ABC"));
+    public System.Tuple<int, float, System.Tuple<char, string>> j3 = new(0, 1.1f, new('a', "ABC"));
+    public System.Collections.Generic.List<int> j4 = [4, 5, 6];
 
     public System.Collections.Generic.Dictionary<string, int> k = new System.Collections.Generic.Dictionary<string, int>()
     {

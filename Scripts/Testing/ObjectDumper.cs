@@ -63,7 +63,7 @@ namespace Rusty.Serialization.Testing
                 return;
             }
 
-            // Class or struct header.t.
+            // Class or struct header.
             else
             {
                 Console.WriteLine($"{indentStr}{name}: ({type.Name}) [ID #{id}]");
