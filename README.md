@@ -11,6 +11,7 @@ Key features:
 - **Broad type support**: supports a wide variety of types from the .NET, Godot and Unity APIs.
 - **Multiple formats**: includes support for JSON, XML and a custom, compact data format called CSCD.
 - **Flexible type handling**: handles arbitrary types that lack explicit support.
+- **Reference preservation**: shared and cyclic references are preserved during serialization and deserialization.
 - **Extendible design**: can be extended to provide support for additional types or data formats.
 
 ## Version Requirements
@@ -35,8 +36,7 @@ obj = context.Deserialize<MyClass>(serialized); // Deserializes back to MyClass.
 ```
 
 #### Notes
-- Types without explicit support automatically serialize using *all* fields and properties that are public, non-static and non-readonly.
-- Multiple references to the same object and cyclic references are preserved during serialization.
+Types without explicit support automatically serialize using *all* fields and properties that are public, non-static and non-readonly.
 
 ## Architecture
 The module separates the serialization process into two steps.
@@ -48,13 +48,13 @@ The module separates the serialization process into two steps.
 </p>
 
 Both the converter and serializer layers can be freely swapped out.
-- The default converter layer has explicit support for various .NET, Godot and Unity data types (see [here](TypeTable.md) for a comprehensive list).
+- The default converter layer has explicit support for various .NET, Godot and Unity data types (see the [type table](TypeTable.md) for a comprehensive list).
 - The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported, though input must be structured in a way that matches the parser's expectations (see [here](XmlSchema.md) for the XML conventions and [here](JsonSchema.md) for the JSON conventions).
 
 ## Compact Serialized C# Data
 The module uses a custom serialization format called Compact Serialized C# Data (CSCD). CSCD is a human-readable format that supports references, type labels and a wide variety of literal types. This allows it to concisely represent complex C# objects that would require more verbosity in other formats. It is designed to be compact, general and unambiguous.
 
-Below is an example of a custom serialized object with pretty printing. See the specification document [here](FormatSpecification.md) for a more detailed description of the syntax.
+Below is an example of a custom serialized object with pretty printing. See the [specification document](FormatSpecification.md) for a more detailed description of the syntax.
 
 ```
 (MyType)<
