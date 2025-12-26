@@ -95,7 +95,7 @@ namespace Rusty.Serialization.Core.Converters
 
             Type sourceType = value.GetType();
 
-            // Look for an implicit operator on the target type
+            // Look for an implicit operator on the target type.
             var method = targetType.GetMethods(
                 BindingFlags.Public | BindingFlags.Static)
                 .FirstOrDefault(m =>
@@ -106,9 +106,9 @@ namespace Rusty.Serialization.Core.Converters
                 );
 
             if (method != null)
-                return method.Invoke(null, new[] { value });
+                return method.Invoke(null, new object[] { value });
 
-            // Look for an implicit operator on the source type
+            // Look for an implicit operator on the source type.
             method = sourceType.GetMethods(
                 BindingFlags.Public | BindingFlags.Static)
                 .FirstOrDefault(m =>
@@ -119,9 +119,9 @@ namespace Rusty.Serialization.Core.Converters
                 );
 
             if (method != null)
-                return method.Invoke(null, new[] { value });
+                return method.Invoke(null, new object[] { value });
 
-            // No conversion found
+            // No conversion found.
             throw new InvalidCastException(
                 $"No implicit conversion operator found from {sourceType} to {targetType}.");
         }

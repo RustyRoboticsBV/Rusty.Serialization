@@ -1,22 +1,20 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Rusty.Serialization.Core.Nodes;
 
+#if NET5_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
+
 namespace Rusty.Serialization.Core.Converters
 {
-#if NET5_0_OR_GREATER
-    [RequiresUnreferencedCode(
-        "TupleConverter uses reflection over tuple fields. " +
-        "Ensure tuple types are preserved when trimming is enabled.")]
-#endif
     /// <summary>
     /// A tuple converter.
     /// </summary>
     public sealed class TupleConverter<
-#if NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
+#if NET5_0_OR_GREATER
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 #endif
     T> : CompositeConverter<T, ListNode>
@@ -28,7 +26,7 @@ namespace Rusty.Serialization.Core.Converters
         /* Protected methods. */
         protected override ListNode CreateNode(T obj, CreateNodeContext context)
         {
-            return new(obj.Length);
+            return new ListNode(obj.Length);
         }
 
         protected override void AssignNode(ListNode node, T obj, AssignNodeContext context)
@@ -54,7 +52,10 @@ namespace Rusty.Serialization.Core.Converters
             return (T)RuntimeHelpers.GetUninitializedObject(typeof(T));
         }
 
-#if NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
+#if NET5_0_OR_GREATER
+        [RequiresUnreferencedCode(
+            "TupleConverter uses reflection over tuple fields. " +
+            "Ensure tuple types are preserved when trimming is enabled.")]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ValueTuple<>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ValueTuple<,>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ValueTuple<,,>))]
