@@ -15,8 +15,12 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A tuple converter.
     /// </summary>
-    public sealed class TupleConverter<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T> : CompositeConverter<T, ListNode>
-        where T : ITuple
+    public sealed class TupleConverter<
+#if NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif
+    T> : CompositeConverter<T, ListNode>
+    where T : ITuple
     {
         /* Private properties. */
         FieldInfo[] Fields { get; set; } = null;
@@ -38,14 +42,9 @@ namespace Rusty.Serialization.Core.Converters
         protected override void CollectTypes(ListNode node, CollectTypesContext context)
         {
             FieldInfo[] fields = GetFields();
-            for (int i = 0; i < fields.Length; i++)
-            {
-                System.Console.WriteLine(i + ": " + fields[i].FieldType + " " +  fields[i].Name);
-            }
             for (int i = 0; i < node.Count && i < fields.Length; i++)
             {
                 Type elementType = fields[i].FieldType;
-                System.Console.WriteLine(elementType + " " + node.Elements[i]);
                 context.CollectTypes(node.Elements[i], elementType);
             }
         }
@@ -55,6 +54,7 @@ namespace Rusty.Serialization.Core.Converters
             return (T)RuntimeHelpers.GetUninitializedObject(typeof(T));
         }
 
+#if NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ValueTuple<>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ValueTuple<,>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ValueTuple<,,>))]
@@ -71,14 +71,11 @@ namespace Rusty.Serialization.Core.Converters
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Tuple<,,,,,>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Tuple<,,,,,,>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Tuple<,,,,,,,>))]
+#endif
         protected override T AssignObject(T obj, ListNode node, AssignObjectContext context)
         {
             FieldInfo[] fields = GetFields();
-            int count = Math.Min(fields.Length, node.Count);
-
-            //ref byte raw = ref Unsafe.As<T, byte>(ref obj);
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < node.Count && i < fields.Length; i++)
             {
                 object value = context.CreateChildObject(
                     fields[i].FieldType,
@@ -86,7 +83,6 @@ namespace Rusty.Serialization.Core.Converters
 
                 WriteField(ref obj, fields[i], value);
             }
-
             return obj;
         }
 

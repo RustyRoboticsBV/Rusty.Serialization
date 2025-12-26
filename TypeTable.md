@@ -21,10 +21,10 @@ If an object of a type is serialized that is not in the table below, then the sy
 |decimal|System.Decimal|real|
 |char|System.Char|char|
 |string|System.String|string/null|
-|array|T[]|list/null|
+|T[]|System.Array|list/null|
 |byte[]|System.Byte[]|binary/null|
-|tuple|System.ValueTuple<...>|list|
-|nullable|System.Nullable&lt;T&gt;|*varies*|
+|(...)|System.ValueTuple<...>|list|
+|T?|System.Nullable&lt;T&gt;|*varies*|
 |enum|System.Enum|int|
 |struct|System.ValueType|object|
 |class|System.Object|object/null|
@@ -46,6 +46,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 |DateTimeOffset|list|
 |DateOnly|time|.NET 6 or higher|
 |TimeOnly|time|.NET 6 or higher|
+|Tuple|list/null||
 
 ### System.Collections
 |C#|Serialized|
