@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Converters
     {
         /* Protected methods. */
         protected override RealNode CreateNode(decimal obj, CreateNodeContext context) => new(obj);
-        protected override decimal CreateObject(RealNode node, CreateObjectContext context) => (decimal)node.Value;
+        protected override decimal CreateObject(RealNode node, CreateObjectContext context) => decimal.Parse(node.Value);
     }
 }

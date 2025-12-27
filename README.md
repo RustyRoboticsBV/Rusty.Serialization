@@ -1,9 +1,11 @@
 # Universal C# Serializer
+**THIS PROJECT IS STILL IN PRE-ALPHA, DO NOT USE YET**
+
 <p align="center">
   <img src="Logo.svg" width="250">
 </p>
 
-A configurable, extendable, engine-agnostic C# serialization/deserialization module. It is designed to simplify saving, loading, and transferring data in any C# context, with special focus on game development.
+A configurable, extendable, engine-agnostic C# serialization/deserialization module. It is designed to simplify saving, loading, and transferring data in any C# context, with a special focus on game development.
 
 Key features:
 - **Easy to use**: simple, one-line serialization and deserialization.

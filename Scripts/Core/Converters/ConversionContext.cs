@@ -105,6 +105,7 @@ namespace Rusty.Serialization.Core.Converters
         {
             // Clear previous resources.
             NodeTypeTable.Clear();
+            ParsingTable.Clear();
 
             // Collect the type of each node.
             CollectTypesContext.CollectTypes(tree.Root, type);

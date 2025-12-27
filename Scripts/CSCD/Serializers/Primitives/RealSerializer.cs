@@ -75,7 +75,7 @@ namespace Rusty.Serialization.CSCD
                     throw new ArgumentException("Missing decimal dot.");
 
                 // Parse.
-                return new(PeterO.Numbers.EDecimal.FromString(trimmed));
+                return new(trimmed);
             }
             catch (Exception ex)
             {

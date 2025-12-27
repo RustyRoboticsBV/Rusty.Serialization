@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Rusty.Serialization.Core.Nodes;
+using System;
 using System.Linq;
 using System.Reflection;
-using Rusty.Serialization.Core.Nodes;
+using System.Xml.Linq;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -26,28 +27,45 @@ namespace Rusty.Serialization.Core.Converters
 
             object obj;
 
-            // Do nothing for reference nodes.
+            // Handle ID node.
             if (node is RefNode refNode)
             {
                 if (ParsingTable.HasParsed(refNode.ID))
-                    return ParsingTable.GetParsed(refNode.ID);
+                    obj = ParsingTable.GetParsed(refNode.ID);
                 else
                 {
-                    IdNode id = NodeTypeTable.GetId(refNode);
-                    Type idType = NodeTypeTable.GetType(id);
-                    object parsed = CreateObject(idType, id);
-                    ParsingTable.SetParsed(refNode.ID, parsed);
-                    return parsed;
+                    IdNode refIdNode = NodeTypeTable.GetId(refNode);
+                    obj = CreateObject(NodeTypeTable.GetType(refIdNode), refIdNode);
                 }
             }
 
             // Handle ID node.
-            if (node is IdNode idNode)
+            else if (node is IdNode idNode)
             {
-                string idName = idNode.Name;
-                obj = CreateObject(expectedType, idNode.Value);
-                ParsingTable.Add(idNode);
-                ParsingTable.SetParsed(idName, obj);
+                if (ParsingTable.HasParsed(idNode.Name))
+                    obj = ParsingTable.GetParsed(idNode.Name);
+                else
+                {
+                    INode valueNode = idNode.Value;
+
+                    IConverter converter;
+                    if (valueNode is TypeNode valueTypeNode)
+                    {
+                        valueNode = valueTypeNode.Value;
+                        converter = Converters.Get(new TypeName(valueTypeNode.Name));
+                    }
+                    else
+                        converter = Converters.Get(expectedType);
+
+                    obj = converter.CreateObject(valueNode, this);
+                    System.Console.WriteLine("EEEEEEEE\n" + idNode);
+
+                    ParsingTable.Add(idNode);
+                    ParsingTable.SetParsed(idNode.Name, obj);
+
+                    if (converter is ICompositeConverter composite)
+                        obj = composite.AssignObject(obj, valueNode, Context.AssignObjectContext);
+                }
             }
 
             // Unwrap type node.

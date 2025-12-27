@@ -60,8 +60,11 @@ class A
         { "GHI", 789 }
     };
 
+    public A l;
+
     public A()
     {
         f2 = f1;
+        l = this;
     }
 }

@@ -23,13 +23,12 @@ namespace Rusty.Serialization.Core.Converters
                 throw new ArgumentException($"Duplicate ID '{node.Name}'.");
 
             Ids[node.Name] = node;
-            Objects[node.Name] = null;
         }
 
         /// <summary>
         /// Check whether or not a node with some ID has already been parsed.
         /// </summary>
-        public bool HasParsed(string id) => GetParsed(id) != null;
+        public bool HasParsed(string id) => Objects.ContainsKey(id);
 
         /// <summary>
         /// Get the parsed object corresponding to some ID.

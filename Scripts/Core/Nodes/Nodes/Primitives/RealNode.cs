@@ -1,5 +1,3 @@
-using PeterO.Numbers;
-
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
@@ -9,18 +7,18 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public EDecimal Value { get; set; }
+        public RealString Value { get; set; }
 
         /* Constructors. */
-        public RealNode(EDecimal value)
+        public RealNode(RealString value)
         {
-            Value = value ?? 0;
+            Value = value;
         }
 
         /* Public methods. */
         public override string ToString()
         {
-            return "real: " + (Value?.ToString() ?? "(null)");
+            return "real: " + Value;
         }
 
         public void Clear()
