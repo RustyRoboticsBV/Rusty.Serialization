@@ -22,7 +22,7 @@ namespace Rusty.Serialization
             Converters.Add<Half, HalfConverter>();
 #endif
 
-            Converters.Add<Guid, GuidConverter>();
+            Converters.Add<Uri, UriConverter>();
             Converters.Add<Version, VersionConverter>();
             Converters.Add<Type, TypeConverter>();
 
@@ -32,6 +32,8 @@ namespace Rusty.Serialization
             Converters.Add<DateOnly, DateOnlyConverter>();
             Converters.Add<TimeOnly, TimeOnlyConverter>();
 #endif
+
+            Converters.Add<Guid, GuidConverter>();
 
 #if NETCOREAPP3_0_OR_GREATER
             Converters.Add<Range, RangeConverter>();

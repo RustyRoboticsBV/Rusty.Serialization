@@ -7,17 +7,17 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET guid converter.
     /// </summary>
-    public class GuidConverter : Core.Converters.Converter<Guid, StringNode>
+    public class GuidConverter : Core.Converters.Converter<Guid, BinaryNode>
     {
         /* Protected method. */
-        protected override StringNode CreateNode(Guid obj, CreateNodeContext context)
+        protected override BinaryNode CreateNode(Guid obj, CreateNodeContext context)
         {
-            return new StringNode(obj.ToString());
+            return new BinaryNode(obj.ToByteArray());
         }
 
-        protected override Guid CreateObject(StringNode node, CreateObjectContext context)
+        protected override Guid CreateObject(BinaryNode node, CreateObjectContext context)
         {
-            return Guid.Parse(node.Value);
+            return new Guid(node.Value);
         }
     }
 }
