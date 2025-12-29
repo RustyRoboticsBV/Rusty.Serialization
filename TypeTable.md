@@ -102,59 +102,32 @@ If an object of a type is serialized that is not in the table below, then the sy
 ## Godot Engine Types
 *These types are only available when compiling in a Godot context.*
 
-|C#|Serialized|
-|-|-|
-|Variant|*varies*|
-|Resource|object/null|
-|Array|list/null|
-|Array&lt;T&gt;|list/null|
-|Dictionary|dictionary/null|
-|Dictionary<T,U>|dictionary/null|
-|StringName|string|
-|NodePath|string|
-|Color|color|
-|Vector2|list|
-|Vector3|list|
-|Vector4|list|
-|Vector2I|list|
-|Vector3I|list|
-|Vector4I|list|
-|Quaternion|list|
-|Plane|list|
-|Rect2|list|
-|Rect2I|list|
-|Aabb|list|
-|Transform2D|list|
-|Basis|list|
-|Transform3D|list|
-|Projection|list|
-
-*The following resource types are serialized using only their resource path.*
-|Resource|
-|-|
-|PackedScene|
-|Sky|
-|Environment|
-|Texture|
-|Image|
-|SpriteFrames|
-|Material|
-|PhysicsMaterial|
-|Mesh|
-|MeshLibrary|
-|NavigationMesh|
-|Font|
-|Theme|
-|Animation|
-|AnimationLibrary|
-|Skin|
-|AudioStream|
-|AudioBusLayout|
-|AudioEffect|
-|TileSet|
-|TileSetSource|
-|Script|
-|Shader|
+|C#|Serialized|Notes|
+|-|-|-|
+|Variant|*varies*||
+|Resource|object/null|Built-in resources serialize using their resource path instead|
+|Array|list/null||
+|Array&lt;T&gt;|list/null||
+|Dictionary|dictionary/null||
+|Dictionary<T,U>|dictionary/null||
+|StringName|string||
+|NodePath|string||
+|Color|color||
+|Vector2|list||
+|Vector3|list||
+|Vector4|list||
+|Vector2I|list||
+|Vector3I|list||
+|Vector4I|list||
+|Quaternion|list||
+|Plane|list||
+|Rect2|list||
+|Rect2I|list||
+|Aabb|list||
+|Transform2D|list||
+|Basis|list||
+|Transform3D|list||
+|Projection|list||
 
 ## Unity Engine Types
 *These types are only available when compiling in a Unity context.*

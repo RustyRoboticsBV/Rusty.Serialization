@@ -10,6 +10,9 @@ namespace Rusty.Serialization
         public DefaultConversionContext() : base()
         {
             AddSystem();
+#if GODOT
+            AddGodot();
+#endif
         }
     }
 }

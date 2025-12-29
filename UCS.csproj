@@ -41,5 +41,15 @@
     <Compile Include="Scripts\Converters\.NET\System\UriConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System\VersionConverter.cs" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <Reference Include="GodotSharp">
+      <HintPath>..\..\Godot_v4.5-stable_mono_win64\GodotSharp\Api\Release\GodotSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <DefineConstants>GODOT</DefineConstants>
+  </PropertyGroup>
+  
 </Project>
