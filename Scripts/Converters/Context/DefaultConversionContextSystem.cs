@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using Rusty.Serialization.Core.Converters;
@@ -42,6 +43,9 @@ namespace Rusty.Serialization
 
             // System.Drawing.
             Converters.Add<Color, ColorConverter>();
+
+            // System.Collections
+            Converters.Add<BitArray, BitArrayConverter>();
 
             // System.Collections.Generic.
             Converters.Add(typeof(List<>), typeof(ListConverter<>));
