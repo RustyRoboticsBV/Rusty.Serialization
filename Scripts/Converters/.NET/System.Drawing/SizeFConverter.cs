@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCOREAPP2_0_OR_GREATER
+using System;
 using System.Drawing;
 using Rusty.Serialization.Core.Converters;
 
@@ -33,3 +34,4 @@ namespace Rusty.Serialization.DotNet
         }
     }
 }
+#endif

@@ -1,4 +1,4 @@
-﻿#if NET6_0_OR_GREATER
+﻿#if NETCOREAPP2_0_OR_GREATER
 using System;
 using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.Core.Nodes;

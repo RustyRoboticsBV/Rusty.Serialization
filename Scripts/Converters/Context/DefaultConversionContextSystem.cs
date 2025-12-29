@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Numerics;
 using System.Text;
-using Rusty.Serialization.Core.Converters;
-using Rusty.Serialization.DotNet;
+
+#if NETCOREAPP2_0_OR_GREATER
+using System.Drawing;
 using ColorConverter = Rusty.Serialization.DotNet.ColorConverter;
 using PointConverter = Rusty.Serialization.DotNet.PointConverter;
 using SizeConverter = Rusty.Serialization.DotNet.SizeConverter;
 using SizeFConverter = Rusty.Serialization.DotNet.SizeFConverter;
 using RectangleConverter = Rusty.Serialization.DotNet.RectangleConverter;
-using System.Numerics;
+#endif
+
+using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.DotNet;
 
 namespace Rusty.Serialization
 {
@@ -19,7 +23,9 @@ namespace Rusty.Serialization
         private void AddSystem()
         {
             // System.
+#if NETCOREAPP2_0_OR_GREATER
             Converters.Add<DBNull, DBNullConverter>();
+#endif
 
 #if NETCOREAPP3_0_OR_GREATER
             Converters.Add<Index, IndexConverter>();
@@ -67,6 +73,7 @@ namespace Rusty.Serialization
             Converters.Add<Encoding, EncodingConverter>();
 
             // System.Drawing.
+#if NETCOREAPP2_0_OR_GREATER
             Converters.Add<Color, ColorConverter>();
 
             Converters.Add<Point, PointConverter>();
@@ -75,6 +82,7 @@ namespace Rusty.Serialization
             Converters.Add<SizeF, SizeFConverter>();
             Converters.Add<Rectangle, RectangleConverter>();
             Converters.Add<RectangleF, RectangleFConverter>();
+#endif
 
             // System.Collections
             Converters.Add<BitArray, BitArrayConverter>();
