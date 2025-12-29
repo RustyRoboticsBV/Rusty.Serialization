@@ -24,6 +24,7 @@ namespace Rusty.Serialization
 
             Converters.Add<Guid, GuidConverter>();
             Converters.Add<Version, VersionConverter>();
+            Converters.Add<Type, TypeConverter>();
 
             Converters.Add<TimeSpan, TimeSpanConverter>();
             Converters.Add<DateTime, DateTimeConverter>();

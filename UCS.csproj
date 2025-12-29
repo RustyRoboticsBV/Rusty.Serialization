@@ -25,6 +25,7 @@
     <Compile Include="Scripts\Converters\.NET\System\RangeConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System\TimeOnlyConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System\TimeSpanConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System\TypeConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System\VersionConverter.cs" />
   </ItemGroup>
 

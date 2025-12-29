@@ -80,7 +80,7 @@ namespace Rusty.Serialization.Core.Converters
             }
 
             // If the object is of the correct type, return it.
-            if (obj.GetType() == expectedType)
+            if (expectedType.IsAssignableFrom(obj.GetType()))
                 return obj;
 
             // Else, check if a conversion operator is available.

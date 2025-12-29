@@ -43,6 +43,7 @@ class A
 
     public string f1 = "ABC";
     public string f2 = "DEF";
+    public Type f3 = typeof(A);
 
     public System.Drawing.Color g = System.Drawing.Color.Red;
 
