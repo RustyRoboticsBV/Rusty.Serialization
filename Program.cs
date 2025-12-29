@@ -22,6 +22,8 @@ Console.WriteLine(tree);
 
 class A
 {
+    public DBNull _ = DBNull.Value;
+
     public bool a = true;
 
     public sbyte b1 = 1;

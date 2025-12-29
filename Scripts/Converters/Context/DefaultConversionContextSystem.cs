@@ -12,6 +12,8 @@ namespace Rusty.Serialization
         private void AddSystem()
         {
             // System.
+            Converters.Add<DBNull, DBNullConverter>();
+
 #if NETCOREAPP3_0_OR_GREATER
             Converters.Add<Index, IndexConverter>();
 #endif
