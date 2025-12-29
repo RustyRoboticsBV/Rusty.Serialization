@@ -4,7 +4,7 @@ using Rusty.Serialization.Core.Nodes;
 namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// A base class for vector converter.
+    /// A base class for vector converters.
     /// </summary>
     public abstract class VectorConverter<VectorT, ElementT> : CompositeConverter<VectorT, ListNode>
     {

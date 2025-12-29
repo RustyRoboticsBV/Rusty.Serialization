@@ -50,6 +50,14 @@ namespace Rusty.Serialization
             // System.Numerics.
             Converters.Add<BigInteger, BigIntegerConverter>();
 
+            Converters.Add<Vector2, Vector2Converter>();
+            Converters.Add<Vector3, Vector3Converter>();
+            Converters.Add<Vector4, Vector4Converter>();
+            Converters.Add<Quaternion, QuaternionConverter>();
+            Converters.Add<Plane, PlaneConverter>();
+            Converters.Add<Matrix3x2, Matrix3x2Converter>();
+            Converters.Add<Matrix4x4, Matrix4x4Converter>();
+
             // System.Text.
 #if NET5_0_OR_GREATER
             Converters.Add<Rune, RuneConverter>();
