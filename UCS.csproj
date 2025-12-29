@@ -14,6 +14,12 @@
   <ItemGroup>
     <Compile Include="Scripts\Converters\.NET\System.Collections\BitArrayConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System.Drawing\ColorConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System.Drawing\PointConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System.Drawing\PointFConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System.Drawing\RectangleConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System.Drawing\RectangleFConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System.Drawing\SizeConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System.Drawing\SizeFConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System.Text\EncodingConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System.Text\RuneConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System.Text\StringBuilderConverter.cs" />

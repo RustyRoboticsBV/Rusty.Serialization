@@ -6,6 +6,10 @@ using System.Text;
 using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.DotNet;
 using ColorConverter = Rusty.Serialization.DotNet.ColorConverter;
+using PointConverter = Rusty.Serialization.DotNet.PointConverter;
+using SizeConverter = Rusty.Serialization.DotNet.SizeConverter;
+using SizeFConverter = Rusty.Serialization.DotNet.SizeFConverter;
+using RectangleConverter = Rusty.Serialization.DotNet.RectangleConverter;
 
 namespace Rusty.Serialization
 {
@@ -52,6 +56,13 @@ namespace Rusty.Serialization
 
             // System.Drawing.
             Converters.Add<Color, ColorConverter>();
+
+            Converters.Add<Point, PointConverter>();
+            Converters.Add<PointF, PointFConverter>();
+            Converters.Add<Size, SizeConverter>();
+            Converters.Add<SizeF, SizeFConverter>();
+            Converters.Add<Rectangle, RectangleConverter>();
+            Converters.Add<RectangleF, RectangleFConverter>();
 
             // System.Text.
 #if NET5_0_OR_GREATER
