@@ -10,6 +10,7 @@ using PointConverter = Rusty.Serialization.DotNet.PointConverter;
 using SizeConverter = Rusty.Serialization.DotNet.SizeConverter;
 using SizeFConverter = Rusty.Serialization.DotNet.SizeFConverter;
 using RectangleConverter = Rusty.Serialization.DotNet.RectangleConverter;
+using System.Numerics;
 
 namespace Rusty.Serialization
 {
@@ -46,13 +47,16 @@ namespace Rusty.Serialization
 #endif
             Converters.Add<DateTimeOffset, DateTimeOffsetConverter>();
 
-            // System.Collections
-            Converters.Add<BitArray, BitArrayConverter>();
+            // System.Numerics.
+            Converters.Add<BigInteger, BigIntegerConverter>();
 
-            // System.Collections.Generic.
-            Converters.Add(typeof(List<>), typeof(ListConverter<>));
+            // System.Text.
+#if NET5_0_OR_GREATER
+            Converters.Add<Rune, RuneConverter>();
+#endif
 
-            Converters.Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
+            Converters.Add<StringBuilder, StringBuilderConverter>();
+            Converters.Add<Encoding, EncodingConverter>();
 
             // System.Drawing.
             Converters.Add<Color, ColorConverter>();
@@ -64,13 +68,13 @@ namespace Rusty.Serialization
             Converters.Add<Rectangle, RectangleConverter>();
             Converters.Add<RectangleF, RectangleFConverter>();
 
-            // System.Text.
-#if NET5_0_OR_GREATER
-            Converters.Add<Rune, RuneConverter>();
-#endif
+            // System.Collections
+            Converters.Add<BitArray, BitArrayConverter>();
 
-            Converters.Add<StringBuilder, StringBuilderConverter>();
-            Converters.Add<Encoding, EncodingConverter>();
+            // System.Collections.Generic.
+            Converters.Add(typeof(List<>), typeof(ListConverter<>));
+
+            Converters.Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
         }
     }
 }
