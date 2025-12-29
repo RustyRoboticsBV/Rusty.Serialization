@@ -15,7 +15,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Constructors. */
         public ListNode(int capacity) : this(new INode[capacity]) { }
 
-        public ListNode(INode[] elements)
+        public ListNode(params INode[] elements)
         {
             Elements = elements;
 

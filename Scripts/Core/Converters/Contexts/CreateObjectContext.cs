@@ -1,8 +1,7 @@
-﻿using Rusty.Serialization.Core.Nodes;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Linq;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -30,13 +29,8 @@ namespace Rusty.Serialization.Core.Converters
             // Handle ID node.
             if (node is RefNode refNode)
             {
-                if (ParsingTable.HasParsed(refNode.ID))
-                    obj = ParsingTable.GetParsed(refNode.ID);
-                else
-                {
-                    IdNode refIdNode = NodeTypeTable.GetId(refNode);
-                    obj = CreateObject(NodeTypeTable.GetType(refIdNode), refIdNode);
-                }
+                IdNode refIdNode = NodeTypeTable.GetId(refNode);
+                obj = CreateObject(NodeTypeTable.GetType(refIdNode), refIdNode);
             }
 
             // Handle ID node.
@@ -58,7 +52,6 @@ namespace Rusty.Serialization.Core.Converters
                         converter = Converters.Get(expectedType);
 
                     obj = converter.CreateObject(valueNode, this);
-                    System.Console.WriteLine("EEEEEEEE\n" + idNode);
 
                     ParsingTable.Add(idNode);
                     ParsingTable.SetParsed(idNode.Name, obj);

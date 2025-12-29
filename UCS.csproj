@@ -13,9 +13,12 @@
 
   <ItemGroup>
     <Compile Include="Scripts\Converters\.NET\System\ColorConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System\DateOnlyConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System\DateTimeConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System.Collections.Generic\DictionaryConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System.Collections.Generic\ListConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System\HalfConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System\TimeOnlyConverter.cs" />
   </ItemGroup>
 
 </Project>
