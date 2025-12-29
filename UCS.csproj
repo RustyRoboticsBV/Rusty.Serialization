@@ -12,7 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Scripts\Converters\.NET\System.Collections\BitArrayConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System.Drawing\ColorConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System.Text\EncodingConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System.Text\RuneConverter.cs" />
+    <Compile Include="Scripts\Converters\.NET\System.Text\StringBuilderConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System\DateOnlyConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System\DateTimeConverter.cs" />
     <Compile Include="Scripts\Converters\.NET\System.Collections.Generic\DictionaryConverter.cs" />

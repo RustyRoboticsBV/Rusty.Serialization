@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.DotNet;
 using ColorConverter = Rusty.Serialization.DotNet.ColorConverter;
@@ -41,15 +42,24 @@ namespace Rusty.Serialization
 #endif
             Converters.Add<DateTimeOffset, DateTimeOffsetConverter>();
 
-            // System.Drawing.
-            Converters.Add<Color, ColorConverter>();
-
             // System.Collections
             Converters.Add<BitArray, BitArrayConverter>();
 
             // System.Collections.Generic.
             Converters.Add(typeof(List<>), typeof(ListConverter<>));
+
             Converters.Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
+
+            // System.Drawing.
+            Converters.Add<Color, ColorConverter>();
+
+            // System.Text.
+#if NET5_0_OR_GREATER
+            Converters.Add<Rune, RuneConverter>();
+#endif
+
+            Converters.Add<StringBuilder, StringBuilderConverter>();
+            Converters.Add<Encoding, EncodingConverter>();
         }
     }
 }
