@@ -53,6 +53,14 @@ Both the converter and serializer layers can be freely swapped out.
 - The default converter layer has explicit support for various .NET, Godot and Unity data types (see the [type table](TypeTable.md) for a comprehensive list).
 - The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported, though input must be structured in a way that matches the parser's expectations (see [here](XmlSchema.md) for the XML conventions and [here](JsonSchema.md) for the JSON conventions).
 
+### Nodes
+The node layer recognizes the following nodes:
+- Primitives: `null`, `bool`, `int`, `real`, `char`, `string`, `color`, `time`, `bytes`, `ref`.
+- Collections: `list`, `dict`, `object`.
+- Metadata: `type`, `ID`.
+
+These are more abstract than a C# type. For example, an `int` node can represent any integer type, a `real` node can represent any decimal type, a `list` node can represent any linear data structure, etc.
+
 ## Compact Serialized C# Data
 The module uses a custom serialization format called Compact Serialized C# Data (CSCD). CSCD is a human-readable format that supports references, type labels and a wide variety of literal types. This allows it to concisely represent complex C# objects that would require more verbosity in other formats. It is designed to be compact, general and unambiguous.
 
