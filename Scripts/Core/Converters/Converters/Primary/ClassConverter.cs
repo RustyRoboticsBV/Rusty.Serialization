@@ -1,7 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Serialization;
 using Rusty.Serialization.Core.Nodes;
+
+
+#if UNITY_5_3_OR_NEWER
+using UnityEngine;
+#endif
+#if GODOT
+using Godot;
+#endif
 
 namespace Rusty.Serialization.Core.Converters
 {
@@ -11,7 +20,7 @@ namespace Rusty.Serialization.Core.Converters
     public class ClassConverter<T> : CompositeConverter<T, ObjectNode>
     {
         /* Protected properties. */
-        protected virtual HashSet<string> IgnoredMembers => new();
+        protected virtual HashSet<MemberInfo> IgnoredMembers => new();
 
         /* Private properties. */
         private MemberInfo[] Members { get; set; }
@@ -120,19 +129,14 @@ namespace Rusty.Serialization.Core.Converters
 
         /* Private methods. */
         /// <summary>
-        /// Get all public members.
+        /// Get all serializable members.
         /// </summary>
         private MemberInfo[] GetPublicMembers(Type type)
         {
             List<MemberInfo> members = new();
 
-            // Collect public fields.
-            FieldInfo[] fields = type.GetFields();
-            for (int i = 0; i < fields.Length; i++)
-            {
-                if (fields[i].IsPublic && !fields[i].IsStatic && !IgnoredMembers.Contains(fields[i].Name))
-                    members.Add(fields[i]);
-            }
+            // Collect fields.
+            GetFields(type, members, IgnoredMembers);
 
             // Collect properties with a public getter and setter.
             PropertyInfo[] properties = type.GetProperties();
@@ -140,7 +144,7 @@ namespace Rusty.Serialization.Core.Converters
             {
                 MethodInfo getter = properties[i].GetMethod;
                 MethodInfo setter = properties[i].SetMethod;
-                if (properties[i].GetIndexParameters().Length == 0 && !IgnoredMembers.Contains(properties[i].Name)
+                if (properties[i].GetIndexParameters().Length == 0 && !IgnoredMembers.Contains(properties[i])
                     && getter != null && getter.IsPublic && !getter.IsStatic
                     && setter != null && setter.IsPublic && !setter.IsStatic)
                 {
@@ -149,6 +153,53 @@ namespace Rusty.Serialization.Core.Converters
             }
 
             return members.ToArray();
+        }
+
+        /// <summary>
+        /// Collect all fields that should be serialized.
+        /// </summary>
+        private static void GetFields(Type type, List<MemberInfo> members, HashSet<MemberInfo> ignoredMembers)
+        {
+            // Stop on System.Object or null.
+            if (type == typeof(object) || type == null)
+                return;
+
+            // Get all fields.
+            FieldInfo[] fields = type.GetFields(
+                BindingFlags.Instance |
+                BindingFlags.Public |
+                BindingFlags.NonPublic |
+                BindingFlags.DeclaredOnly);
+
+            // Only keep the ones that match the serializable requirements.
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i].GetCustomAttribute<NonSerializedAttribute>() != null || ignoredMembers.Contains(fields[i]))
+                    continue;
+
+                if (fields[i].IsPublic)
+                    members.Add(fields[i]);
+
+#if NETFRAMEWORK || NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
+                else if (fields[i].GetCustomAttribute<DataMemberAttribute>() != null)
+                    members.Add(fields[i]);
+#endif
+#if UNITY_5_3_OR_NEWER
+                else if (fields[i].GetCustomAttribute<SerializeField>() != null)
+                    members.Add(fields[i]);
+#endif
+#if UNITY_2019_3_OR_NEWER
+                else if (fields[i].GetCustomAttribute<SerializeReference>() != null)
+                    members.Add(fields[i]);
+#endif
+#if GODOT
+                else if (fields[i].GetCustomAttribute<ExportAttribute>() != null)
+                    members.Add(fields[i]);
+#endif
+            }
+
+            // Examine base type.
+            GetFields(type.BaseType, members, ignoredMembers);
         }
     }
 }

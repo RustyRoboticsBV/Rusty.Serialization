@@ -20,7 +20,11 @@ Console.WriteLine();
 Console.WriteLine(tree);
 
 
-class A
+class Base
+{
+}
+
+class A : Base
 {
     public DBNull _ = DBNull.Value;
 
