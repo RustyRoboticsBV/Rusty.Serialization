@@ -133,23 +133,25 @@ namespace Rusty.Serialization.Core.Converters
         /// </summary>
         private MemberInfo[] GetPublicMembers(Type type)
         {
-            List<MemberInfo> members = new();
-
             // Collect fields.
-            GetFields(type, members, IgnoredMembers);
+            List<FieldInfo> fields = new List<FieldInfo>();
+            CollectFields(type, fields, IgnoredMembers);
 
             // Collect properties with a public getter and setter.
-            PropertyInfo[] properties = type.GetProperties();
-            for (int i = 0; i < properties.Length; i++)
+            List<PropertyInfo> properties = new List<PropertyInfo>();
+            CollectProperties(type, properties, fields, IgnoredMembers);
+
+            // Combine collected members.
+            List<MemberInfo> members = new List<MemberInfo>(fields.Count + properties.Count);
+
+            for (int i = 0; i < fields.Count; i++)
             {
-                MethodInfo getter = properties[i].GetMethod;
-                MethodInfo setter = properties[i].SetMethod;
-                if (properties[i].GetIndexParameters().Length == 0 && !IgnoredMembers.Contains(properties[i])
-                    && getter != null && getter.IsPublic && !getter.IsStatic
-                    && setter != null && setter.IsPublic && !setter.IsStatic)
-                {
-                    members.Add(properties[i]);
-                }
+                members.Add(fields[i]);
+            }
+
+            for (int i = 0; i < properties.Count; i++)
+            {
+                members.Add(properties[i]);
             }
 
             return members.ToArray();
@@ -158,7 +160,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Collect all fields that should be serialized.
         /// </summary>
-        private static void GetFields(Type type, List<MemberInfo> members, HashSet<MemberInfo> ignoredMembers)
+        private static void CollectFields(Type type, List<FieldInfo> members, HashSet<MemberInfo> ignoredMembers)
         {
             // Stop on System.Object or null.
             if (type == typeof(object) || type == null)
@@ -174,9 +176,11 @@ namespace Rusty.Serialization.Core.Converters
             // Only keep the ones that match the serializable requirements.
             for (int i = 0; i < fields.Length; i++)
             {
+                // Skip ignored or [NonSerialized].
                 if (fields[i].GetCustomAttribute<NonSerializedAttribute>() != null || ignoredMembers.Contains(fields[i]))
                     continue;
 
+                // Check if this property is serializable.
                 if (fields[i].IsPublic)
                     members.Add(fields[i]);
 
@@ -199,7 +203,83 @@ namespace Rusty.Serialization.Core.Converters
             }
 
             // Examine base type.
-            GetFields(type.BaseType, members, ignoredMembers);
+            CollectFields(type.BaseType, members, ignoredMembers);
+        }
+
+        /// <summary>
+        /// Collect all properties that should be serialized.
+        /// </summary>
+        private static void CollectProperties(
+            Type type,
+            List<PropertyInfo> members,
+            List<FieldInfo> collectedFields,
+            HashSet<MemberInfo> ignoredMembers)
+        {
+            // Stop on System.Object or null.
+            if (type == typeof(object) || type == null)
+                return;
+
+            // Get all properties.
+            PropertyInfo[] properties = type.GetProperties(
+                BindingFlags.Instance |
+                BindingFlags.Public |
+                BindingFlags.NonPublic |
+                BindingFlags.DeclaredOnly);
+
+            // Only keep the ones that match the serializable requirements.
+            for (int i = 0; i < properties.Length; i++)
+            {
+                // Get property info.
+                PropertyInfo property = properties[i];
+
+                MethodInfo getter = property.GetGetMethod(true);
+                MethodInfo setter = property.GetSetMethod(true);
+
+                // Skip indexers.
+                if (property.GetIndexParameters().Length != 0)
+                    continue;
+
+                // Skip ignored or [NonSerialized].
+                if (ignoredMembers.Contains(property) || property.GetCustomAttribute<NonSerializedAttribute>() != null)
+                    continue;
+
+                // Skip static properties.
+                if ((getter != null && getter.IsStatic) ||
+                    (setter != null && setter.IsStatic))
+                    continue;
+
+                // Check if this property is serializable.
+                bool isSerializable = false;
+
+                if (getter != null && getter.IsPublic && setter != null && setter.IsPublic)
+                    isSerializable = true;
+
+#if NETFRAMEWORK || NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
+                else if (property.GetCustomAttribute<DataMemberAttribute>() != null)
+                    isSerializable = true;
+#endif
+#if GODOT
+                else if (property.GetCustomAttribute<ExportAttribute>() != null)
+                    isSerializable = true;
+#endif
+
+                if (!isSerializable)
+                    continue;
+
+                // Avoid duplicates if a backing field is already serialized.
+                for (int j = 0; j < collectedFields.Count; j++)
+                {
+                    if (collectedFields[j].Name == $"<{property.Name}>k__BackingField")
+                        goto SkipProperty;
+                }
+
+                members.Add(property);
+
+                SkipProperty:;
+            }
+
+            // Examine base type
+            CollectProperties(type.BaseType, members, collectedFields, ignoredMembers);
         }
     }
 }
