@@ -38,13 +38,13 @@ obj = context.Deserialize<MyClass>(serialized); // Deserializes back to MyClass.
 ```
 
 #### Notes
-Types without explicit support automatically serialize using:
-- All fields that are public and non-static.
-- All properties that are public, non-static and non-readonly.
+Classes and structs without explicit support will automatically serialize using:
+- Fields that are public and non-static.
+- Properties that are public, non-static and non-readonly.
 - Non-public fields and properties with the `[DataMember]` attribute.
-- (Unity only): Non-public fields with the `[SerializeField]` or `[SerializeReference]` attribute.
-- (Godot only): Non-public fields and properties with the `[Export]` attribute.
-- Fields and properties with the `[NonSerialized]` attribute will not be serialized.
+- *Unity only*: Non-public fields with the `[SerializeField]` or `[SerializeReference]` attribute.
+- *Godot only*: Non-public fields and properties with the `[Export]` attribute.
+- **Note**: members with the `[NonSerialized]` attribute are never serialized.
 
 ## Architecture
 The module separates the serialization process into two steps.
