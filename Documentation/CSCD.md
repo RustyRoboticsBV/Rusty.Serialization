@@ -120,7 +120,7 @@ Binary data literals store arbitrary data in hexadecimal format. They must start
 #### References
 Reference values are used to link to values that have been marked with an ID. They must start with an `&` ampersand, followed by the name of an ID (example: `&my_id`). This ID must exist elsewhere in the data.
 
-There are no scope limitations on where in the data an ID can be referenced: IDs that are defined before the reference, after the reference or inside a different nested collection are all allowed.
+There are no scope limitations on where in the data an ID can be referenced: IDs that are defined before the reference, after the reference or inside a different nested collection are all allowed. Cyclic references are also allowed.
 
 References can be annotated with a type labels and even an ID of its own.
 
