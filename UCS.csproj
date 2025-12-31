@@ -6,43 +6,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Compile Include="Scripts\Converters\.NET\System.Collections\BitArrayConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Drawing\ColorConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Numerics\Matrix3x2Converter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Drawing\PointConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Drawing\PointFConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Drawing\RectangleConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Drawing\RectangleFConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Drawing\SizeConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Drawing\SizeFConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Numerics\BigIntegerConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Numerics\Matrix4x4Converter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Numerics\PlaneConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Numerics\QuaternionConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Numerics\Vector2Converter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Numerics\Vector3Converter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Numerics\Vector4Converter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Text\EncodingConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Text\RuneConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Text\StringBuilderConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\DateOnlyConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\DateTimeConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Collections.Generic\DictionaryConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System.Collections.Generic\ListConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\DateTimeOffsetConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\DBNullConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\GuidConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\HalfConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\IndexConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\RangeConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\TimeOnlyConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\TimeSpanConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\TypeConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\UriConverter.cs" />
-    <Compile Include="Scripts\Converters\.NET\System\VersionConverter.cs" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <Reference Include="GodotSharp">
       <HintPath>..\..\Godot_v4.5-stable_mono_win64\GodotSharp\Api\Release\GodotSharp.dll</HintPath>
     </Reference>

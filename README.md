@@ -2,7 +2,7 @@
 **THIS PROJECT IS STILL IN PRE-ALPHA, DO NOT USE YET**
 
 <p align="center">
-  <img src="Logo.svg" width="250">
+  <img src="Images/Logo.svg" width="250">
 </p>
 
 A configurable, extendable, engine-agnostic C# serialization/deserialization module. It is designed to simplify saving, loading, and transferring data in any C# context, with a special focus on game development.
@@ -52,12 +52,12 @@ The module separates the serialization process into two steps.
 2. Serialize/deserialize the node-based representation to/from the chosen format.
 
 <p align="center">
-  <img src="Diagram.svg" alt="The structure of the serializer/deserializer architecture.">
+  <img src="Images/Diagram.svg" alt="The structure of the serializer/deserializer architecture.">
 </p>
 
 Both the converter and serializer layers can be freely swapped out.
-- The default converter layer has explicit support for various .NET, Godot and Unity data types (see the [type table](TypeTable.md) for a comprehensive list).
-- The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported, though input must be structured in a way that matches the parser's expectations (see [here](XmlSchema.md) for the XML conventions and [here](JsonSchema.md) for the JSON conventions).
+- The default converter layer has explicit support for various .NET, Godot and Unity data types (see the [type table](Documentation/TypeTable.md) for a comprehensive list).
+- The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported, though input must be structured in a way that matches the parser's expectations (see [here](Documentation/XmlSchema.md) for the XML conventions and [here](Documentation/JsonSchema.md) for the JSON conventions).
 
 ### Nodes
 The node layer recognizes the following nodes:
@@ -70,7 +70,7 @@ These are more abstract than a C# type. For example, an `int` node can represent
 ## Compact Serialized C# Data
 The module uses a custom serialization format called Compact Serialized C# Data (CSCD). CSCD is a human-readable format that supports references, type labels and a wide variety of literal types. This allows it to concisely represent complex C# objects that would require more verbosity in other formats. It is designed to be compact, general and unambiguous.
 
-Below is an example of a custom serialized object with pretty printing. See the [specification document](FormatSpecification.md) for a more detailed description of the syntax.
+Below is an example of a custom serialized object with pretty printing. See the [specification document](Documentation/CSCD.md) for a more detailed description of the syntax.
 
 ```
 (MyType)<

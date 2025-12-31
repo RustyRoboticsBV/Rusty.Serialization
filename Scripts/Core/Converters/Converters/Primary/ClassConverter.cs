@@ -15,12 +15,15 @@ using Godot;
 namespace Rusty.Serialization.Core.Converters
 {
     /// <summary>
-    /// A class converter.
+    /// A struct/class converter.
     /// </summary>
     public class ClassConverter<T> : CompositeConverter<T, ObjectNode>
     {
         /* Protected properties. */
-        protected virtual HashSet<MemberInfo> IgnoredMembers => new();
+        /// <summary>
+        /// A set of members that should not be serialized.
+        /// </summary>
+        protected virtual HashSet<MemberInfo> IgnoredMembers => new HashSet<MemberInfo>();
 
         /* Private properties. */
         private MemberInfo[] Members { get; set; }
@@ -29,8 +32,7 @@ namespace Rusty.Serialization.Core.Converters
         protected override ObjectNode CreateNode(T obj, CreateNodeContext context)
         {
             // Collect members.
-            if (Members == null)
-                Members = GetPublicMembers(obj.GetType());
+            Members = CollectMembers(obj.GetType());
 
             // Create new node.
             return new(Members.Length);
@@ -40,7 +42,7 @@ namespace Rusty.Serialization.Core.Converters
         {
             // Collect members.
             if (Members == null)
-                Members = GetPublicMembers(obj.GetType());
+                Members = CollectMembers(obj.GetType());
 
             // Convert identifiers and convert values to member nodes.
             for (int i = 0; i < Members.Length; i++)
@@ -77,8 +79,7 @@ namespace Rusty.Serialization.Core.Converters
         protected override void CollectTypes(ObjectNode node, CollectTypesContext context)
         {
             // Collect members.
-            if (Members == null)
-                Members = GetPublicMembers(typeof(T));
+            Members = CollectMembers(typeof(T));
 
             // Collect member types.
             for (int i = 0; i < Members.Length; i++)
@@ -96,8 +97,7 @@ namespace Rusty.Serialization.Core.Converters
         protected override T AssignObject(T obj, ObjectNode node, AssignObjectContext context)
         {
             // Collect members.
-            if (Members == null)
-                Members = GetPublicMembers(typeof(T));
+            Members = CollectMembers(typeof(T));
 
             // Assign non-ref.
             for (int i = 0; i < Members.Length; i++)
@@ -131,8 +131,12 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Get all serializable members.
         /// </summary>
-        private MemberInfo[] GetPublicMembers(Type type)
+        private MemberInfo[] CollectMembers(Type type)
         {
+            // Do nothing if we already got the members.
+            if (Members != null)
+                return Members;
+
             // Collect fields.
             List<FieldInfo> fields = new List<FieldInfo>();
             CollectFields(type, fields, IgnoredMembers);
@@ -209,10 +213,7 @@ namespace Rusty.Serialization.Core.Converters
         /// <summary>
         /// Collect all properties that should be serialized.
         /// </summary>
-        private static void CollectProperties(
-            Type type,
-            List<PropertyInfo> members,
-            List<FieldInfo> collectedFields,
+        private static void CollectProperties(Type type, List<PropertyInfo> members, List<FieldInfo> collectedFields,
             HashSet<MemberInfo> ignoredMembers)
         {
             // Stop on System.Object or null.
@@ -270,12 +271,10 @@ namespace Rusty.Serialization.Core.Converters
                 for (int j = 0; j < collectedFields.Count; j++)
                 {
                     if (collectedFields[j].Name == $"<{property.Name}>k__BackingField")
-                        goto SkipProperty;
+                        continue;
                 }
 
                 members.Add(property);
-
-                SkipProperty:;
             }
 
             // Examine base type

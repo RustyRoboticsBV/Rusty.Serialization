@@ -1,7 +1,7 @@
-﻿using Rusty.Serialization;
+﻿using System;
+using Rusty.Serialization;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Testing;
-using System;
 
 DefaultConversionContext context = new();
 A a = new();
