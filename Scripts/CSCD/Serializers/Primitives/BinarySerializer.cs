@@ -26,7 +26,7 @@ namespace Rusty.Serialization.CSCD
                 if (string.IsNullOrEmpty(trimmed))
                     throw new ArgumentException("Empty string.");
 
-                // Enforce 0x prefix.
+                // Enforce b prefix.
                 if (!trimmed.StartsWith("b"))
                     throw new ArgumentException("Missing 'b' prefix.");
 

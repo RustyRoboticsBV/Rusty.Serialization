@@ -57,7 +57,7 @@ The module separates the serialization process into two steps.
 
 Both the converter and serializer layers can be freely swapped out.
 - The default converter layer has explicit support for various .NET, Godot and Unity data types (see the [type table](Documentation/TypeTable.md) for a comprehensive list).
-- The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported, though input must be structured in a way that matches the parser's expectations (see [here](Documentation/XmlSchema.md) for the XML conventions and [here](Documentation/JsonSchema.md) for the JSON conventions).
+- The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported, though input must be structured in a way that [matches the parser's expectations](Documentation/FormatTable.md).
 
 ### Nodes
 The node layer recognizes the following nodes:

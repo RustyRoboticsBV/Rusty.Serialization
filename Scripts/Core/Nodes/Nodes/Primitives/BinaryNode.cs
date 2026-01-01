@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            return $"binary: 0x{HexUtility.ToHexString(Value)}";
+            return $"binary: b{HexUtility.ToHexString(Value)}";
         }
 
         public void Clear()
