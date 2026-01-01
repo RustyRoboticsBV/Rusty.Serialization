@@ -14,8 +14,9 @@ namespace Rusty.Serialization.CSCD
         public string Tab { get; set; } = "  ";
 
         /* Private properties. */
+        private TypeSerializer Type { get; } = new();
+        private IdSerializer Id { get; } = new();
         private NullSerializer Null { get; } = new();
-        private RefSerializer Ref { get; } = new();
         private BoolSerializer Bool { get; } = new();
         private IntSerializer Int { get; } = new();
         private RealSerializer Real { get;  } = new();
@@ -23,48 +24,47 @@ namespace Rusty.Serialization.CSCD
         private StringSerializer String { get; } = new();
         private ColorSerializer Color { get; } = new();
         private TimeSerializer Time { get; } = new();
-        private BinarySerializer Binary { get; } = new();
+        private BinarySerializer Bytes { get; } = new();
+        private RefSerializer Ref { get; } = new();
         private ListSerializer List { get; } = new();
         private DictSerializer Dict { get; } = new();
         private ObjectSerializer Object { get; } = new();
-        private TypeSerializer Type { get; } = new();
-        private IdSerializer Id { get; } = new();
 
         /* Public methods. */
         public string Serialize(INode node)
         {
             switch (node)
             {
-                case NullNode n:
-                    return Null.Serialize(n, this);
-                case RefNode re:
-                    return Ref.Serialize(re, this);
-                case BoolNode b:
-                    return Bool.Serialize(b, this);
-                case IntNode i:
-                    return Int.Serialize(i, this);
-                case RealNode r:
-                    return Real.Serialize(r, this);
-                case CharNode c:
-                    return Char.Serialize(c, this);
-                case StringNode s:
-                    return String.Serialize(s, this);
-                case ColorNode col:
-                    return Color.Serialize(col, this);
-                case TimeNode t:
-                    return Time.Serialize(t, this);
-                case BinaryNode bin:
-                    return Binary.Serialize(bin, this);
-                case ListNode l:
-                    return List.Serialize(l, this);
-                case DictNode d:
-                    return Dict.Serialize(d, this);
-                case ObjectNode o:
-                    return Object.Serialize(o, this);
-                case TypeNode ty:
-                    return Type.Serialize(ty, this);
+                case TypeNode type:
+                    return Type.Serialize(type, this);
                 case IdNode id:
                     return Id.Serialize(id, this);
+                case NullNode @null:
+                    return Null.Serialize(@null, this);
+                case BoolNode @bool:
+                    return Bool.Serialize(@bool, this);
+                case IntNode @int:
+                    return Int.Serialize(@int, this);
+                case RealNode real:
+                    return Real.Serialize(real, this);
+                case CharNode chr:
+                    return Char.Serialize(chr, this);
+                case StringNode str:
+                    return String.Serialize(str, this);
+                case ColorNode color:
+                    return Color.Serialize(color, this);
+                case TimeNode time:
+                    return Time.Serialize(time, this);
+                case BinaryNode bytes:
+                    return Bytes.Serialize(bytes, this);
+                case RefNode @ref:
+                    return Ref.Serialize(@ref, this);
+                case ListNode list:
+                    return List.Serialize(list, this);
+                case DictNode dict:
+                    return Dict.Serialize(dict, this);
+                case ObjectNode obj:
+                    return Object.Serialize(obj, this);
                 default:
                     throw new ArgumentException($"Unknown node type '{node.GetType()}'.");
             }
@@ -113,14 +113,14 @@ namespace Rusty.Serialization.CSCD
                 return String.Parse(serialized, this);
             if (serialized.StartsWith('#'))
                 return Color.Parse(serialized, this);
-            if (serialized.StartsWith("0x"))
-                return Binary.Parse(serialized, this);
+            if (serialized.StartsWith("b"))
+                return Bytes.Parse(serialized, this);
             if (serialized.StartsWith('Y') || serialized.StartsWith("-Y")
                 || serialized.StartsWith('M') || serialized.StartsWith("-M")
                 || serialized.StartsWith('D') || serialized.StartsWith("-D")
                 || serialized.StartsWith('h') || serialized.StartsWith("-h")
                 || serialized.StartsWith('m') || serialized.StartsWith("-m")
-                || serialized.StartsWith('s') || serialized.StartsWith("-s")
+                || serialized.StartsWith('s') || serialized.StartsWith("-str")
                 || serialized.StartsWith('f') || serialized.StartsWith("-g"))
             {
                 return Time.Parse(serialized, this);

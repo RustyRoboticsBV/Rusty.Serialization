@@ -115,7 +115,7 @@ For example:
 Note that time literals do not have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
 
 #### Binary
-Binary data literals store arbitrary data in hexadecimal format. They must start with `0x`, followed by the hexadecimal representation of the data, for example: `0x0004BAF890`. The literal `0x` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.
+Binary data literals store arbitrary data in hexadecimal format. They must start with `b`, followed by the hexadecimal representation of the data, for example: `b0004BAF890`. The literal `b` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.
 
 #### References
 Reference values are used to link to values that have been marked with an ID. They must start with an `&` ampersand, followed by the name of an ID (example: `&my_id`). This ID must exist elsewhere in the data.
