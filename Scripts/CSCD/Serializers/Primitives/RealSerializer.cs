@@ -55,7 +55,7 @@ namespace Rusty.Serialization.CSCD
 
                 // Handle . and -. strings.
                 if (trimmed == "." || trimmed == "-.")
-                    return new(0);
+                    return new(0f);
 
                 // Check syntax.
                 bool foundDot = false;

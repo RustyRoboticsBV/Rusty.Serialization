@@ -11,15 +11,9 @@ namespace Rusty.Serialization.DotNet
     public class HalfConverter : Core.Converters.Converter<Half, RealNode>
     {
         /* Protected method. */
-        protected override RealNode CreateNode(Half obj, CreateNodeContext context)
-        {
-            return new RealNode((float)obj);
-        }
+        protected override RealNode CreateNode(Half obj, CreateNodeContext context) => new RealNode((float)obj);
 
-        protected override Half CreateObject(RealNode node, CreateObjectContext context)
-        {
-            return Half.Parse(node.Value);
-        }
+        protected override Half CreateObject(RealNode node, CreateObjectContext context) => Half.Parse(node.Value);
     }
 }
 #endif

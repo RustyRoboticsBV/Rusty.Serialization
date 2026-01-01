@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Globalization;
+using System.Numerics;
 using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.Core.Nodes;
 
@@ -11,13 +12,9 @@ namespace Rusty.Serialization.DotNet
     {
         /* Protected method. */
         protected override IntNode CreateNode(BigInteger obj, CreateNodeContext context)
-        {
-            return new IntNode((decimal)obj);
-        }
+            => new IntNode(obj.ToString(CultureInfo.InvariantCulture));
 
         protected override BigInteger CreateObject(IntNode node, CreateObjectContext context)
-        {
-            return new BigInteger(node.Value);
-        }
+            => BigInteger.Parse(node.Value);
     }
 }

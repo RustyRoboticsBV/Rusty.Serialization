@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Converters
     {
         /* Protected methods. */
         protected override IntNode CreateNode(long obj, CreateNodeContext context) => new(obj);
-        protected override long CreateObject(IntNode node, CreateObjectContext context) => (long)node.Value;
+        protected override long CreateObject(IntNode node, CreateObjectContext context) => long.Parse(node.Value);
     }
 }

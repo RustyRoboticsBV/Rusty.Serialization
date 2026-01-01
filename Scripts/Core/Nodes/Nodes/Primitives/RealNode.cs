@@ -24,7 +24,7 @@ namespace Rusty.Serialization.Core.Nodes
         public void Clear()
         {
             Parent = null;
-            Value = 0;
+            Value = 0f;
         }
     }
 }

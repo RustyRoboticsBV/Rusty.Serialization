@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A string that represents a real number.
     /// </summary>
-    public readonly struct RealString
+    public readonly struct RealString : IEquatable<RealString>
     {
         /* Constants. */
         private const string format = "0.#############################";
@@ -14,13 +14,17 @@ namespace Rusty.Serialization.Core.Nodes
         /* Fields. */
         private readonly string value;
 
+        /* Public properties. */
+        public bool IsNegative => value?.StartsWith('-') ?? false;
+
         /* Constructors. */
         private RealString(string value) => this.value = value;
 
         /* Public methods. */
         public override string ToString() => value ?? "0";
         public override int GetHashCode() => value?.GetHashCode() ?? 0;
-        public override bool Equals(object obj) => obj is RealString str && value == str.value;
+        public override bool Equals(object obj) => obj is RealString str && Equals(str);
+        public bool Equals(RealString other) => value == other.value;
 
         /* Conversion operators. */
         public static implicit operator RealString(string value)
@@ -65,9 +69,9 @@ namespace Rusty.Serialization.Core.Nodes
             return new RealString(value);
         }
 
-        public static implicit operator RealString(int value)
+        public static implicit operator RealString(IntString value)
         {
-            return new RealString(value.ToString(CultureInfo.InvariantCulture));
+            return new RealString(value);
         }
 
         public static implicit operator RealString(float value)

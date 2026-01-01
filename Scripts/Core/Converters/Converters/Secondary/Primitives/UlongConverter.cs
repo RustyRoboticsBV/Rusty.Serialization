@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Converters
     {
         /* Protected methods. */
         protected override IntNode CreateNode(ulong obj, CreateNodeContext context) => new(obj);
-        protected override ulong CreateObject(IntNode node, CreateObjectContext context) => (ulong)node.Value;
+        protected override ulong CreateObject(IntNode node, CreateObjectContext context) => ulong.Parse(node.Value);
     }
 }

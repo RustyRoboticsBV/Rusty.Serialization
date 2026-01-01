@@ -13,7 +13,7 @@ namespace Rusty.Serialization.CSCD
         /* Public methods. */
         public override string Serialize(IntNode node, ISerializerScheme scheme)
         {
-            return node.Value.ToString(CultureInfo.InvariantCulture);
+            return node.Value;
         }
 
         public override IntNode Parse(string text, ISerializerScheme scheme)
@@ -35,7 +35,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Parse.
-                return new(decimal.Parse(trimmed, CultureInfo.InvariantCulture));
+                return new(trimmed);
             }
             catch (Exception ex)
             {

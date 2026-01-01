@@ -7,15 +7,12 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public decimal Value { get; set; }
+        public IntString Value { get; set; }
 
         /* Constructors. */
-        public IntNode(decimal value)
+        public IntNode(IntString value)
         {
-            if (value < 0)
-                Value = (long)value;
-            else
-                Value = (ulong)value;
+            Value = value;
         }
 
         /* Public methods. */
