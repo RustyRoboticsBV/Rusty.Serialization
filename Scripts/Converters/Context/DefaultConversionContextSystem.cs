@@ -56,6 +56,7 @@ namespace Rusty.Serialization
             // System.Numerics.
             Converters.Add<BigInteger, BigIntegerConverter>();
 
+            Converters.Add<Complex, ComplexConverter>();
             Converters.Add<Vector2, Vector2Converter>();
             Converters.Add<Vector3, Vector3Converter>();
             Converters.Add<Vector4, Vector4Converter>();
