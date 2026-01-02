@@ -13,7 +13,7 @@ Note that not all strings of valid JSON and XML can be interpreted by the parser
 |Char|'A'|["char", "A"]|&lt;char&gt;A&lt;/char&gt;|
 |String|"abc"|["str", "abc"]|&lt;str&gt;abc&lt;/str&gt;|
 |Color|#FF0000FF|["color", "FF0000FF"]|&lt;color&gt;FF0000FF&lt;/color&gt;|
-|Time|Y1999M2D13|["time", "Y1999M2D13"]|&lt;time&gt;Y1999M2D13&lt;/time&gt;|
+|Time|Y1999M2D13h10m5s2f111|["time", { <br>&nbsp;&nbsp;"year": 1999, <br>&nbsp;&nbsp;"month": 2, <br>&nbsp;&nbsp;"day": 13, <br>&nbsp;&nbsp;"hour": 10, <br>&nbsp;&nbsp;"minute": 5, <br>&nbsp;&nbsp;"second": 2, <br>&nbsp;&nbsp;"millisecond": 111<br>}]|&lt;time&gt;<br>&nbsp;&nbsp;&lt;year&gt;1999&lt;/year&gt; <br>&nbsp;&nbsp;&lt;month&gt;2&lt;/month&gt; <br>&nbsp;&nbsp;&lt;day&gt;13&lt;/day&gt; <br>&nbsp;&nbsp;&lt;hour&gt;10&lt;/hour&gt; <br>&nbsp;&nbsp;&lt;minute&gt;5&lt;/minute&gt; <br>&nbsp;&nbsp;&lt;second&gt;2&lt;/second&gt; <br>&nbsp;&nbsp;&lt;millisecond&gt;111&lt;/millisecond&gt; <br>&lt;/time&gt;|
 |Bytes|b1234ABCD|["bytes", "123ABCD"]|&lt;bytes&gt;1234ABCD&lt;/bytes&gt;|
 |Ref|&my_ref|["ref", "my_ref"]|&lt;ref&gt;my_ref&lt;/ref&gt;|
 |List|[1,2,3]|["list", [<br>&nbsp;&nbsp;["int", 1], <br>&nbsp;&nbsp;["int", 2], <br>&nbsp;&nbsp;["int", 3]<br>]]|&lt;list&gt;<br>&nbsp;&nbsp;&lt;int&gt;1&lt;/int&gt;<br>&nbsp;&nbsp;&lt;int&gt;2&lt;/int&gt;<br>&nbsp;&nbsp;&lt;int&gt;3&lt;/int&gt;<br>&lt;/list&gt;|
