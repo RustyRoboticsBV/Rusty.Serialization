@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using Rusty.Serialization.Core.Converters;
 
 namespace Rusty.Serialization.DotNet
@@ -14,12 +15,68 @@ namespace Rusty.Serialization.DotNet
 
         protected override float GetElementAt(ref Matrix3x2 matrix, int x, int y)
         {
-            return matrix[x, y];
+            switch (y)
+            {
+                case 0:
+                    switch (x)
+                    {
+                        case 0: return matrix.M11;
+                        case 1: return matrix.M12;
+                        default: throw new IndexOutOfRangeException(nameof(x));
+                    }
+                case 1:
+                    switch (x)
+                    {
+                        case 0: return matrix.M21;
+                        case 1: return matrix.M22;
+                        default: throw new IndexOutOfRangeException(nameof(x));
+                    }
+                case 2:
+                    switch (x)
+                    {
+                        case 0: return matrix.M31;
+                        case 1: return matrix.M32;
+                        default: throw new IndexOutOfRangeException(nameof(x));
+                    }
+                default:
+                    throw new IndexOutOfRangeException(nameof(y));
+            }
         }
 
         protected override void SetElementAt(ref Matrix3x2 matrix, int x, int y, ref float element)
         {
-            matrix[x, y] = element;
+            switch (y)
+            {
+                case 0:
+                    switch (x)
+                    {
+                        case 0: matrix.M11 = element; break;
+                        case 1: matrix.M12 = element; break;
+                        default: throw new IndexOutOfRangeException(nameof(x));
+                    }
+                    break;
+
+                case 1:
+                    switch (x)
+                    {
+                        case 0: matrix.M21 = element; break;
+                        case 1: matrix.M22 = element; break;
+                        default: throw new IndexOutOfRangeException(nameof(x));
+                    }
+                    break;
+
+                case 2:
+                    switch (x)
+                    {
+                        case 0: matrix.M31 = element; break;
+                        case 1: matrix.M32 = element; break;
+                        default: throw new IndexOutOfRangeException(nameof(x));
+                    }
+                    break;
+
+                default:
+                    throw new IndexOutOfRangeException(nameof(y));
+            }
         }
     }
 }
