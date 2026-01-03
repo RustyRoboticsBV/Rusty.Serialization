@@ -4,9 +4,9 @@ using Rusty.Serialization.Core.Converters;
 namespace Rusty.Serialization.DotNet
 {
     /// <summary>
-    /// A .NET list converter.
+    /// A .NET sorted set converter.
     /// </summary>
-    public class ListConverter<T> : ListConverter<List<T>, T>
+    public class SortedSetConverter<T> : SetConverter<SortedSet<T>, T>
     {
     }
 }

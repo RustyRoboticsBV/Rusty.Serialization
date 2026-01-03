@@ -18,10 +18,11 @@ namespace Rusty.Serialization.Core.Converters
 
         protected override void AssignNode(ListNode node, ListT obj, AssignNodeContext context)
         {
+            Type type = typeof(ElementT);
             int index = 0;
             foreach (ElementT element in obj)
             {
-                node.Elements[index] = context.CreateNode(typeof(ListT), element);
+                node.Elements[index] = context.CreateNode(type, element);
                 index++;
             }
         }

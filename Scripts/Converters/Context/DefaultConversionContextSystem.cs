@@ -90,8 +90,19 @@ namespace Rusty.Serialization
 
             // System.Collections.Generic.
             Converters.Add(typeof(List<>), typeof(ListConverter<>));
+            Converters.Add(typeof(LinkedList<>), typeof(LinkedListConverter<>));
+            Converters.Add(typeof(Stack<>), typeof(StackConverter<>));
+            Converters.Add(typeof(Queue<>), typeof(QueueConverter<>));
+            Converters.Add(typeof(HashSet<>), typeof(HashSetConverter<>));
+            Converters.Add(typeof(SortedSet<>), typeof(SortedSetConverter<>));
+            Converters.Add(typeof(SortedList<,>), typeof(SortedListConverter<,>));
+            Converters.Add(typeof(SortedDictionary<,>), typeof(SortedDictionaryConverter<,>));
 
             Converters.Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
+            Converters.Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>));
+#if NET6_0_OR_GREATER
+            Converters.Add(typeof(PriorityQueue<,>), typeof(PriorityQueueConverter<,>));
+#endif
         }
     }
 }
