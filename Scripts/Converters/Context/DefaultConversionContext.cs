@@ -13,6 +13,9 @@ namespace Rusty.Serialization
 #if GODOT
             AddGodot();
 #endif
+#if UNITY_5_3_OR_NEWER
+            AddUnity();
+#endif
         }
     }
 }
