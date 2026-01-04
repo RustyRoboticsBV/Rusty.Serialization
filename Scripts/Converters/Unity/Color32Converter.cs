@@ -13,12 +13,12 @@ namespace Rusty.Serialization.Unity
         /* Protected method. */
         protected override ColorNode CreateNode(Color32 obj, CreateNodeContext context)
         {
-            return new ColorNode(obj.r, obj.g, obj.b, obj.a);
+            return new ColorNode((obj.r, obj.g, obj.b, obj.a));
         }
 
         protected override Color32 CreateObject(ColorNode node, CreateObjectContext context)
         {
-            return new Color32(node.R, node.G, node.B, node.A);
+            return new Color32(node.Value.R, node.Value.G, node.Value.B, node.Value.A);
         }
     }
 }

@@ -31,7 +31,12 @@ namespace Rusty.Serialization.CSCD
         private ObjectSerializer Object { get; } = new();
 
         /* Public methods. */
-        public string Serialize(INode node)
+        public string Serialize(NodeTree tree, bool prettyPrint = false)
+        {
+            return Serialize(tree.Root, prettyPrint);
+        }
+
+        public string Serialize(INode node, bool prettyPrint = false)
         {
             switch (node)
             {

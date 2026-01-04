@@ -7,33 +7,24 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public byte R { get; set; }
-        public byte G { get; set; }
-        public byte B { get; set; }
-        public byte A { get; set; }
+        public ColorString Value { get; set; }
 
         /* Constructors. */
-        public ColorNode(byte r, byte g, byte b, byte a)
+        public ColorNode(ColorString value)
         {
-            R = r;
-            G = g;
-            B = b;
-            A = a;
+            Value = value;
         }
 
         /* Public methods. */
         public override string ToString()
         {
-            return $"color: ({R},{G},{B},{A})";
+            return $"color: ({Value})";
         }
 
         public void Clear()
         {
             Parent = null;
-            R = 0;
-            G = 0;
-            B = 0;
-            A = 0;
+            Value = (0, 0, 0, 0);
         }
     }
 }
