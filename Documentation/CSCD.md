@@ -16,6 +16,9 @@ When hexadecimal numbers are mentioned, their values may use both upper-case and
 ### Whitespace
 Whitespace is allowed between primitives and punctuation for formatting, but generally has no meaning. With the exception of spaces inside of character and string literals, spaces should simply be stripped during parsing.
 
+### Comments
+Comments are allowed using the `/* Comment text */` syntax. Parsers should simply treat them as whitespace and strip them, and do not need to preserve them if a string of CSCD is deserialized and reserialized.
+
 ## 2. Data Types
 Two categories of values are supported: primitives and collections. Additionally, values can be annotated with metadata.
 

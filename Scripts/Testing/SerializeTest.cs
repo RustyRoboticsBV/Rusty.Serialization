@@ -1,11 +1,11 @@
 #if UNITY_5_3_OR_NEWER
 using UnityEngine;
+using System;
+using System.Collections.Generic;
 using Rusty.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using System;
-using System.Collections.Generic;
 
 [Serializable]
 public class StructTest

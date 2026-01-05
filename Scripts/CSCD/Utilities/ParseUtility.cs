@@ -30,6 +30,7 @@ namespace Rusty.Serialization.CSCD
             bool inChar = false;
             bool inString = false;
             bool inType = false;
+            bool inComment = false;
             int depth = 0;
             int start = 0;
 
@@ -37,7 +38,16 @@ namespace Rusty.Serialization.CSCD
             {
                 char c = text[i];
 
-                if (inString)
+                if (inComment)
+                {
+                    if (c == '*' && i + 1 < text.Length && text[i + 1] == '/')
+                    {
+                        inComment = false;
+                        i++;
+                    }
+                }
+
+                else if (inString)
                 {
                     if (!inChar && c == '"')
                     {
@@ -63,6 +73,12 @@ namespace Rusty.Serialization.CSCD
 
                 else if (inType && c == ')')
                     inType = false;
+
+                else if (c == '/' && i + 1 < text.Length && text[i + 1] == '*')
+                {
+                    inComment = true;
+                    i++;
+                }
 
                 else if (c == quote && depth == 0)
                 {

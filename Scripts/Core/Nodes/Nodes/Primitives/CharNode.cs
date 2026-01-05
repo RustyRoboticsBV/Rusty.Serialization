@@ -15,6 +15,12 @@ namespace Rusty.Serialization.Core.Nodes
             Value = value;
         }
 
+        /* Conversion operators. */
+        public static explicit operator CharNode(StringNode str)
+        {
+            return new CharNode(str.Value);
+        }
+
         /* Public methods. */
         public override string ToString()
         {
