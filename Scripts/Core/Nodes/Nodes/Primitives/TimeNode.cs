@@ -1,3 +1,5 @@
+using System;
+
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
@@ -17,6 +19,8 @@ namespace Rusty.Serialization.Core.Nodes
         public ulong Millisecond { get; set; }
 
         /* Constructors. */
+        public TimeNode() { }
+
         public TimeNode(bool negative, ulong year, ulong month, ulong day, ulong hour, ulong minute, ulong second, ulong millisecond)
         {
             Negative = negative;
@@ -27,6 +31,56 @@ namespace Rusty.Serialization.Core.Nodes
             Minute = minute;
             Second = second;
             Millisecond = millisecond;
+        }
+
+        /* Conversion operators. */
+        public static explicit operator TimeNode(ObjectNode obj)
+        {
+            TimeNode time = new TimeNode();
+
+            for (int i = 0; i < obj.Count; i++)
+            {
+                INode value = obj.Members[i].Value;
+                switch (obj.Members[i].Key)
+                {
+                    case "negative":
+                        if (value is BoolNode negative)
+                            time.Negative = negative.Value;
+                        break;
+                    case "year":
+                        if (value is IntNode year)
+                            time.Year = ulong.Parse(year.Value);
+                        break;
+                    case "month":
+                        if (value is IntNode month)
+                            time.Month = ulong.Parse(month.Value);
+                        break;
+                    case "day":
+                        if (value is IntNode day)
+                            time.Day = ulong.Parse(day.Value);
+                        break;
+                    case "hour":
+                        if (value is IntNode hour)
+                            time.Hour = ulong.Parse(hour.Value);
+                        break;
+                    case "minute":
+                        if (value is IntNode minute)
+                            time.Minute = ulong.Parse(minute.Value);
+                        break;
+                    case "second":
+                        if (value is IntNode second)
+                            time.Second = ulong.Parse(second.Value);
+                        break;
+                    case "ms":
+                        if (value is IntNode ms)
+                            time.Millisecond = ulong.Parse(ms.Value);
+                        break;
+                    default:
+                        throw new ArgumentException("Cannot parse time component " + obj.Members[i].Key);
+                }
+            }
+
+            return time;
         }
 
         /* Public methods. */

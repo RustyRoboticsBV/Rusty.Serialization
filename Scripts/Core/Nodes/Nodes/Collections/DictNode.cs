@@ -29,6 +29,19 @@ namespace Rusty.Serialization.Core.Nodes
             }
         }
 
+        /* Conversion operators. */
+        public static explicit operator DictNode(ListNode list)
+        {
+            DictNode dict = new DictNode(list.Count);
+            for (int i = 0; i < dict.Count; i++)
+            {
+                INode node = list.Elements[i];
+                if (node is ObjectNode obj)
+                    dict.Pairs[i] = new KeyValuePair<INode, INode>(obj.GetValueAt(0), obj.GetValueAt(1));
+            }
+            return dict;
+        }
+
         /* Public methods. */
         public override string ToString()
         {
