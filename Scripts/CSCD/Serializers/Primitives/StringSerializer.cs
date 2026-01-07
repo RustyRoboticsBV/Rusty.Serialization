@@ -2,6 +2,7 @@
 using System.Text;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
+using Rusty.Serialization.Core.Serializers.Utils;
 
 namespace Rusty.Serialization.CSCD
 {
@@ -13,6 +14,21 @@ namespace Rusty.Serialization.CSCD
         /* Public methods. */
         public override string Serialize(StringNode node, ISerializerScheme scheme)
         {
+            return StringFormatter.Format(node.Value, "\"", "\"",
+                new EscapeCharacter[]
+                {
+                    new EscapeCharacter('\\', "\\\\"),
+                    new EscapeCharacter('\t', "\\t"),
+                    new EscapeCharacter('\n', "\\n")
+                },
+                new AllowedCharacterRange[]
+                {
+                    new AllowedCharacterRange(' ', '~'),
+                    new AllowedCharacterRange(0xA1, 0xAC),
+                    new AllowedCharacterRange(0xAE, 0xFF)
+                },
+                x => "\\" + UnicodeUtility.UnicodeToCodePoint(x) + "\\"
+            );
             StringBuilder str = new();
             for (int i = 0; i < node.Value.Length; i++)
             {

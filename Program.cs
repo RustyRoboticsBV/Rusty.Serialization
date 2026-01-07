@@ -1,6 +1,7 @@
 ﻿using System;
 using Rusty.Serialization;
 using Rusty.Serialization.Core.Nodes;
+using Rusty.Serialization.CSCD;
 using Rusty.Serialization.Testing;
 
 DefaultConversionContext context = new();
@@ -10,6 +11,10 @@ ObjectDumper.Print(a);
 NodeTree tree = context.Convert(a);
 Console.WriteLine();
 Console.WriteLine(tree);
+
+string serialized = new Scheme().Serialize(tree.Root);
+Console.WriteLine();
+Console.WriteLine(serialized);
 
 a = context.Deconvert<A>(tree);
 Console.WriteLine();
@@ -48,6 +53,7 @@ class A : Base
     public string f1 = "ABC";
     public string f2 = "DEF";
     public Type f3 = typeof(A);
+    public string f4 = "\n\t\u1234";
 
     public System.Drawing.Color g = System.Drawing.Color.Red;
 
