@@ -52,7 +52,7 @@ namespace Rusty.Serialization.CSCD
         protected override int GetUnicodeLength(string text, int index)
         {
             if (text[index] != '\\')
-                throw new ArgumentException($"The text {text} does not start an Unicode sequence at {index}.");
+                return -1;
 
             for (int i = index + 1; i < text.Length; i++)
             {

@@ -16,7 +16,20 @@ namespace Rusty.Serialization.Core.Converters
         {
             Type enumType = typeof(T);
             Type underlyingType = enumType.GetEnumUnderlyingType();
-            object value = Convert.ChangeType(node.Value, underlyingType);
+
+            object value = underlyingType switch
+            {
+                Type t when t == typeof(byte) => byte.Parse(node.Value),
+                Type t when t == typeof(sbyte) => sbyte.Parse(node.Value),
+                Type t when t == typeof(short) => short.Parse(node.Value),
+                Type t when t == typeof(ushort) => ushort.Parse(node.Value),
+                Type t when t == typeof(int) => int.Parse(node.Value),
+                Type t when t == typeof(uint) => uint.Parse(node.Value),
+                Type t when t == typeof(long) => long.Parse(node.Value),
+                Type t when t == typeof(ulong) => ulong.Parse(node.Value),
+                _ => throw new NotSupportedException($"Unsupported enum underlying type {underlyingType}")
+            };
+
             return (T)Enum.ToObject(enumType, value);
         }
     }
