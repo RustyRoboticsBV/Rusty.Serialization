@@ -79,13 +79,6 @@ namespace Rusty.Serialization.Core.Serializers
                     continue;
                 }
 
-                // If lone surrogate, write escaped unicode sequence.
-                if (char.IsSurrogate(str[i]))
-                {
-                    formatter.Append(EscapeUnicode(str, i, 1));
-                    continue;
-                }
-
                 // If an escape character, write escaped sequence.
                 for (int j = 0; j < EscapeCharacters.Length; j++)
                 {
@@ -97,16 +90,7 @@ namespace Rusty.Serialization.Core.Serializers
                 }
 
                 // If not in the allowed character range, write escaped unicode character.
-                bool disallowed = true;
-                for (int j = 0; j < AllowedCharacters.Length; j++)
-                {
-                    if (AllowedCharacters[j].Has(str[i]))
-                    {
-                        disallowed = false;
-                        break;
-                    }
-                }
-                if (disallowed)
+                if (!IsAllowed(str[i]))
                 {
                     formatter.Append(EscapeUnicode(str, i, 1));
                     continue;
@@ -137,13 +121,16 @@ namespace Rusty.Serialization.Core.Serializers
 
             while (i < limit)
             {
+                // Disallowed character?
+                if (!IsAllowed(str[i]))
+                    throw new ArgumentException($"Disallowed character '{str[i]}'.");
+
                 // Escaped characters.
                 bool matched = false;
                 for (int j = 0; j < EscapeCharacters.Length; j++)
                 {
                     string esc = EscapeCharacters[j].Escaped;
-                    if (i + esc.Length <= limit &&
-                        string.Compare(str, i, esc, 0, esc.Length, StringComparison.Ordinal) == 0)
+                    if (i + esc.Length <= limit && string.Compare(str, i, esc, 0, esc.Length, StringComparison.Ordinal) == 0)
                     {
                         parsed.Append(EscapeCharacters[j].Source);
                         i += esc.Length;
@@ -182,5 +169,39 @@ namespace Rusty.Serialization.Core.Serializers
         protected abstract string EscapeUnicode(string text, int index, int length);
         protected abstract string ParseUnicode(string text, int index, int length);
         protected abstract int GetUnicodeLength(string text, int index);
+
+        /// <summary>
+        /// Take a substring and return the unicode code point.
+        /// </summary>
+        protected static int GetCodePointAt(string text, int index, int length)
+        {
+            if (length == 2)
+            {
+                char high = text[index];
+                char low = text[index + 1];
+
+                return 0x10000 +
+                    ((high - 0xD800) << 10) +
+                    (low - 0xDC00);
+            }
+            else if (length == 1)
+                return text[index];
+            else
+                throw new ArgumentException($"Bad length {length}.");
+        }
+
+        /* Private methods. */
+        /// <summary>
+        /// Check if a character is in the allowed range(s).
+        /// </summary>
+        private bool IsAllowed(char character)
+        {
+            for (int j = 0; j < AllowedCharacters.Length; j++)
+            {
+                if (AllowedCharacters[j].Has(character))
+                    return true;
+            }
+            return false;
+        }
     }
 }

@@ -21,31 +21,17 @@ namespace Rusty.Serialization.CSCD
         };
         protected override EscapeCharacter[] EscapeCharacters => new EscapeCharacter[]
         {
-            new EscapeCharacter('\\', "\\\\"),
-            new EscapeCharacter('\t', "\\t"),
-            new EscapeCharacter('\n', "\\n")
+            ('\'', "\\\'"),
+            ('\"', "\\\""),
+            ('\\', "\\\\"),
+            ('\t', "\\t"),
+            ('\n', "\\n")
         };
 
         /* Protected methods. */
         protected override string EscapeUnicode(string text, int index, int length)
         {
-            // Get code point str.
-            int codePoint;
-            if (length == 2)
-            {
-                char high = text[index];
-                char low = text[index + 1];
-
-                codePoint = 0x10000 +
-                    ((high - 0xD800) << 10) +
-                    (low - 0xDC00);
-            }
-            else if (length == 1)
-                codePoint = text[index];
-            else
-                throw new ArgumentException($"Bad length {length}.");
-
-            // Wrap in correct escape sequence.
+            int codePoint = GetCodePointAt(text, index, length);
             return "\\" + codePoint.ToString("X", CultureInfo.InvariantCulture) + "\\";
         }
 

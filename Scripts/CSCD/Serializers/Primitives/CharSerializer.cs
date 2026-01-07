@@ -8,61 +8,60 @@ namespace Rusty.Serialization.CSCD
     /// <summary>
     /// A CSCD char serializer.
     /// </summary>
-    public class CharSerializer : Serializer<CharNode>
+    public class CharSerializer : TextSerializer<CharNode>
     {
-        /* Public methods. */
-        public override string Serialize(CharNode node, ISerializerScheme scheme)
+        /* Protected properties. */
+        protected override string StartDelimiter => "\'";
+        protected override string EndDelimiter => "\'";
+        protected override AllowedCharacterRange[] AllowedCharacters => new AllowedCharacterRange[]
         {
-            if (!IsSingleCharacter(node.Value))
-                throw new ArgumentException("Invalid char node: " + node);
+            new AllowedCharacterRange(' ', '~'),
+            new AllowedCharacterRange(0xA1, 0xAC),
+            new AllowedCharacterRange(0xAE, 0xFF)
+        };
+        protected override EscapeCharacter[] EscapeCharacters => new EscapeCharacter[]
+        {
+            ('\\', "\\\\"),
+            ('\t', "\\t"),
+            ('\n', "\\n")
+        };
 
-            string str = "";
-            if (node.Value == "\t")
-                str = "\\t";
-            else if (node.Value == "\n")
-                str = "\\n";
-            else if (!CharUtility.Check(node.Value[0]))
-                str = "\\" + UnicodeUtility.UnicodeToHex(node.Value) + "\\";
-            else
-                str = node.Value;
-            return $"'" + str + "'";
+        /* Protected methods. */
+        protected override string EscapeUnicode(string text, int index, int length)
+        {
+            int codePoint = GetCodePointAt(text, index, length);
+            return "\\" + codePoint.ToString("X", CultureInfo.InvariantCulture) + "\\";
         }
 
-        public override CharNode Parse(string text, ISerializerScheme scheme)
+        protected override int GetUnicodeLength(string text, int index)
         {
-            // Remove whitespaces.
-            string trimmed = text?.Trim();
+            if (text[index] != '\\')
+                return -1;
 
-            try
+            for (int i = index + 1; i < text.Length; i++)
             {
-                // Empty strings are not allowed.
-                if (string.IsNullOrEmpty(trimmed))
-                    throw new ArgumentException("Empty string.");
-
-                // Enforce quotes.
-                if (!(trimmed.StartsWith('\'') && trimmed.EndsWith('\'')))
-                    throw new ArgumentException("Missing quotes.");
-
-                // Extract contents.
-                string contents = trimmed.Substring(1, trimmed.Length - 2);
-
-                // Convert from the CSCD string.
-                string packed = StringUtility.Parse(contents, '\'');
-
-                // Don't allow empty characters.
-                if (packed.Length == 0)
-                    throw new ArgumentException("Empty character.");
-
-                // Don't allow strings longer than 1.
-                if (packed.Length > 1)
-                    throw new ArgumentException("Too many characters.");
-
-                // Return finished node.
-                return new CharNode(packed[0].ToString(CultureInfo.InvariantCulture));
+                if (text[i] == '\\')
+                    return i - index + 1;
             }
-            catch (Exception ex)
+
+            throw new ArgumentException($"Unclosed Unicode sequence in {text}.");
+        }
+
+        protected override string ParseUnicode(string text, int index, int length)
+        {
+            string hex = text.Substring(index + 1, length - 2);
+            int codePoint = Convert.ToInt32(hex, 16);
+
+            if (codePoint <= 0xFFFF)
+                return ((char)codePoint).ToString();
+            else
             {
-                throw new ArgumentException($"Could not parse string '{text}' as a character:\n{ex.Message}");
+                codePoint -= 0x10000;
+
+                char high = (char)((codePoint >> 10) + 0xD800);
+                char low = (char)((codePoint & 0x3FF) + 0xDC00);
+
+                return string.Concat(high, low);
             }
         }
 
