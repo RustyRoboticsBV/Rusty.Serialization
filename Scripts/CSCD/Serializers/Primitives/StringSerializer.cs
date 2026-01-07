@@ -1,89 +1,83 @@
 ﻿using System;
-using System.Text;
+using System.Globalization;
 using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.Core.Serializers;
-using Rusty.Serialization.Core.Serializers.Utils;
 
 namespace Rusty.Serialization.CSCD
 {
     /// <summary>
     /// A CSCD string serializer.
     /// </summary>
-    public class StringSerializer : Serializer<StringNode>
+    public class StringSerializer : TextSerializer<StringNode>
     {
-        /* Public methods. */
-        public override string Serialize(StringNode node, ISerializerScheme scheme)
+        /* Protected properties. */
+        protected override string StartDelimiter => "\"";
+        protected override string EndDelimiter => "\"";
+        protected override AllowedCharacterRange[] AllowedCharacters => new AllowedCharacterRange[]
         {
-            return StringFormatter.Format(node.Value, "\"", "\"",
-                new EscapeCharacter[]
-                {
-                    new EscapeCharacter('\\', "\\\\"),
-                    new EscapeCharacter('\t', "\\t"),
-                    new EscapeCharacter('\n', "\\n")
-                },
-                new AllowedCharacterRange[]
-                {
-                    new AllowedCharacterRange(' ', '~'),
-                    new AllowedCharacterRange(0xA1, 0xAC),
-                    new AllowedCharacterRange(0xAE, 0xFF)
-                },
-                x => "\\" + UnicodeUtility.UnicodeToCodePoint(x) + "\\"
-            );
-            StringBuilder str = new();
-            for (int i = 0; i < node.Value.Length; i++)
+            new AllowedCharacterRange(' ', '~'),
+            new AllowedCharacterRange(0xA1, 0xAC),
+            new AllowedCharacterRange(0xAE, 0xFF)
+        };
+        protected override EscapeCharacter[] EscapeCharacters => new EscapeCharacter[]
+        {
+            new EscapeCharacter('\\', "\\\\"),
+            new EscapeCharacter('\t', "\\t"),
+            new EscapeCharacter('\n', "\\n")
+        };
+
+        /* Protected methods. */
+        protected override string EscapeUnicode(string text, int index, int length)
+        {
+            // Get code point str.
+            int codePoint;
+            if (length == 2)
             {
-                char c = node.Value[i];
+                char high = text[index];
+                char low = text[index + 1];
 
-                // Escaped characters.
-                if (c == '\\')
-                    str.Append("\\\\");
-                else if (c == '"')
-                    str.Append("\\\"");
-                else if (c == '\t')
-                    str.Append("\\t");
-                else if (c == '\n')
-                    str.Append("\\n");
-
-                // Handle unicode characters.
-                else if (!CharUtility.Check(c))
-                    str.Append("\\" + UnicodeUtility.CodePointToHex(c) + "\\");
-
-                // Otherwise, append character as-is.
-                else
-                    str.Append(node.Value[i]);
+                codePoint = 0x10000 +
+                    ((high - 0xD800) << 10) +
+                    (low - 0xDC00);
             }
+            else if (length == 1)
+                codePoint = text[index];
+            else
+                throw new ArgumentException($"Bad length {length}.");
 
-            // Enclose in double quotes.
-            return '"' + str.ToString() + '"';
+            // Wrap in correct escape sequence.
+            return "\\" + codePoint.ToString("X", CultureInfo.InvariantCulture) + "\\";
         }
 
-        public override StringNode Parse(string text, ISerializerScheme scheme)
+        protected override int GetUnicodeLength(string text, int index)
         {
-            // Remove whitespaces.
-            string trimmed = text?.Trim();
+            if (text[index] != '\\')
+                throw new ArgumentException($"The text {text} does not start an Unicode sequence at {index}.");
 
-            try
+            for (int i = index + 1; i < text.Length; i++)
             {
-                // Empty strings are not allowed.
-                if (string.IsNullOrEmpty(trimmed))
-                    throw new ArgumentException("Empty string.");
-
-                // Enforce double quotes.
-                if (!trimmed.StartsWith('"') || !trimmed.EndsWith('"'))
-                    throw new ArgumentException("Missing double-quotes.");
-
-                // Extract contents.
-                string contents = trimmed.Substring(1, trimmed.Length - 2);
-
-                // Convert from the CSCD string.
-                string packed = StringUtility.Parse(contents, '"');
-
-                // Return finished node.
-                return new StringNode(packed);
+                if (text[i] == '\\')
+                    return i - index + 1;
             }
-            catch (Exception ex)
+
+            throw new ArgumentException($"Unclosed Unicode sequence in {text}.");
+        }
+
+        protected override string ParseUnicode(string text, int index, int length)
+        {
+            string hex = text.Substring(index + 1, length - 2);
+            int codePoint = Convert.ToInt32(hex, 16);
+
+            if (codePoint <= 0xFFFF)
+                return ((char)codePoint).ToString();
+            else
             {
-                throw new ArgumentException($"Could not parse string '{text}' as a string:\n{ex.Message}");
+                codePoint -= 0x10000;
+
+                char high = (char)((codePoint >> 10) + 0xD800);
+                char low = (char)((codePoint & 0x3FF) + 0xDC00);
+
+                return string.Concat(high, low);
             }
         }
     }

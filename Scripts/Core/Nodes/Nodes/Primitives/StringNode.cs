@@ -3,14 +3,16 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A string serializer node.
     /// </summary>
-    public class StringNode : INode
+    public class StringNode : ITextNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
         public string Value { get; set; }
 
         /* Constructors. */
-        public StringNode(string value = "")
+        public StringNode() : this("") { }
+
+        public StringNode(string value)
         {
             Value = value ?? "";
         }
