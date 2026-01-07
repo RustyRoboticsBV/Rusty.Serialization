@@ -19,9 +19,14 @@ namespace Rusty.Serialization.Core.Serializers
 
         /* Public methods. */
         /// <summary>
+        /// Serialize a node tree.
+        /// </summary>
+        public string Serialize(NodeTree node, bool prettyPrint = false);
+
+        /// <summary>
         /// Serialize an INode hierarchy.
         /// </summary>
-        public string Serialize(INode node);
+        public string Serialize(INode node, bool prettyPrint = false);
 
         /// <summary>
         /// Parse a string into a node tree.

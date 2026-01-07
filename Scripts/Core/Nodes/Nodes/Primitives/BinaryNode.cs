@@ -15,6 +15,12 @@ namespace Rusty.Serialization.Core.Nodes
             Value = value;
         }
 
+        /* Conversion operators. */
+        public static explicit operator BinaryNode(StringNode str)
+        {
+            return new BinaryNode(HexUtility.BytesFromHexString(str.Value));
+        }
+
         /* Public methods. */
         public override string ToString()
         {

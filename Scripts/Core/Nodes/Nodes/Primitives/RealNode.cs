@@ -15,6 +15,12 @@ namespace Rusty.Serialization.Core.Nodes
             Value = value;
         }
 
+        /* Conversion operators. */
+        public static explicit operator RealNode(IntNode real)
+        {
+            return new RealNode(real.Value);
+        }
+
         /* Public methods. */
         public override string ToString()
         {

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using Rusty.Serialization.Core.Converters;
 
 namespace Rusty.Serialization.DotNet
@@ -13,12 +14,28 @@ namespace Rusty.Serialization.DotNet
 
         protected override float GetElementAt(ref Vector2 vector, int index)
         {
-            return vector[index];
+            switch (index)
+            {
+                case 0:
+                    return vector.X;
+                case 1:
+                    return vector.Y;
+                default:
+                    throw new IndexOutOfRangeException(nameof(index));
+            }
         }
 
         protected override void SetElementAt(ref Vector2 vector, int index, ref float element)
         {
-            vector[index] = element;
+            switch (index)
+            {
+                case 0:
+                    vector.X = element; break;
+                case 1:
+                    vector.Y = element; break;
+                default:
+                    throw new IndexOutOfRangeException(nameof(index));
+            }
         }
     }
 }

@@ -93,6 +93,16 @@ namespace Rusty.Serialization.Core.Nodes
             return new IntString(value.ToString(CultureInfo.InvariantCulture));
         }
 
+        public static implicit operator IntString(RealString value)
+        {
+            string str = value;
+            int dotIndex = str.IndexOf('.');
+            if (dotIndex == -1)
+                return str;
+            else
+                return str.Substring(0, dotIndex);
+        }
+
         public static implicit operator string(IntString value) => value.ToString();
     }
 }
