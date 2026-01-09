@@ -7,10 +7,16 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public string Value { get; set; } = "\0";
+        public CharString Value { get; set; } = '\0';
+
+        string ITextNode.Value
+        {
+            get => Value;
+            set => Value = value;
+        }
 
         /* Constructors. */
-        public CharNode() : this("\0") { }
+        public CharNode() { }
 
         public CharNode(string value)
         {
