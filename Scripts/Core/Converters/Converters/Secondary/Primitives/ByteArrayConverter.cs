@@ -5,10 +5,10 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A byte array converter.
     /// </summary>
-    public sealed class ByteArrayConverter : Converter<byte[], BinaryNode>
+    public sealed class ByteArrayConverter : Converter<byte[], BytesNode>
     {
         /* Protected methods. */
-        protected override BinaryNode CreateNode(byte[] obj, CreateNodeContext context) => new(obj);
-        protected override byte[] CreateObject(BinaryNode node, CreateObjectContext context) => node.Value;
+        protected override BytesNode CreateNode(byte[] obj, CreateNodeContext context) => new(obj);
+        protected override byte[] CreateObject(BytesNode node, CreateObjectContext context) => node.Value;
     }
 }

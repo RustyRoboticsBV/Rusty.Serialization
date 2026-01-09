@@ -5,17 +5,17 @@ using Rusty.Serialization.Core.Serializers;
 namespace Rusty.Serialization.CSCD
 {
     /// <summary>
-    /// A CSCD binary serializer.
+    /// A CSCD bytes serializer.
     /// </summary>
-    public class BinarySerializer : Serializer<BinaryNode>
+    public class BytesSerializer : Serializer<BytesNode>
     {
         /* Public methods. */
-        public override string Serialize(BinaryNode node, ISerializerScheme scheme)
+        public override string Serialize(BytesNode node, ISerializerScheme scheme)
         {
-            return $"b{HexUtility.ToHexString(node.Value)}";
+            return $"b{node.Value}";
         }
 
-        public override BinaryNode Parse(string text, ISerializerScheme scheme)
+        public override BytesNode Parse(string text, ISerializerScheme scheme)
         {
             // Remove whitespaces.
             string trimmed = text?.Trim();
@@ -31,16 +31,13 @@ namespace Rusty.Serialization.CSCD
                     throw new ArgumentException("Missing 'b' prefix.");
 
                 // Get contents.
-                string contents = trimmed.Substring(2);
+                string contents = trimmed.Substring(1);
 
                 // Enforce even length.
                 if (contents.Length % 2 != 0)
                     throw new ArgumentException("Bytes literals must have an even length.");
 
-                // Parse as byte array.
-                byte[] bytes = HexUtility.BytesFromHexString(contents);
-
-                return new(bytes);
+                return new(contents);
             }
             catch (Exception ex)
             {

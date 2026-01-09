@@ -24,7 +24,7 @@ namespace Rusty.Serialization.CSCD
         private StringSerializer String { get; } = new();
         private ColorSerializer Color { get; } = new();
         private TimeSerializer Time { get; } = new();
-        private BinarySerializer Bytes { get; } = new();
+        private BytesSerializer Bytes { get; } = new();
         private RefSerializer Ref { get; } = new();
         private ListSerializer List { get; } = new();
         private DictSerializer Dict { get; } = new();
@@ -60,7 +60,7 @@ namespace Rusty.Serialization.CSCD
                     return Color.Serialize(color, this);
                 case TimeNode time:
                     return Time.Serialize(time, this);
-                case BinaryNode bytes:
+                case BytesNode bytes:
                     return Bytes.Serialize(bytes, this);
                 case RefNode @ref:
                     return Ref.Serialize(@ref, this);

@@ -33,6 +33,7 @@ public class StructTest
         public ulong u64;
         public float f32;
         public double f64;
+        public byte[] bytes;
     }
     public Scalars scalars = new();
 

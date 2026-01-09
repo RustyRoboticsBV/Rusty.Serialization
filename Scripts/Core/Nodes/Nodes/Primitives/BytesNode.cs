@@ -1,36 +1,36 @@
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// A binary string serializer node.
+    /// A bytes serializer node.
     /// </summary>
-    public class BinaryNode : INode
+    public class BytesNode : INode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public byte[] Value { get; set; }
+        public BytesString Value { get; set; }
 
         /* Constructors. */
-        public BinaryNode(byte[] value)
+        public BytesNode(BytesString value)
         {
             Value = value;
         }
 
         /* Conversion operators. */
-        public static explicit operator BinaryNode(StringNode str)
+        public static explicit operator BytesNode(StringNode str)
         {
-            return new BinaryNode(HexUtility.BytesFromHexString(str.Value));
+            return new BytesNode(str.Value);
         }
 
         /* Public methods. */
         public override string ToString()
         {
-            return $"binary: b{HexUtility.ToHexString(Value)}";
+            return $"bytes: b{Value}";
         }
 
         public void Clear()
         {
             Parent = null;
-            Value = null;
+            Value = "";
         }
     }
 }
