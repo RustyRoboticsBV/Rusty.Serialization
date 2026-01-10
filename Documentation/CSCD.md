@@ -11,10 +11,16 @@ Serialized data is expressed as a subset of the `ISO-8859-1` character set, and 
 - Latin-1 Supplement letters, digits and punctuation: `0xA1` (`¡`) to `0xAC` (`¬`) and `0xAE` (`®`) to `0xFF` (`ÿ`).
 
 ### Whitespace
-Whitespace is allowed between primitives and punctuation for formatting, but generally has no meaning. With the exception of spaces inside of character and string literals, spaces should simply be stripped during parsing.
+Whitespace is allowed between punctuation, primitive literals, type labels, IDs and collection delimiters for formatting. With the exception of spaces inside of character and string literals, whitespace has no meaning and should simply be stripped during parsing.
+
+Spaces inside of character and string literals should be preserved as-is. They may otherwise not break up primitive literals, type labels and IDs. For example: `12 3 4` is invalid and does not form the literal `1234`.
 
 ### Comments
 Comments are allowed using the `/* Comment text */` syntax. Parsers should simply treat them as whitespace and strip them, and do not need to preserve them if a string of CSCD is deserialized and reserialized.
+
+Nested comments are allowed: `/* This is a /* nested */ comment */`.
+
+Comments cannot appear inside character or string literals; in that context, they are considered part of the literal.
 
 ## 2. Data Types
 Two categories of values are supported: primitives and collections. Additionally, values can be annotated with metadata.
@@ -30,7 +36,7 @@ Type names may contain all characters from the allowed character set, except for
 
 Serializers are encouraged to only generate type labels in situations where it would otherwise be ambiguous what kind of type was serialized.
 
-Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(  my_namespace.my_class<int>.my_struct<list<f64>>[] )`.
+Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(my_namespace.my_class<int>.my_struct<list<f64>>[])`.
 
 #### IDs
 IDs can optionally be placed before any value or type label, and are written as a name between `` ` `` backticks. Values that have been marked with an ID can be used in a reference literal (see the section on references below).
@@ -39,7 +45,7 @@ ID names may only consist of letters, numbers and `_` underscores. IDs must be u
 
 Serializers are encouraged to only generate IDs in situations where a single object is referenced multiple times, or when cyclic references exist.
 
-Examples: `` `my_referenced_int`5``, `` `my_referenced_object`<a:0,b:"abc">``, `` `   my_referenced_typed_value`  (MyStringType)"abcdefg"``
+Examples: `` `my_referenced_int`5``, `` `my_referenced_object`<a:0,b:"abc">``, `` `my_referenced_typed_value`  (MyStringType)"abcdefg"``
 
 ### 2.2. Primitives
 
