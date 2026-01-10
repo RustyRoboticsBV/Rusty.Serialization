@@ -9,33 +9,35 @@ namespace Rusty.Serialization.CSCD
     /// </summary>
     public class BytesSerializer : Serializer<BytesNode>
     {
+        /* Private constants. */
+        private const string Prefix = "b_";
+
         /* Public methods. */
         public override string Serialize(BytesNode node, ISerializerScheme scheme)
         {
-            return $"b{node.Value}";
+            return $"{Prefix}{node.Value}";
         }
 
         public override BytesNode Parse(string text, ISerializerScheme scheme)
         {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             // Remove whitespaces.
             string trimmed = text?.Trim();
 
             try
             {
-                // Empty strings are not allowed.
-                if (string.IsNullOrEmpty(trimmed))
-                    throw new ArgumentException("Empty string.");
-
-                // Enforce b prefix.
-                if (!trimmed.StartsWith("b"))
-                    throw new ArgumentException("Missing 'b' prefix.");
+                // Enforce prefix.
+                if (!trimmed.StartsWith(Prefix))
+                    throw new ArgumentException($"Missing '{Prefix}' prefix.");
 
                 // Get contents.
-                string contents = trimmed.Substring(1);
+                string contents = trimmed.Substring(Prefix.Length);
 
-                // Enforce even length.
-                if (contents.Length % 2 != 0)
-                    throw new ArgumentException("Bytes literals must have an even length.");
+                // Enforce length multiple of 4.
+                if (contents.Length % 4 != 0)
+                    throw new ArgumentException("Bytes literals must have a length that is a multiple of 4.");
 
                 return new(contents);
             }

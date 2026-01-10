@@ -10,9 +10,6 @@ Serialized data is expressed as a subset of the `ISO-8859-1` character set, and 
 - ASCII letters, digits and punctuation: `0x21` (`!`) to `0x7E` (`~`).
 - Latin-1 Supplement letters, digits and punctuation: `0xA1` (`¡`) to `0xAC` (`¬`) and `0xAE` (`®`) to `0xFF` (`ÿ`).
 
-### Hexadecimals
-When hexadecimal numbers are mentioned, their values may use both upper-case and lower-case characters (in other words, they are not case sensitive).
-
 ### Whitespace
 Whitespace is allowed between primitives and punctuation for formatting, but generally has no meaning. With the exception of spaces inside of character and string literals, spaces should simply be stripped during parsing.
 
@@ -94,6 +91,8 @@ Colors literals must start with a `#` hex sign, followed by the hexadecimal repr
 - `#RRGGBB`: full notation without alpha. The alpha is assumed to be `FF`.
 - `#RRGGBBAA`: full notation with alpha.
 
+Color literals are case-sensitive and must be uppercase.
+
 #### Time
 Time literals contain time data in the format `Y#M#D#h#m#s#f#`, where the characters between the letters should only consist of only digits. Optionally, the first character may be a `-` minus sign for negative times (this applies to the *entire* time literal).
 
@@ -117,8 +116,8 @@ For example:
 
 Note that time literals do not have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
 
-#### Binary
-Binary data literals store arbitrary data in hexadecimal format. They must start with `b`, followed by the hexadecimal representation of the data, for example: `b0004BAF890`. The literal `b` represents a binary data string of length 0. The character length of the hexadecimal number must be an even number.
+#### Bytes
+Bytes literals store arbitrary data in the RFC 4648 Base64 format. They must start with `b_`, followed by the Base64-encoded data. Base64 strings must have a length that is a multiple of 4; padding using `=` characters is **mandatory**. For example, the bytestring `00 02 04 07 09 0E 03` is represented by the bytes literal `b_AAIEBwkPAw==`. The literal `b_` (without any padding) represents a bytestring of length 0.
 
 #### References
 Reference values are used to link to values that have been marked with an ID. They must start with an `&` ampersand, followed by the name of an ID (example: `&my_id`). This ID must exist elsewhere in the data.

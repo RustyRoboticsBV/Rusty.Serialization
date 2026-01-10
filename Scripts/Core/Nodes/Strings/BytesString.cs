@@ -3,13 +3,11 @@
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// A string that represents a string of bytes.
+    /// A string that represents a string of bytes in Base64.
     /// </summary>
     public readonly struct BytesString : IEquatable<BytesString>
     {
         /* Fields. */
-        private static readonly char[] HexLookup = "0123456789ABCDEF".ToCharArray();
-
         private readonly string value;
 
         /* Public properties. */
@@ -20,86 +18,51 @@ namespace Rusty.Serialization.Core.Nodes
 
         /* Public methods. */
         public override string ToString() => value ?? "";
-        public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(value ?? "");
+        public override int GetHashCode() => value.GetHashCode();
         public override bool Equals(object obj) => obj is BytesString str && Equals(str);
-        public bool Equals(BytesString other) => string.Equals(value, other.value, StringComparison.OrdinalIgnoreCase);
+        public bool Equals(BytesString other) => string.Equals(value, other.value);
 
         /* Conversion operators. */
         public static implicit operator BytesString(string value)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
-            if (value.Length % 2 != 0)
-                throw new ArgumentException("Hex string length must be even.");
+            // Handle null.
+            value = value ?? "";
 
-            for (int i = 0; i < value.Length; i++)
+            // Validate.
+            try
             {
-                if (!(value[i] >= '0' && value[i] <= '9' || value[i] >= 'A' && value[i] <= 'F' || value[i] >= 'a' && value[i] <= 'f'))
-                    throw new ArgumentException($"Invalid bytes string {value}.");
+                Convert.FromBase64String(value);
+            }
+            catch
+            {
+                throw new FormatException($"Not a valid Base64 string: {value}");
             }
 
+            // Create new bytes string.
             return new BytesString(value);
         }
 
         public static implicit operator BytesString(byte[] value)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
-
-            int len = value.Length;
-            if (len == 0)
+            if (value == null || value.Length == 0)
                 return new BytesString(string.Empty);
-
-            char[] buffer = new char[len * 2];
-
-            for (int i = 0; i < len; i++)
-            {
-                byte b = value[i];
-                int idx = i * 2;
-
-                buffer[idx] = HexLookup[b >> 4];
-                buffer[idx + 1] = HexLookup[b & 0xF];
-            }
-
-            return new string(buffer);
+            return new BytesString(Convert.ToBase64String(value));
         }
 
         public static implicit operator string(BytesString value) => value.ToString();
 
         public static implicit operator byte[](BytesString value)
         {
-            if (value.Length % 2 != 0)
-                throw new FormatException("Hex string length must be even.");
-
-            string str = value.value ?? "";
-            if (str.Length == 0)
+            if (string.IsNullOrEmpty(value.value))
                 return Array.Empty<byte>();
-
-            byte[] result = new byte[str.Length / 2];
-
-            for (int i = 0; i < result.Length; i++)
+            try
             {
-                int hi = FromHexChar(value.value[i * 2]);
-                int lo = FromHexChar(value.value[i * 2 + 1]);
-                result[i] = (byte)((hi << 4) | lo);
+                return Convert.FromBase64String(value.value);
             }
-
-            return result;
-        }
-
-        /* Private methods. */
-        private static int FromHexChar(char c)
-        {
-            if (c >= '0' && c <= '9')
-                return c - '0';
-
-            if (c >= 'A' && c <= 'F')
-                return c - 'A' + 10;
-
-            if (c >= 'a' && c <= 'f')
-                return c - 'a' + 10;
-
-            throw new FormatException($"Invalid hex character: '{c}'");
+            catch
+            {
+                throw new FormatException($"Invalid Base64 string: {value.value}");
+            }
         }
     }
 }
