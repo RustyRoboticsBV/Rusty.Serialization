@@ -34,7 +34,7 @@ namespace Rusty.Serialization.CSCD
             }
             catch (Exception ex)
             {
-                throw new ArgumentException($"Could not parse string '{text}' as a null index:\n{ex.Message}");
+                throw new ArgumentException($"Could not parse string '{text}' as a null:\n{ex.Message}");
             }
         }
     }

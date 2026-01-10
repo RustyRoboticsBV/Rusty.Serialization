@@ -16,9 +16,7 @@ Whitespace is allowed between punctuation, primitive literals, type labels, IDs 
 Spaces inside of character and string literals should be preserved as-is. They may otherwise not break up primitive literals, type labels and IDs. For example: `12 3 4` is invalid and does not form the literal `1234`.
 
 ### Comments
-Comments are allowed using the `/* Comment text */` syntax. Parsers should simply treat them as whitespace and strip them, and do not need to preserve them if a string of CSCD is deserialized and reserialized.
-
-Nested comments are allowed: `/* This is a /* nested */ comment */`.
+Comments are allowed using the `/* Comment text */` syntax. Parsers should simply treat them as whitespace and strip them, and do not need to preserve them if a string of CSCD is deserialized and reserialized. Comments cannot be nested.
 
 Comments cannot appear inside character or string literals; in that context, they are considered part of the literal.
 
@@ -70,6 +68,12 @@ Examples:
 - `-0.0`, `-000.000`, `-0.`, `-.0` and `-.` are all valid representations of the number `-0.0`.
 - `-0.5`, `-.5` and `-00.50` are all valid representations of the number `-0.5`.
 
+#### Not A Number
+NaN is encoded with the `nan` literal. NaN literals must be lowercase. They can be annotated with type labels like any other value.
+
+#### Infinity
+Infinity values are encoded as one of two literals: `inf` for positive infinity and `-inf` for negative infinity. Both must be lowercase.
+
 #### Characters
 Characters must be enclosed in `'` single-quotes. Only a single character may be stored inside. Empty character literals are not allowed.
 
@@ -81,7 +85,7 @@ A few special character literals exist:
 - `'\\'`: alternative way of writing `'\'`.
 - `'\t'`: expresses a horizontal tab.
 - `'\n'`: expresses a newline.
-- `'\...\'`: expresses a unicode character. `...` must be a hexadecimal number between `0` and `10FFFF`. Leading zeros are allowed.
+- `'\...\'`: expresses a unicode character. `...` must be a hexadecimal number between `0` and `10FFFF`. Leading zeros are allowed. Letters in hexcodes must be uppercase.
 
 Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\21FF\'`.
 
@@ -92,7 +96,7 @@ Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF\tarrow"`,
 
 #### Colors
 Colors literals must start with a `#` hex sign, followed by the hexadecimal representation of the color. Four conventions are available:
-- `#RGB`: short notation. Corresponds to the same color as `#RRGGBB`. Example: `#800` equals `#880000`.
+- `#RGB`: short notation. Corresponds to the same color as `#RRGGBB` (so each digit is duplicated). Example: `#800` equals `#880000`.
 - `#RGBA`: short notation with alpha. Corresponds to the same color as `#RRGGBBAA`. Example: `#800F` equals `#880000FF`.
 - `#RRGGBB`: full notation without alpha. The alpha is assumed to be `FF`.
 - `#RRGGBBAA`: full notation with alpha.
@@ -130,7 +134,7 @@ Reference values are used to link to values that have been marked with an ID. Th
 
 There are no scope limitations on where in the data an ID can be referenced: IDs that are defined before the reference, after the reference or inside a different nested collection are all allowed. Cyclic references are also allowed.
 
-References can be annotated with a type labels and even an ID of its own.
+References can be annotated with a type labels, but may NOT be annotated with an ID. They may not appear as the top-level value.
 
 ### 2.3. Collections
 

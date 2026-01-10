@@ -20,6 +20,8 @@ namespace Rusty.Serialization.CSCD
         private BoolSerializer Bool { get; } = new();
         private IntSerializer Int { get; } = new();
         private RealSerializer Real { get;  } = new();
+        private NanSerializer Nan { get; } = new();
+        private InfinitySerializer Infinity { get; } = new();
         private CharSerializer Char { get; } = new();
         private StringSerializer String { get; } = new();
         private ColorSerializer Color { get; } = new();
@@ -52,6 +54,10 @@ namespace Rusty.Serialization.CSCD
                     return Int.Serialize(@int, this);
                 case RealNode real:
                     return Real.Serialize(real, this);
+                case NanNode nan:
+                    return Nan.Serialize(nan, this);
+                case InfinityNode inf:
+                    return Infinity.Serialize(inf, this);
                 case CharNode chr:
                     return Char.Serialize(chr, this);
                 case StringNode str:
@@ -108,17 +114,21 @@ namespace Rusty.Serialization.CSCD
             // Primitives.
             if (serialized.StartsWith('&'))
                 return Ref.Parse(serialized, this);
-            if (serialized.StartsWith('n'))
+            if (serialized.StartsWith("nu"))
                 return Null.Parse(serialized, this);
             if (serialized.StartsWith('t') || serialized.StartsWith("fa"))
                 return Bool.Parse(serialized, this);
+            if (serialized.StartsWith("na"))
+                return Nan.Parse(serialized, this);
+            if (serialized.StartsWith('i') || serialized.StartsWith("-i"))
+                return Infinity.Parse(serialized, this);
             if (serialized.StartsWith('\'') && serialized.EndsWith('\''))
                 return Char.Parse(serialized, this);
             if (serialized.StartsWith('"') && serialized.EndsWith('"'))
                 return String.Parse(serialized, this);
             if (serialized.StartsWith('#'))
                 return Color.Parse(serialized, this);
-            if (serialized.StartsWith("b"))
+            if (serialized.StartsWith("b_"))
                 return Bytes.Parse(serialized, this);
             if (serialized.StartsWith('Y') || serialized.StartsWith("-Y")
                 || serialized.StartsWith('M') || serialized.StartsWith("-M")

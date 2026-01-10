@@ -17,15 +17,15 @@ namespace Rusty.Serialization.CSCD
 
         public override BoolNode Parse(string text, ISerializerScheme scheme)
         {
+            // Don't allow empty strings.
+            if (string.IsNullOrEmpty(text))
+                throw new ArgumentNullException(nameof(text));
+
             // Remove whitespaces.
             string trimmed = text?.Trim();
 
             try
             {
-                // Empty strings are not allowed.
-                if (string.IsNullOrEmpty(trimmed))
-                    throw new ArgumentException("Empty string.");
-
                 // Make sure it's either true or false.
                 if (trimmed.Length == 4 && trimmed == "true")
                     return new(true);

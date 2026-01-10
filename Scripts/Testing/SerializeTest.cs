@@ -34,6 +34,10 @@ public class StructTest
         public float f32;
         public double f64;
         public byte[] bytes;
+
+        public float nan = float.NaN;
+        public double inf = double.PositiveInfinity;
+        public double ninf = double.NegativeInfinity;
     }
     public Scalars scalars = new();
 

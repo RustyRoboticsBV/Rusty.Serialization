@@ -76,14 +76,14 @@ namespace Rusty.Serialization.Core.Nodes
 
         public static implicit operator RealString(float value)
         {
-            if (float.IsNaN(value) || float.IsInfinity(value))
+            if (float.IsNaN(value) || float.IsInfinity(value) || float.IsNegativeInfinity(value))
                 throw new ArgumentOutOfRangeException(nameof(value));
             return new RealString(value.ToString(format, CultureInfo.InvariantCulture));
         }
 
         public static implicit operator RealString(double value)
         {
-            if (double.IsNaN(value) || double.IsInfinity(value))
+            if (double.IsNaN(value) || double.IsInfinity(value) || double.IsNegativeInfinity(value))
                 throw new ArgumentOutOfRangeException(nameof(value));
             return new RealString(value.ToString(format, CultureInfo.InvariantCulture));
         }
