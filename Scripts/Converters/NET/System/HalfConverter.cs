@@ -8,12 +8,20 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET half converter.
     /// </summary>
-    public class HalfConverter : Core.Converters.Converter<Half, RealNode>
+    public class HalfConverter : RealConverter<Half>
     {
-        /* Protected method. */
-        protected override RealNode CreateNode(Half obj, CreateNodeContext context) => new RealNode((float)obj);
+        /* Protected properties. */
+        protected override Half NaN => Half.NaN;
+        protected override Half PositiveInfinity => Half.PositiveInfinity;
+        protected override Half NegativeInfinity => Half.NegativeInfinity;
 
+        /* Protected methods. */
+        protected override RealNode CreateNode(Half obj, CreateNodeContext context) => new(obj);
         protected override Half CreateObject(RealNode node, CreateObjectContext context) => Half.Parse(node.Value);
+
+        protected override bool IsNaN(ref Half value) => Half.IsNaN(value);
+        protected override bool IsPositiveInfinity(ref Half value) => Half.IsPositiveInfinity(value);
+        protected override bool IsNegativeInfinity(ref Half value) => Half.IsNegativeInfinity(value);
     }
 }
 #endif
