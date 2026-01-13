@@ -22,6 +22,30 @@ namespace Rusty.Serialization.Core.Nodes
                 Value.Parent = this;
         }
 
+        /* Conversion operators. */
+        public static explicit operator TypeNode(ObjectNode node)
+        {
+            // Find the type and value nodes.
+            StringNode @type = null;
+            INode value = null;
+            for (int i = 0; i < node.Count; i++)
+            {
+                if (node.GetIdentifierAt(i) == "type" && type == null)
+                    type = (StringNode)node.GetValueAt(i);
+                else if (node.GetIdentifierAt(i) == "value" && value == null)
+                    value = node.GetValueAt(i);
+            }
+
+            // Make sure the child nodes weren't null.
+            if (type == null)
+                throw new NullReferenceException(nameof(type));
+            if (value == null)
+                throw new NullReferenceException(nameof(value));
+
+            // Create a new type node.
+            return new TypeNode(type.Value, value);
+        }
+
         /* Public methods. */
         public override string ToString()
         {

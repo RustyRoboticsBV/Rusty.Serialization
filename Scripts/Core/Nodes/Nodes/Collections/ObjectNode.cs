@@ -67,6 +67,14 @@ namespace Rusty.Serialization.Core.Nodes
             return -1;
         }
 
+        /// <summary>
+        /// Get the identifier at some index.
+        /// </summary>
+        public string GetIdentifierAt(int index)
+        {
+            return Members[index].Key;
+        }
+
         public INode GetValueAt(int index)
         {
             return Members[index].Value;
