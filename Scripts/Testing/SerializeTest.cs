@@ -92,7 +92,7 @@ public class SerializerTestEditor : Editor
 {
     /* Fields. */
     private DefaultContext cscd = new(Format.Cscd);
-    private DefaultContext json = null;// new(Format.Json);
+    private DefaultContext json = new(Format.Json);
     private DefaultContext xml = null;// new(Format.Xml);
 
     /* Unity events. */

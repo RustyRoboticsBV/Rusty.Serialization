@@ -15,6 +15,10 @@ namespace Rusty.Serialization
         /// The CSCD serializers.
         /// </summary>
         public static CSCD.Scheme Cscd => new CSCD.Scheme();
+        /// <summary>
+        /// The JSON serializers.
+        /// </summary>
+        public static JSON.Scheme Json => new JSON.Scheme();
 
         /// <summary>
         /// The converter scheme.
@@ -40,6 +44,8 @@ namespace Rusty.Serialization
                     Serializer = Cscd;
                     break;
                 case Format.Json:
+                    Serializer = Json;
+                    break;
                 case Format.Xml:
                 default:
                     throw new NotImplementedException(format.ToString());

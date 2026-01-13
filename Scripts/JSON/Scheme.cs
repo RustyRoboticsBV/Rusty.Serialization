@@ -97,49 +97,19 @@ namespace Rusty.Serialization.JSON
             if (serialized.Length == 0)
                 throw new ArgumentException("Cannot parse empty strings.");
 
-            // Metadata.
-            if (serialized.StartsWith('('))
-                return Type.Parse(serialized, this);
-            if (serialized.StartsWith('`'))
-                return Id.Parse(serialized, this);
-
             // Collections.
             if (serialized.StartsWith('[') && serialized.EndsWith(']'))
                 return List.Parse(serialized, this);
             if (serialized.StartsWith('{') && serialized.EndsWith('}'))
-                return Dict.Parse(serialized, this);
-            if (serialized.StartsWith('<') && serialized.EndsWith('>'))
                 return Object.Parse(serialized, this);
 
             // Primitives.
-            if (serialized.StartsWith('&'))
-                return Ref.Parse(serialized, this);
-            if (serialized.StartsWith("nu"))
+            if (serialized.StartsWith("n"))
                 return Null.Parse(serialized, this);
-            if (serialized.StartsWith('t') || serialized.StartsWith("fa"))
+            if (serialized.StartsWith('t') || serialized.StartsWith("f"))
                 return Bool.Parse(serialized, this);
-            if (serialized.StartsWith("na"))
-                return Nan.Parse(serialized, this);
-            if (serialized.StartsWith('i') || serialized.StartsWith("-i"))
-                return Infinity.Parse(serialized, this);
-            if (serialized.StartsWith('\'') && serialized.EndsWith('\''))
-                return Char.Parse(serialized, this);
             if (serialized.StartsWith('"') && serialized.EndsWith('"'))
                 return String.Parse(serialized, this);
-            if (serialized.StartsWith('#'))
-                return Color.Parse(serialized, this);
-            if (serialized.StartsWith("b_"))
-                return Bytes.Parse(serialized, this);
-            if (serialized.StartsWith('Y') || serialized.StartsWith("-Y")
-                || serialized.StartsWith('M') || serialized.StartsWith("-M")
-                || serialized.StartsWith('D') || serialized.StartsWith("-D")
-                || serialized.StartsWith('h') || serialized.StartsWith("-h")
-                || serialized.StartsWith('m') || serialized.StartsWith("-m")
-                || serialized.StartsWith('s') || serialized.StartsWith("-str")
-                || serialized.StartsWith('f') || serialized.StartsWith("-g"))
-            {
-                return Time.Parse(serialized, this);
-            }
 
             bool startNumeric = (serialized[0] >= '0' && serialized[0] <= '9') || serialized[0] == '-' || serialized[0] == '.';
             if (startNumeric)

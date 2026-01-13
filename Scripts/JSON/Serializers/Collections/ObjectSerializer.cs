@@ -14,11 +14,8 @@ namespace Rusty.Serialization.JSON
         /* Public methods. */
         public override string Serialize(ObjectNode node, ISerializerScheme scheme)
         {
-            if (node.Members == null)
-                throw new Exception("Cannot serialize object nodes whose members array are null.");
-
-            if (node.Members.Length == 0)
-                return "<>";
+            if (node.Members == null || node.Members.Length == 0)
+                return "{}";
 
             bool prettyPrint = scheme.PrettyPrint;
             string tab = scheme.Tab;
@@ -33,8 +30,9 @@ namespace Rusty.Serialization.JSON
                     sb.Append('\n' + tab);
 
                 // Key.
-                ValidateIdentifier(node.Members[i].Key);
-                sb.Append(node.Members[i].Key);
+                sb.Append('"');
+                sb.Append(node.Members[i].Key.Replace("\"", "\\\""));
+                sb.Append('"');
 
                 // Separator.
                 if (prettyPrint)
@@ -55,7 +53,8 @@ namespace Rusty.Serialization.JSON
             }
             if (prettyPrint)
                 sb.Append('\n');
-            return $"<{sb}>";
+
+            return '{' + sb.ToString() + '}';
         }
 
         public override ObjectNode Parse(string text, ISerializerScheme scheme)
@@ -64,9 +63,9 @@ namespace Rusty.Serialization.JSON
 
             try
             {
-                if (!trimmed.StartsWith('<') || !trimmed.EndsWith('>'))
-                    throw new Exception("Missing angle brackets.");
-
+                if (!trimmed.StartsWith('{') || !trimmed.EndsWith('}'))
+                    throw new Exception("Missing curly braces.");
+                    
                 // Get text between pointy brackets and trim it.
                 string inner = trimmed.Substring(1, trimmed.Length - 2).Trim();
 
@@ -84,11 +83,14 @@ namespace Rusty.Serialization.JSON
                     // Split into key and value.
                     List<string> pairStrs = ParseUtility.Split(terms[i], ':');
                     if (pairStrs.Count != 2)
-                        throw new Exception($"Malformed identifier-index pair.");
+                        throw new FormatException($"Malformed identifier-index pair.");
 
                     // Get identifier.
                     string identifier = pairStrs[0].Trim();
-                    ValidateIdentifier(identifier);
+                    if (!identifier.StartsWith('"') || !identifier.EndsWith('"'))
+                        throw new FormatException("Missing quotes.");
+                    identifier = identifier.Substring(1, identifier.Length - 2)
+                        .Replace("\\\"", "\"");
 
                     // Get value.
                     string valueStr = pairStrs[1].Trim();
@@ -103,22 +105,6 @@ namespace Rusty.Serialization.JSON
             catch (Exception ex)
             {
                 throw new ArgumentException($"Could not parse string '{text}' as an object:\n\n{ex.Message}");
-            }
-        }
-
-        /* Private methods. */
-        private static void ValidateIdentifier(string identifier)
-        {
-            for (int i = 0; i < identifier.Length; i++)
-            {
-                char c = identifier[i];
-                if (i == 0)
-                {
-                    if (!(c <= '~' && (c == '_' || char.IsLetter(c))))
-                        throw new ArgumentException($"Illegal identifier '{identifier}' (must start with letter or underscore).");
-                }
-                else if (!(c <= '~' && (c == '_' || char.IsLetter(c) || char.IsDigit(c))))
-                    throw new ArgumentException($"Illegal identifier '{identifier}' (must only contain letters, digits or underscores).");
             }
         }
     }

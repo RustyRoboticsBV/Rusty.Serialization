@@ -12,7 +12,7 @@ namespace Rusty.Serialization.JSON
         /// <summary>
         /// Takes a delimited string and parses it into a list of strings.
         /// </summary>
-        public static List<string> Split(string text, char quote = ',')
+        public static List<string> Split(string text, char separator = ',')
         {
             // Handle null.
             if (text == null)
@@ -27,10 +27,7 @@ namespace Rusty.Serialization.JSON
 
             // Parse text.
             List<string> result = new();
-            bool inChar = false;
             bool inString = false;
-            bool inType = false;
-            bool inComment = false;
             int depth = 0;
             int start = 0;
 
@@ -38,49 +35,16 @@ namespace Rusty.Serialization.JSON
             {
                 char c = text[i];
 
-                if (inComment)
+                if (inString && i + 1 < text.Length && text[i] == '\\' && text[i + 1] == '"')
                 {
-                    if (c == '*' && i + 1 < text.Length && text[i + 1] == '/')
-                    {
-                        inComment = false;
-                        i++;
-                    }
-                }
-
-                else if (inString)
-                {
-                    if (!inChar && c == '"')
-                    {
-                        bool isDoubled = i + 1 < text.Length && text[i + 1] == '"';
-                        if (isDoubled)
-                            i++;
-                        else
-                            inString = false;
-                    }
-                }
-
-                else if (inChar && c == '\'')
-                    inChar = false;
-
-                else if (!inChar && c == '"')
-                    inString = true;
-
-                else if (c == '\'')
-                    inChar = true;
-
-                else if (!inType && c == '(')
-                    inType = true;
-
-                else if (inType && c == ')')
-                    inType = false;
-
-                else if (c == '/' && i + 1 < text.Length && text[i + 1] == '*')
-                {
-                    inComment = true;
+                    result.Add("\"");
                     i++;
                 }
 
-                else if (c == quote && depth == 0)
+                else if (c == '"')
+                    inString = !inString;
+
+                else if (c == separator && depth == 0)
                 {
                     string segment = text.Substring(start, i - start).Trim();
                     result.Add(segment);
@@ -93,12 +57,10 @@ namespace Rusty.Serialization.JSON
                     {
                         case '[':
                         case '{':
-                        case '<':
                             depth++;
                             break;
                         case ']':
                         case '}':
-                        case '>':
                             depth--;
                             break;
                     }
