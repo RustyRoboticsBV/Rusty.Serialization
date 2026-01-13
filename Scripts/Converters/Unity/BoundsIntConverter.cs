@@ -13,30 +13,31 @@ namespace Rusty.Serialization.Unity
         /* Protected method. */
         protected override int GetLength() => 6;
 
-        protected override int GetElementAt(ref BoundsInt vector, int index)
+        protected override int GetElementAt(ref BoundsInt bounds, int index)
         {
             switch (index)
             {
-                case 0: return vector.min.x;
-                case 1: return vector.min.y;
-                case 2: return vector.min.z;
-                case 3: return vector.max.x;
-                case 4: return vector.max.y;
-                case 5: return vector.max.z;
+                case 0: return bounds.position.x;
+                case 1: return bounds.position.y;
+                case 2: return bounds.position.z;
+                case 3: return bounds.size.x;
+                case 4: return bounds.size.y;
+                case 5: return bounds.size.z;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
-        protected override void SetElementAt(ref BoundsInt vector, int index, ref int element)
+        protected override void SetElementAt(ref BoundsInt bounds, int index, ref int element)
         {
+            UnityEngine.Debug.Log(bounds);
             switch (index)
             {
-                case 0: vector.min = new Vector3Int(element, vector.min.y, vector.min.z); break;
-                case 1: vector.min = new Vector3Int(vector.min.x, element, vector.min.z); break;
-                case 2: vector.min = new Vector3Int(vector.min.x, vector.min.y, element); break;
-                case 3: vector.max = new Vector3Int(element, vector.max.y, vector.max.z); break;
-                case 4: vector.max = new Vector3Int(vector.max.x, element, vector.max.z); break;
-                case 5: vector.max = new Vector3Int(vector.max.x, vector.max.y, element); break;
+                case 0: bounds.position = new Vector3Int(element, bounds.position.y, bounds.position.z); break;
+                case 1: bounds.position = new Vector3Int(bounds.position.x, element, bounds.position.z); break;
+                case 2: bounds.position = new Vector3Int(bounds.position.x, bounds.position.y, element); break;
+                case 3: bounds.size = new Vector3Int(element, bounds.size.y, bounds.size.z); break;
+                case 4: bounds.size = new Vector3Int(bounds.size.x, element, bounds.size.z); break;
+                case 5: bounds.size = new Vector3Int(bounds.size.x, bounds.size.y, element); break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }

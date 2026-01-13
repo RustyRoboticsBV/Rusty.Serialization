@@ -13,30 +13,30 @@ namespace Rusty.Serialization.Unity
         /* Protected method. */
         protected override int GetLength() => 6;
 
-        protected override float GetElementAt(ref Bounds vector, int index)
+        protected override float GetElementAt(ref Bounds bounds, int index)
         {
             switch (index)
             {
-                case 0: return vector.min.x;
-                case 1: return vector.min.y;
-                case 2: return vector.min.z;
-                case 3: return vector.max.x;
-                case 4: return vector.max.y;
-                case 5: return vector.max.z;
+                case 0: return bounds.min.x;
+                case 1: return bounds.min.y;
+                case 2: return bounds.min.z;
+                case 3: return bounds.max.x;
+                case 4: return bounds.max.y;
+                case 5: return bounds.max.z;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
-        protected override void SetElementAt(ref Bounds vector, int index, ref float element)
+        protected override void SetElementAt(ref Bounds bounds, int index, ref float element)
         {
             switch (index)
             {
-                case 0: vector.min = new Vector3(element, vector.min.y, vector.min.z); break;
-                case 1: vector.min = new Vector3(vector.min.x, element, vector.min.z); break;
-                case 2: vector.min = new Vector3(vector.min.x, vector.min.y, element); break;
-                case 3: vector.max = new Vector3(element, vector.max.y, vector.max.z); break;
-                case 4: vector.max = new Vector3(vector.max.x, element, vector.max.z); break;
-                case 5: vector.max = new Vector3(vector.max.x, vector.max.y, element); break;
+                case 0: bounds.min = new Vector3(element, bounds.min.y, bounds.min.z); break;
+                case 1: bounds.min = new Vector3(bounds.min.x, element, bounds.min.z); break;
+                case 2: bounds.min = new Vector3(bounds.min.x, bounds.min.y, element); break;
+                case 3: bounds.max = new Vector3(element, bounds.max.y, bounds.max.z); break;
+                case 4: bounds.max = new Vector3(bounds.max.x, element, bounds.max.z); break;
+                case 5: bounds.max = new Vector3(bounds.max.x, bounds.max.y, element); break;
                 default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
