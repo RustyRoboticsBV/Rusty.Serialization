@@ -29,7 +29,6 @@ namespace Rusty.Serialization.Unity
 
         protected override void SetElementAt(ref BoundsInt bounds, int index, ref int element)
         {
-            UnityEngine.Debug.Log(bounds);
             switch (index)
             {
                 case 0: bounds.position = new Vector3Int(element, bounds.position.y, bounds.position.z); break;

@@ -18,7 +18,9 @@ namespace Rusty.Serialization.Unity
 
         protected override LayerMask CreateObject(IntNode node, CreateObjectContext context)
         {
-            return LayerMask.GetMask(node.Value);
+            LayerMask mask = new();
+            mask.value = int.Parse(node.Value);
+            return mask;
         }
     }
 }
