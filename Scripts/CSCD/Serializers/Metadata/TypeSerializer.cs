@@ -17,7 +17,7 @@ namespace Rusty.Serialization.CSCD
 
             if (node.Value == null)
                 throw new InvalidOperationException("index was null.");
-            return $"({name}){scheme.Serialize(node.Value)}";
+            return $"({name}){scheme.Serialize(node.Value, scheme.PrettyPrint)}";
         }
 
         public override TypeNode Parse(string text, ISerializerScheme scheme)

@@ -27,8 +27,8 @@ namespace Rusty.Serialization.CSCD
             StringBuilder sb = new();
             for (int i = 0; i < node.Pairs.Length; i++)
             {
-                string key = scheme.Serialize(node.Pairs[i].Key);
-                string value = scheme.Serialize(node.Pairs[i].Value);
+                string key = scheme.Serialize(node.Pairs[i].Key, scheme.PrettyPrint);
+                string value = scheme.Serialize(node.Pairs[i].Value, scheme.PrettyPrint);
 
                 if (prettyPrint)
                     sb.Append('\n' + tab);

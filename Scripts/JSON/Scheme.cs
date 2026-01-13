@@ -40,6 +40,7 @@ namespace Rusty.Serialization.JSON
 
         public string Serialize(INode node, bool prettyPrint = false)
         {
+            PrettyPrint = prettyPrint;
             switch (node)
             {
                 case TypeNode type:

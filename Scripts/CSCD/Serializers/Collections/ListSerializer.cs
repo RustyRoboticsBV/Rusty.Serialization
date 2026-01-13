@@ -25,7 +25,7 @@ namespace Rusty.Serialization.CSCD
             {
                 if (i > 0)
                     sb.Append(',');
-                sb.Append(scheme.Serialize(node.Elements[i]));
+                sb.Append(scheme.Serialize(node.Elements[i], scheme.PrettyPrint));
             }
             return '[' + sb.ToString() + ']';
         }

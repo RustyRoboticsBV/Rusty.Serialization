@@ -40,6 +40,8 @@ namespace Rusty.Serialization.CSCD
 
         public string Serialize(INode node, bool prettyPrint = false)
         {
+            PrettyPrint = prettyPrint;
+            UnityEngine.Debug.Log(PrettyPrint);
             switch (node)
             {
                 case TypeNode type:
