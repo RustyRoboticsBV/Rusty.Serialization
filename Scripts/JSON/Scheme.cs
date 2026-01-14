@@ -53,7 +53,7 @@ namespace Rusty.Serialization.JSON
                     return Bool.Serialize(@bool, this);
                 case IntNode @int:
                     return Int.Serialize(@int, this);
-                case RealNode real:
+                case FloatNode real:
                     return Real.Serialize(real, this);
                 case NanNode nan:
                     return Nan.Serialize(nan, this);

@@ -38,6 +38,8 @@ public class StructTest
         public float nan = float.NaN;
         public double inf = double.PositiveInfinity;
         public double ninf = double.NegativeInfinity;
+
+        public decimal dec = 1.00m;
     }
     public Scalars scalars = new();
 
@@ -65,6 +67,8 @@ public class StructTest
         public Color32 color32 = new(0, 0, 0, 255);
     }
     public Colors color = new();
+
+    public DateTime time = new DateTime(1994, 2, 13, 10, 5, 3, 77) + TimeSpan.FromTicks(1);
 
     public List<int> intList = new();
 }

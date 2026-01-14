@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A real converter.
     /// </summary>
-    public abstract class RealConverter<T> : Converter<T, RealNode>, IConverter
+    public abstract class RealConverter<T> : Converter<T, FloatNode>, IConverter
     {
         /* Protected properties. */
         protected abstract T NaN { get; }
@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Core.Converters
         {
             if (node is NanNode || node is InfinityNode)
                 return;
-            CollectTypes((RealNode)node, context);
+            CollectTypes((FloatNode)node, context);
         }
 
         INode IConverter.CreateNode(object obj, CreateNodeContext context)
@@ -36,7 +36,7 @@ namespace Rusty.Serialization.Core.Converters
 
         object IConverter.CreateObject(INode node, CreateObjectContext context)
         {
-            if (node is RealNode real)
+            if (node is FloatNode real)
                 return CreateObject(real, context);
             if (node is NanNode)
                 return NaN;

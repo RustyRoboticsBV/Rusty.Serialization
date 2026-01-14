@@ -64,8 +64,8 @@ Examples:
 - `1` and `001` are both valid representations of the number `1`.
 - `-50` and `-00050` are both valid representations of the number `-50`.
 
-#### Reals
-Real literals must contain a decimal point. Optionally, they may start with a negative sign. Other than that, they may only consist of digits. If the integer part and/or the fractional part are equal to 0, they may be omitted. Consequently, the literal `.` can be used to represent 0; `-.` can be used for -0. Leading and trailing zeros are allowed.
+#### Floats
+Float literals must contain a decimal point. Optionally, they may start with a negative sign. Other than that, they may only consist of digits. If the integer part and/or the fractional part are equal to 0, they may be omitted. Consequently, the literal `.` can be used to represent 0; `-.` can be used for -0. Leading and trailing zeros are allowed.
 
 Examples:
 - `0.0`, `000.000`, `0.`, `.0` and `.` are all valid representations of the number `0.0`.
@@ -131,14 +131,14 @@ For example:
 
 Since time literals can represent both date/times and timespans, they do NOT have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
 
-#### Currency
-Currency literals represent decimal numbers with significant fractional digits, where trailing zeros have explicit meaning. They are primarily intended for monetary values, but may be used for any numeric value where preserving the exact decimal representation is important. Parsers should make sure to preserve fractional digits, including trailing zeros.
+#### Decimals
+Decimal literals represent numeric values with significant fractional digits. They are intended for any use-case where preserving the exact decimal representation is important, such as when expressing monetary values. Parsers should make sure to preserve all fractional digits, including trailing zeros.
 
 The syntax is `$1.00` for positive values and `-$1.00` for negative values. Any number of fractional digits is allowed (i.e. `$10.12345`). If there are no fractional digits, then the decimal point may be omitted (so `$1.` is equivalent to `$1`). Leading zeros are allowed, but have no meaning. If the integer part fully consists of zeros, it may be omitted entirely (i.e. `$00.5`, `$0.5` and `$.5` are all equivalent). However, `$1.0` and `$1.00` are NOT equivalent.
 
 The literal `$` is equivalent to `$0`; `-$` is equivalent to `-$0`.
 
-Currency literals exist to preserve decimal scale information during intermediate parsing stages (such as node-tree representations) where target language types are not yet known. Real literals do not encode whether trailing zeros are significant, and so they may be truncated upon reserialization. Currency literals ensure that the number of fractional digits remains intact.
+Decimal literals exist to preserve decimal scale information during intermediate parsing stages (such as node-tree representations) where target language types are not yet known. Float literals do not encode whether trailing zeros are significant, and so they may be truncated upon reserialization. Decimal literals ensure that the number of fractional digits remains intact.
 
 #### Bytes
 Bytes literals store arbitrary data in the RFC 4648 Base64 format. They must start with `b_`, followed by the Base64-encoded data. Base64 strings must have a length that is a multiple of 4; padding using `=` characters is **mandatory**. For example, the bytestring `00 02 04 07 09 0E 03` is represented by the bytes literal `b_AAIEBwkPAw==`. The literal `b_` (without any padding) represents a bytestring of length 0.
@@ -175,4 +175,4 @@ Identifiers are unquoted strings that may only consist of ASCII letters, digits 
 
 Objects are similar to dictionaries, and are essentially a more compact but also more strict syntax, used to serialize classes and structs.
 
-Example: `<my_int:0,my_real:0.0,my_char:'A'>`.
+Example: `<my_int:0,my_float:0.0,my_char:'A'>`.

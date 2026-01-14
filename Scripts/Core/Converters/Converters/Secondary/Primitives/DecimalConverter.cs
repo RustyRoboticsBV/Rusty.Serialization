@@ -5,10 +5,10 @@ namespace Rusty.Serialization.Core.Converters
     /// <summary>
     /// A decimal converter.
     /// </summary>
-    public sealed class DecimalConverter : Converter<decimal, CurrencyNode>
+    public sealed class DecimalConverter : Converter<decimal, DecimalNode>
     {
         /* Protected methods. */
-        protected override CurrencyNode CreateNode(decimal obj, CreateNodeContext context) => new(obj);
-        protected override decimal CreateObject(CurrencyNode node, CreateObjectContext context) => decimal.Parse(node.Value);
+        protected override DecimalNode CreateNode(decimal obj, CreateNodeContext context) => new DecimalNode(obj);
+        protected override decimal CreateObject(DecimalNode node, CreateObjectContext context) => decimal.Parse(node.Value);
     }
 }

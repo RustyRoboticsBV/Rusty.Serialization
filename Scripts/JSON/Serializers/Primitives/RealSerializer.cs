@@ -6,10 +6,10 @@ namespace Rusty.Serialization.JSON
     /// <summary>
     /// A JSON real serializer.
     /// </summary>
-    public class RealSerializer : Serializer<RealNode>
+    public class RealSerializer : Serializer<FloatNode>
     {
         /* Public methods. */
-        public override string Serialize(RealNode node, ISerializerScheme scheme)
+        public override string Serialize(FloatNode node, ISerializerScheme scheme)
         {
             // Parse raw decimal.
             string text = node.Value.ToString();
@@ -23,9 +23,9 @@ namespace Rusty.Serialization.JSON
             return text;
         }
 
-        public override RealNode Parse(string text, ISerializerScheme scheme)
+        public override FloatNode Parse(string text, ISerializerScheme scheme)
         {
-            return new RealNode(text?.Trim());
+            return new FloatNode(text?.Trim());
         }
     }
 }

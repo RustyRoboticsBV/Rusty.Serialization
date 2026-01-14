@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         /* Conversion operators. */
-        public static explicit operator IntNode(RealNode real)
+        public static explicit operator IntNode(FloatNode real)
         {
             return new IntNode(real.Value);
         }

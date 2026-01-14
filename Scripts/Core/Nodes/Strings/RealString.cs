@@ -90,7 +90,7 @@ namespace Rusty.Serialization.Core.Nodes
 
         public static implicit operator RealString(decimal value)
         {
-            return new RealString(value.ToString(format, CultureInfo.InvariantCulture));
+            return new RealString(value.ToString(CultureInfo.InvariantCulture));
         }
 
         public static implicit operator string(RealString value) => value.ToString();

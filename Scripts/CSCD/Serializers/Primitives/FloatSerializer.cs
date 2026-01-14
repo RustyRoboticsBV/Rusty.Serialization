@@ -5,21 +5,23 @@ using Rusty.Serialization.Core.Serializers;
 namespace Rusty.Serialization.CSCD
 {
     /// <summary>
-    /// A CSCD currency serializer.
+    /// A CSCD real serializer.
     /// </summary>
-    public class CurrencySerializer : Serializer<CurrencyNode>
+    public class FloatSerializer : Serializer<FloatNode>
     {
         /* Public methods. */
-        public override string Serialize(CurrencyNode node, ISerializerScheme scheme)
+        public override string Serialize(FloatNode node, ISerializerScheme scheme)
         {
             // Parse raw decimal.
             string text = node.Value.ToString();
 
             // Handle 0.
             if (text == "0")
-                return "$";
-            if (text == "-0")
-                return "-$";
+                return ".";
+
+            // Make sure a decimal point exists.
+            if (!text.Contains('.'))
+                text += ".";
 
             // Remove leading zeroes.
             while (text.StartsWith("-0"))
@@ -31,10 +33,16 @@ namespace Rusty.Serialization.CSCD
                 text = text.Substring(1);
             }
 
-            return '$' + text;
+            // Remove trailing zeroes.
+            while (text.EndsWith('0'))
+            {
+                text = text.Substring(0, text.Length - 1);
+            }
+
+            return text;
         }
 
-        public override CurrencyNode Parse(string text, ISerializerScheme scheme)
+        public override FloatNode Parse(string text, ISerializerScheme scheme)
         {
             // Remove whitespaces.
             string trimmed = text?.Trim();
@@ -45,24 +53,13 @@ namespace Rusty.Serialization.CSCD
                 if (string.IsNullOrEmpty(trimmed))
                     throw new ArgumentException("Empty string.");
 
-                // Ensure dollar sign.
-                if (!text.StartsWith('$') && !text.StartsWith("-$"))
-                    throw new FormatException("Missing $");
-
-                // Handle $ and -$ strings.
-                if (trimmed == "$")
-                    return new CurrencyNode(0m);
-                if (trimmed == "-$")
-                    return new CurrencyNode(-0m);
+                // Handle . and -. strings.
+                if (trimmed == "." || trimmed == "-.")
+                    return new(0f);
 
                 // Check syntax.
                 bool foundDot = false;
-                int i = 0;
-                if (text.StartsWith('$'))
-                    i++;
-                else if (text.StartsWith("-$"))
-                    i += 2;
-                for (; i < trimmed.Length; i++)
+                for (int i = 0; i < trimmed.Length; i++)
                 {
                     if (trimmed[i] == '.')
                     {
@@ -71,16 +68,18 @@ namespace Rusty.Serialization.CSCD
                         else
                             throw new ArgumentException("Multiple decimal points.");
                     }
-                    else if (trimmed[i] < '0' || trimmed[i] > '9')
+                    else if (!((i == 0 && trimmed[i] == '-') || (trimmed[i] >= '0' && trimmed[i] <= '9')))
                         throw new ArgumentException($"Illegal character '{trimmed[i]}' at {i}.");
                 }
+                if (!foundDot)
+                    throw new ArgumentException("Missing decimal dot.");
 
                 // Parse.
                 return new(trimmed);
             }
             catch (Exception ex)
             {
-                throw new ArgumentException($"Could not parse string '{text}' as a currency:\n{ex.Message}");
+                throw new ArgumentException($"Could not parse string '{text}' as a float:\n{ex.Message}");
             }
         }
     }

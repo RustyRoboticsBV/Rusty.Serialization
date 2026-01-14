@@ -1,40 +1,40 @@
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// A real number serializer node.
+    /// A floating-point number serializer node.
     /// </summary>
-    public class RealNode : INode
+    public class FloatNode : INode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
         public RealString Value { get; set; }
 
         /* Constructors. */
-        public RealNode(RealString value)
+        public FloatNode(RealString value)
         {
             Value = value;
         }
 
         /* Conversion operators. */
-        public static explicit operator RealNode(IntNode node)
+        public static explicit operator FloatNode(IntNode node)
         {
-            return new RealNode(node.Value);
+            return new FloatNode(node.Value);
         }
 
-        public static explicit operator RealNode(StringNode node)
+        public static explicit operator FloatNode(StringNode node)
         {
-            return new RealNode(node.Value);
+            return new FloatNode(node.Value);
         }
 
-        public static explicit operator RealNode(CurrencyNode node)
+        public static explicit operator FloatNode(DecimalNode node)
         {
-            return new RealNode(node.Value);
+            return new FloatNode(node.Value);
         }
 
         /* Public methods. */
         public override string ToString()
         {
-            return "real: " + Value;
+            return "float: " + Value;
         }
 
         public void Clear()
