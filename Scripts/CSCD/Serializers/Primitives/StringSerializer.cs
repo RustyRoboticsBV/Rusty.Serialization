@@ -15,7 +15,9 @@ namespace Rusty.Serialization.CSCD
         protected override string EndDelimiter => "\"";
         protected override AllowedCharacterRange[] AllowedCharacters => new AllowedCharacterRange[]
         {
-            new AllowedCharacterRange(' ', '~'),
+            new AllowedCharacterRange(' ', '!'),
+            new AllowedCharacterRange('#', '['),
+            new AllowedCharacterRange(']', '~'),
             new AllowedCharacterRange(0xA1, 0xAC),
             new AllowedCharacterRange(0xAE, 0xFF)
         };

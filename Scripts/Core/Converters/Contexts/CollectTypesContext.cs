@@ -28,7 +28,6 @@ namespace Rusty.Serialization.Core.Converters
             // Collect child types.
             else
             {
-                UnityEngine.Debug.Log(node);
                 IConverter converter = Converters.Get(type);
                 converter.CollectTypes(node, this);
                 NodeTypeTable.Add(node, type);

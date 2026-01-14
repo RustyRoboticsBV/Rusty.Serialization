@@ -121,10 +121,6 @@ namespace Rusty.Serialization.Core.Serializers
 
             while (i < limit)
             {
-                // Disallowed character?
-                if (!IsAllowed(str[i]))
-                    throw new ArgumentException($"Disallowed character '{str[i]}'.");
-
                 // Escaped characters.
                 bool matched = false;
                 for (int j = 0; j < EscapeCharacters.Length; j++)
@@ -153,6 +149,10 @@ namespace Rusty.Serialization.Core.Serializers
                     i += unicodeLength;
                     continue;
                 }
+
+                // Disallowed character?
+                if (!IsAllowed(str[i]))
+                    throw new ArgumentException($"Disallowed character '{str[i]}'.");
 
                 // Normal character.
                 parsed.Append(str[i]);
