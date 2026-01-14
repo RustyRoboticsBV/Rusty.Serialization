@@ -18,7 +18,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 |ulong|System.UInt64|int|
 |float|System.Single|real|
 |double|System.Double|real|
-|decimal|System.Decimal|real|
+|decimal|System.Decimal|currency|
 |char|System.Char|char|
 |string|System.String|string/null|
 |T[]|System.Array|list/null|
