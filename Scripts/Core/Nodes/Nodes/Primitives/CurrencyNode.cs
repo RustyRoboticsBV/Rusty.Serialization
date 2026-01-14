@@ -1,34 +1,34 @@
-namespace Rusty.Serialization.Core.Nodes
+﻿namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// A real number serializer node.
+    /// A currency number serializer node.
     /// </summary>
-    public class RealNode : INode
+    public class CurrencyNode : INode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
         public RealString Value { get; set; }
 
         /* Constructors. */
-        public RealNode(RealString value)
+        public CurrencyNode(RealString value)
         {
             Value = value;
         }
 
         /* Conversion operators. */
-        public static explicit operator RealNode(IntNode node)
+        public static explicit operator CurrencyNode(IntNode node)
         {
-            return new RealNode(node.Value);
+            return new CurrencyNode(node.Value);
         }
 
-        public static explicit operator RealNode(StringNode node)
+        public static explicit operator CurrencyNode(RealNode node)
         {
-            return new RealNode(node.Value);
+            return new CurrencyNode(node.Value);
         }
 
-        public static explicit operator RealNode(CurrencyNode node)
+        public static explicit operator CurrencyNode(StringNode node)
         {
-            return new RealNode(node.Value);
+            return new CurrencyNode(node.Value);
         }
 
         /* Public methods. */

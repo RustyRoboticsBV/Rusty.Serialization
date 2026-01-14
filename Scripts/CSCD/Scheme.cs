@@ -26,6 +26,7 @@ namespace Rusty.Serialization.CSCD
         private StringSerializer String { get; } = new();
         private ColorSerializer Color { get; } = new();
         private TimeSerializer Time { get; } = new();
+        private CurrencySerializer Currency { get; } = new();
         private BytesSerializer Bytes { get; } = new();
         private RefSerializer Ref { get; } = new();
         private ListSerializer List { get; } = new();
@@ -67,6 +68,8 @@ namespace Rusty.Serialization.CSCD
                     return Color.Serialize(color, this);
                 case TimeNode time:
                     return Time.Serialize(time, this);
+                case CurrencyNode cur:
+                    return Currency.Serialize(cur, this);
                 case BytesNode bytes:
                     return Bytes.Serialize(bytes, this);
                 case RefNode @ref:
@@ -129,6 +132,8 @@ namespace Rusty.Serialization.CSCD
                 return String.Parse(serialized, this);
             if (serialized.StartsWith('#'))
                 return Color.Parse(serialized, this);
+            if (serialized.StartsWith('$') || serialized.StartsWith("-$"))
+                return Currency.Parse(serialized, this);
             if (serialized.StartsWith("b_"))
                 return Bytes.Parse(serialized, this);
             if (serialized.StartsWith('Y') || serialized.StartsWith("-Y")

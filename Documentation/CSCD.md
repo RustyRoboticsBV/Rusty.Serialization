@@ -1,9 +1,11 @@
 # CSCD Format Specification
-This document describes the syntax of a serialized data format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing any C# object.
+This document describes the syntax of a serialized data format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary C# object graphs.
 
 The format is self-describing and does not require an external schema. Values may be annotated with optional type labels and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference links.
 
-Note that many of the CSCD literals are more abstract than a C# type. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common data structures, such as lists and colors, have dedicated literal forms.
+Note that many of the CSCD literals are more abstract than a C# type. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common data structures, such as lists, time and colors, have dedicated compact literal forms in order to reduce verbosity.
+
+The main design goals are generality, compactness and unambiguousness. While usable in any programming language, it was specifically designed to be used in a C# context where object graphs may contain polymorphic types or shared / cyclic references.
 
 ## 1. General Formatting
 ### Character Set
@@ -56,14 +58,14 @@ Null values are encoded with `null` literals. Null values must be lower-case. Th
 Booleans can be one of two literals: `true` or `false`. Boolean values must be lowercase.
 
 #### Integers
-Integers can be any combination of digits. Optionally, they may start with a negative sign. Leading zeros are allowed.
+Integer literals can be any combination of digits. Optionally, they may start with a negative sign. Leading zeros are allowed.
 
 Examples:
 - `1` and `001` are both valid representations of the number `1`.
 - `-50` and `-00050` are both valid representations of the number `-50`.
 
 #### Reals
-Real numbers must contain a decimal point. Optionally, they may start with a negative sign. Other than that, they may only consist of digits. If the integer part and/or the fractional part are equal to 0, they may be omitted. Leading and trailing zeros are allowed.
+Real literals must contain a decimal point. Optionally, they may start with a negative sign. Other than that, they may only consist of digits. If the integer part and/or the fractional part are equal to 0, they may be omitted. Consequently, the literal `.` can be used to represent 0; `-.` can be used for -0. Leading and trailing zeros are allowed.
 
 Examples:
 - `0.0`, `000.000`, `0.`, `.0` and `.` are all valid representations of the number `0.0`.
@@ -106,17 +108,17 @@ Colors literals must start with a `#` hex sign, followed by the hexadecimal repr
 Color literals are case-sensitive and must be uppercase.
 
 #### Time
-Time literals contain time data, and can be used to express both date/time structs and timespans. They use the format `Y...M...D...h...m...s...f...n...`, where the characters between the letters should only consist of digits. Optionally, the first character may be a `-` minus sign for negative times (this sign applies to the *entire* time literal).
+Time literals contain date and/or time-of-day data, and can be used to express both date/time values as well as timespans. They use the format `Y...M...D...h...m...s...f...n...`, where the characters between the letters should only consist of digits. A term may be omitted if it equals 0 (and omitted terms should be parsed as such), as long as at least one term remains. Additionally, the first character may be a `-` minus sign for negative times (this sign applies to the *entire* time literal).
 
 Each part represents a different unit:
-- `Y`: a number of years.
-- `M`: a number of months.
-- `D`: a number of days.
-- `h`: a number of hours.
-- `m`: a number of minutes.
-- `s`: a number of seconds.
-- `f`: a number of milliseconds.
-- `n`: a number of nanoseconds.
+- `Y`: the number of years.
+- `M`: the number of months.
+- `D`: the number of days.
+- `h`: the number of hours.
+- `m`: the number of minutes.
+- `s`: the number of seconds.
+- `f`: the number of milliseconds.
+- `n`: the number of nanoseconds.
 
 These prefixes are case-sensitive.
 
@@ -127,7 +129,16 @@ For example:
 - `s1f100` and `m0f100s1` are both valid representations of the timespan `1 second and 100 milliseconds`.
 - `-Y100000` and `-Y100000M0D0h0m0s0f0` are both valid representations the year `-100,000 B.C.`.
 
-Note that time literals do not have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
+Since time literals can represent both date/times and timespans, they do NOT have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
+
+#### Currency
+Currency literals represent decimal numbers with significant fractional digits, where trailing zeros have explicit meaning. They are primarily intended for monetary values, but may be used for any numeric value where preserving the exact decimal representation is important. Parsers should make sure to preserve fractional digits, including trailing zeros.
+
+The syntax is `$1.00` for positive values and `-$1.00` for negative values. Any number of fractional digits is allowed (i.e. `$10.12345`). If there are no fractional digits, then the decimal point may be omitted (so `$1.` is equivalent to `$1`). Leading zeros are allowed, but have no meaning. If the integer part fully consists of zeros, it may be omitted entirely (i.e. `$00.5`, `$0.5` and `$.5` are all equivalent). However, `$1.0` and `$1.00` are NOT equivalent.
+
+The literal `$` is equivalent to `$0`; `-$` is equivalent to `-$0`.
+
+Currency literals exist to preserve decimal scale information during intermediate parsing stages (such as node-tree representations) where target language types are not yet known. Real literals do not encode whether trailing zeros are significant, and so they may be truncated upon reserialization. Currency literals ensure that the number of fractional digits remains intact.
 
 #### Bytes
 Bytes literals store arbitrary data in the RFC 4648 Base64 format. They must start with `b_`, followed by the Base64-encoded data. Base64 strings must have a length that is a multiple of 4; padding using `=` characters is **mandatory**. For example, the bytestring `00 02 04 07 09 0E 03` is represented by the bytes literal `b_AAIEBwkPAw==`. The literal `b_` (without any padding) represents a bytestring of length 0.

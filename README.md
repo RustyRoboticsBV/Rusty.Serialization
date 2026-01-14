@@ -61,7 +61,7 @@ Both the converter and serializer layers can be freely swapped out.
 
 ### Nodes
 The node layer recognizes the following nodes:
-- Primitives: `null`, `bool`, `int`, `real`, `infinity`, `nan`, `char`, `string`, `color`, `time`, `bytes`, `ref`.
+- Primitives: `null`, `bool`, `int`, `real`, `infinity`, `nan`, `char`, `string`, `color`, `time`, `currency`, `bytes`, `ref`.
 - Collections: `list`, `dict`, `object`.
 - Metadata: `type`, `ID`.
 
@@ -84,10 +84,11 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_string: "abc",
     my_color: #F08080,
     my_time: Y1990M2D13,
-    my_bytes: b1234ABCD,
+    my_decimal: $1.00,
+    my_bytes: b_SGVsbG8sIHdvcmxkIQ==,
     my_list: [1, 2., "def"],
     my_dict: {
-        10: 1.0,
+        10: 1.,
         'A': "ABC",
         [1, 2, 3] : false
     },
