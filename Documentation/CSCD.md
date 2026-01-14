@@ -3,6 +3,8 @@ This document describes the syntax of a serialized data format called *Compact S
 
 The format is self-describing and does not require an external schema. Values may be annotated with optional type labels and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference links.
 
+Note that many of the CSCD literals are more abstract than a C# type. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common data structures, such as lists and colors, have dedicated literal forms.
+
 ## 1. General Formatting
 ### Character Set
 Serialized data is expressed as a subset of the `ISO-8859-1` character set, and may only contain the following characters:
@@ -68,11 +70,11 @@ Examples:
 - `-0.0`, `-000.000`, `-0.`, `-.0` and `-.` are all valid representations of the number `-0.0`.
 - `-0.5`, `-.5` and `-00.50` are all valid representations of the number `-0.5`.
 
-#### Not A Number
-NaN is encoded with the `nan` literal. NaN literals must be lowercase. They can be annotated with type labels like any other value.
-
-#### Infinity
+#### Infinities
 Infinity values are encoded as one of two literals: `inf` for positive infinity and `-inf` for negative infinity. Both must be lowercase.
+
+#### Not A Number
+NaN values are encoded with the `nan` literal. NaN values must be lowercase.
 
 #### Characters
 Characters must be enclosed in `'` single-quotes. Only a single character may be stored inside. Empty character literals are not allowed.
@@ -85,7 +87,7 @@ A few special character literals exist:
 - `'\\'`: alternative way of writing `'\'`.
 - `'\t'`: expresses a horizontal tab.
 - `'\n'`: expresses a newline.
-- `'\...\'`: expresses a unicode character. `...` must be a hexadecimal number between `0` and `10FFFF`. Leading zeros are allowed. Letters in hexcodes must be uppercase.
+- `'\...\'`: expresses a unicode character. `...` must be a hexadecimal number of 1-8 digits, representing a Unicode code point between `0` and `10FFFF`. Leading zeros are allowed. Letters in hexcodes must be uppercase.
 
 Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\21FF\'`.
 
@@ -117,7 +119,7 @@ Each part represents a different unit:
 
 These prefixes are case-sensitive.
 
-Any positive integer number is allowed for each term, negative numbers are not (i.e. `Y5M-2D5`). Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms may come in any order. Empty terms are not allowed (i.e. `YMD200`), and a term cannot appear more than once (i.e. `Y2Y2`).
+Any positive integer number is allowed for each term, negative numbers are not (i.e. `Y5M-2D5`). Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms may come in any order. All unit prefixes must be followed by at least one digit - empty terms are not allowed (i.e. `YMD200`). A single unit cannot appear more than once (i.e. `Y2Y2`).
 
 For example:
 - `Y1999M2D1h13` and `D1M2Y1999h13m0s0` are both valid representations of the date and time `February 1st 1999, 1 P.M.`.
@@ -134,7 +136,7 @@ Reference values are used to link to values that have been marked with an ID. Th
 
 There are no scope limitations on where in the data an ID can be referenced: IDs that are defined before the reference, after the reference or inside a different nested collection are all allowed. Cyclic references are also allowed.
 
-References can be annotated with a type labels, but may NOT be annotated with an ID. They may not appear as the top-level value.
+References can be annotated with a type labels, but may NOT be annotated with an ID. They may not appear as the top-level value, but may otherwise appear anywhere inside any collection literal.
 
 ### 2.3. Collections
 
