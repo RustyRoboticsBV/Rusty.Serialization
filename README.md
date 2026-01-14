@@ -61,11 +61,11 @@ Both the converter and serializer layers can be freely swapped out.
 
 ### Nodes
 The node layer recognizes the following nodes:
-- Primitives: `null`, `bool`, `int`, `real`, `nan`, `infinity`, `char`, `string`, `color`, `time`, `bytes`, `ref`.
+- Primitives: `null`, `bool`, `int`, `real`, `infinity`, `nan`, `char`, `string`, `color`, `time`, `bytes`, `ref`.
 - Collections: `list`, `dict`, `object`.
 - Metadata: `type`, `ID`.
 
-These are more abstract than a C# type. For example, an `int` node can represent any integer type, a `real` node can represent any decimal type, a `time` node covers various date/time structs, a `list` node can represent any linear data structure, etc. `null` is used for any null value. `nan` and `infinity` are special nodes used to encode values such as `float.NaN`, `double.PositiveInfinity` and `System.Half.NegativeInfinity`.
+See the [node documentation document](Documentation/Nodes.md) for more information.
 
 ## Compact Serialized C# Data
 The module uses a custom serialization format called Compact Serialized C# Data (CSCD). CSCD is a human-readable format that supports references, type labels and a wide variety of literal types. This allows it to concisely represent complex C# objects that would require more verbosity in other formats. It is designed to be compact, general and unambiguous.
@@ -78,6 +78,8 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_bool: true,
     my_int: 123,
     my_real: .45,
+    my_infinity: -inf,
+    my_nan: nan,
     my_char: 'A',
     my_string: "abc",
     my_color: #F08080,
