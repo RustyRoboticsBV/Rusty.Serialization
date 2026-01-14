@@ -84,7 +84,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_string: "abc",
     my_color: #F08080,
     my_time: Y1990M2D13,
-    my_bytes: b1234ABCD,
+    my_bytes: b_SGVsbG8sIHdvcmxkIQ==,
     my_list: [1, 2., "def"],
     my_dict: {
         10: 1.0,
