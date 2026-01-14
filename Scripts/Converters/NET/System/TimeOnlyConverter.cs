@@ -3,6 +3,7 @@ using System;
 using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.Core.Nodes;
 
+// TODO: handle sign (?) and nanoseconds.
 namespace Rusty.Serialization.DotNet
 {
     /// <summary>
@@ -15,12 +16,17 @@ namespace Rusty.Serialization.DotNet
         {
             return new(false,
                 0, 0, 0,
-                (ulong)Math.Abs(obj.Hour), (ulong)Math.Abs(obj.Minute), (ulong)Math.Abs(obj.Second), (ulong)Math.Abs(obj.Millisecond));
+                (ulong)Math.Abs(obj.Hour), (ulong)Math.Abs(obj.Minute), (ulong)Math.Abs(obj.Second),
+                (ulong)Math.Abs(obj.Millisecond)
+            );
         }
 
         protected override TimeOnly CreateObject(TimeNode node, CreateObjectContext context)
         {
-            return new((int)node.Hour, (int)node.Minute, (int)node.Second, (int)node.Millisecond);
+            return new(
+                (int)node.Hour, (int)node.Minute, (int)node.Second,
+                (int)node.Millisecond
+            );
         }
     }
 }

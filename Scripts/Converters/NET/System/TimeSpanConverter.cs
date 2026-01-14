@@ -12,15 +12,22 @@ namespace Rusty.Serialization.DotNet
         /* Protected method. */
         protected override TimeNode CreateNode(TimeSpan obj, CreateNodeContext context)
         {
-            return new(false,
-                0, 0, (ulong)Math.Abs(obj.Days),
-                (ulong)Math.Abs(obj.Hours), (ulong)Math.Abs(obj.Minutes), (ulong)Math.Abs(obj.Seconds), (ulong)Math.Abs(obj.Milliseconds));
+            TimeSpan abs = obj.Duration();
+            return new(obj.Ticks < 0,
+                0, 0, (ulong)abs.Days,
+                (ulong)abs.Hours, (ulong)abs.Minutes, (ulong)abs.Seconds,
+                (ulong)abs.Milliseconds, (ulong)abs.Ticks % TimeSpan.TicksPerMillisecond * 100);
         }
 
         protected override TimeSpan CreateObject(TimeNode node, CreateObjectContext context)
         {
-            return new((int)node.Day,
-                (int)node.Hour, (int)node.Minute, (int)node.Second, (int)node.Millisecond);
+            TimeSpan obj = new((int)node.Day,
+                (int)node.Hour, (int)node.Minute, (int)node.Second,
+                (int)node.Millisecond);
+
+            obj += TimeSpan.FromTicks((long)node.Nanosecond / 100);
+
+            return node.Negative ? obj.Negate() : obj;
         }
     }
 }

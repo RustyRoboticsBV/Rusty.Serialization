@@ -13,14 +13,21 @@ namespace Rusty.Serialization.DotNet
         protected override TimeNode CreateNode(DateTime obj, CreateNodeContext context)
         {
             return new(false,
-                (ulong)Math.Abs(obj.Year), (ulong)Math.Abs(obj.Month), (ulong)Math.Abs(obj.Day),
-                (ulong)Math.Abs(obj.Hour), (ulong)Math.Abs(obj.Minute), (ulong)Math.Abs(obj.Second), (ulong)Math.Abs(obj.Millisecond));
+                (ulong)obj.Year, (ulong)obj.Month, (ulong)obj.Day,
+                (ulong)obj.Hour, (ulong)obj.Minute, (ulong)obj.Second,
+                (ulong)obj.Millisecond, (ulong)obj.Ticks % TimeSpan.TicksPerMillisecond * 100);
         }
 
         protected override DateTime CreateObject(TimeNode node, CreateObjectContext context)
         {
-            return new((int)node.Year, (int)node.Month, (int)node.Day,
-                (int)node.Hour, (int)node.Minute, (int)node.Second, (int)node.Millisecond);
+            DateTime obj = new(
+                (int)node.Year, (int)node.Month, (int)node.Day,
+                (int)node.Hour, (int)node.Minute, (int)node.Second,
+                (int)node.Millisecond
+            );
+
+            long nanosecondTicks = (long)node.Nanosecond / 100;
+            return obj.AddTicks(nanosecondTicks);
         }
     }
 }

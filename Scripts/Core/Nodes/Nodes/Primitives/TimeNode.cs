@@ -17,11 +17,14 @@ namespace Rusty.Serialization.Core.Nodes
         public ulong Minute { get; set; }
         public ulong Second { get; set; }
         public ulong Millisecond { get; set; }
+        public ulong Nanosecond { get; set; }
 
         /* Constructors. */
         public TimeNode() { }
 
-        public TimeNode(bool negative, ulong year, ulong month, ulong day, ulong hour, ulong minute, ulong second, ulong millisecond)
+        public TimeNode(bool negative, ulong year, ulong month,
+            ulong day, ulong hour, ulong minute, ulong second,
+            ulong millisecond, ulong nanosecond)
         {
             Negative = negative;
             Year = year;
@@ -31,6 +34,7 @@ namespace Rusty.Serialization.Core.Nodes
             Minute = minute;
             Second = second;
             Millisecond = millisecond;
+            Nanosecond = nanosecond;
         }
 
         /* Conversion operators. */
@@ -72,8 +76,14 @@ namespace Rusty.Serialization.Core.Nodes
                             time.Second = ulong.Parse(second.Value);
                         break;
                     case "ms":
-                        if (value is IntNode ms)
-                            time.Millisecond = ulong.Parse(ms.Value);
+                    case "millisecond":
+                        if (value is IntNode millisecond)
+                            time.Millisecond = ulong.Parse(millisecond.Value);
+                        break;
+                    case "ns":
+                    case "nanosecond":
+                        if (value is IntNode nanosecond)
+                            time.Millisecond = ulong.Parse(nanosecond.Value);
                         break;
                     default:
                         throw new ArgumentException("Cannot parse time component " + obj.Members[i].Key);
@@ -86,7 +96,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            return $"Time: {(Negative ? "-" : "")}{Year}/{Month}/{Day}, {Hour}:{Minute}:{Second}.{Millisecond}";
+            return $"Time: {(Negative ? "-" : "")}{Year}/{Month}/{Day}, {Hour}:{Minute}:{Second}.{Millisecond}.{Nanosecond}";
         }
 
         public void Clear()
@@ -100,6 +110,7 @@ namespace Rusty.Serialization.Core.Nodes
             Minute = 0;
             Second = 0;
             Millisecond = 0;
+            Nanosecond = 0; 
         }
     }
 }

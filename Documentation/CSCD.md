@@ -116,6 +116,7 @@ Each part represents a different unit:
 - `m`: a number of minutes.
 - `s`: a number of seconds.
 - `f`: a number of milliseconds.
+- `n`: a number of nanoseconds.
 
 These prefixes are case-sensitive.
 

@@ -15,7 +15,9 @@ namespace Rusty.Serialization.DotNet
         {
             return new(false,
                 (ulong)Math.Abs(obj.Year), (ulong)Math.Abs(obj.Month), (ulong)Math.Abs(obj.Day),
-                0, 0, 0, 0);
+                0, 0, 0,
+                0, 0
+            );
         }
 
         protected override DateOnly CreateObject(TimeNode node, CreateObjectContext context)

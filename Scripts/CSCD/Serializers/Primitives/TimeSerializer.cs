@@ -30,7 +30,9 @@ namespace Rusty.Serialization.CSCD
             if (node.Second != 0)
                 str.Append($"s{node.Second}");
             if (node.Millisecond != 0)
-                str.Append($"g{node.Millisecond}");
+                str.Append($"f{node.Millisecond}");
+            if (node.Nanosecond != 0)
+                str.Append($"n{node.Nanosecond}");
             string serialized = str.ToString();
 
             // Handle all zeros.
@@ -63,6 +65,7 @@ namespace Rusty.Serialization.CSCD
                 ulong? minute = null;
                 ulong? second = null;
                 ulong? millisecond = null;
+                ulong? nanosecond = null;
 
                 for (int i = negative ? 1 : 0; i < trimmed.Length; i++)
                 {
@@ -108,7 +111,13 @@ namespace Rusty.Serialization.CSCD
                             if (millisecond == null)
                                 millisecond = Parse(trimmed, ref i);
                             else
-                                throw new ArgumentException("Duplicate g.");
+                                throw new ArgumentException("Duplicate f.");
+                            break;
+                        case 'n':
+                            if (nanosecond == null)
+                                nanosecond = Parse(trimmed, ref i);
+                            else
+                                throw new ArgumentException("Duplicate n.");
                             break;
                         default:
                             throw new ArgumentException($"Invalid term '{trimmed[i]}'.");
@@ -123,10 +132,11 @@ namespace Rusty.Serialization.CSCD
                 minute = minute ?? 0;
                 second = second ?? 0;
                 millisecond = millisecond ?? 0;
+                nanosecond = nanosecond ?? 0;
 
                 // Create node.
                 return new(negative, year.Value, month.Value, day.Value,
-                    hour.Value, minute.Value, second.Value, millisecond.Value);
+                    hour.Value, minute.Value, second.Value, millisecond.Value, nanosecond.Value);
             }
             catch (Exception ex)
             {
