@@ -29,10 +29,10 @@ namespace Rusty.Serialization.CSCD
         };
 
         /* Protected methods. */
-        protected override string EscapeUnicode(string text, int index, int length)
+        protected override string EscapeUnicode(string text, int index)
         {
-            int codePoint = GetCodePointAt(text, index, length);
-            return "\\" + codePoint.ToString("X", CultureInfo.InvariantCulture) + "\\";
+            UnicodePair chr = new UnicodePair(text, index);
+            return "\\" + chr.Hex + "\\";
         }
 
         protected override int GetUnicodeLength(string text, int index)
@@ -46,25 +46,14 @@ namespace Rusty.Serialization.CSCD
                     return i - index + 1;
             }
 
-            throw new ArgumentException($"Unclosed Unicode sequence in {text}.");
+            return 0;
         }
 
-        protected override string ParseUnicode(string text, int index, int length)
+        protected override UnicodePair ParseUnicode(string text, int index, int length)
         {
             string hex = text.Substring(index + 1, length - 2);
             int codePoint = Convert.ToInt32(hex, 16);
-
-            if (codePoint <= 0xFFFF)
-                return ((char)codePoint).ToString();
-            else
-            {
-                codePoint -= 0x10000;
-
-                char high = (char)((codePoint >> 10) + 0xD800);
-                char low = (char)((codePoint & 0x3FF) + 0xDC00);
-
-                return string.Concat(high, low);
-            }
+            return new UnicodePair(codePoint);
         }
     }
 }

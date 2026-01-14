@@ -27,7 +27,7 @@ namespace Rusty.Serialization.JSON
         };
 
         /* Protected methods. */
-        protected override string EscapeUnicode(string text, int index, int length)
+        protected override string EscapeUnicode(string text, int index)
         {
             return text[index].ToString();
         }// TODO: handle unicode escapes.
@@ -37,9 +37,9 @@ namespace Rusty.Serialization.JSON
             return 0;
         }// TODO: handle unicode escapes.
 
-        protected override string ParseUnicode(string text, int index, int length)
+        protected override UnicodePair ParseUnicode(string text, int index, int length)
         {
-            return text[index].ToString();
+            return default;
         }// TODO: handle unicode escapes.
     }
 }

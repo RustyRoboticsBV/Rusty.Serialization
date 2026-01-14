@@ -74,7 +74,7 @@ namespace Rusty.Serialization.Core.Serializers
                 // If a unicode surrogate pair, write escaped unicode sequence.
                 if (i + 1 < str.Length && char.IsHighSurrogate(str[i]) && char.IsLowSurrogate(str[i + 1]))
                 {
-                    formatter.Append(EscapeUnicode(str, i, 2));
+                    formatter.Append(EscapeUnicode(str, i));
                     i++;
                     continue;
                 }
@@ -92,7 +92,7 @@ namespace Rusty.Serialization.Core.Serializers
                 // If not in the allowed character range, write escaped unicode character.
                 if (!IsAllowed(str[i]))
                 {
-                    formatter.Append(EscapeUnicode(str, i, 1));
+                    formatter.Append(EscapeUnicode(str, i));
                     continue;
                 }
 
@@ -166,39 +166,19 @@ namespace Rusty.Serialization.Core.Serializers
         }
 
         /* Protected methods. */
-        protected abstract string EscapeUnicode(string text, int index, int length);
-        protected abstract string ParseUnicode(string text, int index, int length);
+        protected abstract string EscapeUnicode(string text, int index);
         protected abstract int GetUnicodeLength(string text, int index);
-
-        /// <summary>
-        /// Take a substring and return the unicode code point.
-        /// </summary>
-        protected static int GetCodePointAt(string text, int index, int length)
-        {
-            if (length == 2)
-            {
-                char high = text[index];
-                char low = text[index + 1];
-
-                return 0x10000 +
-                    ((high - 0xD800) << 10) +
-                    (low - 0xDC00);
-            }
-            else if (length == 1)
-                return text[index];
-            else
-                throw new ArgumentException($"Bad length {length}.");
-        }
+        protected abstract UnicodePair ParseUnicode(string text, int index, int length);
 
         /* Private methods. */
         /// <summary>
         /// Check if a character is in the allowed range(s).
         /// </summary>
-        private bool IsAllowed(char character)
+        private bool IsAllowed(int chr)
         {
             for (int j = 0; j < AllowedCharacters.Length; j++)
             {
-                if (AllowedCharacters[j].Has(character))
+                if (AllowedCharacters[j].Has(chr))
                     return true;
             }
             return false;
