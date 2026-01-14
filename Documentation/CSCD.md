@@ -106,7 +106,7 @@ Colors literals must start with a `#` hex sign, followed by the hexadecimal repr
 Color literals are case-sensitive and must be uppercase.
 
 #### Time
-Time literals contain time data in the format `Y#M#D#h#m#s#f#`, where the characters between the letters should only consist of only digits. Optionally, the first character may be a `-` minus sign for negative times (this applies to the *entire* time literal).
+Time literals contain time data, and can be used to express both date/time structs and timespans. They use the format `Y...M...D...h...m...s...f...n...`, where the characters between the letters should only consist of digits. Optionally, the first character may be a `-` minus sign for negative times (this sign applies to the *entire* time literal).
 
 Each part represents a different unit:
 - `Y`: a number of years.
