@@ -15,7 +15,7 @@ Serialized data is expressed as a subset of the `ISO-8859-1` character set, and 
 - Latin-1 Supplement letters, digits and punctuation: `0xA1` (`¡`) to `0xAC` (`¬`) and `0xAE` (`®`) to `0xFF` (`ÿ`).
 
 ### 1.2 Whitespace
-Whitespace is allowed between literals and punctuation `, : [ ] { } < >` for formatting purposes. Unless otherwise stated, whitespaces may not break up literals.
+Whitespace is allowed between literals and punctuation (`, : [ ] { } < >`) for formatting purposes. Unless otherwise stated, whitespaces may not break up literals.
 
 Serializers are encouraged to not emit them in situations where readability is not important.
 
@@ -56,7 +56,7 @@ Exactly one top-level value must be present in any string of serialized CSCD. Th
 #### Type Labels
 Type labels can optionally placed before any value, and are written as a name between `()` parentheses. Type labels act as hints for parsers, telling them what kind of object was originally serialized. The format has no knowledge about what a type name actually *means*, and it's up to the parser to properly match a type name with the appropriate type.
 
-Type labels are case-sensitive and may not contain whitespace. Escape sequences are allowed; ASCII spaces, tabs, line feeds, `)` right parentheses and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed.
+Type labels are case-sensitive and may not contain whitespace. Escape sequences are allowed; ASCII spaces, tabs, line feeds, `)` right parentheses and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed. Non-mandatory escape sequences are allowed.
 
 Type labels may not be followed by an ID or by another type label - they must be followed by a value of some kind. They may be used inside collections.
 
@@ -67,7 +67,7 @@ Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(my_namespace.my_class<int
 #### IDs
 IDs can optionally be placed before any concrete value or type label, and are written as a name between `` ` `` backticks. Values that have been marked with an ID can be used in a reference literal (see the section on references below). They may not be used on reference literals. IDs must be unique, and are always defined globally (in other words, there are no local scopes or namespaces).
 
-IDs are case-sensitive and may not contain whitespace. Escape sequences are allowed; ASCII spaces, tabs, line feeds, `` ` `` backticks and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed.
+IDs are case-sensitive and may not contain whitespace. Escape sequences are allowed; ASCII spaces, tabs, line feeds, `` ` `` backticks and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed. Non-mandatory escape sequences are allowed.
 
 Serializers are encouraged to only generate IDs in situations where a single object is referenced multiple times, or when cyclic references exist.
 
@@ -105,14 +105,14 @@ NaN values are encoded with the `nan` literal. NaN values must be lowercase.
 #### Characters
 Characters must be enclosed in `'` single-quotes. Only a single character may be stored inside. Empty character literals are not allowed.
 
-Character literals may not contain the characters `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return). Escape sequences are allowed; tabs and line feeds must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed. Note that the `'` apostrophe does NOT require an escape sequence - though usage of it is allowed.
+Character literals may not contain the characters `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return). Escape sequences are allowed; tabs and line feeds must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed. Note that the `'` apostrophe does NOT require an escape sequence. Non-mandatory escape sequences are allowed.
 
 Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\21FF\'`.
 
 #### Strings
 Strings must be enclosed in `"` double-quotes. Empty strings are allowed.
 
-String literals may not contain the characters `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return). Escape sequences are allowed; tabs, line feeds, `"` double-quotes and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed.
+String literals may not contain the characters `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return). Escape sequences are allowed; tabs, line feeds, `"` double-quotes and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed. Non-mandatory escape sequences are allowed.
 
 Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF\\tarrow"`, `"C:\\path\\to\\file"`.
 
@@ -125,8 +125,10 @@ Colors literals must start with a `#` hex sign, followed by the hexadecimal repr
 
 Color literals are case-sensitive and must be uppercase.
 
-#### Time
-Time literals contain date and/or time-of-day data, and can be used to express both date/time values as well as timespans. They use the format `Y...M...D...h...m...s...f...n...`, where the characters between the letters should only consist of digits. A term may be omitted if it equals 0 (and omitted terms should be parsed as such), as long as at least one term remains. Additionally, the first character may be a `-` minus sign for negative times (this sign applies to the *entire* time literal).
+#### Times
+Time literals contain date and/or time-of-day data, and can be used to express both date/time values as well as timespans.
+
+They use the syntax `Y...M...D...h...m...s...f...n...`, where `...` may be any positive integer number (negative and real numbers are not allowed). Additionally, the first character may be a `-` minus sign for negative times (this sign applies to the *entire* time literal). The terms should be ordered from most significant to least significant.
 
 Each part represents a different unit:
 - `Y`: the number of years.
@@ -140,14 +142,14 @@ Each part represents a different unit:
 
 These prefixes are case-sensitive.
 
-Any positive integer number is allowed for each term, negative numbers are not (i.e. `Y5M-2D5`). Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms may come in any order. All unit prefixes must be followed by at least one digit - empty terms are not allowed (i.e. `YMD200`). A single unit cannot appear more than once (i.e. `Y2Y2`). ASCII spaces may be used between terms to increase readability (i.e. `Y2 M3 D1`).
+A term may be omitted if it equals zero (and omitted terms should be parsed as such), as long as at least one term remains. All unit prefixes must be followed by at least one digit - empty terms are not allowed (i.e. `YMD200`). A single unit cannot appear more than once (i.e. `Y2Y2`). ASCII spaces may be used between terms to increase readability (i.e. `Y2 M3 D1`).
 
 For example:
-- `Y1999M2D1h13` and `D1M2Y1999h13m0s0` are both valid representations of the date and time `February 1st 1999, 1 P.M.`.
-- `s1f100` and `m0f100s1` are both valid representations of the timespan `1 second and 100 milliseconds`.
-- `-Y100000` and `-Y100000M0D0h0m0s0f0` are both valid representations the year `-100,000 B.C.`.
+- `Y1999M2D1h13` represents the date and time `February 1st 1999, 1 P.M.`.
+- `s1f100` represents the timespan `1 second and 100 milliseconds`.
+- `-Y100000` and `-Y100000 M0 D0 h0m0s0f0` are both valid representations the year `-100,000 B.C.`.
 
-Since time literals can represent both date/times and timespans, they do NOT have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
+Since time literals are intended represent both date/times and timespans, they do NOT have to represent valid dates or times of day - so a value like `Y2005M13D200` is allowed.
 
 #### Decimals
 Decimal literals represent numeric values with significant fractional digits. They are intended for any use-case where preserving the exact decimal representation is important, such as when expressing monetary values. Parsers should make sure to preserve all fractional digits, including trailing zeros.
