@@ -8,21 +8,43 @@ Note that many of the CSCD literals are more abstract than a C# type. For exampl
 The main design goals are generality, compactness and unambiguousness. While usable in any programming language, it was specifically designed to be used in a C# context where object graphs may contain polymorphic types or shared / cyclic references.
 
 ## 1. General Formatting
-### Character Set
+### 1.1 Character Set
 Serialized data is expressed as a subset of the `ISO-8859-1` character set, and may only contain the following characters:
 - ASCII whitespace characters: `0x20` (space), `0x09` (horizontal tab), `0x0A` (line feed), and `0x0D` (carriage return).
 - ASCII letters, digits and punctuation: `0x21` (`!`) to `0x7E` (`~`).
 - Latin-1 Supplement letters, digits and punctuation: `0xA1` (`¡`) to `0xAC` (`¬`) and `0xAE` (`®`) to `0xFF` (`ÿ`).
 
-### Whitespace
-Whitespace is allowed between punctuation, primitive literals, type labels, IDs and collection delimiters for formatting. With the exception of spaces inside of character and string literals, whitespace has no meaning and should simply be stripped during parsing.
+### 1.2 Whitespace
+Whitespace is allowed between literals and punctuation `, : [ ] { } < >` for formatting purposes. Unless otherwise stated, whitespaces may not break up literals.
 
-Spaces inside of character and string literals should be preserved as-is. They may otherwise not break up primitive literals, type labels and IDs. For example: `12 3 4` is invalid and does not form the literal `1234`.
+Serializers are encouraged to not emit them in situations where readability is not important.
 
-### Comments
+### 1.3 Comments
 Comments are allowed using the `/* Comment text */` syntax. Parsers should simply treat them as whitespace and strip them, and do not need to preserve them if a string of CSCD is deserialized and reserialized. Comments cannot be nested.
 
-Comments cannot appear inside character or string literals; in that context, they are considered part of the literal.
+Comments cannot appear inside character or string literals; in that context, they are considered to be part of the literal.
+
+### 1.4 Escape Sequences
+Several escape sequences exist, which may be used in certain literals. Each literal defines whether or not escape sequences may be used, and which escape sequences are mandatory for that literal type. For the sake of consistency, all literals that enable escape sequences allow for non-mandatory ones to be used in them.
+
+The escape sequences are:
+
+|Character  |Code point |Escape sequence|       |Character  |Code point |Escape sequence|
+|-----------|-----------|---------------|-------|-----------|-----------|---------------|
+|tab        |`0x09`     |`\t`           |       |`/`        |`0x2F`     |`\/`           |
+|line feed  |`0x0A`     |`\n`           |       |`:`        |`0x3A`     |`\:`           |
+|space      |`0x20`     |`\s`           |       |`>`        |`0x3E`     |`\>`           |
+|`"`        |`0x22`     |`\"`           |       |`\`        |`0x5C`     |`\\`           |
+|`'`        |`0x27`     |`\'`           |       |`]`        |`0x5D`     |`\]`           |
+|`)`        |`0x29`     |`\)`           |       |`` ` ``    |`0x60`     |`` \` ``       |
+|`,`        |`0x2C`     |`\,`           |       |`}`        |`0x7D`     |`\}`           |
+
+**To reiterate**: these sequences are valid for *all* literals that enable escape sequences, but most are not *mandatory* for each type.
+
+#### Unicode
+Additionally, a special sequence exists for Unicode characters. This allows characters that are not part of the character set to be represented in the format. The syntax is as follows: `\...\`, where `...` must be a hexadecimal number representing a Unicode code point between `0` and `10FFFF`, for example: `'\21FF\'`. Leading zeros are allowed, and any number of digits is allowed. Hexcodes must be uppercase.
+
+Serializers are encouraged to emit unicode sequences with the minimal number of digits (i.e. `\B\` instead of `\000B\`).
 
 ## 2. Data Types
 Two categories of values are supported: primitives and collections. Additionally, values can be annotated with metadata.
@@ -32,18 +54,20 @@ Exactly one top-level value must be present in any string of serialized CSCD. Th
 ### 2.1. Metadata
 
 #### Type Labels
-Type labels can optionally placed before any value, and are written as a name between `()` parentheses. Type labels act as hints for deserializers, telling them what kind of object was originally serialized. The format has no knowledge about what a type name actually *means*.
+Type labels can optionally placed before any value, and are written as a name between `()` parentheses. Type labels act as hints for parsers, telling them what kind of object was originally serialized. The format has no knowledge about what a type name actually *means*, and it's up to the parser to properly match a type name with the appropriate type.
 
-Type names may contain all characters from the allowed character set, except for parentheses and whitespace characters. They are case-sensitive. Type labels may not be followed by an ID or by another type label - they must be followed by a value of some kind. They may be used inside collections.
+Type labels are case-sensitive and may not contain whitespace. Escape sequences are allowed; ASCII spaces, tabs, line feeds, `)` right parentheses and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed.
 
-Serializers are encouraged to only generate type labels in situations where it would otherwise be ambiguous what kind of type was serialized.
+Type labels may not be followed by an ID or by another type label - they must be followed by a value of some kind. They may be used inside collections.
+
+Serializers are encouraged to only generate type labels in situations where it would otherwise be ambiguous what kind of type was serialized, and to use shorthand aliasses wherever possible.
 
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(my_namespace.my_class<int>.my_struct<list<f64>>[])`.
 
 #### IDs
-IDs can optionally be placed before any value or type label, and are written as a name between `` ` `` backticks. Values that have been marked with an ID can be used in a reference literal (see the section on references below).
+IDs can optionally be placed before any concrete value or type label, and are written as a name between `` ` `` backticks. Values that have been marked with an ID can be used in a reference literal (see the section on references below). They may not be used on reference literals. IDs must be unique, and are always defined globally (in other words, there are no local scopes or namespaces).
 
-ID names may only consist of letters, numbers and `_` underscores. IDs must be unique, and are always defined globally (in other words, there are no local scopes or namespaces). They are case-sensitive. IDs must be followed by either a value or a type label.
+IDs are case-sensitive and may not contain whitespace. Escape sequences are allowed; ASCII spaces, tabs, line feeds, `` ` `` backticks and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed.
 
 Serializers are encouraged to only generate IDs in situations where a single object is referenced multiple times, or when cyclic references exist.
 
@@ -81,22 +105,16 @@ NaN values are encoded with the `nan` literal. NaN values must be lowercase.
 #### Characters
 Characters must be enclosed in `'` single-quotes. Only a single character may be stored inside. Empty character literals are not allowed.
 
-The following characters from the character set may not appear in a character literal: `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return).
-
-A few special character literals exist:
-- `'\''`: alternative way of writing `'''`.
-- `'\"'`: alternative way of writing `'"'`.
-- `'\\'`: alternative way of writing `'\'`.
-- `'\t'`: expresses a horizontal tab.
-- `'\n'`: expresses a newline.
-- `'\...\'`: expresses a unicode character. `...` must be a hexadecimal number of 1-8 digits, representing a Unicode code point between `0` and `10FFFF`. Leading zeros are allowed. Letters in hexcodes must be uppercase.
+Character literals may not contain the characters `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return). Escape sequences are allowed; tabs and line feeds must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed. Note that the `'` apostrophe does NOT require an escape sequence - though usage of it is allowed.
 
 Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\21FF\'`.
 
 #### Strings
-Strings must be enclosed in `"` double-quotes. Empty strings are allowed. The same character set is used as for character literals. The same special character rules apply as well, except that using unescaped double-quotes and backslashes is NOT allowed -  you MUST use `\"` and `\\` to represent them.
+Strings must be enclosed in `"` double-quotes. Empty strings are allowed.
 
-Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF\tarrow"`, `"C:\\path\\to\\file"`.
+String literals may not contain the characters `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return). Escape sequences are allowed; tabs, line feeds, `"` double-quotes and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed.
+
+Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF\\tarrow"`, `"C:\\path\\to\\file"`.
 
 #### Colors
 Colors literals must start with a `#` hex sign, followed by the hexadecimal representation of the color. Four conventions are available:
@@ -122,7 +140,7 @@ Each part represents a different unit:
 
 These prefixes are case-sensitive.
 
-Any positive integer number is allowed for each term, negative numbers are not (i.e. `Y5M-2D5`). Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms may come in any order. All unit prefixes must be followed by at least one digit - empty terms are not allowed (i.e. `YMD200`). A single unit cannot appear more than once (i.e. `Y2Y2`).
+Any positive integer number is allowed for each term, negative numbers are not (i.e. `Y5M-2D5`). Leading zeros are allowed. Terms that equal 0 can be omitted, and the different terms may come in any order. All unit prefixes must be followed by at least one digit - empty terms are not allowed (i.e. `YMD200`). A single unit cannot appear more than once (i.e. `Y2Y2`). ASCII spaces may be used between terms to increase readability (i.e. `Y2 M3 D1`).
 
 For example:
 - `Y1999M2D1h13` and `D1M2Y1999h13m0s0` are both valid representations of the date and time `February 1st 1999, 1 P.M.`.
@@ -141,14 +159,16 @@ The literal `$` is equivalent to `$0`; `-$` is equivalent to `-$0`.
 Decimal literals exist to preserve decimal scale information during intermediate parsing stages (such as node-tree representations) where target language types are not yet known. Float literals do not encode whether trailing zeros are significant, and so they may be truncated upon reserialization. Decimal literals ensure that the number of fractional digits remains intact.
 
 #### Bytes
-Bytes literals store arbitrary data in the RFC 4648 Base64 format. They must start with `b_`, followed by the Base64-encoded data. Base64 strings must have a length that is a multiple of 4; padding using `=` characters is **mandatory**. For example, the bytestring `00 02 04 07 09 0E 03` is represented by the bytes literal `b_AAIEBwkPAw==`. The literal `b_` (without any padding) represents a bytestring of length 0.
+Bytes literals store arbitrary data in the RFC 4648 Base64 format (using the alphabet `A`-`Z`, `a`-`z`, `0`-`9`, `+`, `/` and `=`). They must start with `b_`, followed by the Base64-encoded data. Base64 strings must have a length that is a multiple of 4; padding using `=` characters is **mandatory**. For example, the bytestring `00 02 04 07 09 0E 03` is represented by the bytes literal `b_AAIEBwkPAw==`. The literal `b_` (without any padding) represents a bytestring of length 0.
 
 #### References
 Reference values are used to link to values that have been marked with an ID. They must start with an `&` ampersand, followed by the name of an ID (example: `&my_id`). This ID must exist elsewhere in the data.
 
-There are no scope limitations on where in the data an ID can be referenced: IDs that are defined before the reference, after the reference or inside a different nested collection are all allowed. Cyclic references are also allowed.
+There are almost no scope limitations on where in the data an ID can be referenced: IDs that are defined before the reference, after the reference or inside a different nested collection are all allowed. Cyclic references are also allowed. The only restriction is that a reference may not be the top-level value.
 
 References can be annotated with a type labels, but may NOT be annotated with an ID. They may not appear as the top-level value, but may otherwise appear anywhere inside any collection literal.
+
+Reference literals may not contain whitespace. Escape sequences are allowed; ASCII spaces, tabs, line feeds, `,` commas, `:` colons, `]` right square brackets,  `}` right curly braces, `>` right angular brackets, and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set are allowed.
 
 ### 2.3. Collections
 
