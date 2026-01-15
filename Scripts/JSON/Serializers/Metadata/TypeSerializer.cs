@@ -17,7 +17,7 @@ namespace Rusty.Serialization.JSON
 
             if (node.Value == null)
                 throw new InvalidOperationException("node value was null.");
-            return '{' + $"\"type\":\"{name}\",\"value\":{scheme.Serialize(node.Value)}" + '}';
+            return '{' + $"\"type\":\"{name}\",\"value\":{scheme.Serialize(node.Value, scheme.PrettyPrint)}" + '}';
         }
 
         public override TypeNode Parse(string text, ISerializerScheme scheme)

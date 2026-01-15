@@ -19,11 +19,12 @@ namespace Rusty.Serialization.JSON
         private NullSerializer Null { get; } = new();
         private BoolSerializer Bool { get; } = new();
         private IntSerializer Int { get; } = new();
-        private RealSerializer Real { get;  } = new();
+        private FloatSerializer Float { get;  } = new();
         private NanSerializer Nan { get; } = new();
         private InfinitySerializer Infinity { get; } = new();
         private CharSerializer Char { get; } = new();
         private StringSerializer String { get; } = new();
+        private DecimalSerializer Decimal { get; } = new();
         private ColorSerializer Color { get; } = new();
         private TimeSerializer Time { get; } = new();
         private BytesSerializer Bytes { get; } = new();
@@ -54,7 +55,7 @@ namespace Rusty.Serialization.JSON
                 case IntNode @int:
                     return Int.Serialize(@int, this);
                 case FloatNode real:
-                    return Real.Serialize(real, this);
+                    return Float.Serialize(real, this);
                 case NanNode nan:
                     return Nan.Serialize(nan, this);
                 case InfinityNode inf:
@@ -63,6 +64,8 @@ namespace Rusty.Serialization.JSON
                     return Char.Serialize(chr, this);
                 case StringNode str:
                     return String.Serialize(str, this);
+                case DecimalNode dec:
+                    return Decimal.Serialize(dec, this);
                 case ColorNode color:
                     return Color.Serialize(color, this);
                 case TimeNode time:
@@ -112,11 +115,11 @@ namespace Rusty.Serialization.JSON
             if (serialized.StartsWith('"') && serialized.EndsWith('"'))
                 return String.Parse(serialized, this);
 
-            bool startNumeric = (serialized[0] >= '0' && serialized[0] <= '9') || serialized[0] == '-' || serialized[0] == '.';
+            bool startNumeric = (serialized[0] >= '0' && serialized[0] <= '9') || serialized[0] == '-';
             if (startNumeric)
             {
                 if (serialized.Contains('.'))
-                    return Real.Parse(serialized, this);
+                    return Float.Parse(serialized, this);
                 else
                     return Int.Parse(serialized, this);
             }

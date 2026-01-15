@@ -13,7 +13,7 @@ namespace Rusty.Serialization.JSON
         /* Public methods. */
         public override string Serialize(IdNode node, ISerializerScheme scheme)
         {
-            return '{' + $"\"id\":\"{node.Name}\",\"value\":{scheme.Serialize(node.Value)}" + '}';
+            return '{' + $"\"id\":\"{node.Name}\",\"value\":{scheme.Serialize(node.Value, scheme.PrettyPrint)}" + '}';
         }
 
         public override IdNode Parse(string text, ISerializerScheme scheme)

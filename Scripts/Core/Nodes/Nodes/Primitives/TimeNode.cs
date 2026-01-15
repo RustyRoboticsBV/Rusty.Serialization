@@ -48,6 +48,7 @@ namespace Rusty.Serialization.Core.Nodes
                 switch (obj.Members[i].Key)
                 {
                     case "negative":
+                    case "-":
                         if (value is BoolNode negative)
                             time.Negative = negative.Value;
                         break;

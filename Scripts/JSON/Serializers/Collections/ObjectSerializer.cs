@@ -24,7 +24,7 @@ namespace Rusty.Serialization.JSON
             StringBuilder sb = new();
             for (int i = 0; i < node.Members.Length; i++)
             {
-                string value = scheme.Serialize(node.Members[i].Value);
+                string value = scheme.Serialize(node.Members[i].Value, scheme.PrettyPrint);
 
                 if (prettyPrint)
                     sb.Append('\n' + tab);

@@ -4,12 +4,12 @@ using Rusty.Serialization.Core.Serializers;
 namespace Rusty.Serialization.JSON
 {
     /// <summary>
-    /// A JSON real serializer.
+    /// A JSON decimal serializer.
     /// </summary>
-    public class RealSerializer : Serializer<FloatNode>
+    public class DecimalSerializer : Serializer<DecimalNode>
     {
         /* Public methods. */
-        public override string Serialize(FloatNode node, ISerializerScheme scheme)
+        public override string Serialize(DecimalNode node, ISerializerScheme scheme)
         {
             // Parse raw decimal.
             string text = node.Value.ToString();
@@ -18,14 +18,14 @@ namespace Rusty.Serialization.JSON
             if (text.StartsWith('.'))
                 text = '0' + text;
             if (text.EndsWith('.'))
-                text = text + '0';
+                text = text.Substring(0, text.Length - 1);
 
             return text;
         }
 
-        public override FloatNode Parse(string text, ISerializerScheme scheme)
+        public override DecimalNode Parse(string text, ISerializerScheme scheme)
         {
-            return new FloatNode(text?.Trim());
+            return (DecimalNode)scheme.ParseAsNode(text);
         }
     }
 }
