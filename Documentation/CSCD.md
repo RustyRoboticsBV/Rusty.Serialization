@@ -93,9 +93,13 @@ Examples: `` `my_referenced_int`5``, `` `my_referenced_object`<a:0,b:"abc">``, `
 Null values MUST be encoded using the literal `null`. Null values MUST be lower-case. Null literals MAY be annotated with type labels like any other value.
 
 #### Booleans
+Boolean literals represent the value 'true' or 'false'.
+
 Boolean values MUST be encoded using one of the literals `true` or `false`. Boolean literals MUST be lowercase.
 
 #### Integers
+Integer literals represent integral numeric values.
+
 Integer literals MUST consist of one or more decimal digits (`0`-`9`). An optional leading `-` minus sign MAY be used to indicate a negative value. Leading zeros SHOULD be discarded by a parser.
 
 Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
@@ -105,9 +109,11 @@ Examples:
 - `-50` and `-00050` are both valid representations of the number `-50`.
 
 #### Floats
-Float literals MUST contain a decimal point. An optional leading `-` minus sign MAY be used to indicate a negative value. Aside from the decimal point and optional sign, float literals MUST consist only of decimal digits (`0`-`9`).
+Float literals represent real numeric values.
 
-The integer part and/or fractional part MAY be omitted if equal to zero. Consequently, the literal `.` MUST be interpreted as `0.0`, and `-.` MUST be interpreted as `-0.0.` Leading and trailing zeros SHOULD be discarded by a parser.
+The following format MUST be followed: `[-][integer].[fractional]`. Only the decimal point MUST be present to form a valid float literal. The integer and fractional part MUST consist of zero or more decimal digits (`0`-`9`). An optional leading `-` minus sign MAY be used to indicate a negative value.
+
+The integer part and/or fractional part MAY be omitted if equal to zero and MUST be interpreted as such by parsers. Consequently, the literal `.` MUST be interpreted as `0.0`, and `-.` MUST be interpreted as `-0.0.` Leading and trailing zeros SHOULD be discarded by a parser.
 
 Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
 
@@ -170,11 +176,11 @@ Each component has range and/or syntax rules that MUST be followed by a parser. 
 - Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 0 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value.
 - Month components MUST be valid integer values in the range `1`-`12`.
 - Day components MUST be valid integer values in the range `1`-`31`.
-- Hour components MUST be valid integer values in the range `0`-`24`. The hour `24` is only allowed if the minute and second both equal `0`. A parser SHOULD maintain the distinction between `0` and `24` if possible.
+- Hour components MUST be valid integer values in the range `0`-`24`. The hour `24` is MUST NOT be allowed unless the minute and second both equal `0`. A parser SHOULD maintain the distinction between `0` and `24` if possible.
 - Minute components MUST be valid integer values in the range `0`-`59`.
 - Second components MUST either be valid integer numbers or follow the format `[integer].[fractional]`. The integer part MUST be a valid between `0`-`60`. The value `60` is included to account for leap seconds; a parser SHOULD maintain the distinction between `0` and `60` if possible.
 
-Time literals MAY represent dates or times that do not correspond to valid calendar dates (e.g., `@1994-2-31` is allowed). A parser SHOULD validate calendar correctness, but this is not enforced by the format.
+A parser SHOULD validate calendar correctness (i.e. rejecting `@1994-2-31`), but this is not strictly enforced by the format.
 
 #### Bytes
 Bytes literals represent arbitrary data that cannot be efficiently expressed using another literal.
@@ -205,7 +211,7 @@ List elements MUST be interpreted in the order in which they appear.
 
 Lists MAY be empty, which MUST be represented by the literal `[]`.
 
-Example: `[]`, `[1,'2',"3"]`, `[['c', &ref], $1.00, (my_dict){}]`.
+Examples: `[]`, `[1,'2',"3"]`, `[['c', &ref], $1.00, (my_dict){}]`.
 
 #### Dictionaries
 Dictionaries are collections of key-value pairs.
