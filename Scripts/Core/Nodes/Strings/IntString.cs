@@ -6,22 +6,25 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A string that represents an integer number.
     /// </summary>
-    public readonly struct IntString : IEquatable<IntString>
+    public readonly struct IntString : IEquatable<IntString>, IEquatable<string>
     {
         /* Fields. */
         private readonly string value;
 
-        /* Constructors. */
-        private IntString(string value) => this.value = value;
-
         /* Public properties. */
         public bool IsNegative => value?.StartsWith('-') ?? false;
+        public bool IsZero => value == "0" || value == "-0";
+        public bool IsOne => value == "1";
+
+        /* Constructors. */
+        private IntString(string value) => this.value = value;
 
         /* Public methods. */
         public override string ToString() => value ?? "0";
         public override int GetHashCode() => value?.GetHashCode() ?? 0;
         public override bool Equals(object obj) => obj is IntString str && Equals(str);
         public bool Equals(IntString other) => value == other.value;
+        public bool Equals(string str) => value == str;
 
         /* Conversion operators. */
         public static implicit operator IntString(string value)
@@ -93,7 +96,22 @@ namespace Rusty.Serialization.Core.Nodes
             return new IntString(value.ToString(CultureInfo.InvariantCulture));
         }
 
+        public static implicit operator IntString(UnsignedIntString value)
+        {
+            return new IntString(value.ToString());
+        }
+
         public static implicit operator IntString(RealString value)
+        {
+            string str = value;
+            int dotIndex = str.IndexOf('.');
+            if (dotIndex == -1)
+                return str;
+            else
+                return str.Substring(0, dotIndex);
+        }
+
+        public static implicit operator IntString(UnsignedRealString value)
         {
             string str = value;
             int dotIndex = str.IndexOf('.');

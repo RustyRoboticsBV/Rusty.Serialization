@@ -4,6 +4,8 @@ using Rusty.Serialization.Core.Converters;
 using Rusty.Serialization.Core.Nodes;
 
 // TODO: handle sign (?) and nanoseconds.
+// TODO: update to new time literal.
+/*
 namespace Rusty.Serialization.DotNet
 {
     /// <summary>
@@ -29,5 +31,5 @@ namespace Rusty.Serialization.DotNet
             );
         }
     }
-}
+}*/
 #endif

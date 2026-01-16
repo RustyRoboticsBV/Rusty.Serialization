@@ -116,36 +116,33 @@ namespace Rusty.Serialization.CSCD
                 return Object.Parse(serialized, this);
 
             // Primitives.
-            if (serialized.StartsWith('&'))
-                return Ref.Parse(serialized, this);
             if (serialized.StartsWith("nu"))
                 return Null.Parse(serialized, this);
-            if (serialized.StartsWith('t') || serialized.StartsWith("fa"))
+
+            if (serialized.StartsWith('t') || serialized.StartsWith('f'))
                 return Bool.Parse(serialized, this);
-            if (serialized.StartsWith("na"))
-                return Nan.Parse(serialized, this);
+
             if (serialized.StartsWith('i') || serialized.StartsWith("-i"))
                 return Infinity.Parse(serialized, this);
+            if (serialized.StartsWith("na"))
+                return Nan.Parse(serialized, this);
+
             if (serialized.StartsWith('\'') && serialized.EndsWith('\''))
                 return Char.Parse(serialized, this);
             if (serialized.StartsWith('"') && serialized.EndsWith('"'))
                 return String.Parse(serialized, this);
-            if (serialized.StartsWith('#'))
-                return Color.Parse(serialized, this);
+
             if (serialized.StartsWith('$') || serialized.StartsWith("-$"))
                 return Decimal.Parse(serialized, this);
+            if (serialized.StartsWith('#'))
+                return Color.Parse(serialized, this);
             if (serialized.StartsWith("b_"))
                 return Bytes.Parse(serialized, this);
-            if (serialized.StartsWith('Y') || serialized.StartsWith("-Y")
-                || serialized.StartsWith('M') || serialized.StartsWith("-M")
-                || serialized.StartsWith('D') || serialized.StartsWith("-D")
-                || serialized.StartsWith('h') || serialized.StartsWith("-h")
-                || serialized.StartsWith('m') || serialized.StartsWith("-m")
-                || serialized.StartsWith('s') || serialized.StartsWith("-str")
-                || serialized.StartsWith('f') || serialized.StartsWith("-g"))
-            {
+            if (serialized.StartsWith('@') && serialized.EndsWith(';'))
                 return Time.Parse(serialized, this);
-            }
+
+            if (serialized.StartsWith('&'))
+                return Ref.Parse(serialized, this);
 
             bool startNumeric = (serialized[0] >= '0' && serialized[0] <= '9') || serialized[0] == '-' || serialized[0] == '.';
             if (startNumeric)

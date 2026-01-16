@@ -27,6 +27,19 @@ namespace Rusty.Serialization.Core.Nodes
             }
         }
 
+        /* Conversion operators. */
+        public static implicit operator ObjectNode(TimeNode node)
+        {
+            ObjectNode obj = new ObjectNode(6);
+            obj.Members[0] = new KeyValuePair<string, INode>("year", new IntNode(node.Year));
+            obj.Members[1] = new KeyValuePair<string, INode>("month", new IntNode(node.Month));
+            obj.Members[2] = new KeyValuePair<string, INode>("day", new IntNode(node.Day));
+            obj.Members[3] = new KeyValuePair<string, INode>("hour", new IntNode(node.Hour));
+            obj.Members[4] = new KeyValuePair<string, INode>("minute", new IntNode(node.Minute));
+            obj.Members[5] = new KeyValuePair<string, INode>("second", new IntNode(node.Second));
+            return obj;
+        }
+
         /* Public methods. */
         public override string ToString()
         {

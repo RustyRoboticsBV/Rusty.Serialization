@@ -15,32 +15,17 @@ namespace Rusty.Serialization.CSCD
         {
             // Build string.
             StringBuilder str = new();
-            if (node.Negative)
-                str.AppendLine("-");
-            if (node.Year != 0)
-                str.Append($"Y{node.Year}");
-            if (node.Month != 0)
-                str.Append($"M{node.Month}");
-            if (node.Day != 0)
-                str.Append($"D{node.Day}");
-            if (node.Hour != 0)
-                str.Append($"h{node.Hour}");
-            if (node.Minute != 0)
-                str.Append($"m{node.Minute}");
-            if (node.Second != 0)
-                str.Append($"s{node.Second}");
-            if (node.Millisecond != 0)
-                str.Append($"f{node.Millisecond}");
-            if (node.Nanosecond != 0)
-                str.Append($"n{node.Nanosecond}");
-            string serialized = str.ToString();
+            if (!(node.Year.IsOne && node.Month.IsOne && node.Day.IsOne))
+                str.Append($"{node.Year}-{node.Month}-{node.Day}");
+            if (!(node.Hour.IsZero && node.Minute.IsZero && node.Second.IsZero))
+            {
+                if (str.Length > 0)
+                    str.Append("_");
+                str.Append($"{node.Hour}:{node.Minute}:{(node.Second.IsIntegral ? (UnsignedIntString)node.Second : node.Second)}");
+            }
 
-            // Handle all zeros.
-            if (serialized.Length == 0)
-                return "Y0";
-
-            // Otherwise, return serialized value.
-            return serialized;
+            // Return serialized value.
+            return '@' + str.ToString() + ';';
         }
 
         public override TimeNode Parse(string text, ISerializerScheme scheme)
@@ -54,89 +39,35 @@ namespace Rusty.Serialization.CSCD
                 if (string.IsNullOrEmpty(trimmed))
                     throw new ArgumentException("Empty string.");
 
-                // Check negative sign.
-                bool negative = trimmed.StartsWith('-');
+                // Enforce ampersand prefix.
+                if (!trimmed.StartsWith('@'))
+                    throw new FormatException("Missing @ character.");
+                if (!trimmed.EndsWith(';'))
+                    throw new FormatException("Missing ; character.");
 
-                // Interpret terms.
-                ulong? year = null;
-                ulong? month = null;
-                ulong? day = null;
-                ulong? hour = null;
-                ulong? minute = null;
-                ulong? second = null;
-                ulong? millisecond = null;
-                ulong? nanosecond = null;
+                // Split on underscore.
+                string[] dateTimeSplit = trimmed.Substring(1, trimmed.Length - 2).Split('_');
 
-                for (int i = negative ? 1 : 0; i < trimmed.Length; i++)
+                if (dateTimeSplit.Length == 2)
                 {
-                    switch (trimmed[i])
+                    ParseDate(dateTimeSplit[0], out IntString year, out UnsignedIntString month, out UnsignedIntString day);
+                    ParseTime(dateTimeSplit[1], out UnsignedIntString hour, out UnsignedIntString minute, out RealString second);
+                    return new TimeNode(year, month, day, hour, minute, second);
+                }
+                else if (dateTimeSplit.Length == 1)
+                {
+                    if (dateTimeSplit[0].Contains('-'))
                     {
-                        case 'Y':
-                            if (year == null)
-                                year = Parse(trimmed, ref i);
-                            else
-                                throw new ArgumentException("Duplicate Y.");
-                            break;
-                        case 'M':
-                            if (month == null)
-                                month = Parse(trimmed, ref i);
-                            else
-                                throw new ArgumentException("Duplicate M.");
-                            break;
-                        case 'D':
-                            if (day == null)
-                                day = Parse(trimmed, ref i);
-                            else
-                                throw new ArgumentException("Duplicate D.");
-                            break;
-                        case 'h':
-                            if (hour == null)
-                                hour = Parse(trimmed, ref i);
-                            else
-                                throw new ArgumentException("Duplicate h.");
-                            break;
-                        case 'm':
-                            if (minute == null)
-                                minute = Parse(trimmed, ref i);
-                            else
-                                throw new ArgumentException("Duplicate m.");
-                            break;
-                        case 's':
-                            if (second == null)
-                                second = Parse(trimmed, ref i);
-                            else
-                                throw new ArgumentException("Duplicate s.");
-                            break;
-                        case 'f':
-                            if (millisecond == null)
-                                millisecond = Parse(trimmed, ref i);
-                            else
-                                throw new ArgumentException("Duplicate f.");
-                            break;
-                        case 'n':
-                            if (nanosecond == null)
-                                nanosecond = Parse(trimmed, ref i);
-                            else
-                                throw new ArgumentException("Duplicate n.");
-                            break;
-                        default:
-                            throw new ArgumentException($"Invalid term '{trimmed[i]}'.");
+                        ParseDate(dateTimeSplit[0], out IntString year, out UnsignedIntString month, out UnsignedIntString day);
+                        return new TimeNode(year, month, day, 0, 0, 0.0);
+                    }
+                    else if (dateTimeSplit[0].Contains(':'))
+                    {
+                        ParseTime(dateTimeSplit[0], out UnsignedIntString hour, out UnsignedIntString minute, out RealString second);
+                        return new TimeNode(1, 1, 1, hour, minute, second);
                     }
                 }
-
-                // Default missing values to 0.
-                year = year ?? 0;
-                month = month ?? 0;
-                day = day ?? 0;
-                hour = hour ?? 0;
-                minute = minute ?? 0;
-                second = second ?? 0;
-                millisecond = millisecond ?? 0;
-                nanosecond = nanosecond ?? 0;
-
-                // Create node.
-                return new(negative, year.Value, month.Value, day.Value,
-                    hour.Value, minute.Value, second.Value, millisecond.Value, nanosecond.Value);
+                throw new FormatException("Bad literal.");
             }
             catch (Exception ex)
             {
@@ -145,19 +76,28 @@ namespace Rusty.Serialization.CSCD
         }
 
         /* Private methods. */
-        private static ulong Parse(string str, ref int index)
+        private static void ParseDate(string str, out IntString year, out UnsignedIntString month, out UnsignedIntString day)
         {
-            int i;
-            for (i = index + 1; i < str.Length; i++)
-            {
-                if (str[i] < '0' || str[i] > '9')
-                    break;
-            }
-            if (i == index + 1)
-                throw new Exception($"Empty term '{str[index]}'.");
-            ulong value = ulong.Parse(str.Substring(index + 1, i - (index + 1)));
-            index = i - 1;
-            return value;
+            bool negativeYear = str.StartsWith('-');
+            if (negativeYear)
+                str = str.Substring(1);
+
+            string[] terms = str.Split('-');
+            if (terms.Length != 3)
+                throw new FormatException("Dates must have 3 terms.");
+            year = negativeYear ? '-' + terms[0] : terms[0];
+            month = terms[1];
+            day = terms[2];
+        }
+
+        private static void ParseTime(string str, out UnsignedIntString hour, out UnsignedIntString minute, out RealString second)
+        {
+            string[] terms = str.Split(':');
+            if (terms.Length != 3)
+                throw new FormatException("Times must have 3 terms.");
+            hour = terms[0];
+            minute = terms[1];
+            second = terms[2];
         }
     }
 }

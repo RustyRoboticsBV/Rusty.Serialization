@@ -12,22 +12,34 @@ namespace Rusty.Serialization.DotNet
         /* Protected method. */
         protected override TimeNode CreateNode(DateTime obj, CreateNodeContext context)
         {
-            return new(false,
-                (ulong)obj.Year, (ulong)obj.Month, (ulong)obj.Day,
-                (ulong)obj.Hour, (ulong)obj.Minute, (ulong)obj.Second,
-                (ulong)obj.Millisecond, (ulong)obj.Ticks % TimeSpan.TicksPerMillisecond * 100);
+            double seconds = obj.Second + (obj.Millisecond / 1000.0) + (obj.Ticks % TimeSpan.TicksPerMillisecond * 1e-7);
+
+            return new TimeNode(
+                obj.Year, obj.Month, obj.Day,
+                obj.Hour, obj.Minute, seconds
+            );
         }
 
         protected override DateTime CreateObject(TimeNode node, CreateObjectContext context)
         {
-            DateTime obj = new(
-                (int)node.Year, (int)node.Month, (int)node.Day,
-                (int)node.Hour, (int)node.Minute, (int)node.Second,
-                (int)node.Millisecond
-            );
+            // Convert fractional seconds into ticks.
+            double totalSeconds = double.Parse(node.Second);
+            int intSeconds = (int)Math.Floor(totalSeconds);
+            double fractionSeconds = totalSeconds - intSeconds;
+            long fractionTicks = (long)Math.Round(fractionSeconds * TimeSpan.TicksPerSecond);
 
-            long nanosecondTicks = (long)node.Nanosecond / 100;
-            return obj.AddTicks(nanosecondTicks);
+            // Create new object.
+            try
+            {
+                return new DateTime(
+                    int.Parse(node.Year), int.Parse(node.Month), int.Parse(node.Day),
+                    int.Parse(node.Hour), int.Parse(node.Minute), intSeconds
+                ).AddTicks(fractionTicks);
+            }
+            catch
+            {
+                throw new FormatException("Cannot create valid date/time from " + node);
+            }
         }
     }
 }

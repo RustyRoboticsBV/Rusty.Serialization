@@ -16,6 +16,20 @@ namespace Rusty.Serialization.Core.Nodes
 
         /* Public properties. */
         public bool IsNegative => value?.StartsWith('-') ?? false;
+        public bool IsIntegral => value != null && !value.Contains('.');
+        public bool IsFractional => value?.Contains('.') ?? false;
+        public bool IsZero
+        {
+            get
+            {
+                for (int i = 0; i < value.Length; i++)
+                {
+                    if (value[i] != '-' && value[i] != '0' && value[i] != '.')
+                        return false;
+                }
+                return true;
+            }
+        }
 
         /* Constructors. */
         private RealString(string value) => this.value = value;
@@ -42,7 +56,7 @@ namespace Rusty.Serialization.Core.Nodes
             {
                 i++;
                 if (i == length)
-                    throw new FormatException("Invalid real number string.");
+                    throw new FormatException($"Invalid real number string: {value}.");
             }
 
             while (i < length && value[i] >= '0' && value[i] <= '9')
@@ -53,7 +67,7 @@ namespace Rusty.Serialization.Core.Nodes
             if (i < length)
             {
                 if (value[i] != '.')
-                    throw new FormatException("Invalid real number string.");
+                    throw new FormatException($"Invalid real number string: {value}.");
 
                 i++;
 
@@ -64,13 +78,8 @@ namespace Rusty.Serialization.Core.Nodes
             }
 
             if (i != length)
-                throw new FormatException("Invalid real number string.");
+                throw new FormatException($"Invalid real number string: {value}.");
 
-            return new RealString(value);
-        }
-
-        public static implicit operator RealString(IntString value)
-        {
             return new RealString(value);
         }
 
@@ -91,6 +100,21 @@ namespace Rusty.Serialization.Core.Nodes
         public static implicit operator RealString(decimal value)
         {
             return new RealString(value.ToString(CultureInfo.InvariantCulture));
+        }
+
+        public static implicit operator RealString(IntString value)
+        {
+            return new RealString(value);
+        }
+
+        public static implicit operator RealString(UnsignedIntString value)
+        {
+            return new RealString(value);
+        }
+
+        public static implicit operator RealString(UnsignedRealString value)
+        {
+            return new RealString(value);
         }
 
         public static implicit operator string(RealString value) => value.ToString();
