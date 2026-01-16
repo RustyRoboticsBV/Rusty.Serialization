@@ -55,7 +55,7 @@ In addition to the table above, literals that allow for escape sequences MAY con
 - Unicode escape sequences MUST start and end with a `\` backslash.
 - `...` MUST consist of one or more uppercase hexadecimal digits (`0`-`9`, `A`-`F`).
 - The numeric value represented by `...` MUST be in the range `0x0` to `0x10FFFF`.
-- Parsers MUST correctly interpret escape sequences regardless of the number of digits, including any leading zeros.
+- Parsers MUST correctly interpret escape sequences regardless of the number of digits; leading zeroes SHOULD be discarded.
 - Parsers MUST replace each Unicode escape sequence with the corresponding Unicode code point when interpreting the literal content.
 
 Serializers SHOULD emit Unicode escape sequences using the minimal number of digits necessary to represent the code point. For example, `\B\` SHOULD be used instead of `\000B\`.
@@ -96,7 +96,7 @@ Null values MUST be encoded using the literal `null`. Null values MUST be lower-
 Boolean values MUST be encoded using one of the literals `true` or `false`. Boolean literals MUST be lowercase.
 
 #### Integers
-Integer literals MUST consist of one or more decimal digits (`0`-`9`). An optional leading `-` minus sign MAY be used to indicate a negative value. Leading zeros MAY appear and have no effect on the numeric value.
+Integer literals MUST consist of one or more decimal digits (`0`-`9`). An optional leading `-` minus sign MAY be used to indicate a negative value. Leading zeros SHOULD be discarded by a parser.
 
 Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
 
@@ -107,7 +107,7 @@ Examples:
 #### Floats
 Float literals MUST contain a decimal point. An optional leading `-` minus sign MAY be used to indicate a negative value. Aside from the decimal point and optional sign, float literals MUST consist only of decimal digits (`0`-`9`).
 
-The integer part and/or fractional part MAY be omitted if equal to zero. Consequently, the literal `.` MUST be interpreted as `0.0`, and `-.` MUST be interpreted as `-0.0.` Leading and trailing zeros MAY appear.
+The integer part and/or fractional part MAY be omitted if equal to zero. Consequently, the literal `.` MUST be interpreted as `0.0`, and `-.` MUST be interpreted as `-0.0.` Leading and trailing zeros SHOULD be discarded by a parser.
 
 Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
 
@@ -141,7 +141,7 @@ Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF\\tarrow"`
 #### Decimals
 Decimal literals represent numeric values with significant fractional digits. They are intended for any use-case where preserving the exact decimal representation is important, such as when expressing monetary values. Parsers MUST preserve all fractional digits, including trailing zeros.
 
-Decimal literals MUST start with `$` for positive values or `-$` for negative values, followed by an OPTIONAL integer value, an OPTIONAL `.` decimal point and an OPTIONAL fractional value. The integer and fractional values MUST consist of one or more decimal digits (`0`-`9`). Leading zeros MAY appear in the integer value, but MUST be discarded by the parser.
+Decimal literals MUST start with `$` for positive values or `-$` for negative values, followed by an OPTIONAL integer value, an OPTIONAL `.` decimal point and an OPTIONAL fractional value. The integer and fractional values MUST consist of one or more decimal digits (`0`-`9`). Leading zeros SHOULD be discarded by a parser.
 
 The integer part and/or fractional part MAY be omitted if equal to zero. The decimal point MAY be omitted if both the integer and fractional part are equal to zero. Consequently, `$0`, `$0.`, `$.0`, `$.` and `$` MUST all be interpreted as `$0.0`, and `-$0`, `-$0.`, `-$.0`, `-$.` and `-$` MUST all be interpreted as `-$0.0`.
 
@@ -159,33 +159,22 @@ Colors literals MUST start with a `#` number sign, followed by the hexadecimal r
 Color literals MUST use uppercase hexadecimal digits (`0`–`9`, `A`–`F`). Parsers MUST interpret the values according to the rules above.
 
 #### Times
-Time literals represent any kind of time data, and can be used to express both date/time values as well as timespans.
+Time literals represent absolute moments in time. They are intended to express date and/or time values, but do not represent durations or timespans.
 
-They MUST follow the syntax: `[-]Y...M...D...h...m...s...f...n...`.
-- Each `...` MUST be a positive integer value. Negative and fractional numbers MUST NOT be used.
-- A leading `-` minus sign MAY be used to indicate negative times - this MUST be interpreted as applying to the whole time literal, not an individual term.
-- The terms MUST be ordered from most significant to least significant.
+Time literals MUST start with an `@` at sign, followed by the date/time. Three notations are supported:
+- `@{year}-{month}-{day}_{hour}:{minute}:{second}`.
+- `@{year}-{month}-{day}`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
+- `@{hour}:{minute}:{second}`. The date component MUST be assumed by a parser to be `0:1:1` (i.e. `January 1st, 0 A.D.`), but MAY be discarded when deserializing to a time-only type.
 
-Each part represents a different unit:
-- `Y`: the number of years.
-- `M`: the number of months.
-- `D`: the number of days.
-- `h`: the number of hours.
-- `m`: the number of minutes.
-- `s`: the number of seconds.
-- `f`: the number of milliseconds.
-- `n`: the number of nanoseconds.
+Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
+- Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 0 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value.
+- Month components MUST be valid integer values in the range `1`-`12`.
+- Day components MUST be valid integer values in the range `1`-`31`.
+- Hour components MUST be valid integer values in the range `0`-`24`. The hour `24` is only allowed if the minute and second both equal `0`. A parser SHOULD maintain the distinction between `0` and `24` if possible.
+- Minute components MUST be valid integer values in the range `0`-`59`.
+- Second components MUST either be valid integer numbers or follow the format `[integer].[fractional]`. The integer part MUST be a valid between `0`-`60`. The value `60` is included to account for leap seconds; a parser SHOULD maintain the distinction between `0` and `60` if possible.
 
-These prefixes are case-sensitive.
-
-A term MAY be omitted if it equals zero as long as at least one term remains, and omitted terms MUST be parsed as zero. All unit prefixes MUST be followed by one or more decimal digits (`0`-`9`). Each unit MUST NOT appear more than once. ASCII spaces MAY be used between terms to increase readability (e.g. `Y2 M3 D1`).
-
-For example:
-- `Y1999M2D1h13` represents the date and time `February 1st 1999, 1 P.M.`.
-- `s1f100` represents the timespan `1 second and 100 milliseconds`.
-- `-Y100000` and `-Y100000 M0 D0 h0m0s0f0` are both valid representations the year `-100,000 B.C.`.
-
-Time literals MAY represent values that do not correspond to valid calendar dates or times of day. For example, `Y2005 M13 D200` is valid.
+Time literals MAY represent dates or times that do not correspond to valid calendar dates (e.g., `@1994-2-31` is allowed). A parser SHOULD validate calendar correctness, but this is not enforced by the format.
 
 #### Bytes
 Bytes literals represent arbitrary data that cannot be efficiently expressed using another literal.
