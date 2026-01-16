@@ -199,20 +199,22 @@ Color literals MUST use uppercase hexadecimal digits (`0`–`9`, `A`–`F`). Par
 #### Times
 Time literals represent absolute moments in time. They are intended to express date and/or time values, but do not represent durations or timespans.
 
-Time literals MUST start with an `@` at sign, followed by the date/time. Three notations are supported:
-- `@{year}-{month}-{day}_{hour}:{minute}:{second}`.
-- `@{year}-{month}-{day}`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
-- `@{hour}:{minute}:{second}`. The date component MUST be assumed by a parser to be `0:1:1` (i.e. `January 1st, 0 A.D.`), but MAY be discarded when deserializing to a time-only type.
+Time literals MUST start with an `@` at sign, followed by the date/time, and MUST end with a `;` semicolon. Three notations are supported:
+- `@{year}-{month}-{day}_{hour}:{minute}:{second};`.
+- `@{year}-{month}-{day};`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
+- `@{hour}:{minute}:{second};`. The date component MUST be assumed by a parser to be `1-1-1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
 
 Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
-- Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 0 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value.
+- Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 1 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value. The year `0` MUST NOT be used.
 - Month components MUST be valid integer values in the range `1`-`12`.
 - Day components MUST be valid integer values in the range `1`-`31`.
 - Hour components MUST be valid integer values in the range `0`-`24`. The hour `24` is MUST NOT be allowed unless the minute and second both equal `0`. A parser SHOULD maintain the distinction between `0` and `24` if possible.
 - Minute components MUST be valid integer values in the range `0`-`59`.
-- Second components MUST either be valid integer numbers or follow the format `[integer].[fractional]`. The integer part MUST be a valid between `0`-`60`. The value `60` is included to account for leap seconds; a parser SHOULD maintain the distinction between `0` and `60` if possible.
+- Second components MUST either be valid integer numbers or follow the format `[integer].[fractional]`. The integer part MUST be a valid between `0`-`60`. The value `60` is included to account for leap seconds; a parser SHOULD maintain the distinction between `0` and `60` if possible. Trailing zeros SHOULD be discarded by a parser.
 
-A parser SHOULD validate calendar correctness (i.e. rejecting `@1994-2-31`), but this is not strictly enforced by the format.
+A parser SHOULD validate calendar correctness (i.e. rejecting `@1994-2-31;`), but this is not strictly enforced by the format.
+
+Examples: `@2000-10-16_15:11:03.001;`, `@-500-2-7;`, `@07:30:00;`.
 
 #### Bytes
 Bytes literals represent arbitrary data that cannot be efficiently expressed using another literal.
