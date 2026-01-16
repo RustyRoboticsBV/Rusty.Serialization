@@ -70,7 +70,15 @@ A valid serialized CSCD string MUST contain exactly one top-level value. This to
 #### Type Labels
 Type labels MAY be placed before any value, and are written as a name between `()` parentheses. Type labels act as hints for parsers, indicating what kind of object was originally serialized. The format does not interpret or validate type names; it is up to the parser to map a type name to the corresponding runtime type.
 
-Type labels are case-sensitive and MUST NOT contain whitespace. Escape sequences MAY be used; ASCII spaces, tabs, line feeds, `)` right parentheses and `\` backslashes MUST be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set MAY appear unescaped.
+The following characters MUST NOT appear in type literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
+
+|Character      |Code point |   |Character      |Code point |
+|---------------|-----------|---|---------------|-----------|
+|Tab            |`0x09`     |   |Space          |`0x20`     |
+|Line feed      |`0x0A`     |   |`)`            |`0x29`     |
+|Carriage return|`0x0D`     |   |`\`            |`0x5C`     |
+
+All other characters from the character set MAY appear unescaped.
 
 Type labels MUST be immediately followed by a value. They MUST NOT be followed by an ID or another type label. Type labels MAY appear inside collections.
 
@@ -79,9 +87,17 @@ Serializers SHOULD only emit type labels when necessary to disambiguate the type
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(my_namespace.my_class<int>.my_struct<list<f64>>[])`.
 
 #### IDs
-IDs MAY be placed before any concrete value or type label, and are written as a name between `` ` `` backticks. Values annotated with an ID can be referenced elsewhere using a [reference literal](#references). IDs MUST NOT be applied to reference literals. IDs MUST be unique, and are always defined globally; there are no local scopes or namespaces.
+IDs MAY be placed before any concrete value or type label, and are written as a name between `` ` `` backticks. Values annotated with an ID can be referenced elsewhere using a [reference literal](#references). IDs MUST NOT be applied to reference literals. IDs MUST be globally unique and are case-sensitive.
 
-IDs are case-sensitive and MUST NOT contain whitespace. Escape sequences MAY be used; ASCII spaces, tabs, line feeds, `` ` `` backticks and `\` backslashes MUST be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set MAY appear unescaped.
+The following characters MUST NOT appear in ID literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
+
+|Character      |Code point |   |Character      |Code point |
+|---------------|-----------|---|---------------|-----------|
+|Tab            |`0x09`     |   |Space          |`0x20`     |
+|Line feed      |`0x0A`     |   |`\`            |`0x5C`     |
+|Carriage return|`0x0D`     |   |`` ` ``        |`0x60`     |
+
+All other characters from the character set MAY appear unescaped.
 
 Serializers SHOULD emit IDs only when a single object is referenced multiple times or when a cyclic reference exists.
 
@@ -129,18 +145,34 @@ Infinity values MUST be encoded using one of two literals: `inf` for positive in
 NaN values MUST be encoded using the literal nan. NaN literals MUST be lowercase.
 
 #### Characters
-Character literals MUST be enclosed in `'` single-quotes. A character literal MUST contain zero or one character. The empty character literal `''` MUST be interpreted as the character `0x00` (ASCII null).
+Character literals MUST be enclosed in `'` single-quotes. A character literal MUST contain zero or one character (escape sequences count as one character). The empty character literal `''` MUST be interpreted as the character `0x00` (ASCII null).
 
-Character literals MUST NOT contain the characters `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return). Escape sequences MAY be used; tabs and line feeds MUST be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set MAY appear unescaped.
+The following characters MUST NOT appear in character literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
 
-**Note**: the `'` apostrophe MAY appear unescaped inside a character literal.
+|Character      |Code point |   |Character      |Code point |
+|---------------|-----------|---|---------------|-----------|
+|Tab            |`0x09`     |   |Carriage return|`0x0D`     |
+|Line feed      |`0x0A`     |   |               |           |
+
+
+All other characters from the character set MAY appear unescaped, including the `'` apostrophe.
 
 Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\21FF\'`.
 
 #### Strings
 String literals MUST be enclosed in `"` double-quotes. Empty strings MAY appear.
 
-String literals MUST NOT contain the characters `0x09` (horizontal tab), `0x0A` (newline) and `0x0D` (carriage return). Escape sequences are allowed; tabs, line feeds, `"` double-quotes and `\` backslashes must be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set MAY appear unescaped.
+The following characters MUST NOT appear in string literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
+
+|Character      |Code point |   |Character      |Code point |
+|---------------|-----------|---|---------------|-----------|
+|Tab            |`0x09`     |   |`"`            |`0x22`     |
+|Line feed      |`0x0A`     |   |`\`            |`0x5C`     |
+|Carriage return|`0x0D`     |   |               |           |
+
+
+
+All other characters from the character set MAY appear unescaped.
 
 Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF\\tarrow"`, `"C:\\path\\to\\file"`.
 
@@ -196,7 +228,17 @@ Reference literals MUST NOT be used as the top-level value. Otherwise, they MAY 
 
 Reference literals MAY be annotated with type labels, but MUST NOT be annotated with IDs.
 
-Reference literals MUST NOT contain whitespace. Escape sequences MAY be used; ASCII spaces, tabs, line feeds, `,` commas, `:` colons, `]` right square brackets,  `}` right curly braces, `>` right angular brackets, and `\` backslashes MUST be escaped using their respective [escape sequences](#14-escape-sequences). All other characters from the character set MAY appear unescaped.
+The following characters MUST NOT appear in reference literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
+
+|Character      |Code point |   |Character      |Code point |
+|---------------|-----------|---|---------------|-----------|
+|Tab            |`0x09`     |   |`:`            |`0x3A`     |
+|Line feed      |`0x0A`     |   |`>`            |`0x3E`     |
+|Carriage return|`0x0D`     |   |`\`            |`0x5C`     |
+|Space          |`0x20`     |   |`]`            |`0x5D`     |
+|`,`            |`0x2C`     |   |`}`            |`0x7D`     |
+
+All other characters from the character set MAY appear unescaped.
 
 ### 2.3. Collections
 
