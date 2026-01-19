@@ -180,7 +180,7 @@ namespace Rusty.Serialization.CSCD.Lexer
         /// </summary>
         private static int ReadDelimitedLiteral(TextCursor cursor, char delimiter)
         {
-            for (int i = cursor.Position; i < cursor.Length; i++)
+            for (int i = cursor.Position + 1; i < cursor.Length; i++)
             {
                 char c = cursor[i];
 

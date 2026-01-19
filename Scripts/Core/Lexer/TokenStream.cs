@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Lexer
 {
-    // TODO: use a zero-allocation mechanism instead.
-
     /// <summary>
     /// A token stream.
     /// </summary>
