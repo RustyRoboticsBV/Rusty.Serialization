@@ -1,15 +1,112 @@
-﻿using Rusty.Serialization.Core.Lexer;
+﻿using System;
+using Rusty.Serialization.Core.Lexer;
 
 namespace Rusty.Serialization.Json.Lexer
 {
+    /// <summary>
+    /// A JSON lexer. It breaks a string of JSON into tokens.
+    /// Only minimal syntax analysis is done: strings must be closed.
+    /// </summary>
     public class Lexer : Core.Lexer.Lexer
     {
         /* Public methods. */
         public override bool GetNextToken(TextSpan text, out Token token)
         {
-            Advance();
-            token = MakeToken(0);
+            token = default;
+
+            // Do nothing if at end.
+            if (IsAtEnd(text))
+                return false;
+
+            // Skip leading whitespace.
+            SkipWhitespace(text);
+
+            // Do nothing if at end.
+            if (IsAtEnd(text))
+                return false;
+
+            char c = Current(text);
+
+            // Punctuation.
+            if (c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}')
+                token = MakeTokenAndAdvance(text, 1);
+
+            // String literal.
+            else if (c == '"')
+                token = MakeTokenAndAdvance(text, ReadStringToken(text));
+
+            // Bare value: number, boolean, null.
+            else
+                token = MakeTokenAndAdvance(text, ReadBareToken(text));
+
             return true;
-        } // TODO: replace placeholder code and implement.
+        }
+
+        /* Private methods. */
+        /// <summary>
+        /// Create a token and advance the cursor.
+        /// </summary>
+        private Token MakeTokenAndAdvance(TextSpan text, int length)
+        {
+            if (length < 0)
+                throw new FormatException($"Zero-length token at {Cursor}: {new string(text.Slice(Cursor))}.");
+
+            Token token = new Token(Cursor, length);
+            Advance(token.Length);
+            return token;
+        }
+
+        /// <summary>
+        /// Skip whitespaces at the cursor.
+        /// </summary>
+        private void SkipWhitespace(TextSpan text)
+        {
+            while (!IsAtEnd(text) && IsWhitespace(Current(text)))
+                Advance();
+        }
+
+        /// <summary>
+        /// Check if a character is a whitespace.
+        /// </summary>
+        private static bool IsWhitespace(char c) => c == ' ' || c == '\t' || c == '\n' || c == '\r';
+
+        /// <summary>
+        /// Read a string token and return the length. The cursor is NOT advanced.
+        /// </summary>
+        private int ReadStringToken(TextSpan text)
+        {
+            int start = Cursor + 1;
+
+            for (int i = start; i < text.Length; i++)
+            {
+                char c = text[i];
+
+                // Closing delimiter.
+                if (c == '"')
+                    return i - Cursor + 1;
+
+                // Escaped character.
+                if (c == '\\' && i + 1 < text.Length)
+                    i++;
+            }
+
+            throw new FormatException($"Unclosed string literal at {Cursor}: {new string(text.Slice(Cursor))}.");
+        }
+
+        /// <summary>
+        /// Read a bare token.
+        /// </summary>
+        private int ReadBareToken(TextSpan text)
+        {
+            for (int i = Cursor; i < text.Length; i++)
+            {
+                char c = text[i];
+
+                if (IsWhitespace(c) || c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}')
+                    return i - Cursor;
+            }
+
+            return text.Length - Cursor;
+        }
     }
 }

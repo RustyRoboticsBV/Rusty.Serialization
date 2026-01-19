@@ -55,7 +55,7 @@ namespace Rusty.Serialization.CSCD.Lexer
 
         /* Private methods. */
         /// <summary>
-        /// Create a token and advance the cursor. Also skips trailing whitespace.
+        /// Create a token and advance the cursor.
         /// </summary>
         private Token MakeTokenAndAdvance(TextSpan text, int length)
         {
