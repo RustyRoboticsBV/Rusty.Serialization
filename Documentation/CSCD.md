@@ -13,12 +13,25 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## 1. General Formatting
 ### 1.1 Character Set
-Serialized data MUST be expressed as a subset of the `ISO-8859-1` character set, and MUST only contain the following characters:
-- ASCII whitespace characters: `0x20` (space), `0x09` (horizontal tab), `0x0A` (line feed), and `0x0D` (carriage return).
-- ASCII letters, digits and punctuation: `0x21` (`!`) to `0x7E` (`~`).
-- Latin-1 Supplement letters, digits and punctuation: `0xA1` (`¡`) to `0xAC` (`¬`) and `0xAE` (`®`) to `0xFF` (`ÿ`).
+A valid string of CSCD MUST consist only of characters whose Unicode code points are in one of the following ranges:
 
-The character set defined in this section applies to the serialized textual representation of CSCD. Unicode [escape sequences](#unicode-escape-sequences) allow characters outside this set to be represented indirectly; after escape processing, values may contain arbitrary Unicode scalar values.
+|Range|Description|
+|-|-|
+|`0x09`|Horizontal tab|
+|`0x0A`|Line feed|
+|`0x0D`|Carriage return|
+|`0x20`|Space|
+|`0x21`-`0x7E`|`!` to `~`|
+|`0xA1`-`0xAC`|`¡` to `¬`|
+|`0xAE`-`0xFF`|`®` to `ÿ`|
+
+For clarity: this table excludes the characters `0x00`-`0x08`, `0x0B`-`0x1F`, `0x0E`-`0x0F` (most C0 control codes), `0x7F` (end), `0xAD` (soft hyphen), `0x80`-`0x9F` (C1 control codes) and `0xA0` (non-breaking space).
+
+Characters outside these ranges MUST not appear directly in serialized text. They MUST be represented using [escape sequences](#unicode-escape-sequences) instead.
+
+Parsers MUST reject input strings containing code points outside of the allowed character set before processing escape sequences. After escape processing, parsers MUST accept any valid Unicode code point allowed by the target platform.
+
+**Note**: The specification places no restrictions on how the text is stored or transmitted. Implementations may use any encoding (UTF-8, UTF-16, ISO-8859-1, etc.) as long as the serialized text, when interpreted as code points, obeys the rules above.
 
 ### 1.2 Structure
 A serialized CSCD string MUST contain exactly one top-level value, which forms the root of the serialized representation. Parsers MUST interpret this top-level value as the entry point for deserialization. The top-level value MAY be annotated with metadata. Values that support nested content MAY contain nested values.
@@ -40,25 +53,28 @@ The following escape sequences MUST be recognized by parsers if they appear in a
 
 |Character  |Code point |Escape sequence|       |Character  |Code point |Escape sequence|
 |-----------|-----------|---------------|-------|-----------|-----------|---------------|
-|tab        |`0x09`     |`\t`           |       |`/`        |`0x2F`     |`\/`           |
-|line feed  |`0x0A`     |`\n`           |       |`:`        |`0x3A`     |`\:`           |
-|space      |`0x20`     |`\s`           |       |`>`        |`0x3E`     |`\>`           |
+|tab        |`0x09`     |`\t`           |       |`(`        |`0x28`     |`\(`           |
+|line feed  |`0x0A`     |`\n`           |       |`)`        |`0x29`     |`\)`           |
+|space      |`0x20`     |`\s`           |       |`;`        |`0x3B`     |`\;`           |
 |`"`        |`0x22`     |`\"`           |       |`\`        |`0x5C`     |`\\`           |
-|`'`        |`0x27`     |`\'`           |       |`]`        |`0x5D`     |`\]`           |
-|`)`        |`0x29`     |`\)`           |       |`` ` ``    |`0x60`     |`` \` ``       |
-|`,`        |`0x2C`     |`\,`           |       |`}`        |`0x7D`     |`\}`           |
+|`'`        |`0x27`     |`\'`           |       |`` ` ``    |`0x60`     |`` \` ``       |
 
 Parsers MUST recognize and correctly interpret all escape sequences from this table when they appear in a literal that allows escape sequences. Invalid escape sequences MUST be rejected by a parser.
 
 #### Unicode Escape Sequences
-In addition to the table above, literals that allow for escape sequences MAY contain Unicode escape sequences of the form `\...\`.
-- Unicode escape sequences MUST start and end with a `\` backslash.
+In addition to the table above, literals that allow for escape sequences MAY contain Unicode escape sequences of the form `\...;`.
+- Unicode escape sequences MUST start with a `\` backslash and end with a `;` semicolon.
 - `...` MUST consist of one or more uppercase hexadecimal digits (`0`-`9`, `A`-`F`).
 - The numeric value represented by `...` MUST be in the range `0x0` to `0x10FFFF`.
-- Parsers MUST correctly interpret escape sequences regardless of the number of digits; leading zeroes SHOULD be discarded.
+- Leading zeroes SHOULD be discarded.
 - Parsers MUST replace each Unicode escape sequence with the corresponding Unicode code point when interpreting the literal content.
 
-Serializers SHOULD emit Unicode escape sequences using the minimal number of digits necessary to represent the code point. For example, `\B\` SHOULD be used instead of `\000B\`.
+Serializers SHOULD emit Unicode escape sequences using the minimal number of digits necessary to represent the code point. For example, `\B;` SHOULD be used instead of `\000B;`.
+
+### 1.6 Invalid Input
+A parser MUST detect and handle invalid input.Upon encountering invalid input, a parser SHOULD reject the input and terminate deserialization.
+
+The exact mechanism for rejection (e.g., exception, error code, logging) is implementation-defined, and parsers MUST NOT continue deserialization in a way that could produce an undefined or inconsistent object graph.
 
 ## 2. Data Types
 CSCD supports two categories of value literals: primitives and collections. Additionally, values MAY be annotated with metadata.
@@ -74,9 +90,9 @@ The following characters MUST NOT appear in type literals and MUST instead be re
 
 |Character      |Code point |   |Character      |Code point |
 |---------------|-----------|---|---------------|-----------|
-|Tab            |`0x09`     |   |Space          |`0x20`     |
-|Line feed      |`0x0A`     |   |`)`            |`0x29`     |
-|Carriage return|`0x0D`     |   |`\`            |`0x5C`     |
+|Tab            |`0x09`     |   |`)`            |`0x29`     |
+|Line feed      |`0x0A`     |   |`\`            |`0x5C`     |
+|Carriage return|`0x0D`     |   |               |           |
 
 All other characters from the character set MAY appear unescaped.
 
@@ -93,9 +109,9 @@ The following characters MUST NOT appear in ID literals and MUST instead be repr
 
 |Character      |Code point |   |Character      |Code point |
 |---------------|-----------|---|---------------|-----------|
-|Tab            |`0x09`     |   |Space          |`0x20`     |
-|Line feed      |`0x0A`     |   |`\`            |`0x5C`     |
-|Carriage return|`0x0D`     |   |`` ` ``        |`0x60`     |
+|Tab            |`0x09`     |   |`\`            |`0x5C`     |
+|Line feed      |`0x0A`     |   |`` ` ``        |`0x60`     |
+|Carriage return|`0x0D`     |   |               |           |
 
 All other characters from the character set MAY appear unescaped.
 
@@ -154,10 +170,9 @@ The following characters MUST NOT appear in character literals and MUST instead 
 |Tab            |`0x09`     |   |Carriage return|`0x0D`     |
 |Line feed      |`0x0A`     |   |               |           |
 
-
 All other characters from the character set MAY appear unescaped, including the `'` apostrophe.
 
-Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\21FF\'`.
+Examples: `'A'`, `'ç'`, `'''`, `'\n'`, `'\21FF;'`.
 
 #### Strings
 String literals MUST be enclosed in `"` double-quotes. Empty strings MAY appear.
@@ -170,11 +185,9 @@ The following characters MUST NOT appear in string literals and MUST instead be 
 |Line feed      |`0x0A`     |   |`\`            |`0x5C`     |
 |Carriage return|`0x0D`     |   |               |           |
 
-
-
 All other characters from the character set MAY appear unescaped.
 
-Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF\\tarrow"`, `"C:\\path\\to\\file"`.
+Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF;\tarrow"`, `"C:\\path\\to\\file"`.
 
 #### Decimals
 Decimal literals represent numeric values with significant fractional digits. They are intended for any use-case where preserving the exact decimal representation is important, such as when expressing monetary values. Parsers MUST preserve all fractional digits, including trailing zeros.
@@ -199,10 +212,11 @@ Color literals MUST use uppercase hexadecimal digits (`0`–`9`, `A`–`F`). Par
 #### Times
 Time literals represent absolute moments in time. They are intended to express date and/or time values, but do not represent durations or timespans.
 
-Time literals MUST start with an `@` at sign, followed by the date/time, and MUST end with a `;` semicolon. Three notations are supported:
+Time literals MUST start with an `@` at sign, followed by the date/time, and MUST end with a `;` semicolon. Four notations are supported:
 - `@{year}-{month}-{day}_{hour}:{minute}:{second};`.
 - `@{year}-{month}-{day};`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
 - `@{hour}:{minute}:{second};`. The date component MUST be assumed by a parser to be `1-1-1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
+- `@;`. MUST be interpreted as a the literal `@1-1-1_0:0:0;` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
 
 Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
 - Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 1 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value. The year `0` MUST NOT be used.
@@ -224,7 +238,7 @@ They MUST start with the prefix `b_`, followed by the data encoded in [RFC 4648 
 An empty byte literal (representing zero bytes) MUST be written as `b_`.
 
 #### References
-Reference values are used to link to values that have been marked with an ID. They MUST start with an `&` ampersand, followed by the name of an ID (example: `&my_id`). This ID MUST exist elsewhere in the data.
+Reference values are used to link to values that have been marked with an ID. They MUST start with an `&` ampersand, followed by the name of an ID (example: `&my_id;`). This ID MUST exist elsewhere in the data.
 
 Reference literals MUST NOT be used as the top-level value. Otherwise, they MAY appear anywhere inside collection literals. Cyclic references are allowed. References can appear before or after the definition of the ID they refer to, and may cross nested collections.
 
@@ -234,11 +248,9 @@ The following characters MUST NOT appear in reference literals and MUST instead 
 
 |Character      |Code point |   |Character      |Code point |
 |---------------|-----------|---|---------------|-----------|
-|Tab            |`0x09`     |   |`:`            |`0x3A`     |
-|Line feed      |`0x0A`     |   |`>`            |`0x3E`     |
-|Carriage return|`0x0D`     |   |`\`            |`0x5C`     |
-|Space          |`0x20`     |   |`]`            |`0x5D`     |
-|`,`            |`0x2C`     |   |`}`            |`0x7D`     |
+|Tab            |`0x09`     |   |`;`            |`0x3B`     |
+|Line feed      |`0x0A`     |   |`\`            |`0x5C`     |
+|Carriage return|`0x0D`     |   |               |           |
 
 All other characters from the character set MAY appear unescaped.
 
@@ -249,7 +261,7 @@ Lists represent ordered collections of zero or more values.
 
 A list MUST be enclosed in `[]` square brackets. Element values MUST be separated by `,` commas. Whitespace MAY appear before or after any element value or comma; parsers MUST ignore this whitespace.
 
-Lists MAY contain values of any type, including other collections, and MAY mix multiple types of elements. Each list element MAY be annotated with metadata. Trailing commas MUST NOT appear (e.g. `[1,2,3,]` is invalid).
+Lists MAY contain values of any type, including other collections, and MAY mix multiple types of elements. Each list element MAY be annotated with metadata. Trailing commas MUST NOT appear in lists (e.g. `[1,2,3,]` is invalid).
 
 List elements MUST be interpreted in the order in which they appear.
 
@@ -264,19 +276,35 @@ A dictionary MUST be enclosed in `{}` curly braces. Key-value pairs MUST be sepa
 
 Keys and values MAY be of any type, including other collections. Dictionaries MAY mix multiple types of keys and values. To maximize generality, keys are NOT required to be unique by the format. Dictionary keys and values MAY be annotated with metadata. Trailing commas MUST NOT appear in a dictionary (e.g., `{"a":1,}` is invalid).
 
-Empty dictionaries MUST be represented by the literal `{}`.
+Dictionaries MAY be empty, which MUST be represented by the literal `{}`.
 
 Example: `{"a":"abc",'b':"def",["c"]:"hij"}`.
 
 #### Objects
-Object literals represent a collection of identifier-value pairs. Objects function similarly to dictionaries but provide a more compact and stricter syntax intended for serializing struct-like data.
+Object literals represent a collection of name-value pairs. Objects function similarly to dictionaries but provide a more compact and stricter syntax intended for serializing struct-like data.
 
-An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by , commas, and identifiers and values MUST be separated by a : colon. Whitespace MAY appear before or after any identifier, value, colon, or comma; parsers MUST ignore this whitespace. Trailing commas are NOT allowed (e.g., `<id:0,>` is invalid).
+An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by `,` commas, and names and values MUST be separated by a `:` colon. Trailing commas are MUST NOT appear in an object (e.g., `<id:0,>` is invalid).
 
-Identifiers MUST be unquoted strings that only consist of ASCII letters (`A`-`Z`, `a`-`z`), digits (`0`-`9`) and `_` underscores, and MUST NOT start with a number. They are not considered to be values, and MUST NOT be annotated with metadata. Identifiers are case-sensitive. Just like with dictionary keys, identifiers are NOT required to be unique.
+Objects MAY contain values of any type, including other collections. Member values MAY be annotated with type labels or IDs.
 
-Objects MAY contain values of any type, including other collections. Object member values MAY be annotated with type labels or IDs.
-
-Empty objects MUST be represented by the literal `<>`.
+Objects MAY be empty, which MUST be represented by the literal `<>`.
 
 Example: `<my_int:0,my_float:0.0,my_char:'A'>`.
+
+##### Object Member Names
+Member names MUST be plain, unquoted character sequences. They are case sensitive.
+
+The following characters MUST NOT appear in reference literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
+
+|Character      |Code point |   |Character      |Code point |
+|---------------|-----------|---|---------------|-----------|
+|Tab            |`0x09`     |   |`:`            |`0x3A`     |
+|Line feed      |`0x0A`     |   |`>`            |`0x3E`     |
+|Carriage return|`0x0D`     |   |`\`            |`0x5C`     |
+|Space          |`0x20`     |   |`]`            |`0x5D`     |
+|`,`            |`0x2C`     |   |`}`            |`0x7D`     |
+|`/`            |`0x2F`     |   |               |           |
+
+All other characters from the character set MAY appear unescaped. However, the target language MAY not necessarily be able to handle each character that the format allows.
+
+Member names are not considered to be values, and MUST NOT be annotated with metadata. Just like with dictionary keys, member names are NOT required to be unique.
