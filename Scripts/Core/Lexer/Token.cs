@@ -31,6 +31,8 @@ namespace Rusty.Serialization.Core.Lexer
         }
 
         /* Public methods. */
+        public string ToString(ReadOnlySpan<char> source) => $"{Type}={new string(GetText(source))}";
+
         public ReadOnlySpan<char> GetText(ReadOnlySpan<char> source) => source.Slice(Start, Length);
     }
 }

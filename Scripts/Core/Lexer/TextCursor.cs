@@ -37,6 +37,9 @@ namespace Rusty.Serialization.Core.Lexer
         /// </summary>
         public int Length => text.Length;
 
+        /* Indexers. */
+        public char this[int index] => text[index];
+
         /* Constructors. */
         public TextCursor(ReadOnlySpan<char> text)
         {
@@ -88,18 +91,62 @@ namespace Rusty.Serialization.Core.Lexer
         /// </summary>
         public ReadOnlySpan<char> Slice(int start, int length) => text.Slice(start, length);
 
+
+        /// <summary>
+        /// Check if the text starting at the cursor begins with some character.
+        /// </summary>
+        public bool StartsWith(char chr) => !IsAtEnd && Current == chr;
         /// <summary>
         /// Check if the text starting at the cursor begins with some substring.
         /// </summary>
-        public bool StartsWith(ReadOnlySpan<char> substr)
+        public bool StartsWith(ReadOnlySpan<char> substr) => StartsWith(text.Slice(Position), substr);
+        /// <summary>
+        /// Check if the text starting at some index begins with some substring.
+        /// </summary>
+        public bool StartsWith(int index, ReadOnlySpan<char> substr) => StartsWith(text.Slice(index), substr);
+
+        /// <summary>
+        /// Find the first index of a character from first the character after the current position onwards.
+        /// </summary>
+        public int FirstIndexOf(char chr) => FirstIndexOf(Position + 1, chr);
+        /// <summary>
+        /// Find the first index of a character from some index onwards.
+        /// </summary>
+        public int FirstIndexOf(int index, char chr)
         {
-            if (Position + substr.Length > text.Length)
+            for (int i = index; i < text.Length; i++)
+            {
+                if (text[i] == chr)
+                    return i;
+            }
+            return -1;
+        }
+        /// <summary>
+        /// Find the first index of a substring from first the character after the current position onwards.
+        /// </summary>
+        public int FirstIndexOf(string substr) => FirstIndexOf(Position + 1, substr);
+        /// <summary>
+        /// Find the first index of a substring from some index onwards.
+        /// </summary>
+        public int FirstIndexOf(int index, string substr)
+        {
+            for (int i = index; i < text.Length; i++)
+            {
+                if (StartsWith(text.Slice(i), substr))
+                    return i;
+            }
+            return -1;
+        }
+
+        /* Private methods. */
+        private static bool StartsWith(ReadOnlySpan<char> str, ReadOnlySpan<char> substr)
+        {
+            if (str.Length < substr.Length)
                 return false;
 
-            ReadOnlySpan<char> source = Slice(substr.Length);
             for (int i = 0; i < substr.Length; i++)
             {
-                if (source[i] != substr[i])
+                if (str[i] != substr[i])
                     return false;
             }
 
