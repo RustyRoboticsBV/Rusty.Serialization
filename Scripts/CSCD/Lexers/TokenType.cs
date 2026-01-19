@@ -7,7 +7,7 @@
     {
         NONE,
 
-        Literal,
+        Word,
 
         Comma,
         Colon,

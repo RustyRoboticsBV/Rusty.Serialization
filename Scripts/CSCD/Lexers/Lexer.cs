@@ -4,215 +4,146 @@ using Rusty.Serialization.Core.Lexer;
 namespace Rusty.Serialization.CSCD.Lexer
 {
     /// <summary>
-    /// A CSCD lexer.
+    /// A CSCD lexer. It breaks a string of CSCD down into interpunction and "word" tokens.
+    /// Word tokens can be any primitive value literal or metadata literal.
+    /// The lexer only does limited syntactic analyis, throwing only when delimited tokens are not closed properly.
+    /// No semantic analysis is performed.
     /// </summary>
-    public class Lexer : Lexer<TokenType>
+    public class Lexer : Core.Lexer.Lexer
     {
         /* Public methods. */
-        public override bool GetNextToken(ref TextCursor cursor, out Token<TokenType> token)
+        public override bool GetNextToken(TextSpan text, out Token token)
         {
-            int length = 0;
             token = default;
 
             // Do nothing if at end.
-            if (cursor.IsAtEnd)
+            if (IsAtEnd(text))
                 return false;
-
-            char c = cursor.Current;
 
             // Skip leading whitespace.
-            SkipWhitespace(ref cursor);
+            SkipWhitespace(text);
 
             // Do nothing if at end.
-            if (cursor.IsAtEnd)
+            if (IsAtEnd(text))
                 return false;
 
-            // Type.
-            else if (cursor.StartsWith('('))
-            {
-                length = ReadDelimitedLiteral(cursor, ')');
-                token = MakeToken(TokenType.Literal, cursor, length);
-                cursor.Advance(token.Length);
-                SkipWhitespace(ref cursor);
-                return true;
-            }
-
-            // ID.
-            else if (cursor.StartsWith('`'))
-            {
-                length = ReadDelimitedLiteral(cursor, '`');
-                token = MakeToken(TokenType.Literal, cursor, length);
-                cursor.Advance(token.Length);
-                SkipWhitespace(ref cursor);
-                return true;
-            }
-
-            // Char.
-            else if (cursor.StartsWith('\''))
-            {
-                length = ReadDelimitedLiteral(cursor, '\'');
-                token = MakeToken(TokenType.Literal, cursor, length);
-                cursor.Advance(token.Length);
-                SkipWhitespace(ref cursor);
-                return true;
-            }
-
-            // String.
-            else if (cursor.StartsWith('"'))
-            {
-                length = ReadDelimitedLiteral(cursor, '"');
-                token = MakeToken(TokenType.Literal, cursor, length);
-                cursor.Advance(token.Length);
-                SkipWhitespace(ref cursor);
-                return true;
-            }
-
-            // Ref.
-            else if (cursor.StartsWith('&'))
-            {
-                length = ReadDelimitedLiteral(cursor, ';');
-                token = MakeToken(TokenType.Literal, cursor, length);
-                cursor.Advance(token.Length);
-                SkipWhitespace(ref cursor);
-                return true;
-            }
+            // Start parsing next token.
+            char c = Current(text);
 
             // Interpunction.
-            switch (c)
-            {
-                case ',':
-                    token = MakeToken(TokenType.Comma, cursor, 1);
-                    cursor.Advance(token.Length);
-                    SkipWhitespace(ref cursor);
-                    return true;
-                case ':':
-                    token = MakeToken(TokenType.Colon, cursor, 1);
-                    cursor.Advance(token.Length);
-                    SkipWhitespace(ref cursor);
-                    return true;
-                case '[':
-                    token = MakeToken(TokenType.ListStart, cursor, 1);
-                    cursor.Advance(token.Length);
-                    SkipWhitespace(ref cursor);
-                    return true;
-                case ']':
-                    token = MakeToken(TokenType.ListEnd, cursor, 1);
-                    cursor.Advance(token.Length);
-                    SkipWhitespace(ref cursor);
-                    return true;
-                case '{':
-                    token = MakeToken(TokenType.DictStart, cursor, 1);
-                    cursor.Advance(token.Length);
-                    SkipWhitespace(ref cursor);
-                    return true;
-                case '}':
-                    token = MakeToken(TokenType.DictEnd, cursor, 1);
-                    cursor.Advance(token.Length);
-                    SkipWhitespace(ref cursor);
-                    return true;
-                case '<':
-                    token = MakeToken(TokenType.ObjectStart, cursor, 1);
-                    cursor.Advance(token.Length);
-                    SkipWhitespace(ref cursor);
-                    return true;
-                case '>':
-                    token = MakeToken(TokenType.ObjectEnd, cursor, 1);
-                    cursor.Advance(token.Length);
-                    SkipWhitespace(ref cursor);
-                    return true;
-            }
+            if (c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>')
+                token = MakeTokenAndAdvance(text, 1);
 
-            // Other literal types.
-            length = ReadBareLiteral(cursor);
-            token = MakeToken(TokenType.Literal, cursor, length);
-            cursor.Advance(token.Length);
-            SkipWhitespace(ref cursor);
+            // Delimited word tokens.
+            else if (c == '(')
+                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, ')'));
+            else if (c == '`')
+                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, '`'));
+            else if (c == '\'')
+                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, '\''));
+            else if (c == '"')
+                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, '"'));
+            else if (c == '&')
+                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, ';'));
+
+            // Bare word tokens.
+            else
+                token = MakeTokenAndAdvance(text, ReadBareToken(text));
+
             return true;
         }
 
         /* Private methods. */
         /// <summary>
+        /// Create a token and advance the cursor. Also skips trailing whitespace.
+        /// </summary>
+        private Token MakeTokenAndAdvance(TextSpan text, int length)
+        {
+            if (length < 0)
+                throw new FormatException($"Zero-length token at {Cursor}: {new string(text.Slice(Cursor))}.");
+
+            Token token = MakeToken(length);
+            Advance(token.Length);
+            return token;
+        }
+
+        /// <summary>
         /// Check if the a substring starts with a whitespace at some index. Comments are considered to be whitespace.
         /// </summary>
-        private static bool StartsWithWhitespace(ref TextCursor cursor, int index)
+        private static bool StartsWithWhitespace(TextSpan text, int index)
         {
-            char c = cursor[index];
-            return c == ' ' || c == '\t' || c == '\n' || c == '\r' || cursor.StartsWith(index, "/*");
+            if (index >= text.Length)
+                return false;
+
+            char c = text[index];
+            return c == ' ' || c == '\t' || c == '\n' || c == '\r' || text.StartsWith(index, "/*");
         }
 
         /// <summary>
         /// Skip whitespace. Comments are considered to be whitespace.
         /// </summary>
-        private static void SkipWhitespace(ref TextCursor cursor)
+        private void SkipWhitespace(TextSpan text)
         {
-            if (cursor.IsAtEnd)
+            if (IsAtEnd(text))
                 return;
 
-            char c = cursor.Current;
-
-            while (StartsWithWhitespace(ref cursor, cursor.Position))
+            while (StartsWithWhitespace(text, Cursor))
             {
                 // Comment.
-                if (cursor.StartsWith("/*"))
+                if (text.StartsWith(Cursor, "/*"))
                 {
-                    int end = cursor.FirstIndexOf(cursor.Position + 2, "*/");
+                    int end = text.FirstIndexOf(Cursor + 2, "*/");
                     if (end == -1)
-                        throw new FormatException($"Unclosed comment at {cursor.Position}: {new string(cursor.Slice())}.");
+                        throw new FormatException($"Unclosed comment at {Cursor}: {new string(text.Slice(Cursor))}.");
 
-                    cursor.Advance(end - cursor.Position + 2);
+                    Advance(end - Cursor + 2);
                 }
 
                 // Whitespace.
                 else
-                    cursor.Advance();
+                    Advance();
 
                 // Stop on end.
-                if (cursor.IsAtEnd)
+                if (IsAtEnd(text))
                     return;
-
-                // Get next character.
-                c = cursor.Current;
             }
         }
 
         /// <summary>
-        /// Read a delimited literal.
+        /// Read a delimited token and return the length. The cursor is NOT advanced.
         /// </summary>
-        private static int ReadDelimitedLiteral(TextCursor cursor, char delimiter)
+        private int ReadDelimitedToken(TextSpan text, char delimiter)
         {
-            for (int i = cursor.Position + 1; i < cursor.Length; i++)
+            for (int i = Cursor + 1; i < text.Length; i++)
             {
-                char c = cursor[i];
+                char c = text[i];
 
                 // Closing delimiter.
                 if (c == delimiter)
-                    return i - cursor.Position + 1;
+                    return i - Cursor + 1;
 
                 // Escaped character.
-                else if (i + 1 < cursor.Length && c == '\\')
+                else if (i + 1 < text.Length && c == '\\')
                     i++;
             }
 
-            throw new FormatException($"Unclosed delimited literal at {cursor.Position}: {new string(cursor.Slice())}.");
+            throw new FormatException($"Unclosed delimited token at {Cursor}: {new string(text.Slice(Cursor))}.");
         }
 
         /// <summary>
-        /// Read a bare literal.
+        /// Read a bare token and return the length. The cursor is NOT advanced.
         /// </summary>
-        private static int ReadBareLiteral(TextCursor cursor)
+        private int ReadBareToken(TextSpan text)
         {
-            for (int i = cursor.Position; i < cursor.Length; i++)
+            for (int i = Cursor; i < text.Length; i++)
             {
                 // Check for trailing whitespace.
-                if (StartsWithWhitespace(ref cursor, i))
-                    return i - cursor.Position;
+                if (StartsWithWhitespace(text, i))
+                    return i - Cursor;
 
                 // Check for interpunction.
-                switch (cursor[i])
+                switch (text[i])
                 {
-                    case '\t':
-                    case '\n':
-                    case '\r':
                     case ',':
                     case ':':
                     case '[':
@@ -221,10 +152,10 @@ namespace Rusty.Serialization.CSCD.Lexer
                     case '}':
                     case '<':
                     case '>':
-                        return i - cursor.Position;
+                        return i - Cursor;
                 }
             }
-            return cursor.Length - cursor.Position;
+            return text.Length - Cursor;
         }
     }
 }

@@ -3,142 +3,110 @@
 namespace Rusty.Serialization.Core.Lexer
 {
     /// <summary>
-    /// A lexer text cursor. It's essentially a wrapper around a char ReadOnlySpan with some useful methods.
+    /// A sequence of text.
     /// </summary>
-    public ref struct TextCursor
+    public ref struct TextSpan
     {
         /* Fields. */
-        private readonly ReadOnlySpan<char> text;
+        private readonly ReadOnlySpan<char> span;
 
         /* Public properties. */
         /// <summary>
-        /// The cursor's current position in the text.
-        /// </summary>
-        public int Position { get; private set; }
-
-        /// <summary>
-        /// Whether or not the cursor has finished lexing all characters in the text.
-        /// </summary>
-        public bool IsAtEnd => Position >= text.Length;
-        /// <summary>
-        /// Whether or not at least one more character is left in the text after the current cursor position.
-        /// </summary>
-        public bool CanPeek => Position + 1 < text.Length;
-        /// <summary>
-        /// Get the character from the text at the cursor position.
-        /// </summary>
-        public char Current => text[Position];
-        /// <summary>
-        /// Get the next character from the text after the cursor position.
-        /// </summary>
-        public char Next => text[Position + 1];
-        /// <summary>
         /// Get the length of the text.
         /// </summary>
-        public int Length => text.Length;
+        public int Length => span.Length;
 
         /* Indexers. */
-        public char this[int index] => text[index];
+        public char this[int index] => span[index];
 
         /* Constructors. */
-        public TextCursor(ReadOnlySpan<char> text)
+        public TextSpan(ReadOnlySpan<char> span)
         {
-            this.text = text;
-            Position = 0;
+            this.span = span;
         }
+
+        /* Casting operators. */
+        public static implicit operator TextSpan(ReadOnlySpan<char> span) => new TextSpan(span);
+        public static implicit operator ReadOnlySpan<char>(TextSpan textSpan) => textSpan.span;
 
         /* Public methods. */
         /// <summary>
-        /// Advance the cursor position with one character.
+        /// Get a slice of the text, starting at some character and continuing to the end.
         /// </summary>
-        public void Advance() => Advance(1);
+        public TextSpan Slice(int start) => new TextSpan(span.Slice(start));
         /// <summary>
-        /// Advance the cursor position with some amount of characters.
+        /// Get a slice of the text, starting at some character and using some substring length.
         /// </summary>
-        public void Advance(int count)
+        public TextSpan Slice(int start, int length) => new TextSpan(span.Slice(start, length));
+
+        /// <summary>
+        /// Check if the text begins with some character.
+        /// </summary>
+        public bool StartsWith(char chr) => StartsWith(0, chr);
+        /// <summary>
+        /// Check if the text slice starting at some index begins with some substring.
+        /// </summary>
+        public bool StartsWith(int index, char chr) => Length > index && span[index] == chr;
+        /// <summary>
+        /// Check if the text begins with some substring.
+        /// </summary>
+        public bool StartsWith(ReadOnlySpan<char> substr) => StartsWith(span, substr);
+        /// <summary>
+        /// Check if the text slice starting at some index begins with some character.
+        /// </summary>
+        public bool StartsWith(int index, ReadOnlySpan<char> substr) => StartsWith(span.Slice(index), substr);
+
+        /// <summary>
+        /// Check if the text ends with some character.
+        /// </summary>
+        public bool EndsWith(char chr) => Length > 0 && span[Length - 1] == chr;
+        /// <summary>
+        /// Check if the text ends with some substring.
+        /// </summary>
+        public bool EndsWith(ReadOnlySpan<char> substr)
         {
-            if (count < 0)
-                throw new ArgumentException("Cannot advance with a negative number of characters.");
-            Position += count;
+            if (substr.Length > span.Length)
+                return false;
+
+            int start = span.Length - substr.Length;
+            for (int i = 0; i < substr.Length; i++)
+            {
+                if (span[start + i] != substr[i])
+                    return false;
+            }
+
+            return true;
         }
 
-        /// <summary>
-        /// Advance the cursor position with some amount of characters. Does not advance past the beginning or end of the string.
-        /// </summary>
-        public void AdvanceClamped() => AdvanceClamped(1);
-        /// <summary>
-        /// Advance the cursor position with some amount of characters. Does not advance past the beginning or end of the string.
-        /// </summary>
-        public void AdvanceClamped(int count)
-        {
-            Advance(count);
-            if (Position < 0)
-                Position = 0;
-            if (Position > Length)
-                Position = Length;
-        }
-
-        /// <summary>
-        /// Get a substring of the text, starting at the current cursor position and continuing to the end of the text.
-        /// </summary>
-        public ReadOnlySpan<char> Slice() => Slice(Position, Length - Position);
-        /// <summary>
-        /// Get a substring of the text, starting at the current cursor position using some substring length.
-        /// </summary>
-        public ReadOnlySpan<char> Slice(int length) => Slice(Position, length);
-        /// <summary>
-        /// Get a substring of the text, starting at some character and using some substring length..
-        /// </summary>
-        public ReadOnlySpan<char> Slice(int start, int length) => text.Slice(start, length);
-
-
-        /// <summary>
-        /// Check if the text starting at the cursor begins with some character.
-        /// </summary>
-        public bool StartsWith(char chr) => !IsAtEnd && Current == chr;
-        /// <summary>
-        /// Check if the text starting at the cursor begins with some substring.
-        /// </summary>
-        public bool StartsWith(ReadOnlySpan<char> substr) => StartsWith(text.Slice(Position), substr);
-        /// <summary>
-        /// Check if the text starting at some index begins with some substring.
-        /// </summary>
-        public bool StartsWith(int index, ReadOnlySpan<char> substr) => StartsWith(text.Slice(index), substr);
-
-        /// <summary>
-        /// Find the first index of a character from first the character after the current position onwards.
-        /// </summary>
-        public int FirstIndexOf(char chr) => FirstIndexOf(Position + 1, chr);
         /// <summary>
         /// Find the first index of a character from some index onwards.
         /// </summary>
         public int FirstIndexOf(int index, char chr)
         {
-            for (int i = index; i < text.Length; i++)
+            for (int i = index; i < span.Length; i++)
             {
-                if (text[i] == chr)
+                if (span[i] == chr)
                     return i;
             }
             return -1;
         }
         /// <summary>
-        /// Find the first index of a substring from first the character after the current position onwards.
-        /// </summary>
-        public int FirstIndexOf(string substr) => FirstIndexOf(Position + 1, substr);
-        /// <summary>
         /// Find the first index of a substring from some index onwards.
         /// </summary>
         public int FirstIndexOf(int index, string substr)
         {
-            for (int i = index; i < text.Length; i++)
+            for (int i = index; i < span.Length; i++)
             {
-                if (StartsWith(text.Slice(i), substr))
+                if (StartsWith(span.Slice(i), substr))
                     return i;
             }
             return -1;
         }
 
         /* Private methods. */
+        /// <summary>
+        /// Check if a span starts with the contents of some other span.
+        /// </summary>
         private static bool StartsWith(ReadOnlySpan<char> str, ReadOnlySpan<char> substr)
         {
             if (str.Length < substr.Length)

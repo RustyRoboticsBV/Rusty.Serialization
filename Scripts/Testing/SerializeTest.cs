@@ -52,8 +52,11 @@ namespace Rusty.Serialization.Testing
                 if (t.Format == Format.Cscd)
                 {
                     CSCD.Lexer.Lexer lexer = new();
-                    Core.Lexer.TokenStream<CSCD.Lexer.TokenType> stream = new(t.Serialized, lexer);
-                    Debug.Log(stream.ToString(t.Serialized));
+                    Core.Lexer.TextSpan span = t.Serialized.AsSpan();
+                    while (lexer.GetNextToken(span, out Core.Lexer.Token token))
+                    {
+                        Debug.Log(new string(token.ExtractFrom(span)));
+                    }
                 }
                 if (t.Serialized == "")
                     Debug.LogError("Serialized text field is empty!! This is not a serializer bug!");

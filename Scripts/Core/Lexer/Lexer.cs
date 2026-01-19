@@ -5,26 +5,50 @@ namespace Rusty.Serialization.Core.Lexer
     /// <summary>
     /// A base class for lexers.
     /// </summary>
-    public abstract class Lexer<TokenType>
-        where TokenType : unmanaged
+    public abstract class Lexer
     {
+        /* Public properties. */
+        /// <summary>
+        /// The current cursor position of the lexer in the source text.
+        /// </summary>
+        public int Cursor { get; protected set; }
+
         /* Public methods. */
         /// <summary>
-        /// Create a lexer cursor.
+        /// Reset the cursor back to 0.
         /// </summary>
-        public static TextCursor GetCursor(ReadOnlySpan<char> text) => new TextCursor(text);
-
+        public void ResetCursor() => Cursor = 0;
         /// <summary>
-        /// Lexes the next token. Throws if there is no token left.
+        /// Lexes the next token. Returns false if there are no tokens left.
         /// </summary>
-        public abstract bool GetNextToken(ref TextCursor cursor, out Token<TokenType> token);
+        public abstract bool GetNextToken(TextSpan text, out Token token);
 
         /* Protected methods. */
-        protected static bool IsAsciiWhitespace(char c) => c <= 0x7F && char.IsWhiteSpace(c);
-        protected static bool IsAsciiLetter(char c) => c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z';
-        protected static bool IsAsciiDigit(char c) => c >= '0' && c <= '9';
+        /// <summary>
+        /// Check if the cursor is at the end of the text.
+        /// </summary>
+        protected bool IsAtEnd(TextSpan text) => Cursor >= text.Length;
+        /// <summary>
+        /// Get the character at the cursor position.
+        /// </summary>
+        protected char Current(TextSpan text) => text[Cursor];
+        /// <summary>
+        /// Get the character at the position after the cursor.
+        /// </summary>
+        protected char Next(TextSpan text) => text[Cursor + 1];
+        /// <summary>
+        /// Advance the cursor.
+        /// </summary>
+        protected void Advance(int count = 1)
+        {
+            if (count < 0)
+                throw new ArgumentException("Cannot advance the cursor with negative counts.");
+            Cursor += count;
+        }
 
-        protected Token<TokenType> MakeToken(TokenType type, TextCursor cursor, int length)
-            => new Token<TokenType>(type, cursor.Position, length);
+        /// <summary>
+        /// Create a token starting at the current cursor position.
+        /// </summary>
+        protected Token MakeToken(int length) => new Token(Cursor, length);
     }
 }

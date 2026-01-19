@@ -2,13 +2,13 @@
 
 namespace Rusty.Serialization.Json.Lexer
 {
-    public class Lexer : Lexer<TokenType>
+    public class Lexer : Core.Lexer.Lexer
     {
         /* Public methods. */
-        public override bool GetNextToken(ref TextCursor cursor, out Token<TokenType> token)
+        public override bool GetNextToken(TextSpan text, out Token token)
         {
-            cursor.Advance();
-            token = new Token<TokenType>(default, cursor.Position - 1, 1);
+            Advance();
+            token = MakeToken(0);
             return true;
         } // TODO: replace placeholder code and implement.
     }

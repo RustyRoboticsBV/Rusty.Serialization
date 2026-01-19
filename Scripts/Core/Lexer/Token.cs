@@ -5,14 +5,9 @@ namespace Rusty.Serialization.Core.Lexer
     /// <summary>
     /// A lexer token.
     /// </summary>
-    public readonly struct Token<T>
-        where T : unmanaged
+    public readonly struct Token
     {
         /* Fields. */
-        /// <summary>
-        /// The type of token.
-        /// </summary>
-        public readonly T Type;
         /// <summary>
         /// The start character index of the token in the source data.
         /// </summary>
@@ -23,16 +18,16 @@ namespace Rusty.Serialization.Core.Lexer
         public readonly int Length;
 
         /* Constructors. */
-        public Token(T type, int start, int length)
+        public Token(int start, int length)
         {
-            Type = type;
             Start = start;
             Length = length;
         }
 
         /* Public methods. */
-        public string ToString(ReadOnlySpan<char> source) => $"{Type}={new string(GetText(source))}";
-
-        public ReadOnlySpan<char> GetText(ReadOnlySpan<char> source) => source.Slice(Start, Length);
+        /// <summary>
+        /// Extract the token from a source text.
+        /// </summary>
+        public ReadOnlySpan<char> ExtractFrom(ReadOnlySpan<char> source) => source.Slice(Start, Length);
     }
 }
