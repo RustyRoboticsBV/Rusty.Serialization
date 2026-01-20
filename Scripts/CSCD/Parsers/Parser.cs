@@ -133,42 +133,27 @@ namespace Rusty.Serialization.CSCD.Parsing
 
                 while (true)
                 {
-                    if (!lexer.GetNextToken(text, out Token next))
-                        throw new FormatException("Unclosed list.");
-                    TextSpan nextText = next.Text;
+                    Token next = ExpectToken(text, ref lexer, "Unclosed list.");
 
                     // List closer.
-                    if (nextText.Equals(']'))
+                    if (next.Text.Equals(']'))
                         return list;
 
                     // First element.
                     if (list.Count == 0)
                     {
-                        if (nextText.Equals(','))
-                            throw new FormatException("Leading commas are not allowed.");
+                        DisallowEqual(next, ',', "Lists may not contain leading commas.");
                         list.AddValue(ParseToken(text, next, ref lexer));
                     }
 
                     // Second element onwards.
                     else
                     {
-                        // Elements must be separated with a comma.
-                        if (!nextText.Equals(','))
-                            throw new FormatException("List elements must be separated with commas.");
+                        MustEqual(next, ',', "List elements must be separated with commas.");
 
-                        // There must be a value token.
-                        if (!lexer.GetNextToken(text, out Token valueToken))
-                            throw new FormatException("Unclosed list.");
-
-                        // May not close a list after a comma.
-                        if (valueToken.Text.Equals(']'))
-                            throw new FormatException("Trailing commas are not allowed.");
-
-                        // May not be another comma.
-                        if (valueToken.Text.Equals(','))
-                            throw new FormatException("Consecutive commas are not allowed.");
-
-                        // Parse element.
+                        Token valueToken = ExpectToken(text, ref lexer, "Unclosed list.");
+                        DisallowEqual(valueToken, ']', "Lists may not contain trailing commas.");
+                        DisallowEqual(valueToken, ',', "Lists may not contain consecutive commas.");
                         list.AddValue(ParseToken(text, valueToken, ref lexer));
                     }
                 }
@@ -181,65 +166,42 @@ namespace Rusty.Serialization.CSCD.Parsing
 
                 while (true)
                 {
-                    if (!lexer.GetNextToken(text, out Token next))
-                        throw new FormatException("Unclosed dictionary.");
-
-                    TextSpan nextText = next.Text;
+                    Token next = ExpectToken(text, ref lexer, "Unclosed dictionary.");
+                    Token key, value;
 
                     // Dictionary closer.
-                    if (nextText.Equals('}'))
+                    if (next.Text.Equals('}'))
                         return dict;
 
                     // First pair.
                     if (dict.Count == 0)
                     {
-                        if (nextText.Equals(','))
-                            throw new FormatException("Leading commas are not allowed in dictionaries.");
+                        DisallowEqual(next, ',', "Dictionaries may not contain leading commas.");
+                        key = next;
 
-                        // Parse key.
-                        INode key = ParseToken(text, next, ref lexer);
+                        ExpectSymbol(text, ref lexer, ':', "Dictionary keys must be followed by a colon.");
 
-                        // Expect colon.
-                        if (!lexer.GetNextToken(text, out Token colon) || !colon.Text.Equals(':'))
-                            throw new FormatException("Dictionary keys must be followed by a colon.");
-
-                        // Parse value.
-                        if (!lexer.GetNextToken(text, out Token valueToken))
-                            throw new FormatException("Unclosed dictionary.");
-
-                        INode value = ParseToken(text, valueToken, ref lexer);
-                        dict.AddPair(key, value);
+                        value = ExpectToken(text, ref lexer, "Unclosed dictionary.");
                     }
-                    // Subsequent pairs.
+
+                    // Second pair onwards.
                     else
                     {
-                        // Must be comma.
-                        if (!nextText.Equals(','))
-                            throw new FormatException("Dictionary entries must be separated with commas.");
+                        MustEqual(next, ',', "Dictionary entries must be separated with commas.");
 
-                        // Expect key.
-                        if (!lexer.GetNextToken(text, out Token keyToken))
-                            throw new FormatException("Unclosed dictionary.");
+                        key = ExpectToken(text, ref lexer, "Unclosed dictionary.");
+                        DisallowEqual(key, '}', "Trailing commas are not allowed in dictionaries.");
+                        DisallowEqual(key, ',', "Consecutive commas are not allowed in dictionaries.");
 
-                        if (keyToken.Text.Equals('}'))
-                            throw new FormatException("Trailing commas are not allowed in dictionaries.");
+                        ExpectSymbol(text, ref lexer, ':', "Dictionary keys must be followed by a colon.");
 
-                        if (keyToken.Text.Equals(','))
-                            throw new FormatException("Consecutive commas are not allowed in dictionaries.");
-
-                        INode key = ParseToken(text, keyToken, ref lexer);
-
-                        // Expect colon.
-                        if (!lexer.GetNextToken(text, out Token colon) || !colon.Text.Equals(':'))
-                            throw new FormatException("Dictionary keys must be followed by a colon.");
-
-                        // Expect value.
-                        if (!lexer.GetNextToken(text, out Token valueToken))
-                            throw new FormatException("Unclosed dictionary.");
-
-                        INode value = ParseToken(text, valueToken, ref lexer);
-                        dict.AddPair(key, value);
+                        value = ExpectToken(text, ref lexer, "Unclosed dictionary.");
                     }
+
+                    // Parse key & value token.
+                    INode keyNode = ParseToken(text, key, ref lexer);
+                    INode valueNode = ParseToken(text, value, ref lexer);
+                    dict.AddPair(keyNode, valueNode);
                 }
             }
 
@@ -251,65 +213,40 @@ namespace Rusty.Serialization.CSCD.Parsing
 
                 while (true)
                 {
-                    if (!lexer.GetNextToken(text, out Token next))
-                        throw new FormatException("Unclosed object.");
-
-                    TextSpan nextText = next.Text;
+                    Token next = ExpectToken(text, ref lexer, "Unclosed object.");
+                    string key;
+                    Token value;
 
                     // Object closer.
-                    if (nextText.Equals('>'))
+                    if (next.Text.Equals('>'))
                         return obj;
 
                     // First field.
                     if (obj.Count == 0)
                     {
-                        if (nextText.Equals(','))
-                            throw new FormatException("Leading commas are not allowed in objects.");
+                        DisallowEqual(next, ',', "Objects may not contain leading commas.");
 
-                        // Key is literal token text (NOT parsed).
-                        string key = new string(nextText);
+                        key = next.ToString();
 
-                        // Expect colon.
-                        if (!lexer.GetNextToken(text, out Token colon) || !colon.Text.Equals(':'))
-                            throw new FormatException("Object fields must be in the form <key:value>.");
+                        ExpectSymbol(text, ref lexer, ':', "Object member names must be followed by a colon.");
 
-                        // Expect value.
-                        if (!lexer.GetNextToken(text, out Token valueToken))
-                            throw new FormatException("Unclosed object.");
-
-                        INode value = ParseToken(text, valueToken, ref lexer);
-                        obj.AddMember(key, value);
+                        value = ExpectToken(text, ref lexer, "Unclosed object.");
                     }
                     // Subsequent fields.
                     else
                     {
-                        // Must be comma.
-                        if (!nextText.Equals(','))
-                            throw new FormatException("Object fields must be separated with commas.");
+                        MustEqual(next, ',', "Object members must be separated with commas.");
 
-                        // Expect key.
-                        if (!lexer.GetNextToken(text, out Token keyToken))
-                            throw new FormatException("Unclosed object.");
+                        key = ExpectToken(text, ref lexer, "Unclosed object.").ToString();
 
-                        if (keyToken.Text.Equals('>'))
-                            throw new FormatException("Trailing commas are not allowed in objects.");
+                        ExpectSymbol(text, ref lexer, ':', "Object keys must be followed by a colon.");
 
-                        if (keyToken.Text.Equals(','))
-                            throw new FormatException("Consecutive commas are not allowed in objects.");
-
-                        string key = keyToken.ToString();
-
-                        // Expect colon.
-                        if (!lexer.GetNextToken(text, out Token colon) || !colon.Text.Equals(':'))
-                            throw new FormatException("Object fields must be in the form <key:value>.");
-
-                        // Expect value.
-                        if (!lexer.GetNextToken(text, out Token valueToken))
-                            throw new FormatException("Unclosed object.");
-
-                        INode value = ParseToken(text, valueToken, ref lexer);
-                        obj.AddMember(key, value);
+                        value = ExpectToken(text, ref lexer, "Unclosed object.");
                     }
+
+                    // Parse value token.
+                    INode valueNode = ParseToken(text, value, ref lexer);
+                    obj.AddMember(key, valueNode);
                 }
             }
 
@@ -322,6 +259,57 @@ namespace Rusty.Serialization.CSCD.Parsing
         private enum NumericType { NaN, Int, Real };
 
         /* Private methods. */
+        #region TOKEN_VALIDATION
+        /// <summary>
+        /// Throw a format exception related to some token.
+        /// </summary>
+        private static void TokenError(Token token, string errorMessage)
+        {
+            if (token.IsEOF)
+                throw new FormatException($"At EOF: {errorMessage}");
+            throw new FormatException($"At {token.Lexeme.Start} ({token.ToString()}): {errorMessage}");
+        }
+
+        /// <summary>
+        /// Try to get a token and throw a format exception on failure.
+        /// </summary>
+        private static Token ExpectToken(TextSpan text, ref Lexer lexer, string errorMessage)
+        {
+            if (!lexer.GetNextToken(text, out Token token))
+                TokenError(Token.EOF, errorMessage);
+            return token;
+        }
+
+        /// <summary>
+        /// Try to get a token, check if it equals a symbol and throw a format exception on failure.
+        /// </summary>
+        private static Token ExpectSymbol(TextSpan text, ref Lexer lexer, char symbol, string errorMessage)
+        {
+            Token token = ExpectToken(text, ref lexer, errorMessage);
+            if (!token.Text.Equals(symbol))
+                TokenError(token, errorMessage);
+            return token;
+        }
+
+        /// <summary>
+        /// Throw a format exception if a token does not equal some character.
+        /// </summary>
+        private static void MustEqual(Token token, char chr, string errorMessage)
+        {
+            if (!token.Text.Equals(chr))
+                TokenError(token, errorMessage);
+        }
+
+        /// <summary>
+        /// Throw a format exception if a token equals some character.
+        /// </summary>
+        private static void DisallowEqual(Token token, char chr, string errorMessage)
+        {
+            if (token.Text.Equals(chr))
+                throw new FormatException($"At {token.Lexeme.Start} ({token.ToString()}): {errorMessage}");
+        }
+        #endregion
+
         /// <summary>
         /// Parse a textual literal (without the delimiters).
         /// </summary>

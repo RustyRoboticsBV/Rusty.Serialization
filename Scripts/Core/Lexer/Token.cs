@@ -15,6 +15,16 @@
         /// </summary>
         public readonly Lexeme Lexeme;
 
+        /* Public properties. */
+        /// <summary>
+        /// Construct an EOF token.
+        /// </summary>
+        public static Token EOF => new Token();
+
+        /// <summary>
+        /// Whether or not this token represents the end of the file.
+        /// </summary>
+        public bool IsEOF => Lexeme.Start >= Text.Length;
         /// <summary>
         /// The length the token in the source text.
         /// </summary>
