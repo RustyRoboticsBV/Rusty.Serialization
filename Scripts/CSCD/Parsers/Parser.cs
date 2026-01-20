@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Rusty.Serialization.Core.Lexing;
 using Rusty.Serialization.Core.Nodes;
@@ -11,11 +12,12 @@ namespace Rusty.Serialization.CSCD.Parsing
     /// </summary>
     public class Parser : Core.Parsing.Parser
     {
-        private readonly static char[] idEscapes = new char[] { '\t', '\n', ')', '\\' };
-        private readonly static char[] typeEscapes = new char[] { '\t', '\n', '`', '\\' };
-        private readonly static char[] charEscapes = new char[] { '\t', '\n' };
-        private readonly static char[] strEscapes = new char[] { '\t', '\n', '"', '\\' };
-        private readonly static char[] refEscapes = new char[] { '\t', '\n', ';', '\\' };
+        /* Fields. */
+        private readonly static HashSet<char> idEscapes = new HashSet<char> { '\t', '\n', ')', '\\' };
+        private readonly static HashSet<char> typeEscapes = new HashSet<char> { '\t', '\n', '`', '\\' };
+        private readonly static HashSet<char> charEscapes = new HashSet<char> { '\t', '\n' };
+        private readonly static HashSet<char> strEscapes = new HashSet<char> { '\t', '\n', '"', '\\' };
+        private readonly static HashSet<char> refEscapes = new HashSet<char> { '\t', '\n', ';', '\\' };
 
         /* Public methods. */
         public override NodeTree Parse(TextSpan text, Lexer lexer)
@@ -69,10 +71,10 @@ namespace Rusty.Serialization.CSCD.Parsing
                 return new BoolNode(false);
 
             // Numerics (int and float).
-            int numeric = GetNumeric(token.Text);
-            if (numeric == 0)
+            NumericType numeric = GetNumericType(token.Text);
+            if (numeric == NumericType.Int)
                 return new IntNode(new string(token.Text));
-            if (numeric == 1)
+            if (numeric == NumericType.Real)
                 return new FloatNode(ProcessReal(token.Text));
 
             // NaN.
@@ -316,10 +318,14 @@ namespace Rusty.Serialization.CSCD.Parsing
             throw new FormatException($"Illegal token: {new string(token.Text)}.");
         }
 
+        /* Private types. */
+        private enum NumericType { NaN, Int, Real };
+
+        /* Private methods. */
         /// <summary>
         /// Parse a textual literal (without the delimiters).
         /// </summary>
-        private static string ParseText(TextSpan span, char[] requiredEscapes)
+        private static string ParseText(TextSpan span, HashSet<char> requiredEscapes)
         {
             StringBuilder sb = new();
             for (int i = 0; i < span.Length; i++)
@@ -343,7 +349,7 @@ namespace Rusty.Serialization.CSCD.Parsing
                 }
 
                 // Illegal unescaped.
-                else if (IsRequiredEscaped(c, requiredEscapes))
+                else if (requiredEscapes.Contains(c))
                     throw new FormatException($"Illegal unescaped character '{(int)c:X}' at {new string(span)}.");
 
                 // Non-escaped.
@@ -351,19 +357,6 @@ namespace Rusty.Serialization.CSCD.Parsing
                     sb.Append(c);
             }
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Check if a character should be escaped.
-        /// </summary>
-        private static bool IsRequiredEscaped(char chr, char[] requiredEscapes)
-        {
-            for (int i = 0; i < requiredEscapes.Length; i++)
-            {
-                if (chr == requiredEscapes[i])
-                    return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -478,7 +471,7 @@ namespace Rusty.Serialization.CSCD.Parsing
             // May not have a negative sign after $, or be non-numeric.
             if (contents.StartsWith('-'))
                 throw new FormatException($"Malformed decimal token: {new string(span)}.");
-            if (GetNumeric(contents) == -1)
+            if (GetNumericType(contents) == NumericType.NaN)
                 throw new FormatException($"Non-numeric decimal token: {new string(span)}.");
 
             // Create [decimal.[fractional] form.
@@ -553,7 +546,7 @@ namespace Rusty.Serialization.CSCD.Parsing
                 throw new FormatException($"Empty year term in: {new string(date)}.");
             if (year.StartsWith('-'))
                 throw new FormatException($"Duplicate minus sign in: {new string(date)}.");
-            if (GetNumeric(year) != 0)
+            if (GetNumericType(year) != NumericType.Int)
                 throw new FormatException($"Not an integer year: {new string(date)}.");
 
             if (negativeYear)
@@ -571,7 +564,7 @@ namespace Rusty.Serialization.CSCD.Parsing
                 throw new FormatException($"Empty month term in: {new string(date)}.");
             if (month.StartsWith('-'))
                 throw new FormatException($"Negative month in: {new string(date)}.");
-            if (GetNumeric(month) != 0)
+            if (GetNumericType(month) != NumericType.Int)
                 throw new FormatException($"Not an integer month: {new string(date)}.");
 
             node.Month = new string(month);
@@ -582,7 +575,7 @@ namespace Rusty.Serialization.CSCD.Parsing
                 throw new FormatException($"Empty day term in: {new string(date)}.");
             if (day.StartsWith('-'))
                 throw new FormatException($"Negative day in: {new string(date)}.");
-            if (GetNumeric(day) != 0)
+            if (GetNumericType(day) != NumericType.Int)
                 throw new FormatException($"Not an integer day: {new string(date)}.");
 
             node.Day = new string(day);
@@ -603,7 +596,7 @@ namespace Rusty.Serialization.CSCD.Parsing
                 throw new FormatException($"Empty hour term in: {new string(time)}.");
             if (hour.StartsWith('-'))
                 throw new FormatException($"Negative hour in: {new string(time)}.");
-            if (GetNumeric(hour) != 0)
+            if (GetNumericType(hour) != NumericType.Int)
                 throw new FormatException($"Not an integer hour: {new string(time)}.");
 
             node.Hour = new string(hour);
@@ -618,7 +611,7 @@ namespace Rusty.Serialization.CSCD.Parsing
                 throw new FormatException($"Empty minute term in: {new string(time)}.");
             if (minute.StartsWith('-'))
                 throw new FormatException($"Negative minute in: {new string(time)}.");
-            if (GetNumeric(minute) != 0)
+            if (GetNumericType(minute) != NumericType.Int)
                 throw new FormatException($"Not an integer minute: {new string(time)}.");
 
             node.Minute = new string(minute);
@@ -629,26 +622,32 @@ namespace Rusty.Serialization.CSCD.Parsing
                 throw new FormatException($"Empty second term in: {new string(time)}.");
             if (second.StartsWith('-'))
                 throw new FormatException($"Negative second in: {new string(time)}.");
-            if (GetNumeric(second) == -1)
+            if (GetNumericType(second) == NumericType.NaN)
                 throw new FormatException($"Not a numeric second: {new string(time)}.");
 
             node.Second = new string(second);
         }
 
         /// <summary>
-        /// Returns -1 if not numeric, 0 if integer and 1 if float.
-        /// Interprets special literals . and -. as 0.0 and -0.0, respectively.
+        /// Get the numeric type of a string ("Int" or "Real"). Returns "NaN" if not numeric.
+        /// Notes:<br/>
+        /// - Omitted integer and fractional parts are allowed (e.g. "1.", "-.5").<br/>
+        /// - The string "." is considered a valid representation of "0.0".<br/>
+        /// - The string "-." is considered a valid representation of "-0.0".
         /// </summary>
-        private static int GetNumeric(TextSpan span)
+        private static NumericType GetNumericType(TextSpan span)
         {
             int i = 0;
             bool fractional = false;
+
+            if (span.Length == 0)
+                return NumericType.NaN;
 
             // Leading minus sign.
             if (span[0] == '-')
             {
                 if (span.Length == 1)
-                    return -1;
+                    return NumericType.NaN;
                 else
                     i++;
             }
@@ -662,17 +661,17 @@ namespace Rusty.Serialization.CSCD.Parsing
                     if (!fractional)
                         fractional = true;
                     else
-                        return -1;
+                        return NumericType.NaN;
                 }
 
                 // Not numeric.
                 else if (span[i] < '0' || span[i] > '9')
-                    return -1;
+                    return NumericType.NaN;
             }
             if (fractional)
-                return 1;
+                return NumericType.Real;
             else
-                return 0;
+                return NumericType.Int;
         }
 
         /// <summary>
