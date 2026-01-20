@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rusty.Serialization.Core.Lexer
+namespace Rusty.Serialization.Core.Lexing
 {
     /// <summary>
     /// A base class for lexers.

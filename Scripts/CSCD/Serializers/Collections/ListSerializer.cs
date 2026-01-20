@@ -17,11 +17,11 @@ namespace Rusty.Serialization.CSCD
             if (node.Elements == null)
                 throw new Exception("Cannot serialize list nodes whose Elements array are null.");
 
-            if (node.Elements.Length == 0)
+            if (node.Count == 0)
                 return "[]";
 
             StringBuilder sb = new();
-            for (int i = 0; i < node.Elements.Length; i++)
+            for (int i = 0; i < node.Count; i++)
             {
                 if (i > 0)
                     sb.Append(',');

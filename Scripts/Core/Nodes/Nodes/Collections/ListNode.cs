@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
 {
@@ -9,17 +10,24 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public INode[] Elements { get; set; }
-        public int Count => Elements.Length;
+        public List<INode> Elements { get; set; }
+        public int Count => Elements.Count;
 
         /* Constructors. */
+        public ListNode()
+        {
+            Elements = new List<INode>();
+        }
+
         public ListNode(int capacity) : this(new INode[capacity]) { }
 
-        public ListNode(params INode[] elements)
-        {
-            Elements = elements;
+        public ListNode(params INode[] elements) : this(new List<INode>(elements)) { }
 
-            for (int i = 0; i < Elements.Length; i++)
+        public ListNode(List<INode> elements)
+        {
+            Elements = new List<INode>(elements);
+
+            for (int i = 0; i < Elements.Count; i++)
             {
                 if (Elements[i] != null)
                     Elements[i].Parent = this;
@@ -32,13 +40,13 @@ namespace Rusty.Serialization.Core.Nodes
             if (Elements == null)
                 return "list: (null)";
 
-            if (Elements.Length == 0)
+            if (Elements.Count == 0)
                 return "list: (empty)";
 
             string str = "list:";
-            for (int i = 0; i < Elements.Length; i++)
+            for (int i = 0; i < Elements.Count; i++)
             {
-                str += '\n' + PrintUtility.PrintChild(Elements[i], i == Elements.Length - 1);
+                str += '\n' + PrintUtility.PrintChild(Elements[i], i == Elements.Count - 1);
             }
             return str;
         }
@@ -46,7 +54,7 @@ namespace Rusty.Serialization.Core.Nodes
         public void Clear()
         {
             Parent = null;
-            for (int i = 0; i < Elements.Length; i++)
+            for (int i = 0; i < Elements.Count; i++)
             {
                 Elements[i].Clear();
             }
@@ -58,12 +66,27 @@ namespace Rusty.Serialization.Core.Nodes
         /// </summary>
         public int IndexOf(INode element)
         {
-            for (int i = 0; i < Elements.Length; i++)
+            for (int i = 0; i < Elements.Count; i++)
             {
                 if (Elements[i] == element)
                     return i;
             }
             return -1;
+        }
+
+        /// <summary>
+        /// Add a value at the end of the list.
+        /// </summary>
+        public void AddValue(INode value)
+        {
+            Elements.Add(null);
+            SetValueAt(Count - 1, value);
+        }
+
+        public void SetValueAt(int index, INode value)
+        {
+            Elements[index] = value;
+            value.Parent = this;
         }
 
         public INode GetValueAt(int index)

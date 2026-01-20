@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rusty.Serialization.Core.Lexer
+namespace Rusty.Serialization.Core.Lexing
 {
     /// <summary>
     /// A sequence of text.
@@ -79,6 +79,10 @@ namespace Rusty.Serialization.Core.Lexer
         }
 
         /// <summary>
+        /// Find the first index of a character.
+        /// </summary>
+        public int FirstIndexOf(char chr) => FirstIndexOf(0, chr);
+        /// <summary>
         /// Find the first index of a character from some index onwards.
         /// </summary>
         public int FirstIndexOf(int index, char chr)
@@ -91,9 +95,13 @@ namespace Rusty.Serialization.Core.Lexer
             return -1;
         }
         /// <summary>
+        /// Find the first index of a substring.
+        /// </summary>
+        public int FirstIndexOf(ReadOnlySpan<char> substr) => FirstIndexOf(0, substr);
+        /// <summary>
         /// Find the first index of a substring from some index onwards.
         /// </summary>
-        public int FirstIndexOf(int index, string substr)
+        public int FirstIndexOf(int index, ReadOnlySpan<char> substr)
         {
             for (int i = index; i < span.Length; i++)
             {
@@ -102,6 +110,38 @@ namespace Rusty.Serialization.Core.Lexer
             }
             return -1;
         }
+
+        /// <summary>
+        /// Check if the text contains some character.
+        /// </summary>
+        public bool Contains(char chr) => FirstIndexOf(chr) != -1;
+        /// <summary>
+        /// Check if the text contains some substring.
+        /// </summary>
+        public bool Contains(ReadOnlySpan<char> substr) => FirstIndexOf(substr) != -1;
+
+        /// <summary>
+        /// Check if the text equals a character.
+        /// </summary>
+        public bool Equals(char chr) => Length == 1 && span[0] == chr;
+        /// <summary>
+        /// Check if the text equals another text.
+        /// </summary>
+        public bool Equals(ReadOnlySpan<char> span)
+        {
+            if (span.Length != this.span.Length)
+                return false;
+            for (int i = 0; i < Length; i++)
+            {
+                if (span[i] != this.span[i])
+                    return false;
+            }
+            return true;
+        }
+        /// <summary>
+        /// Check if the text equals a string.
+        /// </summary>
+        public bool Equals(string str) => Equals(str.AsSpan());
 
         /* Private methods. */
         /// <summary>

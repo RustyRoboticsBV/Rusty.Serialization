@@ -65,6 +65,10 @@ namespace Rusty.Serialization.Core.Serializers
             }
         }
 
+        /* Conversion operators. */
+        public static implicit operator UnicodePair(char chr) => new UnicodePair(chr);
+        public static implicit operator UnicodePair(int codePoint) => new UnicodePair(codePoint);
+
         /* Public methods. */
         public override string ToString()
         {

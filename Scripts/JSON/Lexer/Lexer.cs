@@ -1,13 +1,13 @@
 ﻿using System;
-using Rusty.Serialization.Core.Lexer;
+using Rusty.Serialization.Core.Lexing;
 
-namespace Rusty.Serialization.Json.Lexer
+namespace Rusty.Serialization.JSON.Lexer
 {
     /// <summary>
     /// A JSON lexer. It breaks a string of JSON into tokens.
     /// Only minimal syntax analysis is done: strings must be closed.
     /// </summary>
-    public class Lexer : Core.Lexer.Lexer
+    public class Lexer : Core.Lexing.Lexer
     {
         /* Public methods. */
         public override bool GetNextToken(TextSpan text, out Token token)

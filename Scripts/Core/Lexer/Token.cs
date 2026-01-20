@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rusty.Serialization.Core.Lexer
+namespace Rusty.Serialization.Core.Lexing
 {
     /// <summary>
     /// A lexer token.
@@ -28,6 +28,6 @@ namespace Rusty.Serialization.Core.Lexer
         /// <summary>
         /// Extract the token from a source text.
         /// </summary>
-        public ReadOnlySpan<char> ExtractFrom(ReadOnlySpan<char> source) => source.Slice(Start, Length);
+        public TextSpan ExtractFrom(TextSpan source) => source.Slice(Start, Length);
     }
 }

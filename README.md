@@ -5,16 +5,22 @@
   <img src="Images/Logo.svg" width="250">
 </p>
 
-A configurable, extendable, engine-agnostic C# serialization/deserialization module. It is designed to simplify saving, loading, and transferring data in any C# context, with a special focus on game development.
+A drop-in C# serialization/deserialization module. It is designed to make saving, loading, and transferring complex object graphs effortless and engine-agnostic.
+
+It was built with two specific use-cases in mind:
+- *Game Save Systems*: saving and loading of complex game state objects.
+- *Engine-Agnostic Resources*: creating complex tool-generated assets, then loading them inside any C# context.
 
 Key features:
 - **Easy to use**: simple, one-line serialization and deserialization.
-- **Engine-agnostic**: can be used in plain C#, Godot or Unity.
+- **Engine-agnostic**: compatible with plain C#, Godot or Unity.
 - **Broad type support**: supports a wide variety of types from the .NET, Godot and Unity APIs.
 - **Multiple formats**: includes support for JSON, XML and a custom, compact data format called CSCD.
 - **Flexible type handling**: handles arbitrary types that lack explicit support.
 - **Reference preservation**: shared and cyclic references are preserved during serialization and deserialization.
 - **Extendible design**: can be extended to provide support for additional types or data formats.
+
+UCS prioritizes round-tripping correctness, extendability and ease-of-use over runtime performance. It is *not fully zero-allocation* and makes extensive use of reflection when handling types without explicit support. Consequently, it is NOT recommended for performance-critical or highly real-time scenarios. Object pooling is used to reduce GC pressure where possible.
 
 ## Version Requirements
 C# 9 or higher.
@@ -28,14 +34,31 @@ Simply add the project folder to your C# project and add `using Rusty.Serializat
 #### Serializing
 ```
 MyClass obj = new();
-DefaultContext context = new(Format.Cscd);      // Contains pre-defined serialization schema for all built-in types.
-string serialized = context.Serialize(obj);     // Serializes all public properties and fields of MyClass.
+UCS ucs = new(Format.Cscd);                               // Contains pre-defined serialization schema for all built-in types.
+string serialized = ucs.Serialize(obj);                   // Serializes all public properties and fields of MyClass.
 ```
 
 #### Deserializing
 ```
-obj = context.Deserialize<MyClass>(serialized); // Deserializes back to MyClass.
+obj = UCS.Deserialize<MyClass>(serialized);               // Deserializes back to MyClass.
 ```
+
+#### Conversion Between Formats
+```
+string xml = "...";
+UCS xmlContext = new(Format.Xml);
+UCS jsonContext = new(Format.Json);
+string json = UCS.Convert(xml, xmlContext, jsonContext);  // Convert XML to JSON.
+```
+
+#### Freeing Up Memory
+The module makes use of object pooling to avoid unnecessary GC pressure.
+
+```
+ucs.Dispose();
+```
+
+This will release all memory allocated by the context (if any). It is recommended to call this method after any (de)serialization operation that is not performance-sensitive.
 
 #### Notes
 Classes and structs without explicit support will automatically serialize using:
@@ -45,6 +68,11 @@ Classes and structs without explicit support will automatically serialize using:
 - *Unity only*: Non-public fields with the `[SerializeField]` or `[SerializeReference]` attribute.
 - *Godot only*: Non-public fields and properties with the `[Export]` attribute.
 - **Note**: members with the `[NonSerialized]` attribute are never serialized.
+
+#### GDScript
+A GDscript wrapper is included with the module, see the [GDScript manual](Documentation\GDScript) for more information.
+
+**Note**: Using GDScript still requires a .NET build of Godot, and only supports object roots with a type that can be stored in a `Variant`.
 
 ## Architecture
 The module separates the serialization process into two steps.
@@ -61,16 +89,16 @@ Both the converter and serializer layers can be freely swapped out.
 
 ### Nodes
 The node layer recognizes the following nodes:
-- Primitives: `null`, `bool`, `int`, `float`, `infinity`, `nan`, `char`, `string`, `color`, `time`, `decimal`, `bytes`, `ref`.
+- Primitives: `null`, `bool`, `int`, `float`, `infinity`, `nan`, `char`, `string`, `decimal`, `color`, `time`, `bytes`, `ref`.
 - Collections: `list`, `dict`, `object`.
 - Metadata: `type`, `ID`.
 
-See the [node documentation document](Documentation/Nodes.md) for more information.
+See the [node documentation document](Documentation/Nodes.md) for more information about each node type.
 
 ## Compact Serialized C# Data
-The module uses a custom serialization format called Compact Serialized C# Data (CSCD). CSCD is a human-readable format that supports references, type labels and a wide variety of literal types. This allows it to concisely represent complex C# objects that would require more verbosity in other formats. It is designed to be compact, general and unambiguous.
+The module uses a custom, human-readable serialization format called Compact Serialized C# Data (CSCD). It is designed to represent complex object graphs with minimal structural overhead, preserving types, references, and supporting a variety of literal types. These literals allow common .NET and game engine types (such as date/time, vector, and color structs) to be encoded concisely while keeping the data readable and easy to maintain.
 
-Below is an example of a custom serialized object with pretty printing. See the [specification document](Documentation/CSCD.md) for a more detailed description of the syntax.
+Below is an example of a custom serialized object with pretty printing. See the [specification document](Documentation/CSCD.md) for a formal description.
 
 ```
 (MyType)<
@@ -94,7 +122,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
     },
     `my_id` my_object: <
         a: 0,
-        b: '\1F4A9\',
+        b: '\1F4A9;',
         c: @14:2:10.005;
     >,
     my_reference: &my_id

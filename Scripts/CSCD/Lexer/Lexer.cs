@@ -1,7 +1,7 @@
 ﻿using System;
-using Rusty.Serialization.Core.Lexer;
+using Rusty.Serialization.Core.Lexing;
 
-namespace Rusty.Serialization.CSCD.Lexer
+namespace Rusty.Serialization.CSCD.Lexing
 {
     /// <summary>
     /// A CSCD lexer. It breaks a string of CSCD down into interpunction and "word" tokens.
@@ -9,7 +9,7 @@ namespace Rusty.Serialization.CSCD.Lexer
     /// The lexer only does limited syntactic analyis, throwing only when delimited tokens are not closed properly.
     /// No semantic analysis is performed.
     /// </summary>
-    public class Lexer : Core.Lexer.Lexer
+    public class Lexer : Core.Lexing.Lexer
     {
         /* Public methods. */
         public override bool GetNextToken(TextSpan text, out Token token)
@@ -44,6 +44,8 @@ namespace Rusty.Serialization.CSCD.Lexer
             else if (c == '"')
                 token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, '"'));
             else if (c == '&')
+                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, ';'));
+            else if (c == '@')
                 token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, ';'));
 
             // Bare word tokens.

@@ -31,7 +31,7 @@ namespace Rusty.Serialization.Core.Converters
         {
             Type elementType = typeof(ElementT);
 
-            for (int i = 0; i < node.Elements.Length; i++)
+            for (int i = 0; i < node.Count; i++)
             {
                 context.CollectTypes(node.Elements[i], elementType);
             }
