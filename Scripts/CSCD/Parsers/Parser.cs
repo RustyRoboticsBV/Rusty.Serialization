@@ -692,7 +692,7 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             // Handle .x
             else if (span.StartsWith("."))
-                return "0." + new string(span.Slice(2));
+                return "0." + new string(span.Slice(1));
 
             // Handle -.x
             else if (span.StartsWith("-."))
