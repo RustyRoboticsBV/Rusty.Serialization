@@ -17,7 +17,7 @@ namespace Rusty.Serialization.CSCD
             if (node.Members == null)
                 throw new Exception("Cannot serialize object nodes whose members array are null.");
 
-            if (node.Members.Length == 0)
+            if (node.Count == 0)
                 return "<>";
 
             bool prettyPrint = scheme.PrettyPrint;
@@ -25,7 +25,7 @@ namespace Rusty.Serialization.CSCD
 
             // Add members.
             StringBuilder sb = new();
-            for (int i = 0; i < node.Members.Length; i++)
+            for (int i = 0; i < node.Count; i++)
             {
                 string value = scheme.Serialize(node.Members[i].Value, scheme.PrettyPrint);
 
@@ -44,13 +44,13 @@ namespace Rusty.Serialization.CSCD
                     sb.Append(' ');
 
                 // Value.
-                if (prettyPrint && i < node.Members.Length - 1)
+                if (prettyPrint && i < node.Count - 1)
                     sb.Append(value.Replace("\n", "\n" + tab));
                 else
                     sb.Append(value);
 
                 // Comma.
-                if (i < node.Members.Length - 1)
+                if (i < node.Count - 1)
                     sb.Append(',');
             }
             if (prettyPrint)
@@ -75,7 +75,7 @@ namespace Rusty.Serialization.CSCD
 
                 // Handle empty objects.
                 if (terms.Count == 0)
-                    return new ObjectNode(null);
+                    return new ObjectNode();
 
                 // Handle key:value pairs.
                 var pairs = new KeyValuePair<string, INode>[terms.Count];

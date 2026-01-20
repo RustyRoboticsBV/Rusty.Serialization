@@ -35,7 +35,7 @@ namespace Rusty.Serialization.Core.Converters
             Type keyType = typeof(DictT).GetGenericArguments()[0];
             Type valueType = typeof(DictT).GetGenericArguments()[1];
 
-            for (int i = 0; i < node.Pairs.Length; i++)
+            for (int i = 0; i < node.Count; i++)
             {
                 context.CollectTypes(node.Pairs[i].Key, keyType);
                 context.CollectTypes(node.Pairs[i].Value, valueType);

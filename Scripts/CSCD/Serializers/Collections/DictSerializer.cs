@@ -17,7 +17,7 @@ namespace Rusty.Serialization.CSCD
             if (node.Pairs == null)
                 throw new Exception("Cannot serialize dictionary nodes whose pairs array are null.");
 
-            if (node.Pairs.Length == 0)
+            if (node.Count == 0)
                 return "{}";
 
             bool prettyPrint = scheme.PrettyPrint;
@@ -25,7 +25,7 @@ namespace Rusty.Serialization.CSCD
 
             // Add pairs.
             StringBuilder sb = new();
-            for (int i = 0; i < node.Pairs.Length; i++)
+            for (int i = 0; i < node.Count; i++)
             {
                 string key = scheme.Serialize(node.Pairs[i].Key, scheme.PrettyPrint);
                 string value = scheme.Serialize(node.Pairs[i].Value, scheme.PrettyPrint);
@@ -44,13 +44,13 @@ namespace Rusty.Serialization.CSCD
                     sb.Append(' ');
 
                 // Value.
-                if (prettyPrint && i < node.Pairs.Length - 1)
+                if (prettyPrint && i < node.Count - 1)
                     sb.Append(value.Replace("\n", "\n" + tab));
                 else
                     sb.Append(value);
 
                 // Comma.
-                if (i < node.Pairs.Length - 1)
+                if (i < node.Count - 1)
                     sb.Append(',');
             }
             if (prettyPrint)

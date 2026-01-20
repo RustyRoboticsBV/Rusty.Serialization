@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
 {
+    using Member = KeyValuePair<string, INode>;
+
     /// <summary>
     /// An object serializer node.
     /// </summary>
@@ -10,17 +12,21 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public KeyValuePair<string, INode>[] Members { get; set; }
-        public int Count => Members.Length;
+        public List<Member> Members { get; set; }
+        public int Count => Members.Count;
 
         /* Constructors. */
-        public ObjectNode(int capacity) : this(new KeyValuePair<string, INode>[capacity]) { }
+        public ObjectNode() : this(new List<Member>()) { }
 
-        public ObjectNode(KeyValuePair<string, INode>[] members)
+        public ObjectNode(int capacity) : this(new Member[capacity]) { }
+
+        public ObjectNode(params Member[] members) : this(new List<Member>(members)) { }
+
+        public ObjectNode(List<Member> members)
         {
-            Members = members ?? new KeyValuePair<string, INode>[0];
+            Members = members ?? new List<Member>();
 
-            for (int i = 0; i < Members.Length; i++)
+            for (int i = 0; i < Members.Count; i++)
             {
                 if (Members[i].Value != null)
                     Members[i].Value.Parent = this;
@@ -31,12 +37,12 @@ namespace Rusty.Serialization.Core.Nodes
         public static implicit operator ObjectNode(TimeNode node)
         {
             ObjectNode obj = new ObjectNode(6);
-            obj.Members[0] = new KeyValuePair<string, INode>("year", new IntNode(node.Year));
-            obj.Members[1] = new KeyValuePair<string, INode>("month", new IntNode(node.Month));
-            obj.Members[2] = new KeyValuePair<string, INode>("day", new IntNode(node.Day));
-            obj.Members[3] = new KeyValuePair<string, INode>("hour", new IntNode(node.Hour));
-            obj.Members[4] = new KeyValuePair<string, INode>("minute", new IntNode(node.Minute));
-            obj.Members[5] = new KeyValuePair<string, INode>("second", new IntNode(node.Second));
+            obj.Members[0] = new Member("year", new IntNode(node.Year));
+            obj.Members[1] = new Member("month", new IntNode(node.Month));
+            obj.Members[2] = new Member("day", new IntNode(node.Day));
+            obj.Members[3] = new Member("hour", new IntNode(node.Hour));
+            obj.Members[4] = new Member("minute", new IntNode(node.Minute));
+            obj.Members[5] = new Member("second", new IntNode(node.Second));
             return obj;
         }
 
@@ -46,13 +52,13 @@ namespace Rusty.Serialization.Core.Nodes
             if (Members == null)
                 return "object: (null)";
 
-            if (Members.Length == 0)
+            if (Members.Count == 0)
                 return "object: (empty)";
 
             string str = "object:";
-            for (int i = 0; i < Members.Length; i++)
+            for (int i = 0; i < Members.Count; i++)
             {
-                str += '\n' + PrintUtility.PrintPair(Members[i].Key, Members[i].Value, i == Members.Length - 1);
+                str += '\n' + PrintUtility.PrintPair(Members[i].Key, Members[i].Value, i == Members.Count - 1);
             }
             return str;
         }
@@ -61,7 +67,7 @@ namespace Rusty.Serialization.Core.Nodes
         {
             Parent = null;
             Members = null;
-            for (int i = 0; i < Members.Length; i++)
+            for (int i = 0; i < Members.Count; i++)
             {
                 Members[i].Value.Clear();
             }
@@ -72,7 +78,7 @@ namespace Rusty.Serialization.Core.Nodes
         /// </summary>
         public int IndexOf(INode member)
         {
-            for (int i = 0; i < Members.Length; i++)
+            for (int i = 0; i < Members.Count; i++)
             {
                 if (Members[i].Value == member)
                     return i;
@@ -86,6 +92,14 @@ namespace Rusty.Serialization.Core.Nodes
         public string GetIdentifierAt(int index)
         {
             return Members[index].Key;
+        }
+
+        /// <summary>
+        /// Add a new member.
+        /// </summary>
+        public void AddMember(string name, INode value)
+        {
+            Members.Add(new Member(name, value));
         }
 
         public INode GetValueAt(int index)

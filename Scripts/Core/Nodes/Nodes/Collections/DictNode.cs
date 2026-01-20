@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
 {
+    using Pair = KeyValuePair<INode, INode>;
+
     /// <summary>
     /// A dictionary serializer node.
     /// </summary>
@@ -10,17 +12,21 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public KeyValuePair<INode, INode>[] Pairs { get; set; }
-        public int Count => Pairs.Length;
+        public List<Pair> Pairs { get; set; }
+        public int Count => Pairs.Count;
 
         /* Constructors. */
-        public DictNode(int capacity) : this(new KeyValuePair<INode, INode>[capacity]) { }
+        public DictNode() : this(new List<Pair>()) { }
 
-        public DictNode(KeyValuePair<INode, INode>[] pairs)
+        public DictNode(int capacity) : this(new Pair[capacity]) { }
+
+        public DictNode(params Pair[] pairs) : this(new List<Pair>(pairs)) { }
+
+        public DictNode(List<Pair> pairs)
         {
-            Pairs = pairs ?? new KeyValuePair<INode, INode>[0];
+            Pairs = pairs ?? new List<Pair>();
 
-            for (int i = 0; i < Pairs.Length; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (Pairs[i].Key != null)
                     Pairs[i].Key.Parent = this;
@@ -37,7 +43,7 @@ namespace Rusty.Serialization.Core.Nodes
             {
                 INode node = list.Elements[i];
                 if (node is ObjectNode obj)
-                    dict.Pairs[i] = new KeyValuePair<INode, INode>(obj.GetValueAt(0), obj.GetValueAt(1));
+                    dict.Pairs[i] = new Pair(obj.GetValueAt(0), obj.GetValueAt(1));
             }
             return dict;
         }
@@ -48,13 +54,13 @@ namespace Rusty.Serialization.Core.Nodes
             if (Pairs == null)
                 return "dictionary: (null)";
 
-            if (Pairs.Length == 0)
+            if (Count == 0)
                 return "dictionary: (empty)";
 
             string str = "dictionary:";
-            for (int i = 0; i < Pairs.Length; i++)
+            for (int i = 0; i < Count; i++)
             {
-                str += '\n' + PrintUtility.PrintPair(Pairs[i].Key, Pairs[i].Value, i == Pairs.Length - 1);
+                str += '\n' + PrintUtility.PrintPair(Pairs[i].Key, Pairs[i].Value, i == Count - 1);
             }
             return str;
         }
@@ -62,7 +68,7 @@ namespace Rusty.Serialization.Core.Nodes
         public void Clear()
         {
             Parent = null;
-            for (int i = 0; i < Pairs.Length; i++)
+            for (int i = 0; i < Count; i++)
             {
                 Pairs[i].Key.Clear();
                 Pairs[i].Value.Clear();
@@ -75,7 +81,7 @@ namespace Rusty.Serialization.Core.Nodes
         /// </summary>
         public int IndexOfKey(INode key)
         {
-            for (int i = 0; i < Pairs.Length; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (Pairs[i].Key == key)
                     return i;
@@ -88,12 +94,20 @@ namespace Rusty.Serialization.Core.Nodes
         /// </summary>
         public int IndexOfValue(INode value)
         {
-            for (int i = 0; i < Pairs.Length; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (Pairs[i].Value == value)
                     return i;
             }
             return -1;
+        }
+
+        /// <summary>
+        /// Add a new key-value pair.
+        /// </summary>
+        public void AddPair(INode key, INode value)
+        {
+            Pairs.Add(new Pair(key, value));
         }
 
         public INode GetKeyAt(int index)

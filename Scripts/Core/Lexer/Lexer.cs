@@ -49,6 +49,6 @@ namespace Rusty.Serialization.Core.Lexing
         /// <summary>
         /// Create a token starting at the current cursor position.
         /// </summary>
-        protected Token MakeToken(int length) => new Token(Cursor, length);
+        protected Lexeme MakeLexeme(int length) => new Lexeme(Cursor, length);
     }
 }

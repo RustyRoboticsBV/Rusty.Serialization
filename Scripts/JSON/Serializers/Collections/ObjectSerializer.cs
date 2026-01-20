@@ -14,7 +14,7 @@ namespace Rusty.Serialization.JSON
         /* Public methods. */
         public override string Serialize(ObjectNode node, ISerializerScheme scheme)
         {
-            if (node.Members == null || node.Members.Length == 0)
+            if (node.Members == null || node.Count == 0)
                 return "{}";
 
             bool prettyPrint = scheme.PrettyPrint;
@@ -22,7 +22,7 @@ namespace Rusty.Serialization.JSON
 
             // Add members.
             StringBuilder sb = new();
-            for (int i = 0; i < node.Members.Length; i++)
+            for (int i = 0; i < node.Count; i++)
             {
                 string value = scheme.Serialize(node.Members[i].Value, scheme.PrettyPrint);
 
@@ -42,13 +42,13 @@ namespace Rusty.Serialization.JSON
                     sb.Append(' ');
 
                 // Value.
-                if (prettyPrint && i < node.Members.Length - 1)
+                if (prettyPrint && i < node.Count - 1)
                     sb.Append(value.Replace("\n", "\n" + tab));
                 else
                     sb.Append(value);
 
                 // Comma.
-                if (i < node.Members.Length - 1)
+                if (i < node.Count - 1)
                     sb.Append(',');
             }
             if (prettyPrint)
@@ -74,7 +74,7 @@ namespace Rusty.Serialization.JSON
 
                 // Handle empty objects.
                 if (terms.Count == 0)
-                    return new ObjectNode(null);
+                    return new ObjectNode();
 
                 // Handle key:value pairs.
                 var pairs = new KeyValuePair<string, INode>[terms.Count];

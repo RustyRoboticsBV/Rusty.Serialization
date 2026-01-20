@@ -33,11 +33,11 @@ namespace Rusty.Serialization.JSON.Lexer
 
             // String literal.
             else if (c == '"')
-                token = MakeTokenAndAdvance(text, ReadStringToken(text));
+                token = MakeTokenAndAdvance(text, ReadStringLexeme(text));
 
             // Bare value: number, boolean, null.
             else
-                token = MakeTokenAndAdvance(text, ReadBareToken(text));
+                token = MakeTokenAndAdvance(text, ReadBareLexeme(text));
 
             return true;
         }
@@ -51,9 +51,9 @@ namespace Rusty.Serialization.JSON.Lexer
             if (length < 0)
                 throw new FormatException($"Zero-length token at {Cursor}: {new string(text.Slice(Cursor))}.");
 
-            Token token = new Token(Cursor, length);
-            Advance(token.Length);
-            return token;
+            Lexeme lexeme = MakeLexeme(length);
+            Advance(lexeme.Length);
+            return new Token(text, lexeme);
         }
 
         /// <summary>
@@ -71,9 +71,9 @@ namespace Rusty.Serialization.JSON.Lexer
         private static bool IsWhitespace(char c) => c == ' ' || c == '\t' || c == '\n' || c == '\r';
 
         /// <summary>
-        /// Read a string token and return the length. The cursor is NOT advanced.
+        /// Read a string lexeme and return the length. The cursor is NOT advanced.
         /// </summary>
-        private int ReadStringToken(TextSpan text)
+        private int ReadStringLexeme(TextSpan text)
         {
             int start = Cursor + 1;
 
@@ -94,9 +94,9 @@ namespace Rusty.Serialization.JSON.Lexer
         }
 
         /// <summary>
-        /// Read a bare token.
+        /// Read a bare lexeme.
         /// </summary>
-        private int ReadBareToken(TextSpan text)
+        private int ReadBareLexeme(TextSpan text)
         {
             for (int i = Cursor; i < text.Length; i++)
             {

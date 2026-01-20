@@ -24,7 +24,7 @@ namespace Rusty.Serialization.CSCD.Parsing
             while (lexer.GetNextToken(text, out Token token))
             {
                 if (root != null)
-                    throw new FormatException($"Token found after root value: {new string(token.ExtractFrom(text))}.");
+                    throw new FormatException($"Token found after root value: {token.ToString()}.");
 
                 root = ParseToken(text, token, ref lexer);
             }
@@ -32,14 +32,12 @@ namespace Rusty.Serialization.CSCD.Parsing
         }
 
         /* Protected methods. */
-        protected INode ParseToken(TextSpan text, Token token, ref Lexer lexer)
+        protected static INode ParseToken(TextSpan text, Token token, ref Lexer lexer)
         {
-            TextSpan tokenText = token.ExtractFrom(text);
-
             // Type.
-            if (tokenText.StartsWith('(') && tokenText.EndsWith(')'))
+            if (token.Text.StartsWith('(') && token.Text.EndsWith(')'))
             {
-                string name = ParseText(tokenText.Slice(1, tokenText.Length - 2), typeEscapes);
+                string name = ParseText(token.Text.Slice(1, token.Text.Length - 2), typeEscapes);
 
                 if (!lexer.GetNextToken(text, out Token next))
                     throw new FormatException("A type must be followed by another token.");
@@ -49,9 +47,9 @@ namespace Rusty.Serialization.CSCD.Parsing
             }
 
             // ID.
-            if (tokenText.StartsWith('`') && tokenText.EndsWith('`'))
+            if (token.Text.StartsWith('`') && token.Text.EndsWith('`'))
             {
-                string name = ParseText(tokenText.Slice(1, tokenText.Length - 2), idEscapes);
+                string name = ParseText(token.Text.Slice(1, token.Text.Length - 2), idEscapes);
 
                 if (!lexer.GetNextToken(text, out Token next))
                     throw new FormatException("An ID must be followed by another.");
@@ -61,73 +59,73 @@ namespace Rusty.Serialization.CSCD.Parsing
             }
 
             // Null.
-            if (tokenText.Equals("null"))
+            if (token.Text.Equals("null"))
                 return new NullNode();
 
             // Bool.
-            if (tokenText.Equals("true"))
+            if (token.Text.Equals("true"))
                 return new BoolNode(true);
-            if (tokenText.Equals("false"))
+            if (token.Text.Equals("false"))
                 return new BoolNode(false);
 
             // Numerics (int and float).
-            int numeric = GetNumeric(tokenText);
+            int numeric = GetNumeric(token.Text);
             if (numeric == 0)
-                return new IntNode(new string(tokenText));
+                return new IntNode(new string(token.Text));
             if (numeric == 1)
-                return new FloatNode(ProcessReal(tokenText));
+                return new FloatNode(ProcessReal(token.Text));
 
             // NaN.
-            if (tokenText.Equals("nan"))
+            if (token.Text.Equals("nan"))
                 return new NanNode();
 
             // Infinity.
-            if (tokenText.Equals("inf"))
+            if (token.Text.Equals("inf"))
                 return new InfinityNode(true);
-            if (tokenText.Equals("-inf"))
+            if (token.Text.Equals("-inf"))
                 return new InfinityNode(false);
 
             // Char.
-            if (tokenText.StartsWith('\'') && tokenText.EndsWith('\''))
+            if (token.Text.StartsWith('\'') && token.Text.EndsWith('\''))
             {
-                string str = ParseText(tokenText.Slice(1, tokenText.Length - 2), charEscapes);
+                string str = ParseText(token.Text.Slice(1, token.Text.Length - 2), charEscapes);
                 return new CharNode(str);
             }
 
             // String.
-            if (tokenText.StartsWith('"') && tokenText.EndsWith('"'))
+            if (token.Text.StartsWith('"') && token.Text.EndsWith('"'))
             {
-                string str = ParseText(tokenText.Slice(1, tokenText.Length - 2), strEscapes);
+                string str = ParseText(token.Text.Slice(1, token.Text.Length - 2), strEscapes);
                 return new StringNode(str);
             }
 
             // Decimal.
-            if (tokenText.StartsWith('$'))
-                return new DecimalNode(ParseDecimal(tokenText, 1));
-            if (tokenText.StartsWith("-$"))
-                return new DecimalNode('-' + ParseDecimal(tokenText, 2));
+            if (token.Text.StartsWith('$'))
+                return new DecimalNode(ParseDecimal(token.Text, 1));
+            if (token.Text.StartsWith("-$"))
+                return new DecimalNode('-' + ParseDecimal(token.Text, 2));
 
             // Color.
-            if (tokenText.StartsWith('#'))
-                return new ColorNode(new string(tokenText.Slice(1)));
+            if (token.Text.StartsWith('#'))
+                return new ColorNode(new string(token.Text.Slice(1)));
 
             // Time.
-            if (tokenText.StartsWith('@') && tokenText.EndsWith(';'))
-                return ParseDateTime(tokenText);
+            if (token.Text.StartsWith('@') && token.Text.EndsWith(';'))
+                return ParseDateTime(token.Text);
 
             // Bytes.
-            if (tokenText.StartsWith("b_"))
-                return new BytesNode(new string(tokenText.Slice(2)));
+            if (token.Text.StartsWith("b_"))
+                return new BytesNode(new string(token.Text.Slice(2)));
 
             // Ref.
-            if (tokenText.StartsWith('&') && tokenText.EndsWith(';'))
+            if (token.Text.StartsWith('&') && token.Text.EndsWith(';'))
             {
-                string str = ParseText(tokenText.Slice(1, tokenText.Length - 2), refEscapes);
+                string str = ParseText(token.Text.Slice(1, token.Text.Length - 2), refEscapes);
                 return new RefNode(str);
             }
 
             // List.
-            if (tokenText.Equals("["))
+            if (token.Text.Equals('['))
             {
                 ListNode list = new ListNode();
 
@@ -135,7 +133,7 @@ namespace Rusty.Serialization.CSCD.Parsing
                 {
                     if (!lexer.GetNextToken(text, out Token next))
                         throw new FormatException("Unclosed list.");
-                    TextSpan nextText = next.ExtractFrom(text);
+                    TextSpan nextText = next.Text;
 
                     // List closer.
                     if (nextText.Equals(']'))
@@ -161,28 +159,161 @@ namespace Rusty.Serialization.CSCD.Parsing
                             throw new FormatException("Unclosed list.");
 
                         // May not close a list after a comma.
-                        if (valueToken.ExtractFrom(text).Equals(']'))
+                        if (valueToken.Text.Equals(']'))
                             throw new FormatException("Trailing commas are not allowed.");
 
                         // May not be another comma.
-                        if (valueToken.ExtractFrom(text).Equals(','))
+                        if (valueToken.Text.Equals(','))
                             throw new FormatException("Consecutive commas are not allowed.");
 
                         // Parse element.
                         list.AddValue(ParseToken(text, valueToken, ref lexer));
                     }
                 }
-                throw new FormatException("Unclosed list.");
             }
 
             // Dict.
-            // TODO: implement.
+            if (token.Text.Equals('{'))
+            {
+                DictNode dict = new DictNode();
+
+                while (true)
+                {
+                    if (!lexer.GetNextToken(text, out Token next))
+                        throw new FormatException("Unclosed dictionary.");
+
+                    TextSpan nextText = next.Text;
+
+                    // Dictionary closer.
+                    if (nextText.Equals('}'))
+                        return dict;
+
+                    // First pair.
+                    if (dict.Count == 0)
+                    {
+                        if (nextText.Equals(','))
+                            throw new FormatException("Leading commas are not allowed in dictionaries.");
+
+                        // Parse key.
+                        INode key = ParseToken(text, next, ref lexer);
+
+                        // Expect colon.
+                        if (!lexer.GetNextToken(text, out Token colon) || !colon.Text.Equals(':'))
+                            throw new FormatException("Dictionary keys must be followed by a colon.");
+
+                        // Parse value.
+                        if (!lexer.GetNextToken(text, out Token valueToken))
+                            throw new FormatException("Unclosed dictionary.");
+
+                        INode value = ParseToken(text, valueToken, ref lexer);
+                        dict.AddPair(key, value);
+                    }
+                    // Subsequent pairs.
+                    else
+                    {
+                        // Must be comma.
+                        if (!nextText.Equals(','))
+                            throw new FormatException("Dictionary entries must be separated with commas.");
+
+                        // Expect key.
+                        if (!lexer.GetNextToken(text, out Token keyToken))
+                            throw new FormatException("Unclosed dictionary.");
+
+                        if (keyToken.Text.Equals('}'))
+                            throw new FormatException("Trailing commas are not allowed in dictionaries.");
+
+                        if (keyToken.Text.Equals(','))
+                            throw new FormatException("Consecutive commas are not allowed in dictionaries.");
+
+                        INode key = ParseToken(text, keyToken, ref lexer);
+
+                        // Expect colon.
+                        if (!lexer.GetNextToken(text, out Token colon) || !colon.Text.Equals(':'))
+                            throw new FormatException("Dictionary keys must be followed by a colon.");
+
+                        // Expect value.
+                        if (!lexer.GetNextToken(text, out Token valueToken))
+                            throw new FormatException("Unclosed dictionary.");
+
+                        INode value = ParseToken(text, valueToken, ref lexer);
+                        dict.AddPair(key, value);
+                    }
+                }
+            }
+
 
             // Object.
-            // TODO: implement.
+            if (token.Text.Equals('<'))
+            {
+                ObjectNode obj = new ObjectNode();
+
+                while (true)
+                {
+                    if (!lexer.GetNextToken(text, out Token next))
+                        throw new FormatException("Unclosed object.");
+
+                    TextSpan nextText = next.Text;
+
+                    // Object closer.
+                    if (nextText.Equals('>'))
+                        return obj;
+
+                    // First field.
+                    if (obj.Count == 0)
+                    {
+                        if (nextText.Equals(','))
+                            throw new FormatException("Leading commas are not allowed in objects.");
+
+                        // Key is literal token text (NOT parsed).
+                        string key = new string(nextText);
+
+                        // Expect colon.
+                        if (!lexer.GetNextToken(text, out Token colon) || !colon.Text.Equals(':'))
+                            throw new FormatException("Object fields must be in the form <key:value>.");
+
+                        // Expect value.
+                        if (!lexer.GetNextToken(text, out Token valueToken))
+                            throw new FormatException("Unclosed object.");
+
+                        INode value = ParseToken(text, valueToken, ref lexer);
+                        obj.AddMember(key, value);
+                    }
+                    // Subsequent fields.
+                    else
+                    {
+                        // Must be comma.
+                        if (!nextText.Equals(','))
+                            throw new FormatException("Object fields must be separated with commas.");
+
+                        // Expect key.
+                        if (!lexer.GetNextToken(text, out Token keyToken))
+                            throw new FormatException("Unclosed object.");
+
+                        if (keyToken.Text.Equals('>'))
+                            throw new FormatException("Trailing commas are not allowed in objects.");
+
+                        if (keyToken.Text.Equals(','))
+                            throw new FormatException("Consecutive commas are not allowed in objects.");
+
+                        string key = keyToken.ToString();
+
+                        // Expect colon.
+                        if (!lexer.GetNextToken(text, out Token colon) || !colon.Text.Equals(':'))
+                            throw new FormatException("Object fields must be in the form <key:value>.");
+
+                        // Expect value.
+                        if (!lexer.GetNextToken(text, out Token valueToken))
+                            throw new FormatException("Unclosed object.");
+
+                        INode value = ParseToken(text, valueToken, ref lexer);
+                        obj.AddMember(key, value);
+                    }
+                }
+            }
+
 
             // Illegal tokens.
-            throw new FormatException($"Illegal token: {new string(tokenText)}.");
+            throw new FormatException($"Illegal token: {new string(token.Text)}.");
         }
 
         /// <summary>

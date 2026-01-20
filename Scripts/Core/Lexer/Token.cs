@@ -1,33 +1,40 @@
-﻿using System;
-
-namespace Rusty.Serialization.Core.Lexing
+﻿namespace Rusty.Serialization.Core.Lexing
 {
     /// <summary>
-    /// A lexer token.
+    /// A token, representing a substring from a string of serialized data.
     /// </summary>
-    public readonly struct Token
+    public readonly ref struct Token
     {
         /* Fields. */
         /// <summary>
-        /// The start character index of the token in the source data.
+        /// The source text that this token is a substring of.
         /// </summary>
-        public readonly int Start;
+        public readonly TextSpan SourceText;
         /// <summary>
-        /// The character length of the token in the source data.
+        /// The underlying lexeme that this token represents.
         /// </summary>
-        public readonly int Length;
+        public readonly Lexeme Lexeme;
+
+        /// <summary>
+        /// The length the token in the source text.
+        /// </summary>
+        public int Length => Lexeme.Length;
+        /// <summary>
+        /// The text that this token represents.
+        /// </summary>
+        public TextSpan Text => Lexeme.ExtractFrom(SourceText);
 
         /* Constructors. */
-        public Token(int start, int length)
+        public Token(TextSpan sourceText, Lexeme lexeme)
         {
-            Start = start;
-            Length = length;
+            SourceText = sourceText;
+            Lexeme = lexeme;
         }
 
+        /* Conversion operators. */
+        public static implicit operator TextSpan(Token token) => token.Text;
+
         /* Public methods. */
-        /// <summary>
-        /// Extract the token from a source text.
-        /// </summary>
-        public TextSpan ExtractFrom(TextSpan source) => source.Slice(Start, Length);
+        public override string ToString() => new string(Text);
     }
 }

@@ -72,6 +72,12 @@ namespace Rusty.Serialization.Testing
         public DateTime time = new DateTime(1994, 2, 13, 10, 5, 3, 77) + TimeSpan.FromTicks(1);
 
         public List<int> intList = new();
+        public Dictionary<string, object> dict = new()
+        {
+            { "a", 0 },
+            { "b", new DateTime(2000, 1, 2, 0, 0, 0) },
+            { "c", Color.cyan }
+        };
     }
 
     /// <summary>

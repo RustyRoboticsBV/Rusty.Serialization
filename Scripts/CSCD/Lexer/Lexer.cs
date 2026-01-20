@@ -36,21 +36,21 @@ namespace Rusty.Serialization.CSCD.Lexing
 
             // Delimited word tokens.
             else if (c == '(')
-                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, ')'));
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ')'));
             else if (c == '`')
-                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, '`'));
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '`'));
             else if (c == '\'')
-                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, '\''));
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '\''));
             else if (c == '"')
-                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, '"'));
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '"'));
             else if (c == '&')
-                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, ';'));
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ';'));
             else if (c == '@')
-                token = MakeTokenAndAdvance(text, ReadDelimitedToken(text, ';'));
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ';'));
 
             // Bare word tokens.
             else
-                token = MakeTokenAndAdvance(text, ReadBareToken(text));
+                token = MakeTokenAndAdvance(text, ReadBareLexeme(text));
 
             return true;
         }
@@ -64,9 +64,9 @@ namespace Rusty.Serialization.CSCD.Lexing
             if (length < 0)
                 throw new FormatException($"Zero-length token at {Cursor}: {new string(text.Slice(Cursor))}.");
 
-            Token token = MakeToken(length);
-            Advance(token.Length);
-            return token;
+            Lexeme lexeme = MakeLexeme(length);
+            Advance(lexeme.Length);
+            return new Token(text, lexeme);
         }
 
         /// <summary>
@@ -112,9 +112,9 @@ namespace Rusty.Serialization.CSCD.Lexing
         }
 
         /// <summary>
-        /// Read a delimited token and return the length. The cursor is NOT advanced.
+        /// Read a delimited lexeme and return the length. The cursor is NOT advanced.
         /// </summary>
-        private int ReadDelimitedToken(TextSpan text, char delimiter)
+        private int ReadDelimitedLexeme(TextSpan text, char delimiter)
         {
             for (int i = Cursor + 1; i < text.Length; i++)
             {
@@ -133,9 +133,9 @@ namespace Rusty.Serialization.CSCD.Lexing
         }
 
         /// <summary>
-        /// Read a bare token and return the length. The cursor is NOT advanced.
+        /// Read a bare lexeme and return the length. The cursor is NOT advanced.
         /// </summary>
-        private int ReadBareToken(TextSpan text)
+        private int ReadBareLexeme(TextSpan text)
         {
             for (int i = Cursor; i < text.Length; i++)
             {
