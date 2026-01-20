@@ -135,27 +135,31 @@ namespace Rusty.Serialization.CSCD.Parsing
                 {
                     Token next = ExpectToken(text, ref lexer, "Unclosed list.");
 
-                    // List closer.
+                    // Preliminary checks.
+                    if (list.Count == 0)
+                    {
+                        // Empty list.
+                        if (next.Text.Equals(']'))
+                            return list;
+
+                        DisallowEqual(next, ',', "Lists may not contain leading commas.");
+                    }
+                    else
+                    {
+                        DisallowEqual(next, ',', "Lists may not contain consecutive commas.");
+                        DisallowEqual(next, ']', "Lists may not contain trailing commas.");
+                    }
+
+                    // Parse element.
+                    list.AddValue(ParseToken(text, next, ref lexer));
+
+                    // Next token: comma or list closer.
+                    next = ExpectToken(text, ref lexer, "Unclosed list.");
+
                     if (next.Text.Equals(']'))
                         return list;
 
-                    // First element.
-                    if (list.Count == 0)
-                    {
-                        DisallowEqual(next, ',', "Lists may not contain leading commas.");
-                        list.AddValue(ParseToken(text, next, ref lexer));
-                    }
-
-                    // Second element onwards.
-                    else
-                    {
-                        MustEqual(next, ',', "List elements must be separated with commas.");
-
-                        Token valueToken = ExpectToken(text, ref lexer, "Unclosed list.");
-                        DisallowEqual(valueToken, ']', "Lists may not contain trailing commas.");
-                        DisallowEqual(valueToken, ',', "Lists may not contain consecutive commas.");
-                        list.AddValue(ParseToken(text, valueToken, ref lexer));
-                    }
+                    MustEqual(next, ',', "List elements must be separated by commas.");
                 }
             }
 
@@ -167,45 +171,45 @@ namespace Rusty.Serialization.CSCD.Parsing
                 while (true)
                 {
                     Token next = ExpectToken(text, ref lexer, "Unclosed dictionary.");
-                    Token key, value;
 
-                    // Dictionary closer.
+                    // Preliminary checks.
+                    if (dict.Count == 0)
+                    {
+                        // Empty dictionary.
+                        if (next.Text.Equals('}'))
+                            return dict;
+
+                        DisallowEqual(next, ',', "Dictionaries may not contain leading commas.");
+                    }
+                    else
+                    {
+                        DisallowEqual(next, ',', "Dictionaries may not contain consecutive commas.");
+                        DisallowEqual(next, '}', "Dictionaries may not contain trailing commas.");
+                    }
+
+                    // Parse entry key and value pair.
+                    INode key = ParseToken(text, next, ref lexer);
+
+                    ExpectSymbol(text, ref lexer, ':', "Dictionary keys must be followed by a colon.");
+
+                    next = ExpectToken(text, ref lexer, "Unclosed dictionary.");
+                    DisallowEqual(next, ',', "Dictionary entries must contain a value after the colon.");
+                    DisallowEqual(next, ':', "Dictionaries may not contain consecutive colons.");
+                    DisallowEqual(next, '}', "Dictionaries may not contain trailing colons.");
+                    INode value = ParseToken(text, next, ref lexer);
+
+                    dict.AddPair(key, value);
+
+                    // Next token: comma or dictionary closer.
+                    next = ExpectToken(text, ref lexer, "Unclosed dictionary.");
+
                     if (next.Text.Equals('}'))
                         return dict;
 
-                    // First pair.
-                    if (dict.Count == 0)
-                    {
-                        DisallowEqual(next, ',', "Dictionaries may not contain leading commas.");
-                        key = next;
-
-                        ExpectSymbol(text, ref lexer, ':', "Dictionary keys must be followed by a colon.");
-
-                        value = ExpectToken(text, ref lexer, "Unclosed dictionary.");
-                    }
-
-                    // Second pair onwards.
-                    else
-                    {
-                        MustEqual(next, ',', "Dictionary entries must be separated with commas.");
-
-                        key = ExpectToken(text, ref lexer, "Unclosed dictionary.");
-                        DisallowEqual(key, '}', "Trailing commas are not allowed in dictionaries.");
-                        DisallowEqual(key, ',', "Consecutive commas are not allowed in dictionaries.");
-
-                        ExpectSymbol(text, ref lexer, ':', "Dictionary keys must be followed by a colon.");
-
-                        value = ExpectToken(text, ref lexer, "Unclosed dictionary.");
-                    }
-
-                    // Parse key & value token.
-                    INode keyNode = ParseToken(text, key, ref lexer);
-                    INode valueNode = ParseToken(text, value, ref lexer);
-                    dict.AddPair(keyNode, valueNode);
+                    MustEqual(next, ',', "Dictionary entries must be separated by commas.");
                 }
             }
-
-
+            
             // Object.
             if (token.Text.Equals('<'))
             {
@@ -214,42 +218,44 @@ namespace Rusty.Serialization.CSCD.Parsing
                 while (true)
                 {
                     Token next = ExpectToken(text, ref lexer, "Unclosed object.");
-                    string key;
-                    Token value;
 
-                    // Object closer.
+                    // Preliminary checks.
+                    if (obj.Count == 0)
+                    {
+                        // Empty object.
+                        if (next.Text.Equals('>'))
+                            return obj;
+
+                        DisallowEqual(next, ',', "Objects may not contain leading commas.");
+                    }
+                    else
+                    {
+                        DisallowEqual(next, ',', "Objects may not contain consecutive commas.");
+                        DisallowEqual(next, '>', "Objects may not contain trailing commas.");
+                    }
+
+                    // Parse member name & value.
+                    DisallowEqual(next, ':', "Object names may not equal ':'.");
+                    string name = next.ToString();
+
+                    ExpectSymbol(text, ref lexer, ':', "Object member names must be followed by a colon.");
+
+                    next = ExpectToken(text, ref lexer, "Unclosed object.");
+                    DisallowEqual(next, ',', "Object members must contain a value after the colon.");
+                    DisallowEqual(next, ':', "Objects may not contain consecutive colons.");
+                    DisallowEqual(next, '>', "Objects may not contain trailing colons.");
+                    INode valueNode = ParseToken(text, next, ref lexer);
+
+                    obj.AddMember(name, valueNode);
+
+                    // Next token: comma or object closer.
+                    next = ExpectToken(text, ref lexer, "Unclosed object.");
                     if (next.Text.Equals('>'))
                         return obj;
 
-                    // First field.
-                    if (obj.Count == 0)
-                    {
-                        DisallowEqual(next, ',', "Objects may not contain leading commas.");
-
-                        key = next.ToString();
-
-                        ExpectSymbol(text, ref lexer, ':', "Object member names must be followed by a colon.");
-
-                        value = ExpectToken(text, ref lexer, "Unclosed object.");
-                    }
-                    // Subsequent fields.
-                    else
-                    {
-                        MustEqual(next, ',', "Object members must be separated with commas.");
-
-                        key = ExpectToken(text, ref lexer, "Unclosed object.").ToString();
-
-                        ExpectSymbol(text, ref lexer, ':', "Object keys must be followed by a colon.");
-
-                        value = ExpectToken(text, ref lexer, "Unclosed object.");
-                    }
-
-                    // Parse value token.
-                    INode valueNode = ParseToken(text, value, ref lexer);
-                    obj.AddMember(key, valueNode);
+                    MustEqual(next, ',', "Object members must be separated by commas.");
                 }
             }
-
 
             // Illegal tokens.
             throw new FormatException($"Illegal token: {new string(token.Text)}.");
