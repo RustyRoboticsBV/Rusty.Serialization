@@ -13,11 +13,20 @@ namespace Rusty.Serialization.CSCD.Parsing
     public class Parser : Core.Parsing.Parser
     {
         /* Fields. */
-        private readonly static HashSet<char> idEscapes = new HashSet<char> { '\t', '\n', ')', '\\' };
-        private readonly static HashSet<char> typeEscapes = new HashSet<char> { '\t', '\n', '`', '\\' };
-        private readonly static HashSet<char> charEscapes = new HashSet<char> { '\t', '\n' };
-        private readonly static HashSet<char> strEscapes = new HashSet<char> { '\t', '\n', '"', '\\' };
-        private readonly static HashSet<char> refEscapes = new HashSet<char> { '\t', '\n', ';', '\\' };
+        private readonly static HashSet<UnicodePair> idEscapes = new HashSet<UnicodePair> { '\t', '\n', ')', '\\' };
+        private readonly static HashSet<UnicodePair> typeEscapes = new HashSet<UnicodePair> { '\t', '\n', '`', '\\' };
+        private readonly static HashSet<UnicodePair> charEscapes = new HashSet<UnicodePair> { '\t', '\n' };
+        private readonly static HashSet<UnicodePair> strEscapes = new HashSet<UnicodePair> { '\t', '\n', '"', '\\' };
+        private readonly static HashSet<UnicodePair> refEscapes = new HashSet<UnicodePair> { '\t', '\n', ';', '\\' };
+        
+        private static readonly Dictionary<char, UnicodePair> simpleEscapes = new()
+        {
+            { 't', '\t' }, { 'n', '\n' }, { 's', ' ' },
+            { '"', '"' }, { '\'', '\'' }, { '`', '`' },
+            { '(', '(' }, { ')', ')' },
+            { ';', ';' },
+            { '\\', '\\' }
+        };
 
         /* Public methods. */
         public override NodeTree Parse(TextSpan text, Lexer lexer)
@@ -28,22 +37,21 @@ namespace Rusty.Serialization.CSCD.Parsing
                 if (root != null)
                     throw new FormatException($"Token found after root value: {token.ToString()}.");
 
-                root = ParseToken(text, token, ref lexer);
+                root = ParseToken(text, token, lexer);
             }
             return new NodeTree(root);
         }
 
         /* Protected methods. */
-        protected static INode ParseToken(TextSpan text, Token token, ref Lexer lexer)
+        protected static INode ParseToken(TextSpan text, Token token, Lexer lexer)
         {
             // Type.
             if (token.Text.StartsWith('(') && token.Text.EndsWith(')'))
             {
-                string name = ParseText(token.Text.Slice(1, token.Text.Length - 2), typeEscapes);
+                string name = ParseText(token, typeEscapes);
 
-                if (!lexer.GetNextToken(text, out Token next))
-                    throw new FormatException("A type must be followed by another token.");
-                INode value = ParseToken(text, next, ref lexer);
+                Token next = ExpectToken(text, lexer, "A type must be followed by another token.");
+                INode value = ParseToken(text, next, lexer);
 
                 return new TypeNode(name, value);
             }
@@ -51,11 +59,10 @@ namespace Rusty.Serialization.CSCD.Parsing
             // ID.
             if (token.Text.StartsWith('`') && token.Text.EndsWith('`'))
             {
-                string name = ParseText(token.Text.Slice(1, token.Text.Length - 2), idEscapes);
+                string name = ParseText(token, idEscapes);
 
-                if (!lexer.GetNextToken(text, out Token next))
-                    throw new FormatException("An ID must be followed by another.");
-                INode value = ParseToken(text, next, ref lexer);
+                Token next = ExpectToken(text, lexer, "An ID must be followed by another token.");
+                INode value = ParseToken(text, next, lexer);
 
                 return new IdNode(name, value);
             }
@@ -71,7 +78,7 @@ namespace Rusty.Serialization.CSCD.Parsing
                 return new BoolNode(false);
 
             // Numerics (int and float).
-            NumericType numeric = GetNumericType(token.Text);
+            NumericType numeric = GetNumericType(token.Text, NumericParseMode.AllowLonePoint);
             if (numeric == NumericType.Int)
                 return new IntNode(new string(token.Text));
             if (numeric == NumericType.Real)
@@ -89,23 +96,15 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             // Char.
             if (token.Text.StartsWith('\'') && token.Text.EndsWith('\''))
-            {
-                string str = ParseText(token.Text.Slice(1, token.Text.Length - 2), charEscapes);
-                return new CharNode(str);
-            }
+                return new CharNode(ParseText(token, charEscapes));
 
             // String.
             if (token.Text.StartsWith('"') && token.Text.EndsWith('"'))
-            {
-                string str = ParseText(token.Text.Slice(1, token.Text.Length - 2), strEscapes);
-                return new StringNode(str);
-            }
+                return new StringNode(ParseText(token, strEscapes));
 
             // Decimal.
-            if (token.Text.StartsWith('$'))
-                return new DecimalNode(ParseDecimal(token.Text, 1));
-            if (token.Text.StartsWith("-$"))
-                return new DecimalNode('-' + ParseDecimal(token.Text, 2));
+            if (token.Text.StartsWith('$') || token.Text.StartsWith("-$"))
+                return ParseDecimal(token);
 
             // Color.
             if (token.Text.StartsWith('#'))
@@ -113,7 +112,7 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             // Time.
             if (token.Text.StartsWith('@') && token.Text.EndsWith(';'))
-                return ParseDateTime(token.Text);
+                return ParseDateTime(token);
 
             // Bytes.
             if (token.Text.StartsWith("b_"))
@@ -121,363 +120,63 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             // Ref.
             if (token.Text.StartsWith('&') && token.Text.EndsWith(';'))
-            {
-                string str = ParseText(token.Text.Slice(1, token.Text.Length - 2), refEscapes);
-                return new RefNode(str);
-            }
+                return new RefNode(ParseText(token, refEscapes));
 
             // List.
             if (token.Text.Equals('['))
-            {
-                ListNode list = new ListNode();
+                return ParseList(text, lexer);
 
-                while (true)
-                {
-                    Token next = ExpectToken(text, ref lexer, "Unclosed list.");
-
-                    // Preliminary checks.
-                    if (list.Count == 0)
-                    {
-                        // Empty list.
-                        if (next.Text.Equals(']'))
-                            return list;
-
-                        DisallowEqual(next, ',', "Lists may not contain leading commas.");
-                    }
-                    else
-                    {
-                        DisallowEqual(next, ',', "Lists may not contain consecutive commas.");
-                        DisallowEqual(next, ']', "Lists may not contain trailing commas.");
-                    }
-
-                    // Parse element.
-                    list.AddValue(ParseToken(text, next, ref lexer));
-
-                    // Next token: comma or list closer.
-                    next = ExpectToken(text, ref lexer, "Unclosed list.");
-
-                    if (next.Text.Equals(']'))
-                        return list;
-
-                    MustEqual(next, ',', "List elements must be separated by commas.");
-                }
-            }
-
-            // Dict.
+            // Dictionary.
             if (token.Text.Equals('{'))
-            {
-                DictNode dict = new DictNode();
+                return ParseDictionary(text, lexer);
 
-                while (true)
-                {
-                    Token next = ExpectToken(text, ref lexer, "Unclosed dictionary.");
-
-                    // Preliminary checks.
-                    if (dict.Count == 0)
-                    {
-                        // Empty dictionary.
-                        if (next.Text.Equals('}'))
-                            return dict;
-
-                        DisallowEqual(next, ',', "Dictionaries may not contain leading commas.");
-                    }
-                    else
-                    {
-                        DisallowEqual(next, ',', "Dictionaries may not contain consecutive commas.");
-                        DisallowEqual(next, '}', "Dictionaries may not contain trailing commas.");
-                    }
-
-                    // Parse entry key and value pair.
-                    INode key = ParseToken(text, next, ref lexer);
-
-                    ExpectSymbol(text, ref lexer, ':', "Dictionary keys must be followed by a colon.");
-
-                    next = ExpectToken(text, ref lexer, "Unclosed dictionary.");
-                    DisallowEqual(next, ',', "Dictionary entries must contain a value after the colon.");
-                    DisallowEqual(next, ':', "Dictionaries may not contain consecutive colons.");
-                    DisallowEqual(next, '}', "Dictionaries may not contain trailing colons.");
-                    INode value = ParseToken(text, next, ref lexer);
-
-                    dict.AddPair(key, value);
-
-                    // Next token: comma or dictionary closer.
-                    next = ExpectToken(text, ref lexer, "Unclosed dictionary.");
-
-                    if (next.Text.Equals('}'))
-                        return dict;
-
-                    MustEqual(next, ',', "Dictionary entries must be separated by commas.");
-                }
-            }
-            
             // Object.
             if (token.Text.Equals('<'))
-            {
-                ObjectNode obj = new ObjectNode();
-
-                while (true)
-                {
-                    Token next = ExpectToken(text, ref lexer, "Unclosed object.");
-
-                    // Preliminary checks.
-                    if (obj.Count == 0)
-                    {
-                        // Empty object.
-                        if (next.Text.Equals('>'))
-                            return obj;
-
-                        DisallowEqual(next, ',', "Objects may not contain leading commas.");
-                    }
-                    else
-                    {
-                        DisallowEqual(next, ',', "Objects may not contain consecutive commas.");
-                        DisallowEqual(next, '>', "Objects may not contain trailing commas.");
-                    }
-
-                    // Parse member name & value.
-                    DisallowEqual(next, ':', "Object names may not equal ':'.");
-                    string name = next.ToString();
-
-                    ExpectSymbol(text, ref lexer, ':', "Object member names must be followed by a colon.");
-
-                    next = ExpectToken(text, ref lexer, "Unclosed object.");
-                    DisallowEqual(next, ',', "Object members must contain a value after the colon.");
-                    DisallowEqual(next, ':', "Objects may not contain consecutive colons.");
-                    DisallowEqual(next, '>', "Objects may not contain trailing colons.");
-                    INode valueNode = ParseToken(text, next, ref lexer);
-
-                    obj.AddMember(name, valueNode);
-
-                    // Next token: comma or object closer.
-                    next = ExpectToken(text, ref lexer, "Unclosed object.");
-                    if (next.Text.Equals('>'))
-                        return obj;
-
-                    MustEqual(next, ',', "Object members must be separated by commas.");
-                }
-            }
+                return ParseObject(text, lexer);
 
             // Illegal tokens.
-            throw new FormatException($"Illegal token: {new string(token.Text)}.");
+            TokenError(token, $"Unexpected token.");
+            return null;
         }
-
-        /* Private types. */
-        private enum NumericType { NaN, Int, Real };
 
         /* Private methods. */
-        #region TOKEN_VALIDATION
-        /// <summary>
-        /// Throw a format exception related to some token.
-        /// </summary>
-        private static void TokenError(Token token, string errorMessage)
-        {
-            if (token.IsEOF)
-                throw new FormatException($"At EOF: {errorMessage}");
-            throw new FormatException($"At {token.Lexeme.Start} ({token.ToString()}): {errorMessage}");
-        }
-
-        /// <summary>
-        /// Try to get a token and throw a format exception on failure.
-        /// </summary>
-        private static Token ExpectToken(TextSpan text, ref Lexer lexer, string errorMessage)
-        {
-            if (!lexer.GetNextToken(text, out Token token))
-                TokenError(Token.EOF, errorMessage);
-            return token;
-        }
-
-        /// <summary>
-        /// Try to get a token, check if it equals a symbol and throw a format exception on failure.
-        /// </summary>
-        private static Token ExpectSymbol(TextSpan text, ref Lexer lexer, char symbol, string errorMessage)
-        {
-            Token token = ExpectToken(text, ref lexer, errorMessage);
-            if (!token.Text.Equals(symbol))
-                TokenError(token, errorMessage);
-            return token;
-        }
-
-        /// <summary>
-        /// Throw a format exception if a token does not equal some character.
-        /// </summary>
-        private static void MustEqual(Token token, char chr, string errorMessage)
-        {
-            if (!token.Text.Equals(chr))
-                TokenError(token, errorMessage);
-        }
-
-        /// <summary>
-        /// Throw a format exception if a token equals some character.
-        /// </summary>
-        private static void DisallowEqual(Token token, char chr, string errorMessage)
-        {
-            if (token.Text.Equals(chr))
-                throw new FormatException($"At {token.Lexeme.Start} ({token.ToString()}): {errorMessage}");
-        }
-        #endregion
-
-        /// <summary>
-        /// Parse a textual literal (without the delimiters).
-        /// </summary>
-        private static string ParseText(TextSpan span, HashSet<char> requiredEscapes)
-        {
-            StringBuilder sb = new();
-            for (int i = 0; i < span.Length; i++)
-            {
-                char c = span[i];
-
-                // Illegal characters.
-                if (!(c == 0x09 || c == 0x0A || c == 0x0D || c == 0x20
-                    || c >= 0x21 && c <= 0x7E
-                    || c >= 0xA1 && c <= 0xAC
-                    || c >= 0xAE && c <= 0xFF))
-                {
-                    throw new FormatException($"Illegal character '{(int)c:X}' at {new string(span)}.");
-                }
-
-                // Escaped.
-                else if (ExtractEscape(span, i, out UnicodePair escaped, out int length))
-                {
-                    sb.Append(escaped);
-                    i += length - 1;
-                }
-
-                // Illegal unescaped.
-                else if (requiredEscapes.Contains(c))
-                    throw new FormatException($"Illegal unescaped character '{(int)c:X}' at {new string(span)}.");
-
-                // Non-escaped.
-                else
-                    sb.Append(c);
-            }
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Parse an escape sequence (and get the original sequence's length).
-        /// </summary>
-        private static bool ExtractEscape(TextSpan span, int index, out UnicodePair chr, out int length)
-        {
-            // Must start with a backslash.
-            char current = span[index];
-            if (current != '\\')
-            {
-                chr = 0;
-                length = 0;
-                return false;
-            }
-
-            // Must be followed by another character.
-            if (index + 1 >= span.Length)
-                throw new FormatException($"Unclosed escape sequence at {new string(span)}.");
-
-            char next = span[index + 1];
-
-            // Whitespace.
-            if (next == 't')
-            {
-                chr = '\t';
-                length = 2;
-            }
-            else if (next == 'n')
-            {
-                chr = '\n';
-                length = 2;
-            }
-            else if (next == 's')
-            {
-                chr = ' ';
-                length = 2;
-            }
-
-            // Delimiter characters.
-            else if (next == '"' || next == '\'' || next == '(' || next == ')'
-                || next == '\\' || next == ';' || next == '`')
-            {
-                chr = next;
-                length = 2;
-            }
-
-            // Unicode.
-            else
-            {
-                int unicodeEnd = span.FirstIndexOf(index + 1, ';');
-                if (unicodeEnd == -1)
-                    throw new FormatException($"Unclosed unicode escape sequence at {new string(span)}.");
-
-                int hexLength = unicodeEnd - (index + 1);
-                TextSpan unicodeHex = span.Slice(index + 1, hexLength);
-                try
-                {
-                    chr = ParseHex(unicodeHex);
-                    length = hexLength + 2;
-                }
-                catch
-                {
-                    throw new FormatException($"Invalid unicode escape sequence at {new string(span)}.");
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Parse a hex number.
-        /// </summary>
-        private static int ParseHex(ReadOnlySpan<char> hex)
-        {
-            if (hex.Length == 0)
-                throw new FormatException("Input cannot be empty.");
-
-            int result = 0;
-
-            for (int i = 0; i < hex.Length; i++)
-            {
-                char c = hex[i];
-                int value;
-
-                if (c >= '0' && c <= '9')
-                    value = c - '0';
-                else if (c >= 'A' && c <= 'F')
-                    value = c - 'A' + 10;
-                else if (c >= 'a' && c <= 'f')
-                    value = c - 'a' + 10;
-                else
-                    throw new FormatException($"Invalid hex character: '{c}'");
-
-                result = (result << 4) | value;
-            }
-
-            return result;
-        }
-
         /// <summary>
         /// Parse a decimal number.
         /// </summary>
-        private static string ParseDecimal(TextSpan span, int offset)
+        private static DecimalNode ParseDecimal(Token token)
         {
-            TextSpan contents = span.Slice(offset);
+            // Get contents.
+            bool negative = token.Text.StartsWith('-');
+            int offset = negative ? 2 : 1;
+            TextSpan contents = token.Text.Slice(offset);
 
             // Empty literal (integer zero).
             if (contents.Length == 0)
-                return "0";
+                return new DecimalNode("0");
 
             // May not have a negative sign after $, or be non-numeric.
             if (contents.StartsWith('-'))
-                throw new FormatException($"Malformed decimal token: {new string(span)}.");
-            if (GetNumericType(contents) == NumericType.NaN)
-                throw new FormatException($"Non-numeric decimal token: {new string(span)}.");
+                TokenError(token, "Negative decimals must use the syntax -$ and may not have a - sign after the $ sign.");
+            if (GetNumericType(contents, NumericParseMode.AllowLonePoint) == NumericType.NaN)
+                TokenError(token, "Non-numeric decimal.");
 
-            // Create [decimal.[fractional] form.
-            return ProcessReal(contents);
+            // Create proper decimal form (i.e. .5 to 0.5).
+            string processed = ProcessReal(contents);
+
+            // Prepend - sign if negative.
+            if (negative)
+                processed = '-' + processed;
+
+            // Create node.
+            return new DecimalNode(processed);
         }
 
         /// <summary>
         /// Parse a date/time literal.
         /// </summary>
-        private static TimeNode ParseDateTime(TextSpan span)
+        private static TimeNode ParseDateTime(Token token)
         {
-            TextSpan contents = span.Slice(1, span.Length - 2);
+            TextSpan contents = token.Unpack(1, 1);
 
             // Empty literal.
             if (contents.Length == 0)
@@ -514,158 +213,238 @@ namespace Rusty.Serialization.CSCD.Parsing
                 return node;
             }
 
-            throw new FormatException($"Malformed time literal: {new string(span)}.");
+            TokenError(token, $"Malformed time literal.");
+            return null;
         }
 
         /// <summary>
-        /// Parse a date component.
+        /// Parse a sequence of tokens as a list node.
         /// </summary>
-        private static void ParseDate(TimeNode node, TextSpan date)
+        private static ListNode ParseList(TextSpan text, Lexer lexer)
         {
-            // Negative year.
-            bool negativeYear = false;
-            if (date.StartsWith('-'))
+
+            ListNode list = new ListNode();
+
+            while (true)
             {
-                negativeYear = true;
-                date = date.Slice(1);
-            }
+                Token next = ExpectToken(text, lexer, "Unclosed list.");
 
-            // Parse year.
-            int endOfYear = date.FirstIndexOf('-');
-            if (endOfYear == -1)
-                throw new FormatException($"Date does not contain a year: {new string(date)}.");
-
-            TextSpan year = date.Slice(0, endOfYear);
-            if (year.Length == 0)
-                throw new FormatException($"Empty year term in: {new string(date)}.");
-            if (year.StartsWith('-'))
-                throw new FormatException($"Duplicate minus sign in: {new string(date)}.");
-            if (GetNumericType(year) != NumericType.Int)
-                throw new FormatException($"Not an integer year: {new string(date)}.");
-
-            if (negativeYear)
-                node.Year = '-' + new string(year);
-            else
-                node.Year = new string(year);
-
-            // Parse month.
-            int endOfMonth = date.FirstIndexOf(endOfYear + 1, '-');
-            if (endOfMonth == -1)
-                throw new FormatException($"Date does not contain a month: {new string(date)}.");
-
-            TextSpan month = date.Slice(endOfYear + 1, endOfMonth - (endOfYear + 1));
-            if (month.Length == 0)
-                throw new FormatException($"Empty month term in: {new string(date)}.");
-            if (month.StartsWith('-'))
-                throw new FormatException($"Negative month in: {new string(date)}.");
-            if (GetNumericType(month) != NumericType.Int)
-                throw new FormatException($"Not an integer month: {new string(date)}.");
-
-            node.Month = new string(month);
-
-            // Parse day.
-            TextSpan day = date.Slice(endOfMonth + 1);
-            if (day.Length == 0)
-                throw new FormatException($"Empty day term in: {new string(date)}.");
-            if (day.StartsWith('-'))
-                throw new FormatException($"Negative day in: {new string(date)}.");
-            if (GetNumericType(day) != NumericType.Int)
-                throw new FormatException($"Not an integer day: {new string(date)}.");
-
-            node.Day = new string(day);
-        }
-
-        /// <summary>
-        /// Parse a time component.
-        /// </summary>
-        private static void ParseTime(TimeNode node, TextSpan time)
-        {
-            // Parse hour.
-            int endOfHour = time.FirstIndexOf(':');
-            if (endOfHour == -1)
-                throw new FormatException($"Time does not contain an hour: {new string(time)}.");
-
-            TextSpan hour = time.Slice(0, endOfHour);
-            if (hour.Length == 0)
-                throw new FormatException($"Empty hour term in: {new string(time)}.");
-            if (hour.StartsWith('-'))
-                throw new FormatException($"Negative hour in: {new string(time)}.");
-            if (GetNumericType(hour) != NumericType.Int)
-                throw new FormatException($"Not an integer hour: {new string(time)}.");
-
-            node.Hour = new string(hour);
-
-            // Parse minute.
-            int endOfMinute = time.FirstIndexOf(endOfHour + 1, ':');
-            if (endOfMinute == -1)
-                throw new FormatException($"Time does not contain a minute: {new string(time)}.");
-
-            TextSpan minute = time.Slice(endOfHour + 1, endOfMinute - (endOfHour + 1));
-            if (minute.Length == 0)
-                throw new FormatException($"Empty minute term in: {new string(time)}.");
-            if (minute.StartsWith('-'))
-                throw new FormatException($"Negative minute in: {new string(time)}.");
-            if (GetNumericType(minute) != NumericType.Int)
-                throw new FormatException($"Not an integer minute: {new string(time)}.");
-
-            node.Minute = new string(minute);
-
-            // Parse second.
-            TextSpan second = time.Slice(endOfMinute + 1);
-            if (second.Length == 0)
-                throw new FormatException($"Empty second term in: {new string(time)}.");
-            if (second.StartsWith('-'))
-                throw new FormatException($"Negative second in: {new string(time)}.");
-            if (GetNumericType(second) == NumericType.NaN)
-                throw new FormatException($"Not a numeric second: {new string(time)}.");
-
-            node.Second = new string(second);
-        }
-
-        /// <summary>
-        /// Get the numeric type of a string ("Int" or "Real"). Returns "NaN" if not numeric.
-        /// Notes:<br/>
-        /// - Omitted integer and fractional parts are allowed (e.g. "1.", "-.5").<br/>
-        /// - The string "." is considered a valid representation of "0.0".<br/>
-        /// - The string "-." is considered a valid representation of "-0.0".
-        /// </summary>
-        private static NumericType GetNumericType(TextSpan span)
-        {
-            int i = 0;
-            bool fractional = false;
-
-            if (span.Length == 0)
-                return NumericType.NaN;
-
-            // Leading minus sign.
-            if (span[0] == '-')
-            {
-                if (span.Length == 1)
-                    return NumericType.NaN;
-                else
-                    i++;
-            }
-
-            // Check remaining characters.
-            for (; i < span.Length; i++)
-            {
-                // Decimal point.
-                if (span[i] == '.')
+                // Preliminary checks.
+                if (list.Count == 0)
                 {
-                    if (!fractional)
-                        fractional = true;
-                    else
-                        return NumericType.NaN;
+                    // Empty list.
+                    if (next.Text.Equals(']'))
+                        return list;
+
+                    DisallowEqual(next, ',', "Lists may not contain leading commas.");
+                }
+                else
+                {
+                    DisallowEqual(next, ',', "Lists may not contain consecutive commas.");
+                    DisallowEqual(next, ']', "Lists may not contain trailing commas.");
                 }
 
-                // Not numeric.
-                else if (span[i] < '0' || span[i] > '9')
-                    return NumericType.NaN;
+                // Parse element.
+                list.AddValue(ParseToken(text, next, lexer));
+
+                // Next token: comma or list closer.
+                next = ExpectToken(text, lexer, "Unclosed list.");
+
+                if (next.Text.Equals(']'))
+                    return list;
+
+                MustEqual(next, ',', "List elements must be separated by commas.");
             }
-            if (fractional)
-                return NumericType.Real;
+        }
+
+        /// <summary>
+        /// Parse a sequence of tokens as a dictionary node.
+        /// </summary>
+        private static DictNode ParseDictionary(TextSpan text, Lexer lexer)
+        {
+            DictNode dict = new DictNode();
+
+            while (true)
+            {
+                Token next = ExpectToken(text, lexer, "Unclosed dictionary.");
+
+                // Preliminary checks.
+                if (dict.Count == 0)
+                {
+                    // Empty dictionary.
+                    if (next.Text.Equals('}'))
+                        return dict;
+
+                    DisallowEqual(next, ',', "Dictionaries may not contain leading commas.");
+                }
+                else
+                {
+                    DisallowEqual(next, ',', "Dictionaries may not contain consecutive commas.");
+                    DisallowEqual(next, '}', "Dictionaries may not contain trailing commas.");
+                }
+
+                // Parse entry key and value pair.
+                INode key = ParseToken(text, next, lexer);
+
+                ExpectSymbol(text, lexer, ':', "Dictionary keys must be followed by a colon.");
+
+                next = ExpectToken(text, lexer, "Unclosed dictionary.");
+                DisallowEqual(next, ',', "Dictionary entries must contain a value after the colon.");
+                DisallowEqual(next, ':', "Dictionaries may not contain consecutive colons.");
+                DisallowEqual(next, '}', "Dictionaries may not contain trailing colons.");
+                INode value = ParseToken(text, next, lexer);
+
+                dict.AddPair(key, value);
+
+                // Next token: comma or dictionary closer.
+                next = ExpectToken(text, lexer, "Unclosed dictionary.");
+
+                if (next.Text.Equals('}'))
+                    return dict;
+
+                MustEqual(next, ',', "Dictionary entries must be separated by commas.");
+            }
+        }
+
+        /// <summary>
+        /// Parse a sequence of tokens as an object node.
+        /// </summary>
+        private static ObjectNode ParseObject(TextSpan text, Lexer lexer)
+        {
+            ObjectNode obj = new ObjectNode();
+
+            while (true)
+            {
+                Token next = ExpectToken(text, lexer, "Unclosed object.");
+
+                // Preliminary checks.
+                if (obj.Count == 0)
+                {
+                    // Empty object.
+                    if (next.Text.Equals('>'))
+                        return obj;
+
+                    DisallowEqual(next, ',', "Objects may not contain leading commas.");
+                }
+                else
+                {
+                    DisallowEqual(next, ',', "Objects may not contain consecutive commas.");
+                    DisallowEqual(next, '>', "Objects may not contain trailing commas.");
+                }
+
+                // Parse member name & value.
+                DisallowEqual(next, ':', "Object names may not equal ':'.");
+                string name = next.ToString();
+
+                ExpectSymbol(text, lexer, ':', "Object member names must be followed by a colon.");
+
+                next = ExpectToken(text, lexer, "Unclosed object.");
+                DisallowEqual(next, ',', "Object members must contain a value after the colon.");
+                DisallowEqual(next, ':', "Objects may not contain consecutive colons.");
+                DisallowEqual(next, '>', "Objects may not contain trailing colons.");
+                INode valueNode = ParseToken(text, next, lexer);
+
+                obj.AddMember(name, valueNode);
+
+                // Next token: comma or object closer.
+                next = ExpectToken(text, lexer, "Unclosed object.");
+                if (next.Text.Equals('>'))
+                    return obj;
+
+                MustEqual(next, ',', "Object members must be separated by commas.");
+            }
+        }
+
+        // Helper methods.
+
+        /// <summary>
+        /// Parse a textual literal (without the delimiters).
+        /// </summary>
+        private static string ParseText(Token token, HashSet<UnicodePair> requiredEscapes)
+        {
+            // Remove enclosing delimiters.
+            TextSpan contents = token.Unpack(1, 1);
+
+            StringBuilder sb = new();
+            for (int i = 0; i < contents.Length; i++)
+            {
+                UnicodePair c = contents[i];
+
+                // Illegal characters.
+                if (!(c == 0x09 || c == 0x0A || c == 0x0D || c == 0x20
+                    || c >= 0x21 && c <= 0x7E
+                    || c >= 0xA1 && c <= 0xAC
+                    || c >= 0xAE && c <= 0xFF))
+                {
+                    TokenError(token, $"Illegal character '{c}'.");
+                }
+
+                // Escaped.
+                else if (ExtractEscape(contents, i, out UnicodePair escaped, out int length))
+                {
+                    sb.Append(escaped);
+                    i += length - 1;
+                }
+
+                // Illegal unescaped.
+                else if (requiredEscapes.Contains(c))
+                    TokenError(token, $"Illegal unescaped character '{c}'.");
+
+                // Non-escaped.
+                else
+                    sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Parse an escape sequence (and get the original sequence's length).
+        /// </summary>
+        private static bool ExtractEscape(TextSpan span, int index, out UnicodePair chr, out int sequenceLength)
+        {
+            // Must start with a backslash.
+            char current = span[index];
+            if (current != '\\')
+            {
+                chr = 0;
+                sequenceLength = 0;
+                return false;
+            }
+
+            // Must be followed by another character.
+            if (index + 1 >= span.Length)
+                throw new FormatException($"Unclosed escape sequence at {new string(span)}.");
+
+            char next = span[index + 1];
+
+            // Simple escape codes.
+            if (simpleEscapes.TryGetValue(next, out chr))
+            {
+                sequenceLength = 2;
+                return true;
+            }
+
+            // Unicode.
             else
-                return NumericType.Int;
+            {
+                int unicodeEnd = span.FirstIndexOf(index + 1, ';');
+                if (unicodeEnd == -1)
+                    throw new FormatException($"Unclosed unicode escape sequence at {new string(span)}.");
+
+                int hexLength = unicodeEnd - (index + 1);
+                TextSpan unicodeHex = span.Slice(index + 1, hexLength);
+                try
+                {
+                    chr = ParseHex(unicodeHex);
+                    sequenceLength = hexLength + 2;
+                }
+                catch
+                {
+                    throw new FormatException($"Invalid unicode escape sequence at {new string(span)}.");
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -698,6 +477,123 @@ namespace Rusty.Serialization.CSCD.Parsing
             // No change needed.
             else
                 return new string(span);
+        }
+
+        /// <summary>
+        /// Parse a date component.
+        /// </summary>
+        private static void ParseDate(TimeNode node, TextSpan date)
+        {
+            // Negative year.
+            bool negativeYear = false;
+            if (date.StartsWith('-'))
+            {
+                negativeYear = true;
+                date = date.Slice(1);
+            }
+
+            // Parse year.
+            int endOfYear = date.FirstIndexOf('-');
+            if (endOfYear == -1)
+                throw new FormatException($"Date does not contain a year: {new string(date)}.");
+
+            TextSpan year = date.Slice(0, endOfYear);
+            if (year.Length == 0)
+                throw new FormatException($"Empty year term in: {new string(date)}.");
+            if (year.StartsWith('-'))
+                throw new FormatException($"Duplicate minus sign in: {new string(date)}.");
+            if (GetNumericType(year) != NumericType.Int)
+                throw new FormatException($"Not an integer year: {new string(date)}."); 
+
+            if (negativeYear)
+                node.Year = '-' + new string(year);
+            else
+                node.Year = new string(year);
+
+            // Parse month.
+            int endOfMonth = date.FirstIndexOf(endOfYear + 1, '-');
+            if (endOfMonth == -1)
+                throw new FormatException($"Date does not contain a month: {new string(date)}.");
+
+            TextSpan month = date.Slice(endOfYear + 1, endOfMonth - (endOfYear + 1));
+            if (month.Length == 0)
+                throw new FormatException($"Empty month term in: {new string(date)}.");
+            if (month.StartsWith('-'))
+                throw new FormatException($"Negative month in: {new string(date)}.");
+            if (GetNumericType(month) != NumericType.Int)
+                throw new FormatException($"Not an integer month: {new string(date)}.");
+            if (!IsWithinRange(month, 1, 12))
+                throw new FormatException($"Month not in the range [1-12]: {new string(date)}.");
+
+            node.Month = new string(month);
+
+            // Parse day.
+            TextSpan day = date.Slice(endOfMonth + 1);
+            if (day.Length == 0)
+                throw new FormatException($"Empty day term in: {new string(date)}.");
+            if (day.StartsWith('-'))
+                throw new FormatException($"Negative day in: {new string(date)}.");
+            if (GetNumericType(day) != NumericType.Int)
+                throw new FormatException($"Not an integer day: {new string(date)}.");
+            if (!IsWithinRange(day, 1, 31))
+                throw new FormatException($"Day not in the range [1-31]: {new string(date)}.");
+
+            node.Day = new string(day);
+        }
+
+        /// <summary>
+        /// Parse a time component.
+        /// </summary>
+        private static void ParseTime(TimeNode node, TextSpan time)
+        {
+            // Parse hour.
+            int endOfHour = time.FirstIndexOf(':');
+            if (endOfHour == -1)
+                throw new FormatException($"Time does not contain an hour: {new string(time)}.");
+
+            TextSpan hour = time.Slice(0, endOfHour);
+            if (hour.Length == 0)
+                throw new FormatException($"Empty hour term in: {new string(time)}.");
+            if (hour.StartsWith('-'))
+                throw new FormatException($"Negative hour in: {new string(time)}.");
+            if (GetNumericType(hour) != NumericType.Int)
+                throw new FormatException($"Not an integer hour: {new string(time)}.");
+            if (!IsWithinRange(hour, 0, 24))
+                throw new FormatException($"Hour not in the range [0-24]: {new string(time)}.");
+
+            node.Hour = new string(hour);
+
+            // Parse minute.
+            int endOfMinute = time.FirstIndexOf(endOfHour + 1, ':');
+            if (endOfMinute == -1)
+                throw new FormatException($"Time does not contain a minute: {new string(time)}.");
+
+            TextSpan minute = time.Slice(endOfHour + 1, endOfMinute - (endOfHour + 1));
+            if (minute.Length == 0)
+                throw new FormatException($"Empty minute term in: {new string(time)}.");
+            if (minute.StartsWith('-'))
+                throw new FormatException($"Negative minute in: {new string(time)}.");
+            if (GetNumericType(minute) != NumericType.Int)
+                throw new FormatException($"Not an integer minute: {new string(time)}.");
+            if (!IsWithinRange(minute, 0, 59))
+                throw new FormatException($"Hour not in the range [0-59]: {new string(time)}.");
+
+            node.Minute = new string(minute);
+
+            // Parse second.
+            TextSpan second = time.Slice(endOfMinute + 1);
+            if (second.Length == 0)
+                throw new FormatException($"Empty second term in: {new string(time)}.");
+            if (second.StartsWith('-'))
+                throw new FormatException($"Negative second in: {new string(time)}.");
+            if (GetNumericType(second, NumericParseMode.AllowLonePoint) == NumericType.NaN)
+                throw new FormatException($"Not a numeric second: {new string(time)}.");
+            int pointIndex = second.FirstIndexOf('.');
+            TextSpan integerPart = pointIndex == -1 ? second : second.Slice(0, pointIndex);
+            if (!IsWithinRange(integerPart, 0, 60))
+                throw new FormatException($"Second not in the range [0-60]: {new string(time)}.");
+
+            node.Second = new string(second);
         }
     }
 }

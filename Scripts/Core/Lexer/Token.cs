@@ -46,5 +46,13 @@
 
         /* Public methods. */
         public override string ToString() => new string(Text);
+
+        /// <summary>
+        /// Get the text between enclosing delimiters.
+        /// </summary>
+        public TextSpan Unpack(int prefixLength, int suffixLength)
+        {
+            return Text.Slice(prefixLength, Text.Length - prefixLength - suffixLength);
+        }
     }
 }

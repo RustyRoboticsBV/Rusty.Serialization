@@ -69,6 +69,14 @@ namespace Rusty.Serialization.Core.Serializers
         public static implicit operator UnicodePair(char chr) => new UnicodePair(chr);
         public static implicit operator UnicodePair(int codePoint) => new UnicodePair(codePoint);
 
+        /* Comparison operators. */
+        public static bool operator ==(UnicodePair chr, int codePoint) => chr.Equals(codePoint);
+        public static bool operator !=(UnicodePair chr, int codePoint) => !chr.Equals(codePoint);
+        public static bool operator >(UnicodePair chr, int codePoint) => chr.CodePoint > codePoint;
+        public static bool operator <(UnicodePair chr, int codePoint) => chr.CodePoint < codePoint;
+        public static bool operator >=(UnicodePair chr, int codePoint) => chr.CodePoint >= codePoint;
+        public static bool operator <=(UnicodePair chr, int codePoint) => chr.CodePoint <= codePoint;
+
         /* Public methods. */
         public override string ToString()
         {
@@ -77,6 +85,8 @@ namespace Rusty.Serialization.Core.Serializers
             else
                 return string.Concat(High, Low);
         }
+
+        public bool Equals(int codePoint) => CodePoint == codePoint;
 
         public void CopyTo(Span<char> destination)
         {
