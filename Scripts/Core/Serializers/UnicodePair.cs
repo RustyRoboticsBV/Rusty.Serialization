@@ -85,8 +85,9 @@ namespace Rusty.Serialization.Core.Serializers
             else
                 return string.Concat(High, Low);
         }
-
+        public override bool Equals(object obj) => obj is int i ? Equals(i) : base.Equals(obj);
         public bool Equals(int codePoint) => CodePoint == codePoint;
+        public override int GetHashCode() => High.GetHashCode() * 27 + Low.GetHashCode();
 
         public void CopyTo(Span<char> destination)
         {

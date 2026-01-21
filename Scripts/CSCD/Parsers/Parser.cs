@@ -203,36 +203,44 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             TimeNode node = new TimeNode();
 
-            // Date and time.
-            int underscore = contents.FirstIndexOf('_');
-            if (underscore != -1)
+            try
             {
-                TextSpan date = contents.Slice(0, underscore);
-                ParseDate(node, date);
+                // Date and time.
+                int underscore = contents.FirstIndexOf('_');
+                if (underscore != -1)
+                {
+                    TextSpan date = contents.Slice(0, underscore);
+                    ParseDate(node, date);
 
-                TextSpan time = contents.Slice(underscore + 1);
-                ParseTime(node, time);
+                    TextSpan time = contents.Slice(underscore + 1);
+                    ParseTime(node, time);
 
-                return node;
+                    return node;
+                }
+
+                // Date only.
+                int dash = contents.FirstIndexOf('-');
+                if (dash != -1)
+                {
+                    ParseDate(node, contents);
+                    return node;
+                }
+
+                // Time only.
+                int colon = contents.FirstIndexOf(':');
+                if (colon != -1)
+                {
+                    ParseTime(node, contents);
+                    return node;
+                }
+            }
+            catch (Exception ex)
+            {
+                TokenError(token, ex.Message);
+                return null;
             }
 
-            // Date only.
-            int dash = contents.FirstIndexOf('-');
-            if (dash != -1)
-            {
-                ParseDate(node, contents);
-                return node;
-            }
-
-            // Time only.
-            int colon = contents.FirstIndexOf(':');
-            if (colon != -1)
-            {
-                ParseTime(node, contents);
-                return node;
-            }
-
-            TokenError(token, $"Malformed time literal.");
+            TokenError(token, "Malformed time literal.");
             return null;
         }
 
@@ -514,15 +522,15 @@ namespace Rusty.Serialization.CSCD.Parsing
             // Parse year.
             int endOfYear = date.FirstIndexOf('-');
             if (endOfYear == -1)
-                throw new FormatException($"Date does not contain a year: {new string(date)}.");
+                throw new FormatException($"Date does not contain a year.");
 
             TextSpan year = date.Slice(0, endOfYear);
             if (year.Length == 0)
-                throw new FormatException($"Empty year term in: {new string(date)}.");
+                throw new FormatException($"Empty year term.");
             if (year.StartsWith('-'))
-                throw new FormatException($"Duplicate minus sign in: {new string(date)}.");
+                throw new FormatException($"Duplicate minus sign.");
             if (GetNumericType(year) != NumericType.Int)
-                throw new FormatException($"Not an integer year: {new string(date)}."); 
+                throw new FormatException($"Not an integer year."); 
 
             if (negativeYear)
                 node.Year = '-' + new string(year);
@@ -532,30 +540,30 @@ namespace Rusty.Serialization.CSCD.Parsing
             // Parse month.
             int endOfMonth = date.FirstIndexOf(endOfYear + 1, '-');
             if (endOfMonth == -1)
-                throw new FormatException($"Date does not contain a month: {new string(date)}.");
+                throw new FormatException($"Date does not contain a month.");
 
             TextSpan month = date.Slice(endOfYear + 1, endOfMonth - (endOfYear + 1));
             if (month.Length == 0)
-                throw new FormatException($"Empty month term in: {new string(date)}.");
+                throw new FormatException($"Empty month term.");
             if (month.StartsWith('-'))
-                throw new FormatException($"Negative month in: {new string(date)}.");
+                throw new FormatException($"Negative month.");
             if (GetNumericType(month) != NumericType.Int)
-                throw new FormatException($"Not an integer month: {new string(date)}.");
+                throw new FormatException($"Not an integer month.");
             if (!IsWithinRange(month, 1, 12))
-                throw new FormatException($"Month not in the range [1-12]: {new string(date)}.");
+                throw new FormatException($"Month must be in range [1-12].");
 
             node.Month = new string(month);
 
             // Parse day.
             TextSpan day = date.Slice(endOfMonth + 1);
             if (day.Length == 0)
-                throw new FormatException($"Empty day term in: {new string(date)}.");
+                throw new FormatException($"Empty day term.");
             if (day.StartsWith('-'))
-                throw new FormatException($"Negative day in: {new string(date)}.");
+                throw new FormatException($"Negative day.");
             if (GetNumericType(day) != NumericType.Int)
-                throw new FormatException($"Not an integer day: {new string(date)}.");
+                throw new FormatException($"Not an integer day.");
             if (!IsWithinRange(day, 1, 31))
-                throw new FormatException($"Day not in the range [1-31]: {new string(date)}.");
+                throw new FormatException($"Day must be in range [1-31].");
 
             node.Day = new string(day);
         }
@@ -572,13 +580,13 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             TextSpan hour = time.Slice(0, endOfHour);
             if (hour.Length == 0)
-                throw new FormatException($"Empty hour term in.");
+                throw new FormatException($"Empty hour term.");
             if (hour.StartsWith('-'))
-                throw new FormatException($"Negative hour in.");
+                throw new FormatException($"Negative hour.");
             if (GetNumericType(hour) != NumericType.Int)
                 throw new FormatException($"Not an integer hour.");
             if (!IsWithinRange(hour, 0, 24))
-                throw new FormatException($"Hour not in the range [0-24].");
+                throw new FormatException($"Hour must be in range [0-24].");
 
             node.Hour = new string(hour);
 
