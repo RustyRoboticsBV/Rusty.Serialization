@@ -31,6 +31,8 @@ namespace Rusty.Serialization.Core.Lexing
         public static implicit operator ReadOnlySpan<char>(TextSpan textSpan) => textSpan.span;
 
         /* Public methods. */
+        public override string ToString() => new string(span);
+
         /// <summary>
         /// Get a slice of the text, starting at some character and continuing to the end.
         /// </summary>

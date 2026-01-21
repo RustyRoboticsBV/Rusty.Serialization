@@ -526,11 +526,11 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             TextSpan year = date.Slice(0, endOfYear);
             if (year.Length == 0)
-                throw new FormatException($"Empty year term.");
+                throw new FormatException($"Empty year term {year.ToString()}.");
             if (year.StartsWith('-'))
-                throw new FormatException($"Duplicate minus sign.");
+                throw new FormatException($"Duplicate minus sign {year.ToString()}.");
             if (GetNumericType(year) != NumericType.Int)
-                throw new FormatException($"Not an integer year."); 
+                throw new FormatException($"Non-integer year {year.ToString()}."); 
 
             if (negativeYear)
                 node.Year = '-' + new string(year);
@@ -544,26 +544,26 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             TextSpan month = date.Slice(endOfYear + 1, endOfMonth - (endOfYear + 1));
             if (month.Length == 0)
-                throw new FormatException($"Empty month term.");
+                throw new FormatException($"Empty month term {month.ToString()}.");
             if (month.StartsWith('-'))
-                throw new FormatException($"Negative month.");
+                throw new FormatException($"Negative month {month.ToString()}.");
             if (GetNumericType(month) != NumericType.Int)
-                throw new FormatException($"Not an integer month.");
+                throw new FormatException($"Non-integer month {month.ToString()}.");
             if (!IsWithinRange(month, 1, 12))
-                throw new FormatException($"Month must be in range [1-12].");
+                throw new FormatException($"Month must be in range [1-12], but equals {month.ToString()}.");
 
             node.Month = new string(month);
 
             // Parse day.
             TextSpan day = date.Slice(endOfMonth + 1);
             if (day.Length == 0)
-                throw new FormatException($"Empty day term.");
+                throw new FormatException($"Empty day term {day.ToString()}.");
             if (day.StartsWith('-'))
-                throw new FormatException($"Negative day.");
+                throw new FormatException($"Negative day {day.ToString()}.");
             if (GetNumericType(day) != NumericType.Int)
-                throw new FormatException($"Not an integer day.");
+                throw new FormatException($"Non-integer day {day.ToString()}.");
             if (!IsWithinRange(day, 1, 31))
-                throw new FormatException($"Day must be in range [1-31].");
+                throw new FormatException($"Day must be in range [1-31], but equals {day.ToString()}.");
 
             node.Day = new string(day);
         }
@@ -580,13 +580,13 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             TextSpan hour = time.Slice(0, endOfHour);
             if (hour.Length == 0)
-                throw new FormatException($"Empty hour term.");
+                throw new FormatException($"Empty hour term {hour.ToString()}.");
             if (hour.StartsWith('-'))
-                throw new FormatException($"Negative hour.");
+                throw new FormatException($"Negative hour {hour.ToString()}.");
             if (GetNumericType(hour) != NumericType.Int)
-                throw new FormatException($"Not an integer hour.");
+                throw new FormatException($"Non-integer hour {hour.ToString()}.");
             if (!IsWithinRange(hour, 0, 24))
-                throw new FormatException($"Hour must be in range [0-24].");
+                throw new FormatException($"Hour must be in range [0-24], but equals {hour.ToString()}.");
 
             node.Hour = new string(hour);
 
@@ -597,15 +597,15 @@ namespace Rusty.Serialization.CSCD.Parsing
 
             TextSpan minute = time.Slice(endOfHour + 1, endOfMinute - (endOfHour + 1));
             if (minute.Length == 0)
-                throw new FormatException($"Empty minute term.");
+                throw new FormatException($"Empty minute term {minute.ToString()}.");
             if (minute.StartsWith('-'))
-                throw new FormatException($"Negative minute.");
+                throw new FormatException($"Negative minute {minute.ToString()}.");
             if (GetNumericType(minute) != NumericType.Int)
-                throw new FormatException($"Minute must be an integer");
+                throw new FormatException($"Minute must be an integer {minute.ToString()}");
             if (!IsWithinRange(minute, 0, 59))
-                throw new FormatException($"Minute must be in range [0-59].");
+                throw new FormatException($"Minute must be in range [0-59], but equals  {minute.ToString()}.");
             if (IsWithinRange(hour, 24, 24) && !IsWithinRange(minute, 0, 0))
-                throw new FormatException("Minute must be 0 if hour is 24.");
+                throw new FormatException($"Minute must be 0 if hour is 24, but equals {minute.ToString()}.");
 
             node.Minute = new string(minute);
 
@@ -614,19 +614,19 @@ namespace Rusty.Serialization.CSCD.Parsing
             if (second.Length == 0)
                 throw new FormatException($"Empty second term.");
             if (second.StartsWith('-'))
-                throw new FormatException($"Negative second.");
+                throw new FormatException($"Negative second {second.ToString()}.");
             if (GetNumericType(second, NumericParseMode.AllowLonePoint) == NumericType.NaN)
-                throw new FormatException($"Not a numeric second.");
+                throw new FormatException($"Non-numeric second {second.ToString()}.");
             second = ProcessReal(second).AsSpan();
 
             int pointIndex = second.FirstIndexOf('.');
             TextSpan secondInt = pointIndex == -1 ? second : second.Slice(0, pointIndex);
             if (!IsWithinRange(secondInt, 0, 60))
-                throw new FormatException($"Second must be in the range [0-60].");
+                throw new FormatException($"Second must be in the range [0-60], but equals {second.ToString()}.");
 
             TextSpan secondFrac = pointIndex == -1 ? "0" : second.Slice(pointIndex + 1);
             if (IsWithinRange(hour, 24, 24) && (!IsWithinRange(secondInt, 0, 0) || !IsWithinRange(secondFrac, 0, 0)))
-                throw new FormatException("Second must be 0 if hour is 24.");
+                throw new FormatException($"Second must be 0 if hour is 24, but equals {second.ToString()}.");
 
             node.Second = new string(second);
         }
