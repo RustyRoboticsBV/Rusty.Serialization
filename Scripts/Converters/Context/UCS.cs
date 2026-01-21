@@ -94,6 +94,7 @@ namespace Rusty.Serialization
         public static T Parse<T>(string serialized, Converters converters, Codec codec)
         {
             NodeTree tree = ParseText(serialized, codec);
+            UnityEngine.Debug.Log(tree);
             return DeconvertTree<T>(tree, converters);
         }
 
@@ -103,6 +104,7 @@ namespace Rusty.Serialization
         public static object Parse(string serialized, Type type, Converters converters, Codec codec)
         {
             NodeTree tree = ParseText(serialized, codec);
+            UnityEngine.Debug.Log(tree);
             return DeconvertTree(type, tree, converters);
         }
 
