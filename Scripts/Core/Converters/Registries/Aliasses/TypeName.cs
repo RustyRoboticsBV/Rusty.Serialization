@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Rusty.Serialization.Core.Converters
+namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
     /// Represents a type name.

@@ -1,6 +1,6 @@
 #if UNITY_5_3_OR_NEWER
 using UnityEngine;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Unity

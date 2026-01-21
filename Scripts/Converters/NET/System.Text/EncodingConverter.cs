@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet

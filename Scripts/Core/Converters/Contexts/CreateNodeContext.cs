@@ -1,7 +1,7 @@
 ﻿using System;
 using Rusty.Serialization.Core.Nodes;
 
-namespace Rusty.Serialization.Core.Converters
+namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
     /// A context for the IConverter.CreateNode method.
@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Core.Converters
         private AssignNodeContext AssignNodeContext => Context.AssignNodeContext;
 
         /* Constructors. */
-        public CreateNodeContext(ConversionContext context) : base(context) { }
+        public CreateNodeContext(Converters context) : base(context) { }
 
         /* Public methods. */
         /// <summary>

@@ -8,7 +8,7 @@ using Rusty.Serialization.Core.Nodes;
 using System.Diagnostics.CodeAnalysis;
 #endif
 
-namespace Rusty.Serialization.Core.Converters
+namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
     /// A tuple converter.

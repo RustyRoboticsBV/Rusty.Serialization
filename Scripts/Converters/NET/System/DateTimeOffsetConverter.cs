@@ -1,5 +1,5 @@
 ﻿using System;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
@@ -7,7 +7,7 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET date/time + offset converter.
     /// </summary>
-    public class DateTimeOffsetConverter : Core.Converters.Converter<DateTimeOffset, ListNode>
+    public class DateTimeOffsetConverter : Core.Conversion.Converter<DateTimeOffset, ListNode>
     {
         /* Protected method. */
         protected override ListNode CreateNode(DateTimeOffset obj, CreateNodeContext context)

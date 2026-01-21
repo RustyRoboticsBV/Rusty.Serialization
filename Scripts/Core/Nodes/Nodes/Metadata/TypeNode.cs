@@ -30,9 +30,9 @@ namespace Rusty.Serialization.Core.Nodes
             INode value = null;
             for (int i = 0; i < node.Count; i++)
             {
-                if (node.GetIdentifierAt(i) == "type" && type == null)
+                if (node.GetNameAt(i) == "type" && type == null)
                     type = (StringNode)node.GetValueAt(i);
-                else if (node.GetIdentifierAt(i) == "value" && value == null)
+                else if (node.GetNameAt(i) == "value" && value == null)
                     value = node.GetValueAt(i);
             }
 

@@ -29,39 +29,23 @@ namespace Rusty.Serialization.Testing
     public class SerializerTestEditor<T, U> : Editor
         where T : SerializeTest<U>
     {
-        /* Fields. */
-        private DefaultContext cscd = new(Format.Cscd);
-        private DefaultContext json = new(Format.Json);
-        private DefaultContext xml = null;// new(Format.Xml);
-
         /* Unity events. */
         public override void OnInspectorGUI()
         {
+
             T t = (T)target;
-
-            DefaultContext context = GetContext(t.Format);
-
             // Draw buttons.
             if (GUILayout.Button("Serialize"))
             {
-                string serialized = context.Serialize(t.Object, t.PrettyPrint);
+                string serialized = UCS.Serialize(t.Object, t.Format, t.PrettyPrint);
                 t.Serialized = serialized;
             }
             if (GUILayout.Button("Deserialize"))
             {
-                if (t.Format == Format.Cscd)
-                {
-                    CSCD.Lexing.Lexer lexer = new();
-                    CSCD.Parsing.Parser parser = new();
-                    Debug.Log(parser.Parse(t.Serialized.AsSpan(), lexer));
-                }
                 if (t.Serialized == "")
                     Debug.LogError("Serialized text field is empty!! This is not a serializer bug!");
                 else
-                {
-                    U obj = context.Parse<U>(t.Serialized);
-                    t.Object = obj;
-                }
+                    t.Object = UCS.Parse<U>(t.Serialized, t.Format);
             }
             if (GUILayout.Button("Clear Object"))
                 t.Object = GetCleared();
@@ -71,21 +55,6 @@ namespace Rusty.Serialization.Testing
 
             // Draw normal inspector.
             DrawDefaultInspector();
-        }
-
-        private DefaultContext GetContext(Format format)
-        {
-            switch (format)
-            {
-                case Format.Cscd:
-                    return cscd;
-                case Format.Json:
-                    return json;
-                case Format.Xml:
-                    return xml;
-                default:
-                    throw new Exception();
-            }
         }
 
         private static U GetCleared()

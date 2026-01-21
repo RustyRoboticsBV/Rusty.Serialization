@@ -3,12 +3,12 @@ using System.Linq;
 using System.Reflection;
 using Rusty.Serialization.Core.Nodes;
 
-namespace Rusty.Serialization.Core.Converters
+namespace Rusty.Serialization.Core.Conversion
 {
     public class CreateObjectContext : SubContext
     {
         /* Constructors. */
-        public CreateObjectContext(ConversionContext context) : base(context) { }
+        public CreateObjectContext(Converters context) : base(context) { }
 
         /* Public methods. */
         /// <summary>

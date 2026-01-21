@@ -8,6 +8,9 @@ namespace Rusty.Serialization
 {
     public partial class DefaultConversionContext : ConversionContext
     {
+        /// <summary>
+        /// Add the Godot type converters.
+        /// </summary>
         private void AddGodot()
         {
             // Structs.

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Rusty.Serialization.Core.Nodes;
 
-namespace Rusty.Serialization.Core.Converters
+namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
     /// A registry for the C# types of compiler nodes, used during parsing.

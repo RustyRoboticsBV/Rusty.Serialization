@@ -1,5 +1,5 @@
 ﻿using System;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
@@ -7,7 +7,7 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET URI converter.
     /// </summary>
-    public class UriConverter : Core.Converters.Converter<Uri, StringNode>
+    public class UriConverter : Core.Conversion.Converter<Uri, StringNode>
     {
         /* Protected method. */
         protected override StringNode CreateNode(Uri obj, CreateNodeContext context)

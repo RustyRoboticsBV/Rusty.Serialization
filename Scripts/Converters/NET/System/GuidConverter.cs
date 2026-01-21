@@ -1,5 +1,5 @@
 ﻿using System;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
@@ -7,7 +7,7 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET guid converter.
     /// </summary>
-    public class GuidConverter : Core.Converters.Converter<Guid, BytesNode>
+    public class GuidConverter : Core.Conversion.Converter<Guid, BytesNode>
     {
         /* Protected method. */
         protected override BytesNode CreateNode(Guid obj, CreateNodeContext context)

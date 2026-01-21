@@ -1,5 +1,5 @@
 ﻿using System;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
@@ -7,7 +7,7 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET date/time converter.
     /// </summary>
-    public class DateTimeConverter : Core.Converters.Converter<DateTime, TimeNode>
+    public class DateTimeConverter : Core.Conversion.Converter<DateTime, TimeNode>
     {
         /* Protected method. */
         protected override TimeNode CreateNode(DateTime obj, CreateNodeContext context)

@@ -13,13 +13,16 @@ using SizeFConverter = Rusty.Serialization.DotNet.SizeFConverter;
 using RectangleConverter = Rusty.Serialization.DotNet.RectangleConverter;
 #endif
 
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.DotNet;
 
 namespace Rusty.Serialization
 {
-    public partial class DefaultConversionContext : ConversionContext
+    public partial class DefaultConverters : Converters
     {
+        /// <summary>
+        /// Add the .NET type converters.
+        /// </summary>
         private void AddSystem()
         {
             // System.
@@ -35,43 +38,43 @@ namespace Rusty.Serialization
             Converters.Add<Half, HalfConverter>();
 #endif
 
-            Converters.Add<Uri, UriConverter>();
-            Converters.Add<Version, VersionConverter>();
-            Converters.Add<Type, TypeConverter>();
+            ConverterRegistry.Add<Uri, UriConverter>();
+            ConverterRegistry.Add<Version, VersionConverter>();
+            ConverterRegistry.Add<Type, TypeConverter>();
 
-            Converters.Add<TimeSpan, TimeSpanConverter>();
-            Converters.Add<DateTime, DateTimeConverter>();
+            ConverterRegistry.Add<TimeSpan, TimeSpanConverter>();
+            ConverterRegistry.Add<DateTime, DateTimeConverter>();
 #if NET6_0_OR_GREATER
             Converters.Add<DateOnly, DateOnlyConverter>();
             Converters.Add<TimeOnly, TimeOnlyConverter>();
 #endif
 
-            Converters.Add<Guid, GuidConverter>();
+            ConverterRegistry.Add<Guid, GuidConverter>();
 
 #if NETCOREAPP3_0_OR_GREATER
             Converters.Add<Range, RangeConverter>();
 #endif
-            Converters.Add<DateTimeOffset, DateTimeOffsetConverter>();
+            ConverterRegistry.Add<DateTimeOffset, DateTimeOffsetConverter>();
 
             // System.Numerics.
-            Converters.Add<BigInteger, BigIntegerConverter>();
+            ConverterRegistry.Add<BigInteger, BigIntegerConverter>();
 
-            Converters.Add<Complex, ComplexConverter>();
-            Converters.Add<Vector2, Vector2Converter>();
-            Converters.Add<Vector3, Vector3Converter>();
-            Converters.Add<Vector4, Vector4Converter>();
-            Converters.Add<Quaternion, QuaternionConverter>();
-            Converters.Add<Plane, PlaneConverter>();
-            Converters.Add<Matrix3x2, Matrix3x2Converter>();
-            Converters.Add<Matrix4x4, Matrix4x4Converter>();
+            ConverterRegistry.Add<Complex, ComplexConverter>();
+            ConverterRegistry.Add<Vector2, Vector2Converter>();
+            ConverterRegistry.Add<Vector3, Vector3Converter>();
+            ConverterRegistry.Add<Vector4, Vector4Converter>();
+            ConverterRegistry.Add<Quaternion, QuaternionConverter>();
+            ConverterRegistry.Add<Plane, PlaneConverter>();
+            ConverterRegistry.Add<Matrix3x2, Matrix3x2Converter>();
+            ConverterRegistry.Add<Matrix4x4, Matrix4x4Converter>();
 
             // System.Text.
 #if NET5_0_OR_GREATER
             Converters.Add<Rune, RuneConverter>();
 #endif
 
-            Converters.Add<StringBuilder, StringBuilderConverter>();
-            Converters.Add<Encoding, EncodingConverter>();
+            ConverterRegistry.Add<StringBuilder, StringBuilderConverter>();
+            ConverterRegistry.Add<Encoding, EncodingConverter>();
 
             // System.Drawing.
 #if NETCOREAPP2_0_OR_GREATER
@@ -86,20 +89,20 @@ namespace Rusty.Serialization
 #endif
 
             // System.Collections
-            Converters.Add<BitArray, BitArrayConverter>();
+            ConverterRegistry.Add<BitArray, BitArrayConverter>();
 
             // System.Collections.Generic.
-            Converters.Add(typeof(List<>), typeof(ListConverter<>));
-            Converters.Add(typeof(LinkedList<>), typeof(LinkedListConverter<>));
-            Converters.Add(typeof(Stack<>), typeof(StackConverter<>));
-            Converters.Add(typeof(Queue<>), typeof(QueueConverter<>));
-            Converters.Add(typeof(HashSet<>), typeof(HashSetConverter<>));
-            Converters.Add(typeof(SortedSet<>), typeof(SortedSetConverter<>));
-            Converters.Add(typeof(SortedList<,>), typeof(SortedListConverter<,>));
-            Converters.Add(typeof(SortedDictionary<,>), typeof(SortedDictionaryConverter<,>));
+            ConverterRegistry.Add(typeof(List<>), typeof(ListConverter<>));
+            ConverterRegistry.Add(typeof(LinkedList<>), typeof(LinkedListConverter<>));
+            ConverterRegistry.Add(typeof(Stack<>), typeof(StackConverter<>));
+            ConverterRegistry.Add(typeof(Queue<>), typeof(QueueConverter<>));
+            ConverterRegistry.Add(typeof(HashSet<>), typeof(HashSetConverter<>));
+            ConverterRegistry.Add(typeof(SortedSet<>), typeof(SortedSetConverter<>));
+            ConverterRegistry.Add(typeof(SortedList<,>), typeof(SortedListConverter<,>));
+            ConverterRegistry.Add(typeof(SortedDictionary<,>), typeof(SortedDictionaryConverter<,>));
 
-            Converters.Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
-            Converters.Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>));
+            ConverterRegistry.Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
+            ConverterRegistry.Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>));
 #if NET6_0_OR_GREATER
             Converters.Add(typeof(PriorityQueue<,>), typeof(PriorityQueueConverter<,>));
 #endif

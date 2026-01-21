@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rusty.Serialization.Core.Converters
+namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
     /// A converter registry.

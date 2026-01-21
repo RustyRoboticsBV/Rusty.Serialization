@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Rusty.Serialization.Core.Converters
+namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
     /// An IList converter.

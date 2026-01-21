@@ -1,4 +1,4 @@
-﻿namespace Rusty.Serialization.Core.Converters
+﻿namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
     /// A restricted context used in converter methods.
@@ -6,14 +6,14 @@
     public abstract class SubContext
     {
         /* Protected properties. */
-        protected ConversionContext Context { get; private set; }
-        protected ConverterRegistry Converters => Context.Converters;
+        protected Converters Context { get; private set; }
+        protected ConverterRegistry Converters => Context.ConverterRegistry;
         protected SymbolTable SymbolTable => Context.SymbolTable;
         protected NodeTypeTable NodeTypeTable => Context.NodeTypeTable;
         protected ParsingTable ParsingTable => Context.ParsingTable;
 
         /* Constructors. */
-        protected SubContext(ConversionContext context)
+        protected SubContext(Converters context)
         {
             Context = context;
         }

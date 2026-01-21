@@ -1,5 +1,5 @@
 ﻿using System;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
@@ -7,7 +7,7 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET version converter.
     /// </summary>
-    public class VersionConverter : Core.Converters.Converter<Version, StringNode>
+    public class VersionConverter : Core.Conversion.Converter<Version, StringNode>
     {
         /* Protected method. */
         protected override StringNode CreateNode(Version obj, CreateNodeContext context)

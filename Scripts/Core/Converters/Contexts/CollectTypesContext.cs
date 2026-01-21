@@ -1,12 +1,12 @@
 ﻿using System;
 using Rusty.Serialization.Core.Nodes;
 
-namespace Rusty.Serialization.Core.Converters
+namespace Rusty.Serialization.Core.Conversion
 {
     public class CollectTypesContext : SubContext
     {
         /* Constructors. */
-        public CollectTypesContext(ConversionContext context) : base(context) { }
+        public CollectTypesContext(Converters context) : base(context) { }
 
         /* Public methods. */
         /// <summary>

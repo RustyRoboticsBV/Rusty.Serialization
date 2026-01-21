@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 
 namespace Rusty.Serialization.DotNet
 {

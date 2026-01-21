@@ -1,38 +1,41 @@
 ﻿#if UNITY_5_3_OR_NEWER
 using UnityEngine;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Unity;
 
 namespace Rusty.Serialization
 {
-    public partial class DefaultConversionContext : ConversionContext
+    public partial class DefaultConverters : Converters
     {
+        /// <summary>
+        /// Add the Unity type converters.
+        /// </summary>
         private void AddUnity()
         {
             // Structs.
-            Converters.Add<LayerMask, LayerMaskConverter>();
+            ConverterRegistry.Add<LayerMask, LayerMaskConverter>();
 
-            Converters.Add<Color, ColorConverter>();
-            Converters.Add<Color32, Color32Converter>();
+            ConverterRegistry.Add<Color, ColorConverter>();
+            ConverterRegistry.Add<Color32, Color32Converter>();
 
-            Converters.Add<RangeInt, RangeIntConverter>();
-            Converters.Add<Vector2, Vector2Converter>();
-            Converters.Add<Vector3, Vector3Converter>();
-            Converters.Add<Vector4, Vector4Converter>();
-            Converters.Add<Vector2Int, Vector2IntConverter>();
-            Converters.Add<Vector3Int, Vector3IntConverter>();
-            Converters.Add<Quaternion, QuaternionConverter>();
-            Converters.Add<Plane, PlaneConverter>();
-            Converters.Add<Rect, RectConverter>();
-            Converters.Add<RectInt, RectIntConverter>();
-            Converters.Add<Bounds, BoundsConverter>();
-            Converters.Add<BoundsInt, BoundsIntConverter>();
-            Converters.Add<Matrix4x4, Matrix4x4Converter>();
-            Converters.Add<BoundingSphere, BoundingSphereConverter>();
-            Converters.Add<Ray, RayConverter>();
-            Converters.Add<Ray2D, Ray2DConverter>();
-            Converters.Add<Keyframe, ClassConverter<Keyframe>>();
-            Converters.Add<AnimationCurve, ClassConverter<AnimationCurve>>();
+            ConverterRegistry.Add<RangeInt, RangeIntConverter>();
+            ConverterRegistry.Add<Vector2, Vector2Converter>();
+            ConverterRegistry.Add<Vector3, Vector3Converter>();
+            ConverterRegistry.Add<Vector4, Vector4Converter>();
+            ConverterRegistry.Add<Vector2Int, Vector2IntConverter>();
+            ConverterRegistry.Add<Vector3Int, Vector3IntConverter>();
+            ConverterRegistry.Add<Quaternion, QuaternionConverter>();
+            ConverterRegistry.Add<Plane, PlaneConverter>();
+            ConverterRegistry.Add<Rect, RectConverter>();
+            ConverterRegistry.Add<RectInt, RectIntConverter>();
+            ConverterRegistry.Add<Bounds, BoundsConverter>();
+            ConverterRegistry.Add<BoundsInt, BoundsIntConverter>();
+            ConverterRegistry.Add<Matrix4x4, Matrix4x4Converter>();
+            ConverterRegistry.Add<BoundingSphere, BoundingSphereConverter>();
+            ConverterRegistry.Add<Ray, RayConverter>();
+            ConverterRegistry.Add<Ray2D, Ray2DConverter>();
+            ConverterRegistry.Add<Keyframe, ClassConverter<Keyframe>>();
+            ConverterRegistry.Add<AnimationCurve, ClassConverter<AnimationCurve>>();
         }
     }
 }

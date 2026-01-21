@@ -89,7 +89,7 @@ namespace Rusty.Serialization.Core.Nodes
         /// <summary>
         /// Get the identifier at some index.
         /// </summary>
-        public string GetIdentifierAt(int index)
+        public string GetNameAt(int index)
         {
             return Members[index].Key;
         }
