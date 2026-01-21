@@ -39,6 +39,19 @@ namespace Rusty.Serialization.CSCD.Parsing
 
                 root = ParseToken(text, token, lexer);
             }
+
+            // Ensure legal root value.
+            INode check = root;
+            if (check is IdNode id)
+                check = id.Value;
+            if (check is TypeNode type)
+                check = type.Value;
+            if (check is RefNode)
+                throw new FormatException("Root values may not be references.");
+            if (check == null)
+                throw new FormatException("No root value.");
+
+            // Create tree.
             return new NodeTree(root);
         }
 
@@ -52,6 +65,10 @@ namespace Rusty.Serialization.CSCD.Parsing
 
                 Token next = ExpectToken(text, lexer, "A type must be followed by another token.");
                 INode value = ParseToken(text, next, lexer);
+                if (value is IdNode)
+                    TokenError(token, "Types may not be followed by an ID.");
+                if (value is TypeNode)
+                    TokenError(token, "Types may not be followed by a type.");
 
                 return new TypeNode(name, value);
             }
@@ -63,6 +80,8 @@ namespace Rusty.Serialization.CSCD.Parsing
 
                 Token next = ExpectToken(text, lexer, "An ID must be followed by another token.");
                 INode value = ParseToken(text, next, lexer);
+                if (value is IdNode)
+                    TokenError(token, "IDs may not be followed by another ID.");
 
                 return new IdNode(name, value);
             }
@@ -549,49 +568,57 @@ namespace Rusty.Serialization.CSCD.Parsing
             // Parse hour.
             int endOfHour = time.FirstIndexOf(':');
             if (endOfHour == -1)
-                throw new FormatException($"Time does not contain an hour: {new string(time)}.");
+                throw new FormatException($"Time does not contain an hour.");
 
             TextSpan hour = time.Slice(0, endOfHour);
             if (hour.Length == 0)
-                throw new FormatException($"Empty hour term in: {new string(time)}.");
+                throw new FormatException($"Empty hour term in.");
             if (hour.StartsWith('-'))
-                throw new FormatException($"Negative hour in: {new string(time)}.");
+                throw new FormatException($"Negative hour in.");
             if (GetNumericType(hour) != NumericType.Int)
-                throw new FormatException($"Not an integer hour: {new string(time)}.");
+                throw new FormatException($"Not an integer hour.");
             if (!IsWithinRange(hour, 0, 24))
-                throw new FormatException($"Hour not in the range [0-24]: {new string(time)}.");
+                throw new FormatException($"Hour not in the range [0-24].");
 
             node.Hour = new string(hour);
 
             // Parse minute.
             int endOfMinute = time.FirstIndexOf(endOfHour + 1, ':');
             if (endOfMinute == -1)
-                throw new FormatException($"Time does not contain a minute: {new string(time)}.");
+                throw new FormatException($"Time does not contain a minute.");
 
             TextSpan minute = time.Slice(endOfHour + 1, endOfMinute - (endOfHour + 1));
             if (minute.Length == 0)
-                throw new FormatException($"Empty minute term in: {new string(time)}.");
+                throw new FormatException($"Empty minute term.");
             if (minute.StartsWith('-'))
-                throw new FormatException($"Negative minute in: {new string(time)}.");
+                throw new FormatException($"Negative minute.");
             if (GetNumericType(minute) != NumericType.Int)
-                throw new FormatException($"Not an integer minute: {new string(time)}.");
+                throw new FormatException($"Minute must be an integer");
             if (!IsWithinRange(minute, 0, 59))
-                throw new FormatException($"Hour not in the range [0-59]: {new string(time)}.");
+                throw new FormatException($"Minute must be in range [0-59].");
+            if (IsWithinRange(hour, 24, 24) && !IsWithinRange(minute, 0, 0))
+                throw new FormatException("Minute must be 0 if hour is 24.");
 
             node.Minute = new string(minute);
 
             // Parse second.
             TextSpan second = time.Slice(endOfMinute + 1);
             if (second.Length == 0)
-                throw new FormatException($"Empty second term in: {new string(time)}.");
+                throw new FormatException($"Empty second term.");
             if (second.StartsWith('-'))
-                throw new FormatException($"Negative second in: {new string(time)}.");
+                throw new FormatException($"Negative second.");
             if (GetNumericType(second, NumericParseMode.AllowLonePoint) == NumericType.NaN)
-                throw new FormatException($"Not a numeric second: {new string(time)}.");
+                throw new FormatException($"Not a numeric second.");
+            second = ProcessReal(second).AsSpan();
+
             int pointIndex = second.FirstIndexOf('.');
-            TextSpan integerPart = pointIndex == -1 ? second : second.Slice(0, pointIndex);
-            if (!IsWithinRange(integerPart, 0, 60))
-                throw new FormatException($"Second not in the range [0-60]: {new string(time)}.");
+            TextSpan secondInt = pointIndex == -1 ? second : second.Slice(0, pointIndex);
+            if (!IsWithinRange(secondInt, 0, 60))
+                throw new FormatException($"Second must be in the range [0-60].");
+
+            TextSpan secondFrac = pointIndex == -1 ? "0" : second.Slice(pointIndex + 1);
+            if (IsWithinRange(hour, 24, 24) && (!IsWithinRange(secondInt, 0, 0) || !IsWithinRange(secondFrac, 0, 0)))
+                throw new FormatException("Second must be 0 if hour is 24.");
 
             node.Second = new string(second);
         }

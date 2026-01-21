@@ -26,6 +26,7 @@ namespace Rusty.Serialization.Core.Lexing
         }
 
         /* Casting operators. */
+        public static implicit operator TextSpan(string str) => new TextSpan(str.AsSpan());
         public static implicit operator TextSpan(ReadOnlySpan<char> span) => new TextSpan(span);
         public static implicit operator ReadOnlySpan<char>(TextSpan textSpan) => textSpan.span;
 
