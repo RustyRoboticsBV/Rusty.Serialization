@@ -7,18 +7,6 @@ using Rusty.Serialization.Core.Nodes;
 namespace Rusty.Serialization.CSCD
 {
     /// <summary>
-    /// A base class for serializers.
-    /// </summary>
-    public abstract class Serializer
-    {
-        /* Protected properties. */
-        protected static StringBuilderBag StringBuilders { get; } = new();
-
-        /* Public methods. */
-        public abstract string Serialize(NodeTree node, bool prettyPrint);
-    }
-
-    /// <summary>
     /// A CSCD serializer.
     /// </summary>
     public class CscdSerializer : Serializer
@@ -85,6 +73,8 @@ namespace Rusty.Serialization.CSCD
                 return $"@{t.Year}-{t.Month}-{t.Day}_{t.Hour}:{t.Minute}:{t.Second};";
             if (node is BytesNode byt)
                 return $"b_{byt.Value}";
+            if (node is RefNode rf)
+                return $"&{FormatText(rf.ID, refEscapes)};";
             if (node is ListNode lst)
                 return Serialize(lst, prettyPrinting);
             if (node is DictNode dic)

@@ -16,6 +16,8 @@ namespace Rusty.Serialization.Core.Conversion
         /* Public methods. */
         void IConverter.CollectTypes(INode node, CollectTypesContext context)
         {
+            if (!CanHandleNode(node))
+                NodeError(node);
             if (node is NanNode || node is InfinityNode)
                 return;
             CollectTypes((FloatNode)node, context);
@@ -36,8 +38,10 @@ namespace Rusty.Serialization.Core.Conversion
 
         object IConverter.CreateObject(INode node, CreateObjectContext context)
         {
-            if (node is FloatNode real)
-                return CreateObject(real, context);
+            if (!CanHandleNode(node))
+                NodeError(node);
+            if (node is FloatNode @float)
+                return CreateObject(@float, context);
             if (node is NanNode)
                 return NaN;
             if (node is InfinityNode infinity)
@@ -51,6 +55,11 @@ namespace Rusty.Serialization.Core.Conversion
         }
 
         /* Protected methods. */
+        protected override bool CanHandleNode(INode node)
+        {
+            return base.CanHandleNode(node) || node is FloatNode || node is InfinityNode || node is NanNode;
+        }
+
         protected abstract bool IsNaN(ref T value);
         protected abstract bool IsPositiveInfinity(ref T value);
         protected abstract bool IsNegativeInfinity(ref T value);

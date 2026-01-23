@@ -1,4 +1,5 @@
-﻿using Rusty.Serialization.Core.Nodes;
+﻿using System;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -9,11 +10,29 @@ namespace Rusty.Serialization.Core.Conversion
         where NodeT : INode
     {
         /* Public methods. */
-        public void CollectTypes(INode node, CollectTypesContext context) => CollectTypes((NodeT)node, context);
+        public void CollectTypes(INode node, CollectTypesContext context)
+        {
+            if (!CanHandleNode(node))
+                NodeError(node);
+            CollectTypes((NodeT)node, context);
+        }
+
         INode IConverter.CreateNode(object obj, CreateNodeContext context) => CreateNode((TargetT)obj, context);
-        object IConverter.CreateObject(INode node, CreateObjectContext context) => CreateObject((NodeT)node, context);
+
+        object IConverter.CreateObject(INode node, CreateObjectContext context)
+        {
+            if (!CanHandleNode(node))
+                NodeError(node);
+            return CreateObject((NodeT)node, context);
+        }
 
         /* Protected methods. */
+        protected virtual bool CanHandleNode(INode node) => typeof(NodeT).IsAssignableFrom(node.GetType());
+        protected void NodeError(INode node)
+        {
+            throw new InvalidCastException($"The converter {GetType().Name} cannot handle {node.GetType().Name} nodes\n{node}.");
+        }
+
         /// <summary>
         /// Collect the type of a node, as well as the types of members.
         /// </summary>

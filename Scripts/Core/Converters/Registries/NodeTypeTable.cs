@@ -62,7 +62,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// </summary>
         public bool Has(INode node)
         {
-            return NodeTypes.ContainsKey(node);
+            return NodeTypes.ContainsKey(node) || (node is RefNode @ref && Refs.Contains(@ref));
         }
 
         /// <summary>
