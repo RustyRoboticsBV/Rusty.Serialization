@@ -22,9 +22,9 @@ namespace Rusty.Serialization.CSCD
 
         private static readonly Dictionary<UnicodePair, char> simpleEscapes = new()
         {
-            { 't', '\t' },
-            { 'n', '\n' },
-            { 's', ' ' },
+            { '\t', 't' },
+            { '\n', 'n' },
+            { ' ', 's' },
             { '"', '"' },
             { '\'', '\'' },
             { '`', '`' },
@@ -62,15 +62,15 @@ namespace Rusty.Serialization.CSCD
             if (node is NanNode)
                 return "nan";
             if (node is CharNode chr)
-                return $"'{FormatText(chr.Value, charEscapes)}'";
+                return Serialize(chr);
             if (node is StringNode str)
                 return $"\"{FormatText(str.Value, strEscapes)}\"";
             if (node is DecimalNode dec)
-                return dec.Value.IsNegative ? $"-${dec.Value}" : $"${dec.Value}";
+                return dec.Value.IsNegative ? $"-${dec.Value.ToString().Substring(1)}" : $"${dec.Value}";
             if (node is ColorNode col)
                 return '#' + col.Value;
             if (node is TimeNode t)
-                return $"@{t.Year}-{t.Month}-{t.Day}_{t.Hour}:{t.Minute}:{t.Second};";
+                return Serialize(t);
             if (node is BytesNode byt)
                 return $"b_{byt.Value}";
             if (node is RefNode rf)
@@ -113,6 +113,28 @@ namespace Rusty.Serialization.CSCD
                 result = "-" + result;
 
             return result;
+        }
+
+        private string Serialize(CharNode node)
+        {
+            if (node.Value == '\0')
+                return "''";
+            return $"'{FormatText(node.Value, charEscapes)}'";
+        }
+
+        private string Serialize(TimeNode node)
+        {
+            bool noDate = node.Year.IsOne && node.Month.IsOne && node.Day.IsOne;
+            bool noTime = node.Hour.IsZero && node.Minute.IsZero && node.Second.IsZero;
+
+            if (noDate && noTime)
+                return "@;";
+            else if (noTime)
+                return $"@{node.Year}-{node.Month}-{node.Day};";
+            else if (noDate)
+                return $"@{node.Hour}:{node.Minute}:{node.Second};";
+            else
+                return $"@{node.Year}-{node.Month}-{node.Day}_{node.Hour}:{node.Minute}:{node.Second};";
         }
 
         private string Serialize(ListNode node, bool prettyPrinting)
@@ -237,9 +259,9 @@ namespace Rusty.Serialization.CSCD
                 if (!(c == 0x09 || c == 0x0A || c == 0x0D || c == 0x20
                     || c >= 0x21 && c <= 0x7E
                     || c >= 0xA1 && c <= 0xAC
-                    || c >= 0xAE && c <= 0xFF))
+                    || c >= 0xAE && c <= 0xFF) || escapeSequences.Contains(c))
                 {
-                    FormatEscaped(c, escapeSequences, sb);
+                    FormatEscaped(c, sb);
                 }
 
                 // Append character as-is.
@@ -249,11 +271,11 @@ namespace Rusty.Serialization.CSCD
             return sb.ToString();
         }
 
-        private static void FormatEscaped(UnicodePair chr, HashSet<UnicodePair> escapeSequences, StringBuilder sb)
+        private static void FormatEscaped(UnicodePair chr, StringBuilder sb)
         {
             sb.Append('\\');
-            if (escapeSequences.Contains(chr))
-                sb.Append(simpleEscapes[chr]);
+            if (simpleEscapes.TryGetValue(chr, out char escaped))
+                sb.Append(escaped);
             else
             {
                 sb.Append(chr.Hex);

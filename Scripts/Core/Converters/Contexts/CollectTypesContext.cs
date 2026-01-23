@@ -30,11 +30,11 @@ namespace Rusty.Serialization.Core.Conversion
                     NodeTypeTable.Add(node, NodeTypeTable[type.Value]);
             }
 
-            else if (node is IMetadataNode metadata)
+            else if (node is IdNode id)
             {
-                CollectTypes(metadata.Value, objType);
+                CollectTypes(id.Value, objType);
                 if (!NodeTypeTable.Has(node))
-                    NodeTypeTable.Add(node, NodeTypeTable[metadata.Value]);
+                    NodeTypeTable.Add(node, NodeTypeTable[id.Value]);
             }
 
             // Collect child types.
