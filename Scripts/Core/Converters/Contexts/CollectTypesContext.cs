@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Register a node's type.
         /// </summary>
-        public void CollectTypes(INode node, Type type)
+        public void CollectTypes(INode node, Type objType)
         {
             // Defer references.
             if (node is RefNode @ref)
@@ -22,9 +22,17 @@ namespace Rusty.Serialization.Core.Conversion
             }
 
             // Unwrap metadata nodes.
+            else if (node is TypeNode type)
+            {
+                objType = new TypeName(type.Name);
+                CollectTypes(type.Value, objType);
+                if (!NodeTypeTable.Has(node))
+                    NodeTypeTable.Add(node, NodeTypeTable[type.Value]);
+            }
+
             else if (node is IMetadataNode metadata)
             {
-                CollectTypes(metadata.Value, type);
+                CollectTypes(metadata.Value, objType);
                 if (!NodeTypeTable.Has(node))
                     NodeTypeTable.Add(node, NodeTypeTable[metadata.Value]);
             }
@@ -32,10 +40,10 @@ namespace Rusty.Serialization.Core.Conversion
             // Collect child types.
             else
             {
-                IConverter converter = Converters.Get(type);
+                IConverter converter = Converters.Get(objType);
                 converter.CollectTypes(node, this);
                 if (!NodeTypeTable.Has(node))
-                    NodeTypeTable.Add(node, type);
+                    NodeTypeTable.Add(node, objType);
             }
         }
     }

@@ -24,6 +24,12 @@ namespace Rusty.Serialization.Core.Conversion
             if (node == null)
                 throw new ArgumentException("Cannot deconvert null reference node values.");
 
+            if (expectedType.IsAbstract && !(node is TypeNode))
+            {
+                throw new ArgumentException($"Cannot deconvert node to abstract type {expectedType} - a type node is needed to "
+                    + $"create a non-abstract child object instead:\n{node}.");
+            }
+
             object obj;
 
             // Handle ID node.

@@ -1,8 +1,6 @@
 ﻿using Rusty.Serialization.Core.Nodes;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -20,11 +18,13 @@ namespace Rusty.Serialization.Core.Conversion
 
         protected override void AssignNode(DictNode node, DictT obj, AssignNodeContext context)
         {
+            Type keyType = typeof(KeyT);
+            Type valueType = typeof(ValueT);
             int index = 0;
             foreach (KeyValuePair<KeyT, ValueT> pair in obj)
             {
-                INode key = context.CreateNode(typeof(DictT), pair.Key);
-                INode value = context.CreateNode(typeof(DictT), pair.Value);
+                INode key = context.CreateNode(keyType, pair.Key);
+                INode value = context.CreateNode(valueType, pair.Value);
                 node.Pairs[index] = new(key, value);
                 index++;
             }
@@ -32,9 +32,8 @@ namespace Rusty.Serialization.Core.Conversion
 
         protected override void CollectTypes(DictNode node, CollectTypesContext context)
         {
-            Type keyType = typeof(DictT).GetGenericArguments()[0];
-            Type valueType = typeof(DictT).GetGenericArguments()[1];
-
+            Type keyType = typeof(KeyT);
+            Type valueType = typeof(ValueT);
             for (int i = 0; i < node.Count; i++)
             {
                 context.CollectTypes(node.Pairs[i].Key, keyType);
@@ -47,10 +46,12 @@ namespace Rusty.Serialization.Core.Conversion
 
         protected override DictT AssignObject(DictT obj, DictNode node, AssignObjectContext context)
         {
+            Type keyType = typeof(KeyT);
+            Type valueType = typeof(ValueT);
             for (int i = 0; i < node.Count; i++)
             {
-                KeyT key = (KeyT)context.CreateChildObject(typeof(KeyT), node.GetKeyAt(i));
-                ValueT value = (ValueT)context.CreateChildObject(typeof(ValueT), node.GetValueAt(i));
+                KeyT key = (KeyT)context.CreateChildObject(keyType, node.GetKeyAt(i));
+                ValueT value = (ValueT)context.CreateChildObject(valueType, node.GetValueAt(i));
                 obj.Add(key, value);
             }
             return obj;
