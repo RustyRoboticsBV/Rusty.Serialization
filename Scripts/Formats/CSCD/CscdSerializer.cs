@@ -119,7 +119,7 @@ namespace Rusty.Serialization.CSCD
         {
             if (node.Value == '\0')
                 return "''";
-            return $"'{FormatText(node.Value, charEscapes)}'";
+            return $"'{FormatText(node.Value.ToString(), charEscapes)}'";
         }
 
         private string Serialize(ColorNode node)

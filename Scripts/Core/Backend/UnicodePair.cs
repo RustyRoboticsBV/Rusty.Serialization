@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Rusty.Serialization.Core.Codecs
+namespace Rusty.Serialization.Core.Nodes
 {
-    public readonly struct UnicodePair
+    public readonly struct UnicodePair : IEquatable<char>, IEquatable<int>, IEquatable<UnicodePair>
     {
         /* Fields. */
         public readonly char High;
@@ -65,17 +65,21 @@ namespace Rusty.Serialization.Core.Codecs
             }
         }
 
+        public UnicodePair(string str) : this(str, 0) { }
+
         /* Conversion operators. */
+        public static implicit operator UnicodePair(string str) => new UnicodePair(str);
         public static implicit operator UnicodePair(char chr) => new UnicodePair(chr);
         public static implicit operator UnicodePair(int codePoint) => new UnicodePair(codePoint);
+        public static explicit operator char(UnicodePair pair) => pair.High;
 
         /* Comparison operators. */
-        public static bool operator ==(UnicodePair chr, int codePoint) => chr.Equals(codePoint);
-        public static bool operator !=(UnicodePair chr, int codePoint) => !chr.Equals(codePoint);
-        public static bool operator >(UnicodePair chr, int codePoint) => chr.CodePoint > codePoint;
-        public static bool operator <(UnicodePair chr, int codePoint) => chr.CodePoint < codePoint;
-        public static bool operator >=(UnicodePair chr, int codePoint) => chr.CodePoint >= codePoint;
-        public static bool operator <=(UnicodePair chr, int codePoint) => chr.CodePoint <= codePoint;
+        public static bool operator ==(UnicodePair a, UnicodePair b) => a.Equals(b);
+        public static bool operator !=(UnicodePair a, UnicodePair b) => !a.Equals(b);
+        public static bool operator >(UnicodePair a, UnicodePair b) => a.CodePoint > b.CodePoint;
+        public static bool operator <(UnicodePair a, UnicodePair b) => a.CodePoint < b.CodePoint;
+        public static bool operator >=(UnicodePair a, UnicodePair b) => a.CodePoint >= b.CodePoint;
+        public static bool operator <=(UnicodePair a, UnicodePair b) => a.CodePoint <= b.CodePoint;
 
         /* Public methods. */
         public override string ToString()
@@ -85,12 +89,26 @@ namespace Rusty.Serialization.Core.Codecs
             else
                 return string.Concat(High, Low);
         }
-        public override bool Equals(object obj) => obj is int i ? Equals(i) : base.Equals(obj);
+        public override bool Equals(object obj)
+        {
+            switch (obj)
+            {
+                case char c: return Equals(c);
+                case int i: return Equals(i);
+                case UnicodePair pair: return Equals(pair);
+                default: return base.Equals(obj);
+            }
+        }
+        public bool Equals(char c) => High == c && Low == '\0';
         public bool Equals(int codePoint) => CodePoint == codePoint;
-        public override int GetHashCode() => High.GetHashCode() * 27 + Low.GetHashCode();
+        public bool Equals(UnicodePair other) => High == other.High && Low == other.Low;
+        public override int GetHashCode() => HashCode.Combine(High, Low);
 
         public void CopyTo(Span<char> destination)
         {
+            if (destination.Length < Length)
+                throw new ArgumentException("Destination span is too small.", nameof(destination));
+
             destination[0] = High;
             if (Low != '\0')
                 destination[1] = Low;

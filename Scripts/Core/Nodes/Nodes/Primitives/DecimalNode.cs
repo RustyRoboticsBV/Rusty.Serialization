@@ -3,33 +3,12 @@
     /// <summary>
     /// A decimal number serializer node.
     /// </summary>
-    public class DecimalNode : INode
+    public class DecimalNode : ValueNode<RealString>
     {
-        /* Public properties. */
-        public ITreeElement Parent { get; set; }
-        public RealString Value { get; set; }
-
         /* Constructors. */
-        public DecimalNode(RealString value)
-        {
-            Value = value;
-        }
+        public DecimalNode() : base() { }
 
-        /* Conversion operators. */
-        public static explicit operator DecimalNode(IntNode node)
-        {
-            return new DecimalNode(node.Value);
-        }
-
-        public static explicit operator DecimalNode(FloatNode node)
-        {
-            return new DecimalNode(node.Value);
-        }
-
-        public static explicit operator DecimalNode(StringNode node)
-        {
-            return new DecimalNode(node.Value);
-        }
+        public DecimalNode(RealString value) : base(value) { }
 
         /* Public methods. */
         public override string ToString()
@@ -37,7 +16,7 @@
             return "decimal: " + Value;
         }
 
-        public void Clear()
+        public override void Clear()
         {
             Parent = null;
             Value = 0f;

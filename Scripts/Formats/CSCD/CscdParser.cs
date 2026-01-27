@@ -116,7 +116,7 @@ namespace Rusty.Serialization.CSCD
 
             // Char.
             if (token.Text.StartsWith('\'') && token.Text.EndsWith('\''))
-                return new CharNode(ParseText(token, charEscapes, "'", "'"));
+                return ParseChar(token);
 
             // String.
             if (token.Text.StartsWith('"') && token.Text.EndsWith('"'))
@@ -160,6 +160,17 @@ namespace Rusty.Serialization.CSCD
         }
 
         /* Private methods. */
+        /// <summary>
+        /// Parse a char literal.
+        /// </summary>
+        private static CharNode ParseChar(Token token)
+        {
+            string str = ParseText(token, charEscapes, "'", "'");
+            if (str.Length < 1 || str.Length > 2 || (str.Length == 2 && !char.IsHighSurrogate(str[0])))
+                TokenError(token, "Char token may not represent multiple characters.");
+            return new CharNode(str);
+        }
+
         /// <summary>
         /// Parse a decimal number.
         /// </summary>

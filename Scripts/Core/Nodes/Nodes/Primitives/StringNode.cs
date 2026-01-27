@@ -3,19 +3,12 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A string serializer node.
     /// </summary>
-    public class StringNode : ITextNode
+    public class StringNode : ValueNode<string>
     {
-        /* Public properties. */
-        public ITreeElement Parent { get; set; }
-        public string Value { get; set; }
-
         /* Constructors. */
-        public StringNode() : this("") { }
+        public StringNode() : base() { }
 
-        public StringNode(string value)
-        {
-            Value = value ?? "";
-        }
+        public StringNode(string value) : base(value){}
 
         /* Public methods. */
         public override string ToString()
@@ -23,7 +16,7 @@ namespace Rusty.Serialization.Core.Nodes
             return "string: " + (Value ?? "(null)");
         }
 
-        public void Clear()
+        public override void Clear()
         {
             Parent = null;
             Value = null;

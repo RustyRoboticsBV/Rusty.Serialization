@@ -3,12 +3,8 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An integer serializer node.
     /// </summary>
-    public class IntNode : INode
+    public class IntNode : ValueNode<IntString>
     {
-        /* Public properties. */
-        public ITreeElement Parent { get; set; }
-        public IntString Value { get; set; }
-
         /* Constructors. */
         public IntNode(IntString value)
         {
@@ -27,7 +23,7 @@ namespace Rusty.Serialization.Core.Nodes
             return "int: " + Value;
         }
 
-        public void Clear()
+        public override void Clear()
         {
             Parent = null;
             Value = 0;

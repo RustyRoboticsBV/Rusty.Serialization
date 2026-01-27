@@ -3,30 +3,17 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A color serializer node.
     /// </summary>
-    public class ColorNode : INode
+    public class ColorNode : ValueNode<ColorValue>
     {
-        /* Public properties. */
-        public ITreeElement Parent { get; set; }
-        public ColorValue Value { get; set; }
-
         /* Constructors. */
-        public ColorNode() { }
+        public ColorNode() : base() { }
 
-        public ColorNode(ColorValue value)
-        {
-            Value = value;
-        }
+        public ColorNode(ColorValue value) : base(value) { }
 
         /* Public methods. */
         public override string ToString()
         {
             return $"color: {Value}";
-        }
-
-        public void Clear()
-        {
-            Parent = null;
-            Value = new ColorValue();
         }
     }
 }
