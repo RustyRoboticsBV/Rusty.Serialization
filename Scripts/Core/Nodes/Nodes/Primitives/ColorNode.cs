@@ -7,30 +7,26 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public ColorString Value { get; set; }
+        public ColorValue Value { get; set; }
 
         /* Constructors. */
-        public ColorNode(ColorString value)
+        public ColorNode() { }
+
+        public ColorNode(ColorValue value)
         {
             Value = value;
-        }
-
-        /* Conversion operators. */
-        public static explicit operator ColorNode(StringNode str)
-        {
-            return new ColorNode(str.Value);
         }
 
         /* Public methods. */
         public override string ToString()
         {
-            return $"color: #{Value}";
+            return $"color: {Value}";
         }
 
         public void Clear()
         {
             Parent = null;
-            Value = (0, 0, 0, 0);
+            Value = new ColorValue();
         }
     }
 }

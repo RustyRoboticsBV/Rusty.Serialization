@@ -68,7 +68,7 @@ namespace Rusty.Serialization.CSCD
             if (node is DecimalNode dec)
                 return dec.Value.IsNegative ? $"-${dec.Value.ToString().Substring(1)}" : $"${dec.Value}";
             if (node is ColorNode col)
-                return '#' + col.Value;
+                return Serialize(col);
             if (node is TimeNode t)
                 return Serialize(t);
             if (node is BytesNode byt)
@@ -120,6 +120,43 @@ namespace Rusty.Serialization.CSCD
             if (node.Value == '\0')
                 return "''";
             return $"'{FormatText(node.Value, charEscapes)}'";
+        }
+
+        private string Serialize(ColorNode node)
+        {
+            // Format color channels.
+            Span<char> span = stackalloc char[8];
+            FormatColorChannel(node.Value.r, span.Slice(0, 2));
+            FormatColorChannel(node.Value.g, span.Slice(2, 2));
+            FormatColorChannel(node.Value.b, span.Slice(4, 2));
+            FormatColorChannel(node.Value.a, span.Slice(6, 2));
+
+            // Figure out format & length.
+            bool shortForm = span[0] == span[1]
+                && span[2] == span[3]
+                && span[4] == span[5]
+                && span[6] == span[7];
+
+            bool hasAlpha = span[6] != 'F' || span[7] != 'F';
+
+            int length = shortForm ? (hasAlpha ? 5 : 4) : (hasAlpha ? 9 : 7);
+
+            // Create string.
+            Span<char> result = stackalloc char[length];
+
+            result[0] = '#';
+            if (shortForm)
+            {
+                result[1] = span[0];
+                result[2] = span[2];
+                result[3] = span[4];
+                if (hasAlpha)
+                    result[4] = span[6];
+            }
+            else
+                span.Slice(0, hasAlpha ? 8 : 6).CopyTo(result.Slice(1));
+
+            return new string(result);
         }
 
         private string Serialize(TimeNode node)
@@ -248,6 +285,8 @@ namespace Rusty.Serialization.CSCD
             return sb.ToString();
         }
 
+        // Helper methods.
+
         private static string FormatText(string text, HashSet<UnicodePair> escapeSequences)
         {
             StringBuilder sb = StringBuilders.Rent(text.Length);
@@ -281,6 +320,19 @@ namespace Rusty.Serialization.CSCD
                 sb.Append(chr.Hex);
                 sb.Append(';');
             }
+        }
+
+        private static void FormatColorChannel(byte col, Span<char> span)
+        {
+            span[0] = ToHex(col >> 4);
+            span[1] = ToHex(col & 0xF);
+        }
+
+        private static char ToHex(int value)
+        {
+            if (value > 15)
+                throw new ArgumentOutOfRangeException(nameof(value));
+            return (char)(value < 10 ? '0' + value : 'A' + (value - 10));
         }
     }
 }

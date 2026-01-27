@@ -179,6 +179,20 @@ namespace Rusty.Serialization.Core.Codecs
         }
 
         /// <summary>
+        /// Parse a hex digit.
+        /// </summary>
+        protected static byte ParseHexDigit(char c, HexParseMode mode = HexParseMode.UppercaseAndLowercase)
+        {
+            if (c >= '0' && c <= '9')
+                return (byte)(c - '0');
+            if (c >= 'A' && c <= 'F' && mode != HexParseMode.Lowercase)
+                return (byte)(c - 'A' + 10);
+            if (c >= 'a' && c <= 'f' && mode != HexParseMode.Uppercase)
+                return (byte)(c - 'a' + 10);
+            throw new ArgumentOutOfRangeException(nameof(c), $"Invalid hex digit '{c}'");
+        }
+
+        /// <summary>
         /// Parse a hex number.
         /// </summary>
         protected static int ParseHex(TextSpan hex, HexParseMode mode = HexParseMode.UppercaseAndLowercase)
@@ -190,17 +204,7 @@ namespace Rusty.Serialization.Core.Codecs
             for (int i = 0; i < hex.Length; i++)
             {
                 char c = hex[i];
-                int value;
-
-                if (c >= '0' && c <= '9')
-                    value = c - '0';
-                else if (c >= 'A' && c <= 'F' && mode != HexParseMode.Lowercase)
-                    value = c - 'A' + 10;
-                else if (c >= 'a' && c <= 'f' && mode != HexParseMode.Uppercase)
-                    value = c - 'a' + 10;
-                else
-                    throw new FormatException($"Invalid hex character: '{c}'");
-
+                int value = ParseHexDigit(c, mode);
                 result = (result << 4) | value;
             }
 

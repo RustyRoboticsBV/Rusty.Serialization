@@ -128,7 +128,7 @@ namespace Rusty.Serialization.CSCD
 
             // Color.
             if (token.Text.StartsWith('#'))
-                return new ColorNode(new string(token.Text.Slice(1)));
+                return ParseColor(token);
 
             // Time.
             if (token.Text.StartsWith('@') && token.Text.EndsWith(';'))
@@ -189,6 +189,37 @@ namespace Rusty.Serialization.CSCD
 
             // Create node.
             return new DecimalNode(processed);
+        }
+
+        /// <summary>
+        /// Parse a color literal.
+        /// </summary>
+        private static ColorNode ParseColor(Token token)
+        {
+            if (!token.Text.StartsWith('#'))
+                TokenError(token, "Missing # prefix.");
+            if (token.Length != 4 && token.Length != 5 && token.Length != 7 && token.Length != 9)
+                TokenError(token, "Invalid length.");
+
+            ColorNode node = new ColorNode();
+            if (token.Length <= 5)
+            {
+                byte r = ParseColorChannel(token.Text.Slice(1, 1));
+                byte g = ParseColorChannel(token.Text.Slice(2, 1));
+                byte b = ParseColorChannel(token.Text.Slice(3, 1));
+                byte a = token.Length == 4 ? (byte)255 : ParseColorChannel(token.Text.Slice(4, 1));
+                node.Value = new ColorValue(r, g, b, a);
+            }
+            else
+            {
+                byte r = ParseColorChannel(token.Text.Slice(1, 2));
+                byte g = ParseColorChannel(token.Text.Slice(3, 2));
+                byte b = ParseColorChannel(token.Text.Slice(5, 2));
+                byte a = token.Length == 7 ? (byte)255 : ParseColorChannel(token.Text.Slice(7, 2));
+                node.Value = new ColorValue(r, g, b, a);
+            }
+
+            return node;
         }
 
         /// <summary>
@@ -505,6 +536,23 @@ namespace Rusty.Serialization.CSCD
             // No change needed.
             else
                 return new string(span);
+        }
+
+        /// <summary>
+        /// Parse a color channel in hex format.
+        /// </summary>
+        private static byte ParseColorChannel(TextSpan span)
+        {
+            if (span.Length < 1 || span.Length > 2)
+                throw new ArgumentOutOfRangeException(nameof(span));
+
+            if (span.Length == 1)
+            {
+                byte shorthand = ParseHexDigit(span[0], HexParseMode.Uppercase);
+                return (byte)((shorthand << 4) | shorthand);
+            }
+            else
+                return (byte)ParseHex(span, HexParseMode.Uppercase);
         }
 
         /// <summary>
