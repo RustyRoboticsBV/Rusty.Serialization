@@ -32,6 +32,7 @@ namespace Rusty.Serialization.Core.Codecs
 
         /* Public methods. */
         public override string ToString() => new string(span);
+        public ReadOnlySpan<char> AsSpan() => span;
 
         /// <summary>
         /// Get a slice of the text, starting at some character and continuing to the end.

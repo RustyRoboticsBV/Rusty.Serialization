@@ -176,6 +176,9 @@ namespace Rusty.Serialization.CSCD
         /// </summary>
         private static DecimalNode ParseDecimal(Token token)
         {
+            if (!token.Text.StartsWith('$') && !token.Text.StartsWith("-$"))
+                TokenError(token, "Decimal tokens must start with a $ or -$ prefix.");
+
             // Get contents.
             bool negative = token.Text.StartsWith('-');
             int offset = negative ? 2 : 1;
@@ -183,11 +186,11 @@ namespace Rusty.Serialization.CSCD
 
             // Empty literal (integer zero).
             if (contents.Length == 0)
-                return new DecimalNode("0");
+                return new DecimalNode(0m);
 
             // May not have a negative sign after $, or be non-numeric.
             if (contents.StartsWith('-'))
-                TokenError(token, "Negative decimals must use the syntax -$ and may not have a - sign after the $ sign.");
+                TokenError(token, "Decimals may not have a - sign after the $ sign; use -$ instead.");
             if (GetNumericType(contents, NumericParseMode.AllowLonePoint) == NumericType.NaN)
                 TokenError(token, "Non-numeric decimal.");
 
@@ -199,7 +202,7 @@ namespace Rusty.Serialization.CSCD
                 processed = '-' + processed;
 
             // Create node.
-            return new DecimalNode(processed);
+            return new DecimalNode(DecimalValue.Parse(processed));
         }
 
         /// <summary>

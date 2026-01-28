@@ -66,7 +66,7 @@ namespace Rusty.Serialization.CSCD
             if (node is StringNode str)
                 return $"\"{FormatText(str.Value, strEscapes)}\"";
             if (node is DecimalNode dec)
-                return dec.Value.IsNegative ? $"-${dec.Value.ToString().Substring(1)}" : $"${dec.Value}";
+                return Serialize(dec);
             if (node is ColorNode col)
                 return Serialize(col);
             if (node is TimeNode t)
@@ -120,6 +120,12 @@ namespace Rusty.Serialization.CSCD
             if (node.Value == '\0')
                 return "''";
             return $"'{FormatText(node.Value.ToString(), charEscapes)}'";
+        }
+
+        private string Serialize(DecimalNode node)
+        {
+            UnityEngine.Debug.Log(node.Value.mantissa + "  e-" + node.Value.scale + " " + node.Value);
+            return node.Value.negative ? $"-${node.Value.ToString().Substring(1)}" : $"${node.Value}";
         }
 
         private string Serialize(ColorNode node)

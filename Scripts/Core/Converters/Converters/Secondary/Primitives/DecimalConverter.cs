@@ -8,7 +8,16 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class DecimalConverter : Converter<decimal, DecimalNode>
     {
         /* Protected methods. */
-        protected override DecimalNode CreateNode(decimal obj, CreateNodeContext context) => new DecimalNode(obj);
-        protected override decimal CreateObject(DecimalNode node, CreateObjectContext context) => decimal.Parse(node.Value);
+        protected override DecimalNode CreateNode(decimal obj, CreateNodeContext context)
+        {
+            UnityEngine.Debug.Log("input: " + obj);
+            return new DecimalNode(obj);
+        }
+        protected override decimal CreateObject(DecimalNode node, CreateObjectContext context)
+        {
+            decimal d = (decimal)node.Value;
+            UnityEngine.Debug.Log("Decimal: " + d);
+            return d;
+        }
     }
 }

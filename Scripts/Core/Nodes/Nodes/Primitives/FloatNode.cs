@@ -15,22 +15,6 @@ namespace Rusty.Serialization.Core.Nodes
             Value = value;
         }
 
-        /* Conversion operators. */
-        public static explicit operator FloatNode(IntNode node)
-        {
-            return new FloatNode(node.Value);
-        }
-
-        public static explicit operator FloatNode(StringNode node)
-        {
-            return new FloatNode(node.Value);
-        }
-
-        public static explicit operator FloatNode(DecimalNode node)
-        {
-            return new FloatNode(node.Value);
-        }
-
         /* Public methods. */
         public override string ToString()
         {
