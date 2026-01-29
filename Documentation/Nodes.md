@@ -1,0 +1,32 @@
+# Nodes
+
+A node tree data structure represent a C# object graph. A node tree should never contain any cycles.
+
+The node layer recognizes the following nodes listed below. Each node corresponds to a CSCD format literal, and vice-versa.
+
+### Primitives
+
+- **Null**: Encodes a null value in an object graph.
+- **Bool**: Encodes a boolean value. Can be either `true` or `false`.
+- **Int**: Encodes an integer value of arbitrary precision. Can be used for both signed and unsigned integers.
+- **Float**: Encodes a floating-point value of arbitrary precision.
+- **Infinity**: Encodes a positive or negative infinity value, such as `float.PositiveInfinity` and `double.NegativeInfinity`.
+- **Nan**: Encodes a NaN value, such as `float.NaN` and `double.NaN`.
+- **Char**: encodes a character value. May be any Unicode character.
+- **String**: encodes a string value.
+- **Decimal**: encodes a decimal value of arbitrary precision, composed of a sign, mantissa and range. Unlike float nodes, it preserves trailing zeros after the decimal point.
+- **Color**: encodes a color value, composed of a red, green, blue and alpha byte.
+- **Time**: encodes a date/time value, composed of a year, month, day, hour, minute and second. The year is an integer value of arbitrary precision, the second a floating-point value of arbitrary precision that may not be negative. The rest are byte values.
+- **Bytes**: encodes a byte array value.
+- **Ref**: a reference to an ID node. Used to avoid duplication of shared references, and cycles in cyclic references.
+
+### Collections
+
+- **List**: a collection node that contains a list of element nodes. Used to encode arrays-like or set-like types.
+- **Dict**: a collection node that contains pairs of key/value nodes. Used to encode dictionary-like types.
+- **Object**: a collection node that contains pairs of member name strings and member value nodes. Used to encode arbitrary object instances.
+
+### Metadata
+
+- **Type**: a type label, used to disambiguify polymorphic types.
+- **ID**: a reference ID, used to mark shared or cyclic reference objects. 
