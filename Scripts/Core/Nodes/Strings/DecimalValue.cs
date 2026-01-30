@@ -54,7 +54,6 @@ namespace Rusty.Serialization.Core.Nodes
         public static implicit operator DecimalValue(decimal value) => new DecimalValue(value);
         public static explicit operator decimal(DecimalValue value)
         {
-            UnityEngine.Debug.Log("decimal: " + value);
             if (value.scale > 28)
                 throw new OverflowException("Scale out of range for decimal.");
 
@@ -67,7 +66,6 @@ namespace Rusty.Serialization.Core.Nodes
             int mid = (int)((abs >> 32) & 0xFFFFFFFF);
             int hi = (int)((abs >> 64) & 0xFFFFFFFF);
 
-            UnityEngine.Debug.Log("Is negative: " + value.negative);
             return new decimal(lo, mid, hi, value.negative, (byte)value.scale);
         }
 
@@ -127,7 +125,6 @@ namespace Rusty.Serialization.Core.Nodes
         /// </summary>
         public static DecimalValue Parse(ReadOnlySpan<char> span)
         {
-            UnityEngine.Debug.Log("Text: " + new string(span));
             // Find decimal point.
             int pointIndex = span.IndexOf('.');
 
@@ -155,7 +152,6 @@ namespace Rusty.Serialization.Core.Nodes
                 integer.CopyTo(mantissaStr);
                 fractional.CopyTo(mantissaStr.Slice(integer.Length));
                 mantissa = BigInteger.Parse(mantissaStr);
-
             }
             else
             {
@@ -164,10 +160,6 @@ namespace Rusty.Serialization.Core.Nodes
                 fractional.CopyTo(mantissaChars.AsSpan(integer.Length, fractional.Length));
                 mantissa = BigInteger.Parse(mantissaChars);
             }
-            UnityEngine.Debug.Log("Mantissa: " + mantissa);
-            UnityEngine.Debug.Log("Scale: " + scale);
-            UnityEngine.Debug.Log("Negative: " + negative);
-            UnityEngine.Debug.Log("ToString: " + new DecimalValue(negative, mantissa, scale));
             return new DecimalValue(negative, mantissa, scale);
         }
     }

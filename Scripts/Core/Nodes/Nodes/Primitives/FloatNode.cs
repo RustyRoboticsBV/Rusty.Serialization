@@ -7,10 +7,10 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public RealString Value { get; set; }
+        public FloatValue Value { get; set; }
 
         /* Constructors. */
-        public FloatNode(RealString value)
+        public FloatNode(FloatValue value)
         {
             Value = value;
         }

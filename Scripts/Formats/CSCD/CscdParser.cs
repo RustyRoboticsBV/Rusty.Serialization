@@ -102,7 +102,7 @@ namespace Rusty.Serialization.CSCD
             if (numeric == NumericType.Int)
                 return new IntNode(new string(token.Text));
             if (numeric == NumericType.Real)
-                return new FloatNode(ProcessReal(token.Text));
+                return new FloatNode(FloatValue.Parse(ProcessReal(token.Text)));
 
             // NaN.
             if (token.Text.Equals("nan"))

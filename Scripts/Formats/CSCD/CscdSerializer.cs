@@ -87,7 +87,7 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(FloatNode node)
         {
-            string value = node.Value;
+            string value = node.Value.ToString();
 
             bool negative = value.StartsWith("-");
             if (negative)

@@ -11,12 +11,6 @@ namespace Rusty.Serialization.Core.Nodes
             Value = value;
         }
 
-        /* Conversion operators. */
-        public static explicit operator IntNode(FloatNode real)
-        {
-            return new IntNode(real.Value);
-        }
-
         /* Public methods. */
         public override string ToString()
         {

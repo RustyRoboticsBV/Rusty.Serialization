@@ -74,7 +74,7 @@ namespace Rusty.Serialization.Core.Nodes
                         if (value is IntNode secondi)
                             time.Second = secondi.Value;
                         else if (value is FloatNode secondf)
-                            time.Second = secondf.Value;
+                            time.Second = secondf.Value.ToString();
                         else
                             throw new FormatException("Invalid second node.");
                         break;
