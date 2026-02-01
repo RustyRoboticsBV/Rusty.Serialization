@@ -7,24 +7,20 @@ namespace Rusty.Serialization.Core.Nodes
     /// </summary>
     public readonly struct TimeValue : IEquatable<TimeValue>
     {
-        // TODO: placeholder; remove.
-        public struct FloatValue
-        {
-            public static bool operator ==(FloatValue a, FloatValue b) => true;
-            public static bool operator !=(FloatValue a, FloatValue b) => false;
-        }
-
         /* Fields */
         public readonly IntValue year;
-        public readonly byte month;
-        public readonly byte day;
-        public readonly byte hour;
-        public readonly byte minute;
+        public readonly IntValue month;
+        public readonly IntValue day;
+        public readonly IntValue hour;
+        public readonly IntValue minute;
         public readonly FloatValue second;
 
         /* Constructors */
-        public TimeValue(IntValue year, byte month, byte day, byte hour, byte minute, FloatValue second)
+        public TimeValue(IntValue year, IntValue month, IntValue day, IntValue hour, IntValue minute, FloatValue second)
         {
+            if (second.negative)
+                throw new ArgumentException("Second may not be negative.");
+
             this.year = year;
             this.month = month;
             this.day = day;

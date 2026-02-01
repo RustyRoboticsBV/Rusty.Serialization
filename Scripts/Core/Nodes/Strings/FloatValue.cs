@@ -33,7 +33,7 @@ namespace Rusty.Serialization.Core.Nodes
             {
                 this.negative = negative; // preserve sign
                 this.mantissa = BigInteger.Zero;
-                exponent = 0;
+                this.exponent = 0;
                 return;
             }
 
@@ -59,41 +59,22 @@ namespace Rusty.Serialization.Core.Nodes
                 exp2 = rawExp - Bias - 52;
             }
 
-            int scale;
+            int exponent;
 
             if (exp2 >= 0)
             {
                 mantissa <<= exp2;
-                scale = 0;
+                exponent = 0;
             }
             else
             {
                 int shift = -exp2;
                 mantissa *= BigInteger.Pow(5, shift);
-                scale = shift;
+                exponent = shift;
             }
 
-            // ---- Inline normalization (remove trailing decimal zeros) ----
-            if (!mantissa.IsZero)
-            {
-                BigInteger ten = new BigInteger(10);
-                while (scale > 0)
-                {
-                    BigInteger div = BigInteger.DivRem(mantissa, ten, out BigInteger rem);
-                    if (!rem.IsZero)
-                        break;
-
-                    mantissa = div;
-                    scale--;
-                }
-            }
-            // -------------------------------------------------------------
-
-            this.negative = negative;
-            this.mantissa = mantissa;
-            exponent = scale;
+            Normalize(negative, mantissa, exponent, out this.negative, out this.mantissa, out this.exponent);
         }
-
 
         public FloatValue(bool negative, BigInteger mantissa, int exponent)
         {
@@ -104,19 +85,24 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         /* Conversion operators */
-        public static implicit operator FloatValue(BigInteger value)
-            => new FloatValue(value < 0, BigInteger.Abs(value), 0);
         public static implicit operator FloatValue(float value) => new FloatValue(value);
         public static implicit operator FloatValue(double value) => new FloatValue(value);
+
         public static explicit operator float(FloatValue value) => (float)(double)value;
         public static explicit operator double(FloatValue value) => (double)value.mantissa * Math.Pow(10, -value.exponent);
+
+        /* Compatison operators. */
+        public static bool operator ==(FloatValue a, FloatValue b) => a.Equals(b);
+        public static bool operator !=(FloatValue a, FloatValue b) => !a.Equals(b);
 
         /* Public methods. */
         public override string ToString()
         {
+            // Integers.
             if (exponent == 0)
-                return (negative ? "-" : "") + mantissa.ToString(CultureInfo.InvariantCulture);
-
+                return (negative ? "-" : "") + mantissa.ToString(CultureInfo.InvariantCulture) + ".0";
+            
+            // Fractionals.
             string digits = mantissa.ToString(CultureInfo.InvariantCulture);
 
             if (digits.Length <= exponent)
@@ -129,6 +115,7 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         public override int GetHashCode() => HashCode.Combine(mantissa, exponent);
+
         public override bool Equals(object obj) => obj is FloatValue other && Equals(other);
 
         public bool Equals(FloatValue other)
@@ -175,20 +162,20 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         /* Private methods. */
-        private static void Normalize(bool negative, BigInteger mantissa, int scale,
-            out bool normNegative, out BigInteger normMantissa, out int normScale)
+        private static void Normalize(bool negative, BigInteger mantissa, int exponent,
+            out bool normNegative, out BigInteger normMantissa, out int normExponent)
         {
             if (mantissa.IsZero)
             {
-                normNegative = false;
+                normNegative = negative;
                 normMantissa = BigInteger.Zero;
-                normScale = 0;
+                normExponent = 0;
                 return;
             }
 
             BigInteger ten = new BigInteger(10);
 
-            while (scale > 0)
+            while (exponent > 0)
             {
                 BigInteger remainder;
                 BigInteger div = BigInteger.DivRem(mantissa, ten, out remainder);
@@ -196,12 +183,12 @@ namespace Rusty.Serialization.Core.Nodes
                     break;
 
                 mantissa = div;
-                scale--;
+                exponent--;
             }
 
             normNegative = negative;
             normMantissa = mantissa;
-            normScale = scale;
+            normExponent = exponent;
         }
     }
 }

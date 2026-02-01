@@ -3,17 +3,12 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A bytes serializer node.
     /// </summary>
-    public class BytesNode : INode
+    public class BytesNode : ValueNode<BytesString>
     {
-        /* Public properties. */
-        public ITreeElement Parent { get; set; }
-        public BytesString Value { get; set; }
-
         /* Constructors. */
-        public BytesNode(BytesString value)
-        {
-            Value = value;
-        }
+        public BytesNode() : base() { }
+
+        public BytesNode(BytesString value) : base(value) { }
 
         /* Conversion operators. */
         public static explicit operator BytesNode(StringNode str)
@@ -25,12 +20,6 @@ namespace Rusty.Serialization.Core.Nodes
         public override string ToString()
         {
             return $"bytes: {Value}";
-        }
-
-        public void Clear()
-        {
-            Parent = null;
-            Value = "";
         }
     }
 }

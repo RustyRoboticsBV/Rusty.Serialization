@@ -22,9 +22,14 @@ namespace Rusty.Serialization.CSCD
 
         private static readonly Dictionary<char, UnicodePair> simpleEscapes = new()
         {
-            { 't', '\t' }, { 'n', '\n' }, { 's', ' ' },
-            { '"', '"' }, { '\'', '\'' }, { '`', '`' },
-            { '(', '(' }, { ')', ')' },
+            { 't', '\t' },
+            { 'n', '\n' },
+            { 's', ' ' },
+            { '"', '"' },
+            { '\'', '\'' },
+            { '`', '`' },
+            { '(', '(' },
+            { ')', ')' },
             { ';', ';' },
             { '\\', '\\' }
         };
@@ -243,41 +248,46 @@ namespace Rusty.Serialization.CSCD
         {
             TextSpan contents = token.Unpack(1, 1);
 
-            // Empty literal.
-            if (contents.Length == 0)
-                return new TimeNode(1, 1, 1, 0, 0, 0.0);
-
-            TimeNode node = new TimeNode();
+            IntValue year = 1;
+            IntValue month = 1;
+            IntValue day = 1;
+            IntValue hour = 0;
+            IntValue minute = 0;
+            FloatValue second = 0f;
 
             try
             {
+                // Empty literal.
+                if (contents.Length == 0)
+                    return new TimeNode(year, month, day, hour, minute, second);
+
                 // Date and time.
                 int underscore = contents.FirstIndexOf('_');
                 if (underscore != -1)
                 {
                     TextSpan date = contents.Slice(0, underscore);
-                    ParseDate(node, date);
+                    ParseDate(date, out year, out month, out day);
 
                     TextSpan time = contents.Slice(underscore + 1);
-                    ParseTime(node, time);
+                    ParseTime(time, out hour, out minute, out second);
 
-                    return node;
+                    goto Return;
                 }
 
                 // Date only.
                 int dash = contents.FirstIndexOf('-');
                 if (dash != -1)
                 {
-                    ParseDate(node, contents);
-                    return node;
+                    ParseDate(contents, out year, out month, out day);
+                    goto Return;
                 }
 
                 // Time only.
                 int colon = contents.FirstIndexOf(':');
                 if (colon != -1)
                 {
-                    ParseTime(node, contents);
-                    return node;
+                    ParseTime(contents, out hour, out minute, out second);
+                    goto Return;
                 }
             }
             catch (Exception ex)
@@ -288,6 +298,8 @@ namespace Rusty.Serialization.CSCD
 
             TokenError(token, "Malformed time literal.");
             return null;
+
+            Return: return new TimeNode(year, month, day, hour, minute, second);
         }
 
         /// <summary>
@@ -572,7 +584,7 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a date component.
         /// </summary>
-        private static void ParseDate(TimeNode node, TextSpan date)
+        private static void ParseDate(TextSpan date, out IntValue year, out IntValue month, out IntValue day)
         {
             // Negative year.
             bool negativeYear = false;
@@ -587,111 +599,110 @@ namespace Rusty.Serialization.CSCD
             if (endOfYear == -1)
                 throw new FormatException($"Date does not contain a year.");
 
-            TextSpan year = date.Slice(0, endOfYear);
-            if (year.Length == 0)
-                throw new FormatException($"Empty year term {year.ToString()}.");
-            if (year.StartsWith('-'))
-                throw new FormatException($"Duplicate minus sign {year.ToString()}.");
-            if (GetNumericType(year) != NumericType.Int)
-                throw new FormatException($"Non-integer year {year.ToString()}."); 
+            TextSpan yearText = date.Slice(0, endOfYear);
+            if (yearText.Length == 0)
+                throw new FormatException($"Empty year term {yearText.ToString()}.");
+            if (yearText.StartsWith('-'))
+                throw new FormatException($"Duplicate minus sign {yearText.ToString()}.");
+            if (GetNumericType(yearText) != NumericType.Int)
+                throw new FormatException($"Non-integer year {yearText.ToString()}.");
 
+            year = IntValue.Parse(yearText);
             if (negativeYear)
-                node.Year = '-' + new string(year);
-            else
-                node.Year = new string(year);
+                year = -year;
 
             // Parse month.
             int endOfMonth = date.FirstIndexOf(endOfYear + 1, '-');
             if (endOfMonth == -1)
                 throw new FormatException($"Date does not contain a month.");
 
-            TextSpan month = date.Slice(endOfYear + 1, endOfMonth - (endOfYear + 1));
-            if (month.Length == 0)
-                throw new FormatException($"Empty month term {month.ToString()}.");
-            if (month.StartsWith('-'))
-                throw new FormatException($"Negative month {month.ToString()}.");
-            if (GetNumericType(month) != NumericType.Int)
-                throw new FormatException($"Non-integer month {month.ToString()}.");
-            if (!IsWithinRange(month, 1, 12))
-                throw new FormatException($"Month must be in range [1-12], but equals {month.ToString()}.");
+            TextSpan monthText = date.Slice(endOfYear + 1, endOfMonth - (endOfYear + 1));
+            if (monthText.Length == 0)
+                throw new FormatException($"Empty month term {monthText.ToString()}.");
+            if (monthText.StartsWith('-'))
+                throw new FormatException($"Negative month {monthText.ToString()}.");
+            if (GetNumericType(monthText) != NumericType.Int)
+                throw new FormatException($"Non-integer month {monthText.ToString()}.");
+            if (!IsWithinRange(monthText, 1, 12))
+                throw new FormatException($"Month must be in range [1-12], but equals {monthText.ToString()}.");
 
-            node.Month = new string(month);
+            month = IntValue.Parse(monthText);
 
             // Parse day.
-            TextSpan day = date.Slice(endOfMonth + 1);
-            if (day.Length == 0)
-                throw new FormatException($"Empty day term {day.ToString()}.");
-            if (day.StartsWith('-'))
-                throw new FormatException($"Negative day {day.ToString()}.");
-            if (GetNumericType(day) != NumericType.Int)
-                throw new FormatException($"Non-integer day {day.ToString()}.");
-            if (!IsWithinRange(day, 1, 31))
-                throw new FormatException($"Day must be in range [1-31], but equals {day.ToString()}.");
+            TextSpan dayText = date.Slice(endOfMonth + 1);
+            if (dayText.Length == 0)
+                throw new FormatException($"Empty day term {dayText.ToString()}.");
+            if (dayText.StartsWith('-'))
+                throw new FormatException($"Negative day {dayText.ToString()}.");
+            if (GetNumericType(dayText) != NumericType.Int)
+                throw new FormatException($"Non-integer day {dayText.ToString()}.");
+            if (!IsWithinRange(dayText, 1, 31))
+                throw new FormatException($"Day must be in range [1-31], but equals {dayText.ToString()}.");
 
-            node.Day = new string(day);
+            day = IntValue.Parse(dayText);
         }
 
         /// <summary>
         /// Parse a time component.
         /// </summary>
-        private static void ParseTime(TimeNode node, TextSpan time)
+        private static void ParseTime(TextSpan time, out IntValue hour, out IntValue minute, out FloatValue second)
         {
             // Parse hour.
             int endOfHour = time.FirstIndexOf(':');
             if (endOfHour == -1)
                 throw new FormatException($"Time does not contain an hour.");
 
-            TextSpan hour = time.Slice(0, endOfHour);
-            if (hour.Length == 0)
-                throw new FormatException($"Empty hour term {hour.ToString()}.");
-            if (hour.StartsWith('-'))
-                throw new FormatException($"Negative hour {hour.ToString()}.");
-            if (GetNumericType(hour) != NumericType.Int)
-                throw new FormatException($"Non-integer hour {hour.ToString()}.");
-            if (!IsWithinRange(hour, 0, 24))
-                throw new FormatException($"Hour must be in range [0-24], but equals {hour.ToString()}.");
+            TextSpan hourText = time.Slice(0, endOfHour);
+            if (hourText.Length == 0)
+                throw new FormatException($"Empty hour term {hourText.ToString()}.");
+            if (hourText.StartsWith('-'))
+                throw new FormatException($"Negative hour {hourText.ToString()}.");
+            if (GetNumericType(hourText) != NumericType.Int)
+                throw new FormatException($"Non-integer hour {hourText.ToString()}.");
+            if (!IsWithinRange(hourText, 0, 24))
+                throw new FormatException($"Hour must be in range [0-24], but equals {hourText.ToString()}.");
 
-            node.Hour = new string(hour);
+            hour = IntValue.Parse(hourText);
 
             // Parse minute.
             int endOfMinute = time.FirstIndexOf(endOfHour + 1, ':');
             if (endOfMinute == -1)
                 throw new FormatException($"Time does not contain a minute.");
 
-            TextSpan minute = time.Slice(endOfHour + 1, endOfMinute - (endOfHour + 1));
-            if (minute.Length == 0)
-                throw new FormatException($"Empty minute term {minute.ToString()}.");
-            if (minute.StartsWith('-'))
-                throw new FormatException($"Negative minute {minute.ToString()}.");
-            if (GetNumericType(minute) != NumericType.Int)
-                throw new FormatException($"Minute must be an integer {minute.ToString()}");
-            if (!IsWithinRange(minute, 0, 59))
-                throw new FormatException($"Minute must be in range [0-59], but equals  {minute.ToString()}.");
-            if (IsWithinRange(hour, 24, 24) && !IsWithinRange(minute, 0, 0))
-                throw new FormatException($"Minute must be 0 if hour is 24, but equals {minute.ToString()}.");
+            TextSpan minuteText = time.Slice(endOfHour + 1, endOfMinute - (endOfHour + 1));
+            if (minuteText.Length == 0)
+                throw new FormatException($"Empty minute term {minuteText.ToString()}.");
+            if (minuteText.StartsWith('-'))
+                throw new FormatException($"Negative minute {minuteText.ToString()}.");
+            if (GetNumericType(minuteText) != NumericType.Int)
+                throw new FormatException($"Minute must be an integer {minuteText.ToString()}");
+            if (!IsWithinRange(minuteText, 0, 59))
+                throw new FormatException($"Minute must be in range [0-59], but equals  {minuteText.ToString()}.");
+            if (IsWithinRange(hourText, 24, 24) && !IsWithinRange(minuteText, 0, 0))
+                throw new FormatException($"Minute must be 0 if hour is 24, but equals {minuteText.ToString()}.");
 
-            node.Minute = new string(minute);
+            minute = IntValue.Parse(minuteText);
 
             // Parse second.
-            TextSpan second = time.Slice(endOfMinute + 1);
-            if (second.Length == 0)
+            TextSpan secondText = time.Slice(endOfMinute + 1);
+            if (secondText.Length == 0)
                 throw new FormatException($"Empty second term.");
-            if (second.StartsWith('-'))
-                throw new FormatException($"Negative second {second.ToString()}.");
-            if (GetNumericType(second, NumericParseMode.AllowLonePoint) == NumericType.NaN)
-                throw new FormatException($"Non-numeric second {second.ToString()}.");
-            second = ProcessReal(second).AsSpan();
+            if (secondText.StartsWith('-'))
+                throw new FormatException($"Negative second {secondText.ToString()}.");
+            if (GetNumericType(secondText, NumericParseMode.AllowLonePoint) == NumericType.NaN)
+                throw new FormatException($"Non-numeric second {secondText.ToString()}.");
+            secondText = ProcessReal(secondText).AsSpan();
 
-            int pointIndex = second.FirstIndexOf('.');
-            TextSpan secondInt = pointIndex == -1 ? second : second.Slice(0, pointIndex);
+            int pointIndex = secondText.FirstIndexOf('.');
+            TextSpan secondInt = pointIndex == -1 ? secondText : secondText.Slice(0, pointIndex);
             if (!IsWithinRange(secondInt, 0, 60))
-                throw new FormatException($"Second must be in the range [0-60], but equals {second.ToString()}.");
+                throw new FormatException($"Second must be in the range [0-60], but equals {secondText.ToString()}.");
 
-            TextSpan secondFrac = pointIndex == -1 ? "0" : second.Slice(pointIndex + 1);
-            if (IsWithinRange(hour, 24, 24) && (!IsWithinRange(secondInt, 0, 0) || !IsWithinRange(secondFrac, 0, 0)))
-                throw new FormatException($"Second must be 0 if hour is 24, but equals {second.ToString()}.");
+            TextSpan secondFrac = pointIndex == -1 ? "0" : secondText.Slice(pointIndex + 1);
+            if (IsWithinRange(hourText, 24, 24) && (!IsWithinRange(secondInt, 0, 0) || !IsWithinRange(secondFrac, 0, 0)))
+                throw new FormatException($"Second must be 0 if hour is 24, but equals {secondText.ToString()}.");
 
-            node.Second = new string(second);
+            second = FloatValue.Parse(secondText);
         }
     }
 }

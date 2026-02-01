@@ -33,11 +33,5 @@ namespace Rusty.Serialization.Core.Nodes
                 return "char: backspace";
             return "char: " + Value;
         }
-
-        public override void Clear()
-        {
-            Parent = null;
-            Value = '\0';
-        }
     }
 }

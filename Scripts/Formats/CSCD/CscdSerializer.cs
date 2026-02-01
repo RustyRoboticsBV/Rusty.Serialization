@@ -124,7 +124,6 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(DecimalNode node)
         {
-            UnityEngine.Debug.Log(node.Value.mantissa + "  e-" + node.Value.scale + " " + node.Value);
             return node.Value.negative ? $"-${node.Value.ToString().Substring(1)}" : $"${node.Value}";
         }
 
@@ -167,17 +166,17 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(TimeNode node)
         {
-            bool noDate = node.Year.IsOne && node.Month.IsOne && node.Day.IsOne;
-            bool noTime = node.Hour.IsZero && node.Minute.IsZero && node.Second.IsZero;
+            bool noDate = node.Value.year == 1 && node.Value.month == 1 && node.Value.day == 1;
+            bool noTime = node.Value.hour == 0 && node.Value.minute == 0 && node.Value.second == 0;
 
             if (noDate && noTime)
                 return "@;";
             else if (noTime)
-                return $"@{node.Year}-{node.Month}-{node.Day};";
+                return $"@{node.Value.year}-{node.Value.month}-{node.Value.day};";
             else if (noDate)
-                return $"@{node.Hour}:{node.Minute}:{node.Second};";
+                return $"@{node.Value.hour}:{node.Value.minute}:{node.Value.second};";
             else
-                return $"@{node.Year}-{node.Month}-{node.Day}_{node.Hour}:{node.Minute}:{node.Second};";
+                return $"@{node.Value.year}-{node.Value.month}-{node.Value.day}_{node.Value.hour}:{node.Value.minute}:{node.Value.second};";
         }
 
         private string Serialize(ListNode node, bool prettyPrinting)

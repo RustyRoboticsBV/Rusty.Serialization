@@ -14,16 +14,16 @@ namespace Rusty.Serialization.DotNet
         {
             double seconds = obj.Second + (obj.Millisecond / 1000.0) + (obj.Ticks % TimeSpan.TicksPerMillisecond * 1e-7);
 
-            return new TimeNode(
-                obj.Year, obj.Month, obj.Day,
-                obj.Hour, obj.Minute, seconds
-            );
+            return new TimeNode(new TimeValue(
+                obj.Year, (byte)obj.Month, (byte)obj.Day,
+                (byte)obj.Hour, (byte)obj.Minute, seconds
+            ));
         }
 
         protected override DateTime CreateObject(TimeNode node, CreateObjectContext context)
         {
             // Convert fractional seconds into ticks.
-            double totalSeconds = double.Parse(node.Second);
+            double totalSeconds = (double)node.Value.second;
             int intSeconds = (int)Math.Floor(totalSeconds);
             double fractionSeconds = totalSeconds - intSeconds;
             long fractionTicks = (long)Math.Round(fractionSeconds * TimeSpan.TicksPerSecond);
@@ -32,8 +32,8 @@ namespace Rusty.Serialization.DotNet
             try
             {
                 return new DateTime(
-                    int.Parse(node.Year), int.Parse(node.Month), int.Parse(node.Day),
-                    int.Parse(node.Hour), int.Parse(node.Minute), intSeconds
+                    (int)node.Value.year, (int)node.Value.month, (int)node.Value.day,
+                    (int)node.Value.hour, (int)node.Value.minute, intSeconds
                 ).AddTicks(fractionTicks);
             }
             catch

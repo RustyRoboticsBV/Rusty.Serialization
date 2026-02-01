@@ -20,6 +20,7 @@
         /* Public methods. */
         public virtual void Clear()
         {
+            Parent = null;
             Value = default;
         }
     }

@@ -15,11 +15,5 @@ namespace Rusty.Serialization.Core.Nodes
         {
             return "string: " + (Value ?? "(null)");
         }
-
-        public override void Clear()
-        {
-            Parent = null;
-            Value = null;
-        }
     }
 }
