@@ -141,7 +141,7 @@ namespace Rusty.Serialization.CSCD
 
             // Bytes.
             if (token.Text.StartsWith("b_"))
-                return new BytesNode(new string(token.Text.Slice(2)));
+                return ParseBytes(token);
 
             // Ref.
             if (token.Text.StartsWith('&') && token.Text.EndsWith(';'))
@@ -300,6 +300,32 @@ namespace Rusty.Serialization.CSCD
             return null;
 
             Return: return new TimeNode(year, month, day, hour, minute, second);
+        }
+
+        /// <summary>
+        /// Parse a bytes literal.
+        /// </summary>
+        private static BytesNode ParseBytes(Token token)
+        {
+            if (!token.Text.StartsWith("b_"))
+                TokenError(token, "Missing b_ prefix.");
+
+            // Get Base64 contents.
+            TextSpan contents = token.Text.Slice(2);
+
+            // Add padding if needed.
+            int paddedLength = contents.Length % 4 != 0 ? (contents.Length / 4 + 1) * 4 : contents.Length;
+            Span<char> span = stackalloc char[paddedLength];
+            contents.AsSpan().CopyTo(span);
+            for (int i = contents.Length; i < paddedLength; i++)
+            {
+                span[i] = '=';
+            }
+
+            // Create node.
+            System.Console.WriteLine(new string(span));
+            System.Console.WriteLine(Convert.ToBase64String(Convert.FromBase64String(new string(span))));
+            return new BytesNode(Convert.FromBase64String(new string(span)));
         }
 
         /// <summary>

@@ -42,9 +42,9 @@ namespace Rusty.Serialization.CSCD
                 token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '\''));
             else if (c == '"')
                 token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '"'));
-            else if (c == '&')
-                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ';'));
             else if (c == '@')
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ';'));
+            else if (c == '&')
                 token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ';'));
 
             // Bare word tokens.

@@ -1,25 +1,21 @@
+using System;
+
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A bytes serializer node.
     /// </summary>
-    public class BytesNode : ValueNode<BytesString>
+    public class BytesNode : ValueNode<byte[]>
     {
         /* Constructors. */
         public BytesNode() : base() { }
 
-        public BytesNode(BytesString value) : base(value) { }
-
-        /* Conversion operators. */
-        public static explicit operator BytesNode(StringNode str)
-        {
-            return new BytesNode(str.Value);
-        }
+        public BytesNode(byte[] value) : base(value) { }
 
         /* Public methods. */
         public override string ToString()
         {
-            return $"bytes: {Value}";
+            return $"bytes: {Convert.ToBase64String(Value)}";
         }
     }
 }
