@@ -3,7 +3,7 @@
 ## Introduction
 This formal specification document describes the syntax of a serialized data format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary C# object graphs.
 
-The format is self-describing and does not require an external schema. Values may be annotated with optional type labels and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference links.
+The format is self-describing and does not require an external schema for parsing or round-trip serialization. Values may be annotated with optional type labels and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference links.
 
 Note that many of the CSCD literals are more abstract than a C# type. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common data structures, such as lists, time and colors, have dedicated compact literal forms in order to reduce verbosity.
 
@@ -233,7 +233,7 @@ Examples: `@2000-10-16_15:11:03.001;`, `@-500-2-7;`, `@07:30:00;`.
 #### Bytes
 Bytes literals represent arbitrary data that cannot be efficiently expressed using another literal.
 
-They MUST start with the prefix `b_`, followed by the data encoded in [RFC 4648 Base64](https://datatracker.ietf.org/doc/html/rfc4648), using the alphabet `A`-`Z`, `a`-`z`, `0`-`9`, `+`, `/` and `=`. The Base64 MUST have a length that is a multiple of 4; padding using `=` characters is **mandatory** to fulfill this rule. For example, the bytestring `00 02 04 07 09 0E 03` is represented by the bytes literal `b_AAIEBwkPAw==`.
+They MUST start with the prefix `b_`, followed by the data encoded in [RFC 4648 Base64](https://datatracker.ietf.org/doc/html/rfc4648), using the alphabet `A`-`Z`, `a`-`z`, `0`-`9`, `+`, `/` and `=`. Padding using `=` MAY be used, but this is not enforced. For example, the bytestring `00 02 04 07 09 0E 03` is represented by the bytes literal `b_AAIEBwkPAw`.
 
 An empty byte literal (representing zero bytes) MUST be written as `b_`.
 
