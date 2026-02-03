@@ -10,6 +10,8 @@ namespace Rusty.Serialization.Core.Nodes
 
         public ColorNode(ColorValue value) : base(value) { }
 
+        public ColorNode(byte r, byte g, byte b, byte a) : this(new ColorValue(r, g, b, a)) { }
+
         /* Public methods. */
         public override string ToString()
         {

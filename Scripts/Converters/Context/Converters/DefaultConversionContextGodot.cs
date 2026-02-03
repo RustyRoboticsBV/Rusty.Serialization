@@ -1,7 +1,7 @@
 ﻿#if GODOT
 using Godot;
 using System;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Gd;
 
 namespace Rusty.Serialization
@@ -14,36 +14,36 @@ namespace Rusty.Serialization
         private void AddGodot()
         {
             // Structs.
-            Converters.Add<StringName, StringNameConverter>();
-            Converters.Add<NodePath, NodePathConverter>();
+            ConverterRegistry.Add<StringName, StringNameConverter>();
+            ConverterRegistry.Add<NodePath, NodePathConverter>();
 
-            Converters.Add<Color, ColorConverter>();
+            ConverterRegistry.Add<Color, ColorConverter>();
 
-            Converters.Add<Vector2, Vector2Converter>();
-            Converters.Add<Vector3, Vector3Converter>();
-            Converters.Add<Vector4, Vector4Converter>();
-            Converters.Add<Vector2I, Vector2IConverter>();
-            Converters.Add<Vector3I, Vector3IConverter>();
-            Converters.Add<Vector4I, Vector4IConverter>();
-            Converters.Add<Quaternion, QuaternionConverter>();
-            Converters.Add<Plane, PlaneConverter>();
-            Converters.Add<Rect2, Rect2Converter>();
-            Converters.Add<Rect2I, Rect2IConverter>();
-            Converters.Add<Aabb, AabbConverter>();
-            Converters.Add<Transform2D, Transform2DConverter>();
-            Converters.Add<Basis, BasisConverter>();
-            Converters.Add<Transform3D, Transform3DConverter>();
-            Converters.Add<Projection, Transform2DConverter>();
+            ConverterRegistry.Add<Vector2, Vector2Converter>();
+            ConverterRegistry.Add<Vector3, Vector3Converter>();
+            ConverterRegistry.Add<Vector4, Vector4Converter>();
+            ConverterRegistry.Add<Vector2I, Vector2IConverter>();
+            ConverterRegistry.Add<Vector3I, Vector3IConverter>();
+            ConverterRegistry.Add<Vector4I, Vector4IConverter>();
+            ConverterRegistry.Add<Quaternion, QuaternionConverter>();
+            ConverterRegistry.Add<Plane, PlaneConverter>();
+            ConverterRegistry.Add<Rect2, Rect2Converter>();
+            ConverterRegistry.Add<Rect2I, Rect2IConverter>();
+            ConverterRegistry.Add<Aabb, AabbConverter>();
+            ConverterRegistry.Add<Transform2D, Transform2DConverter>();
+            ConverterRegistry.Add<Basis, BasisConverter>();
+            ConverterRegistry.Add<Transform3D, Transform3DConverter>();
+            ConverterRegistry.Add<Projection, Transform2DConverter>();
 
             // Built-in resources.
             var builtInResources = BuiltInResourceTypes.GetBuiltInResourceTypes();
             foreach (Type builtInResource in builtInResources)
             {
-                Converters.Add(builtInResource, typeof(ResourcePathConverter));
+                ConverterRegistry.Add(builtInResource, typeof(ResourcePathConverter));
             }
 
             // User-defined resources.
-            Converters.Add<Resource, ClassConverter<Resource>>();
+            ConverterRegistry.Add<Resource, ClassConverter<Resource>>();
         }
     }
 }

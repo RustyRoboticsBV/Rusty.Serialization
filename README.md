@@ -8,8 +8,8 @@
 A drop-in C# serialization/deserialization module. It is designed to make saving, loading, and transferring complex object graphs effortless and engine-agnostic.
 
 It was built with two specific use-cases in mind:
-- *Game Save Systems*: saving and loading of complex game state objects.
-- *Engine-Agnostic Resources*: creating complex tool-generated assets, then loading them inside any C# context.
+- *Game Save Systems*: saving and loading of game state objects.
+- *Engine-Agnostic Resources*: creating tool-generated assets, then loading them inside any C# context.
 
 Key features:
 - **Easy to use**: simple, one-line serialization and deserialization.
@@ -40,7 +40,7 @@ string serialized = ucs.Serialize(obj);                   // Serializes all publ
 
 #### Deserializing
 ```
-obj = UCS.Deserialize<MyClass>(serialized);               // Deserializes back to MyClass.
+obj = ucs.Deserialize<MyClass>(serialized);               // Deserializes back to MyClass.
 ```
 
 #### Conversion Between Formats
@@ -70,7 +70,7 @@ Classes and structs without explicit support will automatically serialize using:
 - **Note**: members with the `[NonSerialized]` attribute are never serialized.
 
 #### GDScript
-A GDscript wrapper is included with the module, see the [GDScript manual](Documentation\GDScript) for more information.
+A GDscript wrapper is included with the module, see the [GDScript manual](Documentation/GDScript.md) for more information.
 
 **Note**: Using GDScript still requires a .NET build of Godot, and only supports object roots with a type that can be stored in a `Variant`.
 
@@ -87,12 +87,12 @@ Both the converter and serializer layers can be freely swapped out.
 - The default converter layer has explicit support for various .NET, Godot and Unity data types (see the [type table](Documentation/TypeTable.md) for a comprehensive list).
 - The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported, though input must be structured in a way that [matches the parser's expectations](Documentation/FormatTable.md).
 
-The node layer is fixed cannot be swapped. See the [node documentation document](Documentation/Nodes.md) a list of nodes.
+The node layer is fixed cannot be swapped. See the [node documentation document](Documentation/Nodes.md) a list of nodes and their purpose.
 
 ## Compact Serialized C# Data
 The module uses a custom, human-readable serialization format called Compact Serialized C# Data (CSCD). It is designed to represent complex object graphs with minimal structural overhead, preserving types, references, and supporting a variety of literal types. These literals allow common .NET and game engine types (such as date/time, vector, and color structs) to be encoded concisely while keeping the data readable and easy to maintain.
 
-Below is an example of a custom serialized object with pretty printing. See the [specification document](Documentation/CSCD.md) for a formal description.
+Below is an example of a custom serialized object with pretty printing. See the [CSCD user manual](Documentation/CSCD/Manual.md) for more information, and the [specification document](Documentation/CSCD/Specification.md) for a formal syntax description.
 
 ```
 (MyType)<

@@ -27,15 +27,15 @@ namespace Rusty.Serialization
         {
             // System.
 #if NETCOREAPP2_0_OR_GREATER
-            Converters.Add<DBNull, DBNullConverter>();
+            ConverterRegistry.Add<DBNull, DBNullConverter>();
 #endif
 
 #if NETCOREAPP3_0_OR_GREATER
-            Converters.Add<Index, IndexConverter>();
+            ConverterRegistry.Add<Index, IndexConverter>();
 #endif
 
 #if NET5_0_OR_GREATER
-            Converters.Add<Half, HalfConverter>();
+            ConverterRegistry.Add<Half, HalfConverter>();
 #endif
 
             ConverterRegistry.Add<Uri, UriConverter>();
@@ -45,14 +45,14 @@ namespace Rusty.Serialization
             ConverterRegistry.Add<TimeSpan, TimeSpanConverter>();
             ConverterRegistry.Add<DateTime, DateTimeConverter>();
 #if NET6_0_OR_GREATER
-            Converters.Add<DateOnly, DateOnlyConverter>();
-            Converters.Add<TimeOnly, TimeOnlyConverter>();
+            ConverterRegistry.Add<DateOnly, DateOnlyConverter>();
+            ConverterRegistry.Add<TimeOnly, TimeOnlyConverter>();
 #endif
 
             ConverterRegistry.Add<Guid, GuidConverter>();
 
 #if NETCOREAPP3_0_OR_GREATER
-            Converters.Add<Range, RangeConverter>();
+            ConverterRegistry.Add<Range, RangeConverter>();
 #endif
             ConverterRegistry.Add<DateTimeOffset, DateTimeOffsetConverter>();
 
@@ -70,7 +70,7 @@ namespace Rusty.Serialization
 
             // System.Text.
 #if NET5_0_OR_GREATER
-            Converters.Add<Rune, RuneConverter>();
+            ConverterRegistry.Add<Rune, RuneConverter>();
 #endif
 
             ConverterRegistry.Add<StringBuilder, StringBuilderConverter>();
@@ -78,14 +78,14 @@ namespace Rusty.Serialization
 
             // System.Drawing.
 #if NETCOREAPP2_0_OR_GREATER
-            Converters.Add<Color, ColorConverter>();
+            ConverterRegistry.Add<Color, ColorConverter>();
 
-            Converters.Add<Point, PointConverter>();
-            Converters.Add<PointF, PointFConverter>();
-            Converters.Add<Size, SizeConverter>();
-            Converters.Add<SizeF, SizeFConverter>();
-            Converters.Add<Rectangle, RectangleConverter>();
-            Converters.Add<RectangleF, RectangleFConverter>();
+            ConverterRegistry.Add<Point, PointConverter>();
+            ConverterRegistry.Add<PointF, PointFConverter>();
+            ConverterRegistry.Add<Size, SizeConverter>();
+            ConverterRegistry.Add<SizeF, SizeFConverter>();
+            ConverterRegistry.Add<Rectangle, RectangleConverter>();
+            ConverterRegistry.Add<RectangleF, RectangleFConverter>();
 #endif
 
             // System.Collections
@@ -104,7 +104,7 @@ namespace Rusty.Serialization
             ConverterRegistry.Add(typeof(Dictionary<,>), typeof(DictionaryConverter<,>));
             ConverterRegistry.Add(typeof(KeyValuePair<,>), typeof(KeyValuePairConverter<,>));
 #if NET6_0_OR_GREATER
-            Converters.Add(typeof(PriorityQueue<,>), typeof(PriorityQueueConverter<,>));
+            ConverterRegistry.Add(typeof(PriorityQueue<,>), typeof(PriorityQueueConverter<,>));
 #endif
         }
     }

@@ -1,6 +1,6 @@
 ﻿#if NET6_0_OR_GREATER
 using System.Collections.Generic;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet

@@ -1,6 +1,6 @@
 ﻿#if GODOT
 using Godot;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using System;
 
 namespace Rusty.Serialization.Gd

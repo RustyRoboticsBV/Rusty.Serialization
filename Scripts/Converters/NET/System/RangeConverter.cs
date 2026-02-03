@@ -1,6 +1,6 @@
 ﻿#if NETCOREAPP3_0_OR_GREATER
 using System;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
@@ -8,7 +8,7 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET range converter.
     /// </summary>
-    public class RangeConverter : Core.Converters.Converter<Range, ListNode>
+    public class RangeConverter : Core.Conversion.Converter<Range, ListNode>
     {
         /* Protected method. */
         protected override ListNode CreateNode(Range obj, CreateNodeContext context)

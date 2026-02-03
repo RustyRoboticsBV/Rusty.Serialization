@@ -1,6 +1,6 @@
 ﻿#if NET5_0_OR_GREATER
 using System.Text;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
@@ -18,7 +18,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override Rune CreateObject(CharNode node, CreateObjectContext context)
         {
-            return Rune.GetRuneAt(node.Value, 0);
+            return new Rune(node.Value.CodePoint);
         }
     }
 }

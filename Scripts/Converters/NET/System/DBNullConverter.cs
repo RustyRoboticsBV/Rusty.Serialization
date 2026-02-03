@@ -1,6 +1,6 @@
 ﻿#if NETCOREAPP2_0_OR_GREATER
 using System;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
@@ -8,7 +8,7 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET database null converter.
     /// </summary>
-    public class DBNullConverter : Core.Converters.Converter<DBNull, NullNode>
+    public class DBNullConverter : Core.Conversion.Converter<DBNull, NullNode>
     {
         /* Protected method. */
         protected override NullNode CreateNode(DBNull obj, CreateNodeContext context)

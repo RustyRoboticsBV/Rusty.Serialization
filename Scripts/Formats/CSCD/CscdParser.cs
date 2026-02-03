@@ -20,7 +20,7 @@ namespace Rusty.Serialization.CSCD
         private readonly static HashSet<UnicodePair> memberNameEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', ' ', ',', '/', ':', '>', '\\', ']', '}' };
 
-        private static readonly Dictionary<char, UnicodePair> simpleEscapes = new()
+        private static readonly Dictionary<char, UnicodePair> simpleEscapes = new Dictionary<char, UnicodePair>
         {
             { 't', '\t' },
             { 'n', '\n' },

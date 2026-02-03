@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Codecs
     /// <summary>
     /// A sequence of text.
     /// </summary>
-    public ref struct TextSpan
+    public readonly ref struct TextSpan
     {
         /* Fields. */
         private readonly ReadOnlySpan<char> span;

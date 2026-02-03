@@ -1,6 +1,6 @@
 ﻿#if NETCOREAPP2_0_OR_GREATER
 using System.Drawing;
-using Rusty.Serialization.Core.Converters;
+using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
@@ -13,12 +13,12 @@ namespace Rusty.Serialization.DotNet
         /* Protected method. */
         protected override ColorNode CreateNode(Color obj, CreateNodeContext context)
         {
-            return new(obj.R, obj.G, obj.B, obj.A);
+            return new ColorNode(obj.R, obj.G, obj.B, obj.A);
         }
 
         protected override Color CreateObject(ColorNode node, CreateObjectContext context)
         {
-            return Color.FromArgb(node.A, node.R, node.G, node.B);
+            return Color.FromArgb(node.Value.a, node.Value.r, node.Value.g, node.Value.b);
         }
     }
 }

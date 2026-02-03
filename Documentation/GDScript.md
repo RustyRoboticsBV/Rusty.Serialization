@@ -1,0 +1,3 @@
+# GDScript Wrapper Manual
+
+TODO

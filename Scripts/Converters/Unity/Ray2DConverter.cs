@@ -1,3 +1,4 @@
+#if UNITY_5_3_OR_NEWER
 using System;
 using UnityEngine;
 using Rusty.Serialization.Core.Conversion;
@@ -56,3 +57,4 @@ namespace Rusty.Serialization.Unity
         }
     }
 }
+#endif
