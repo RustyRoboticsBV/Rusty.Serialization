@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class UshortConverter : Converter<ushort, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode CreateNode(ushort obj, CreateNodeContext context) => new(obj);
-        protected override ushort CreateObject(IntNode node, CreateObjectContext context) => ushort.Parse(node.Value);
+        protected override IntNode CreateNode(ushort obj, CreateNodeContext context) => new IntNode(obj);
+        protected override ushort CreateObject(IntNode node, CreateObjectContext context) => (ushort)node.Value;
     }
 }

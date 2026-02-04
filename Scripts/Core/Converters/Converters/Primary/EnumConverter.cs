@@ -19,14 +19,14 @@ namespace Rusty.Serialization.Core.Conversion
 
             object value = underlyingType switch
             {
-                Type t when t == typeof(byte) => byte.Parse(node.Value),
-                Type t when t == typeof(sbyte) => sbyte.Parse(node.Value),
-                Type t when t == typeof(short) => short.Parse(node.Value),
-                Type t when t == typeof(ushort) => ushort.Parse(node.Value),
-                Type t when t == typeof(int) => int.Parse(node.Value),
-                Type t when t == typeof(uint) => uint.Parse(node.Value),
-                Type t when t == typeof(long) => long.Parse(node.Value),
-                Type t when t == typeof(ulong) => ulong.Parse(node.Value),
+                Type t when t == typeof(byte) => (byte)node.Value,
+                Type t when t == typeof(sbyte) => (sbyte)node.Value,
+                Type t when t == typeof(short) => (short)node.Value,
+                Type t when t == typeof(ushort) => (ushort)node.Value,
+                Type t when t == typeof(int) => (int)node.Value,
+                Type t when t == typeof(uint) => (uint)node.Value,
+                Type t when t == typeof(long) => (long)node.Value,
+                Type t when t == typeof(ulong) => (ulong)node.Value,
                 _ => throw new NotSupportedException($"Unsupported enum underlying type {underlyingType}")
             };
 

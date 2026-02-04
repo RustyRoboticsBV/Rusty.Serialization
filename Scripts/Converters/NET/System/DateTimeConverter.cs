@@ -15,8 +15,8 @@ namespace Rusty.Serialization.DotNet
             double seconds = obj.Second + (obj.Millisecond / 1000.0) + (obj.Ticks % TimeSpan.TicksPerMillisecond * 1e-7);
 
             return new TimeNode(new TimeValue(
-                obj.Year, (byte)obj.Month, (byte)obj.Day,
-                (byte)obj.Hour, (byte)obj.Minute, seconds
+                obj.Year, obj.Month, obj.Day,
+                obj.Hour, obj.Minute, seconds
             ));
         }
 

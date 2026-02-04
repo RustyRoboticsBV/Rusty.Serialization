@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class LongConverter : Converter<long, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode CreateNode(long obj, CreateNodeContext context) => new(obj);
-        protected override long CreateObject(IntNode node, CreateObjectContext context) => long.Parse(node.Value);
+        protected override IntNode CreateNode(long obj, CreateNodeContext context) => new IntNode(obj);
+        protected override long CreateObject(IntNode node, CreateObjectContext context) => (long)node.Value;
     }
 }

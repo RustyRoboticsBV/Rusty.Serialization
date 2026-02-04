@@ -105,7 +105,7 @@ namespace Rusty.Serialization.CSCD
             // Numerics (int and float).
             NumericType numeric = GetNumericType(token.Text, NumericParseMode.AllowLonePoint);
             if (numeric == NumericType.Int)
-                return new IntNode(new string(token.Text));
+                return new IntNode(IntValue.Parse(token.Text));
             if (numeric == NumericType.Real)
                 return new FloatNode(FloatValue.Parse(ProcessReal(token.Text)));
 

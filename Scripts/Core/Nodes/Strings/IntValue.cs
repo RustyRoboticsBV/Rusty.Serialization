@@ -22,10 +22,24 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         /* Conversion operators */
-        public static implicit operator IntValue(BigInteger value) => new IntValue(value);
+        public static implicit operator IntValue(byte value) => new IntValue(value);
+        public static implicit operator IntValue(sbyte value) => new IntValue(value);
+        public static implicit operator IntValue(short value) => new IntValue(value);
+        public static implicit operator IntValue(ushort value) => new IntValue(value);
         public static implicit operator IntValue(int value) => new IntValue(value);
+        public static implicit operator IntValue(long value) => new IntValue(value);
+        public static implicit operator IntValue(uint value) => new IntValue(value);
+        public static implicit operator IntValue(ulong value) => new IntValue(value);
+        public static implicit operator IntValue(BigInteger value) => new IntValue(value);
         public static explicit operator BigInteger(IntValue value) => value.value;
+        public static explicit operator byte(IntValue value) => (byte)value.value;
+        public static explicit operator sbyte(IntValue value) => (sbyte)value.value;
+        public static explicit operator short(IntValue value) => (short)value.value;
+        public static explicit operator ushort(IntValue value) => (ushort)value.value;
         public static explicit operator int(IntValue value) => (int)value.value;
+        public static explicit operator uint(IntValue value) => (uint)value.value;
+        public static explicit operator long(IntValue value) => (long)value.value;
+        public static explicit operator ulong(IntValue value) => (ulong)value.value;
 
         /* Arithmetic operators. */
         public static IntValue operator -(IntValue v) => new IntValue(-v.value);

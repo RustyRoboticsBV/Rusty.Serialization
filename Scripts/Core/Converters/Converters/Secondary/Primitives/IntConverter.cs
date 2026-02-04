@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class IntConverter : Converter<int, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode CreateNode(int obj, CreateNodeContext context) => new(obj);
-        protected override int CreateObject(IntNode node, CreateObjectContext context) => int.Parse(node.Value);
+        protected override IntNode CreateNode(int obj, CreateNodeContext context) => new IntNode(obj);
+        protected override int CreateObject(IntNode node, CreateObjectContext context) => (int)node.Value;
     }
 }

@@ -3,12 +3,12 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An integer serializer node.
     /// </summary>
-    public class IntNode : ValueNode<IntString>
+    public class IntNode : ValueNode<IntValue>
     {
         /* Constructors. */
         public IntNode() : base() { }
 
-        public IntNode(IntString value) : base(value) { }
+        public IntNode(IntValue value) : base(value) { }
 
         /* Public methods. */
         public override string ToString()

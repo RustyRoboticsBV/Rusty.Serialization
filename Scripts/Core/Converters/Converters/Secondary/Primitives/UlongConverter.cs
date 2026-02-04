@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class UlongConverter : Converter<ulong, IntNode>
     {
         /* Protected methods. */
-        protected override IntNode CreateNode(ulong obj, CreateNodeContext context) => new(obj);
-        protected override ulong CreateObject(IntNode node, CreateObjectContext context) => ulong.Parse(node.Value);
+        protected override IntNode CreateNode(ulong obj, CreateNodeContext context) => new IntNode(obj);
+        protected override ulong CreateObject(IntNode node, CreateObjectContext context) => (ulong)node.Value;
     }
 }

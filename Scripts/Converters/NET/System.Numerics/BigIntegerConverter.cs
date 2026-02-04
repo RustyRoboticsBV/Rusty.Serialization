@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Numerics;
+﻿using System.Numerics;
 using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
@@ -11,10 +10,8 @@ namespace Rusty.Serialization.DotNet
     public class BigIntegerConverter : Converter<BigInteger, IntNode>
     {
         /* Protected method. */
-        protected override IntNode CreateNode(BigInteger obj, CreateNodeContext context)
-            => new IntNode(obj.ToString(CultureInfo.InvariantCulture));
+        protected override IntNode CreateNode(BigInteger obj, CreateNodeContext context) => new IntNode(obj);
 
-        protected override BigInteger CreateObject(IntNode node, CreateObjectContext context)
-            => BigInteger.Parse(node.Value);
+        protected override BigInteger CreateObject(IntNode node, CreateObjectContext context) => (BigInteger)node.Value;
     }
 }

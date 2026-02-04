@@ -54,7 +54,7 @@ namespace Rusty.Serialization.CSCD
             if (node is BoolNode b)
                 return b.Value ? "true" : "false";
             if (node is IntNode i)
-                return i.Value;
+                return i.Value.ToString();
             if (node is FloatNode f)
                 return Serialize(f);
             if (node is InfinityNode inf)
