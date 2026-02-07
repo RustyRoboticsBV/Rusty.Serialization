@@ -51,7 +51,7 @@ namespace Rusty.Serialization.Core.Nodes
                 throw new ArgumentNullException(nameof(str));
 
             if ((uint)index >= (uint)str.Length)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index), $"{index} / {str.Length}");
 
             if (index + 1 < str.Length && char.IsHighSurrogate(str[index]) && char.IsLowSurrogate(str[index + 1]))
             {

@@ -64,7 +64,7 @@ namespace Rusty.Serialization.Core.Codecs
         /// <summary>
         /// Throw a format exception related to some token.
         /// </summary>
-        protected static void TokenError(Token token, string errorMessage)
+        protected static FormatException TokenError(Token token, string errorMessage)
         {
             if (token.IsEOF)
                 throw new FormatException($"At EOF ({token.ToString()}): {errorMessage}");
