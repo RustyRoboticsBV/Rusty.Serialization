@@ -255,7 +255,7 @@ namespace Rusty.Serialization.XML
         // Parsing.
 
         private static bool IsPrimitive(string tag) => tag is "null" or "bool" or "int" or "float" or "inf" or "nan" or "char"
-            or "str" or "dec" or "col" or "bytes";
+            or "str" or "dec" or "col" or "bytes" or "symbol" or "ref";
 
         private static INode ParsePrimitive(string tag, string value) => tag switch
         {
