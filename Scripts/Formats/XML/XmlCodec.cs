@@ -179,6 +179,22 @@ namespace Rusty.Serialization.XML
                     writer.WriteEndElement();
                     break;
 
+                case SymbolNode smb:
+                    writer.WriteStartElement("symbol");
+                    WriteMetadata(writer, idAttr, typeAttr);
+
+                    writer.WriteString(smb.Name);
+                    writer.WriteEndElement();
+                    break;
+
+                case RefNode r:
+                    writer.WriteStartElement("ref");
+                    WriteMetadata(writer, idAttr, typeAttr);
+
+                    writer.WriteString(r.ID);
+                    writer.WriteEndElement();
+                    break;
+
                 case ListNode l:
                     writer.WriteStartElement("list");
                     WriteMetadata(writer, idAttr, typeAttr);
@@ -254,6 +270,8 @@ namespace Rusty.Serialization.XML
             "dec" => new DecimalNode(DecimalValue.Parse(value)),
             "col" => new ColorNode(ColorValue.Parse(value)),
             "bytes" => new BytesNode(BytesValue.Parse(value)),
+            "symbol" => new SymbolNode(value),
+            "ref" => new RefNode(value),
             _ => throw new ArgumentException($"Invalid primitive tag <{tag}>.")
         };
 
