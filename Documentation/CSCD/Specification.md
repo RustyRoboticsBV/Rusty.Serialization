@@ -1,13 +1,15 @@
 # CSCD Format Specification
 
 ## Introduction
-This formal specification document describes the syntax of a serialized data format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary C# object graphs.
+This formal specification document describes the syntax of an object graph serialization format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary object graphs.
 
 The format is self-describing and does not require an external schema for parsing or round-trip serialization. Values may be annotated with optional type labels and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference links.
 
-Note that many of the CSCD literals are more abstract than a C# type. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common data structures, such as lists, time and colors, have dedicated compact literal forms in order to reduce verbosity.
+Note that many of the CSCD literals are more abstract than a C# type. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common data structures, such as lists, date/times and colors, have dedicated compact literal forms in order to reduce verbosity.
 
 The main design goals are generality, compactness and unambiguousness. While usable in any programming language, it was specifically designed to be used in a C# context where object graphs may contain polymorphic types or shared / cyclic references.
+
+This document will first describe some format-wide syntax rules. After that, it will describe each literal type and their syntaxes, starting with metadata, followed by primitives and finally collections.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) and [RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174).
 
@@ -72,7 +74,7 @@ In addition to the table above, literals that allow for escape sequences MAY con
 Serializers SHOULD emit Unicode escape sequences using the minimal number of digits necessary to represent the code point. For example, `\B;` SHOULD be used instead of `\000B;`.
 
 ### 1.6 Invalid Input
-A parser MUST detect and handle invalid input.Upon encountering invalid input, a parser SHOULD reject the input and terminate deserialization.
+A parser MUST detect and handle invalid input. Upon encountering invalid input, a parser SHOULD reject the input and terminate deserialization.
 
 The exact mechanism for rejection (e.g., exception, error code, logging) is implementation-defined, and parsers MUST NOT continue deserialization in a way that could produce an undefined or inconsistent object graph.
 
@@ -234,7 +236,9 @@ Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00@`.
 #### Bytes
 Bytes literals represent arbitrary data that cannot be efficiently expressed using another literal.
 
-They MUST start with the prefix `b_`, followed by the data encoded in [RFC 4648 Base64](https://datatracker.ietf.org/doc/html/rfc4648), using the alphabet `A`-`Z`, `a`-`z`, `0`-`9`, `+`, `/` and `=`. Padding using `=` MAY be used, but this is not enforced. For example, the bytestring `00 02 04 07 09 0E 03` is represented by the bytes literal `b_AAIEBwkPAw`.
+They MUST start with the prefix `b_`, followed by the data encoded in [RFC 4648 Base64](https://datatracker.ietf.org/doc/html/rfc4648), using the alphabet `A`-`Z`, `a`-`z`, `0`-`9`, `+`, `/` and `=`.
+
+Padding using `=` MAY be used, but this is not enforced; parsers MUST handle bytes literals without padding by assuming trailing `=` padding characters. For example, the bytestring `00 02 04 07 09 0E 03` can be represented by the bytes literals `b_AAIEBwkPAw` and `b_AAIEBwkPAw==`.
 
 An empty byte literal (representing zero bytes) MUST be written as `b_`.
 
