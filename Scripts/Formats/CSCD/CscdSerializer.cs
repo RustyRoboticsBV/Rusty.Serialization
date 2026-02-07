@@ -134,6 +134,10 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(ColorNode node)
         {
+            // Handle clear.
+            if (node.Value.r == 0 && node.Value.g == 0 && node.Value.b == 0 && node.Value.a == 0)
+                return "#";
+
             // Format color channels.
             Span<char> span = stackalloc char[8];
             FormatColorChannel(node.Value.r, span.Slice(0, 2));

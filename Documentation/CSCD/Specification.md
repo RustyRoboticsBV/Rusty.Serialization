@@ -201,11 +201,12 @@ Parsers SHOULD distinguish positive and negative zero if the runtime type permit
 Examples: `$123`, `$4.567`, `$.05`, `-$2`.
 
 #### Colors
-Colors literals MUST start with a `#` number sign, followed by the hexadecimal representation of the color. Four notations are supported:
+Colors literals MUST start with a `#` number sign, followed by the hexadecimal representation of the color. Five notations are supported:
 - `#RGB`: short notation. When parsed, each digit MUST be duplicated to form the equivalent `#RRGGBB`. Example: `#800` MUST be interpreted as `#880000`.
 - `#RGBA`: short notation with alpha. When parsed, each digit MUST be duplicated to form the equivalent `#RRGGBBAA`. Example: `#800F` MUST be interpreted as `#880000FF`.
 - `#RRGGBB`: full notation without alpha. The alpha channel MUST be assumed to be `FF`.
 - `#RRGGBBAA`: full notation with alpha.
+- `#`: MUST be interpreted as `#00000000`.
 
 Color literals MUST use uppercase hexadecimal digits (`0`–`9`, `A`–`F`). Parsers MUST interpret the values according to the rules above.
 

@@ -223,6 +223,9 @@ namespace Rusty.Serialization.CSCD
             if (!token.Text.StartsWith('#'))
                 TokenError(token, "Missing # prefix.");
 
+            if (token.Text == "#")
+                return new ColorNode(new ColorValue(0, 0, 0, 0));
+
             try
             {
                 return new ColorNode(ColorValue.Parse(token.Text));
