@@ -105,7 +105,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_char: 'A',
     my_string: "abc",
     my_color: #F08080,
-    my_time: @1990-2-13; ,
+    my_time: @1990-2-13,18:30:05.001@,
     my_decimal: $1.00,
     my_bytes: b_SGVsbG8sIHdvcmxkIQ,
     my_list: [1, 2., "def"],
@@ -117,8 +117,8 @@ Below is an example of a custom serialized object with pretty printing. See the 
     `my_id` my_object: <
         a: 0,
         b: '\1F4A9;',
-        c: @14:2:10.005;
+        c: @14:2:10.005@
     >,
-    my_reference: &my_id;
+    my_reference: &my_id&
 >
 ```

@@ -42,9 +42,9 @@ Whitespace MAY appear between literals and punctuation (`, : [ ] { } < >`) for f
 Serializers SHOULD NOT emit whitespace in situations where readability is not important.
 
 ### 1.4 Comments
-Comments MAY be used with the `/* Comment text */` syntax and MAY appear anywhere where whitespace may appear. Parsers MUST treat them as whitespace and strip them. Parsers MAY discard comments during deserialization and reserialization. Comments MUST NOT be nested.
+Comments MUST start and end with `;;` two semicolons (e.g. `;; Comment text ;;`). They MAY appear anywhere where whitespace may appear; parsers MUST treat them as whitespace and strip them - they SHOULD not preserve comments on reserialization. Comments MUST NOT be nested, but MAY consist of multiple lines.
 
-Comments MUST NOT be recognized inside character or string literals. Within such literals, the comment syntax MUST be treated as literal content.
+Comments MUST NOT be recognized inside type, ID, character, string or reference literals. Within such literals, substrings that match the comment syntax MUST be treated as literal content.
 
 ### 1.5 Escape Sequences
 Escape sequences MAY appear in literals that support them. Literals MUST NOT allow escape sequences unless explicitly stated otherwise in their definition.
@@ -53,11 +53,11 @@ The following escape sequences MUST be recognized by parsers if they appear in a
 
 |Character  |Code point |Escape sequence|       |Character  |Code point |Escape sequence|
 |-----------|-----------|---------------|-------|-----------|-----------|---------------|
-|tab        |`0x09`     |`\t`           |       |`(`        |`0x28`     |`\(`           |
-|line feed  |`0x0A`     |`\n`           |       |`)`        |`0x29`     |`\)`           |
-|space      |`0x20`     |`\s`           |       |`;`        |`0x3B`     |`\;`           |
+|tab        |`0x09`     |`\t`           |       |`'`        |`0x27`     |`\'`           |
+|line feed  |`0x0A`     |`\n`           |       |`(`        |`0x28`     |`\(`           |
+|space      |`0x20`     |`\s`           |       |`)`        |`0x29`     |`\)`           |
 |`"`        |`0x22`     |`\"`           |       |`\`        |`0x5C`     |`\\`           |
-|`'`        |`0x27`     |`\'`           |       |`` ` ``    |`0x60`     |`` \` ``       |
+|`&`        |`0x26`     |`\&`           |       |`` ` ``    |`0x60`     |`` \` ``       |
 
 Parsers MUST recognize and correctly interpret all escape sequences from this table when they appear in a literal that allows escape sequences. Invalid escape sequences MUST be rejected by a parser.
 
@@ -192,7 +192,7 @@ Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF;\tarrow"`
 #### Decimals
 Decimal literals represent numeric values with significant fractional digits. They are intended for any use-case where preserving the exact decimal representation is important, such as when expressing monetary values. Parsers MUST preserve all fractional digits, including trailing zeros.
 
-Decimal literals MUST start with `$` for positive values or `-$` for negative values, followed by an OPTIONAL integer value, an OPTIONAL `.` decimal point and an OPTIONAL fractional value. The integer and fractional values MUST consist of one or more decimal digits (`0`-`9`). Leading zeros SHOULD be discarded by a parser.
+Decimal literals MUST start with `$` for positive values or `-$` for negative values, followed by an OPTIONAL integer value, an OPTIONAL `.` decimal point and an OPTIONAL fractional value. The integer and fractional values MUST consist of zero or more decimal digits (`0`-`9`). Leading zeros SHOULD be discarded by a parser.
 
 The integer part and/or fractional part MAY be omitted if equal to zero. The decimal point MAY be omitted if both the integer and fractional part are equal to zero. Consequently, `$0`, `$0.`, `$.0`, `$.` and `$` MUST all be interpreted as `$0.0`, and `-$0`, `-$0.`, `-$.0`, `-$.` and `-$` MUST all be interpreted as `-$0.0`.
 
@@ -212,11 +212,11 @@ Color literals MUST use uppercase hexadecimal digits (`0`–`9`, `A`–`F`). Par
 #### Times
 Time literals represent absolute moments in time. They are intended to express date and/or time values, but do not represent durations or timespans.
 
-Time literals MUST start with an `@` at sign, followed by the date/time, and MUST end with a `;` semicolon. Four notations are supported:
-- `@{year}-{month}-{day}_{hour}:{minute}:{second};`.
-- `@{year}-{month}-{day};`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
-- `@{hour}:{minute}:{second};`. The date component MUST be assumed by a parser to be `1-1-1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
-- `@;`. MUST be interpreted as a the literal `@1-1-1_0:0:0;` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
+Time literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
+- `@{year}/{month}/{day},{hour}:{minute}:{second}@`.
+- `@{year}/{month}/{day}@`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
+- `@{hour}:{minute}:{second}@`. The date component MUST be assumed by a parser to be `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
+- `@`. MUST be interpreted as a the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
 
 Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
 - Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 1 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value. The year `0` MUST NOT be used.
@@ -226,9 +226,9 @@ Each component has range and/or syntax rules that MUST be followed by a parser. 
 - Minute components MUST be valid integer values in the range `0`-`59`.
 - Second components MUST either be valid integer numbers or follow the format `[integer].[fractional]`. The integer part MUST be a valid between `0`-`60`. The value `60` is included to account for leap seconds; a parser SHOULD maintain the distinction between `0` and `60` if possible. Trailing zeros SHOULD be discarded by a parser.
 
-A parser SHOULD validate calendar correctness (i.e. rejecting `@1994-2-31;`), but this is not strictly enforced by the format.
+A parser SHOULD validate calendar correctness (i.e. rejecting `@1994-2-31@`), but this is not strictly enforced by the format.
 
-Examples: `@2000-10-16_15:11:03.001;`, `@-500-2-7;`, `@07:30:00;`.
+Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00@`.
 
 #### Bytes
 Bytes literals represent arbitrary data that cannot be efficiently expressed using another literal.
@@ -238,7 +238,7 @@ They MUST start with the prefix `b_`, followed by the data encoded in [RFC 4648 
 An empty byte literal (representing zero bytes) MUST be written as `b_`.
 
 #### References
-Reference values are used to link to values that have been marked with an ID. They MUST start with an `&` ampersand, followed by the name of an ID (example: `&my_id;`). This ID MUST exist elsewhere in the data.
+Reference values are used to link to values that have been marked with an ID. They MUST start and end with an `&` ampersand, with the name of an ID between them (example: `&my_id&`). This ID MUST exist elsewhere in the data.
 
 Reference literals MUST NOT be used as the top-level value. Otherwise, they MAY appear anywhere inside collection literals. Cyclic references are allowed. References can appear before or after the definition of the ID they refer to, and may cross nested collections.
 
@@ -248,7 +248,7 @@ The following characters MUST NOT appear in reference literals and MUST instead 
 
 |Character      |Code point |   |Character      |Code point |
 |---------------|-----------|---|---------------|-----------|
-|Tab            |`0x09`     |   |`;`            |`0x3B`     |
+|Tab            |`0x09`     |   |`&`            |`0x26`     |
 |Line feed      |`0x0A`     |   |`\`            |`0x5C`     |
 |Carriage return|`0x0D`     |   |               |           |
 
@@ -267,7 +267,7 @@ List elements MUST be interpreted in the order in which they appear.
 
 Lists MAY be empty, which MUST be represented by the literal `[]`.
 
-Examples: `[]`, `[1,'2',"3"]`, `[['c', &ref], $1.00, (my_dict){}]`.
+Examples: `[]`, `[1,'2',"3"]`, `[['c', &ref&], $1.00, (my_dict){}]`.
 
 #### Dictionaries
 Dictionaries are collections of key-value pairs.
@@ -294,17 +294,14 @@ Example: `<my_int:0,my_float:0.0,my_char:'A'>`.
 ##### Object Member Names
 Member names MUST be plain, unquoted character sequences. They are case sensitive.
 
-The following characters MUST NOT appear in reference literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
+The following characters MUST NOT appear in object member names and MUST instead be represented with [escape sequences](#15-escape-sequences):
 
 |Character      |Code point |   |Character      |Code point |
 |---------------|-----------|---|---------------|-----------|
-|Tab            |`0x09`     |   |`:`            |`0x3A`     |
-|Line feed      |`0x0A`     |   |`>`            |`0x3E`     |
+|Tab            |`0x09`     |   |Space          |`0x20`     |
+|Line feed      |`0x0A`     |   |`:`            |`0x3A`     |
 |Carriage return|`0x0D`     |   |`\`            |`0x5C`     |
-|Space          |`0x20`     |   |`]`            |`0x5D`     |
-|`,`            |`0x2C`     |   |`}`            |`0x7D`     |
-|`/`            |`0x2F`     |   |               |           |
 
-All other characters from the character set MAY appear unescaped. However, the target language MAY not necessarily be able to handle each character that the format allows.
+All other characters from the character set MAY appear unescaped.
 
 Member names are not considered to be values, and MUST NOT be annotated with metadata. Just like with dictionary keys, member names are NOT required to be unique.

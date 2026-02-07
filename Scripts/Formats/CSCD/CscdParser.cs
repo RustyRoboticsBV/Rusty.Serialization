@@ -12,13 +12,18 @@ namespace Rusty.Serialization.CSCD
     public class CscdParser : Parser<CscdLexer>
     {
         /* Fields. */
-        private readonly static HashSet<UnicodePair> idEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
-        private readonly static HashSet<UnicodePair> typeEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
-        private readonly static HashSet<UnicodePair> charEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r' };
-        private readonly static HashSet<UnicodePair> strEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r', '"', '\\' };
-        private readonly static HashSet<UnicodePair> refEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r', ';', '\\' };
+        private readonly static HashSet<UnicodePair> idEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
+        private readonly static HashSet<UnicodePair> typeEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
+        private readonly static HashSet<UnicodePair> charEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r' };
+        private readonly static HashSet<UnicodePair> strEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '"', '\\' };
+        private readonly static HashSet<UnicodePair> refEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '&', '\\' };
         private readonly static HashSet<UnicodePair> memberNameEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', ' ', ',', '/', ':', '>', '\\', ']', '}' };
+            new HashSet<UnicodePair> { '\t', '\n', '\r', ' ', ':', '\\' };
 
         private static readonly Dictionary<char, UnicodePair> simpleEscapes = new Dictionary<char, UnicodePair>
         {
@@ -26,11 +31,11 @@ namespace Rusty.Serialization.CSCD
             { 'n', '\n' },
             { 's', ' ' },
             { '"', '"' },
+            { '&', '&' },
             { '\'', '\'' },
             { '`', '`' },
             { '(', '(' },
             { ')', ')' },
-            { ';', ';' },
             { '\\', '\\' }
         };
 
@@ -136,7 +141,7 @@ namespace Rusty.Serialization.CSCD
                 return ParseColor(token);
 
             // Time.
-            if (token.Text.StartsWith('@') && token.Text.EndsWith(';'))
+            if (token.Text.StartsWith('@') && token.Text.EndsWith('@'))
                 return ParseDateTime(token);
 
             // Bytes.
@@ -144,8 +149,8 @@ namespace Rusty.Serialization.CSCD
                 return ParseBytes(token);
 
             // Ref.
-            if (token.Text.StartsWith('&') && token.Text.EndsWith(';'))
-                return new RefNode(ParseText(token, refEscapes, "&", ";"));
+            if (token.Text.StartsWith('&') && token.Text.EndsWith('&'))
+                return new RefNode(ParseText(token, refEscapes, "&", "&"));
 
             // List.
             if (token.Text.Equals('['))
@@ -250,7 +255,7 @@ namespace Rusty.Serialization.CSCD
                     return new TimeNode(year, month, day, hour, minute, second);
 
                 // Date and time.
-                int underscore = contents.FirstIndexOf('_');
+                int underscore = contents.FirstIndexOf(',');
                 if (underscore != -1)
                 {
                     TextSpan date = contents.Slice(0, underscore);
@@ -263,7 +268,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Date only.
-                int dash = contents.FirstIndexOf('-');
+                int dash = contents.FirstIndexOf('/');
                 if (dash != -1)
                 {
                     ParseDate(contents, out year, out month, out day);
@@ -581,35 +586,25 @@ namespace Rusty.Serialization.CSCD
         /// </summary>
         private static void ParseDate(TextSpan date, out IntValue year, out IntValue month, out IntValue day)
         {
-            // Negative year.
-            bool negativeYear = false;
-            if (date.StartsWith('-'))
-            {
-                negativeYear = true;
-                date = date.Slice(1);
-            }
-
             // Parse year.
-            int endOfYear = date.FirstIndexOf('-');
+            int endOfYear = date.FirstIndexOf('/');
             if (endOfYear == -1)
-                throw new FormatException($"Date does not contain a year.");
+                throw new FormatException($"Date does not contain a month.");
 
             TextSpan yearText = date.Slice(0, endOfYear);
             if (yearText.Length == 0)
                 throw new FormatException($"Empty year term {yearText.ToString()}.");
-            if (yearText.StartsWith('-'))
-                throw new FormatException($"Duplicate minus sign {yearText.ToString()}.");
             if (GetNumericType(yearText) != NumericType.Int)
                 throw new FormatException($"Non-integer year {yearText.ToString()}.");
 
             year = IntValue.Parse(yearText);
-            if (negativeYear)
-                year = -year;
+            if (year == 0)
+                throw new FormatException("Year may not be 0");
 
             // Parse month.
-            int endOfMonth = date.FirstIndexOf(endOfYear + 1, '-');
+            int endOfMonth = date.FirstIndexOf(endOfYear + 1, '/');
             if (endOfMonth == -1)
-                throw new FormatException($"Date does not contain a month.");
+                throw new FormatException($"Date does not contain a day.");
 
             TextSpan monthText = date.Slice(endOfYear + 1, endOfMonth - (endOfYear + 1));
             if (monthText.Length == 0)

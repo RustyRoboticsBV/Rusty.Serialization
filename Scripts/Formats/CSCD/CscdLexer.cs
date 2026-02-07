@@ -10,6 +10,10 @@ namespace Rusty.Serialization.CSCD
     /// </summary>
     public class CscdLexer : Lexer
     {
+        /* Constants. */
+        private const string CommentStart = ";;";
+        private const string CommentEnd = ";;";
+
         /* Public methods. */
         public override bool GetNextToken(TextSpan text, out Token token)
         {
@@ -43,9 +47,9 @@ namespace Rusty.Serialization.CSCD
             else if (c == '"')
                 token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '"'));
             else if (c == '@')
-                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ';'));
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '@'));
             else if (c == '&')
-                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ';'));
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '&'));
 
             // Bare word tokens.
             else
@@ -77,7 +81,7 @@ namespace Rusty.Serialization.CSCD
                 return false;
 
             char c = text[index];
-            return c == ' ' || c == '\t' || c == '\n' || c == '\r' || text.StartsWith(index, "/*");
+            return c == ' ' || c == '\t' || c == '\n' || c == '\r' || text.StartsWith(index, CommentStart);
         }
 
         /// <summary>
@@ -91,13 +95,13 @@ namespace Rusty.Serialization.CSCD
             while (StartsWithWhitespace(text, Cursor))
             {
                 // Comment.
-                if (text.StartsWith(Cursor, "/*"))
+                if (text.StartsWith(Cursor, CommentStart))
                 {
-                    int end = text.FirstIndexOf(Cursor + 2, "*/");
+                    int end = text.FirstIndexOf(Cursor + CommentStart.Length, CommentEnd);
                     if (end == -1)
                         throw new FormatException($"Unclosed comment at {Cursor}: {new string(text.Slice(Cursor))}.");
 
-                    Advance(end - Cursor + 2);
+                    Advance(end - Cursor + CommentEnd.Length);
                 }
 
                 // Whitespace.

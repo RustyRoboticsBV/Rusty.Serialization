@@ -12,13 +12,18 @@ namespace Rusty.Serialization.CSCD
     public class CscdSerializer : Serializer
     {
         /* Private constants. */
-        private readonly static HashSet<UnicodePair> idEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
-        private readonly static HashSet<UnicodePair> typeEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
-        private readonly static HashSet<UnicodePair> charEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r' };
-        private readonly static HashSet<UnicodePair> strEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r', '"', '\\' };
-        private readonly static HashSet<UnicodePair> refEscapes = new HashSet<UnicodePair> { '\t', '\n', '\r', ';', '\\' };
+        private readonly static HashSet<UnicodePair> idEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
+        private readonly static HashSet<UnicodePair> typeEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
+        private readonly static HashSet<UnicodePair> charEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r' };
+        private readonly static HashSet<UnicodePair> strEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '"', '\\' };
+        private readonly static HashSet<UnicodePair> refEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '&', '\\' };
         private readonly static HashSet<UnicodePair> memberNameEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', ' ', ',', '/', ':', '>', '\\', ']', '}' };
+            new HashSet<UnicodePair> { '\t', '\n', '\r', ' ', ':', '\\' };
 
         private static readonly Dictionary<UnicodePair, char> simpleEscapes = new Dictionary<UnicodePair, char>()
         {
@@ -26,11 +31,11 @@ namespace Rusty.Serialization.CSCD
             { '\n', 'n' },
             { ' ', 's' },
             { '"', '"' },
+            { '&', '&' },
             { '\'', '\'' },
             { '`', '`' },
             { '(', '(' },
             { ')', ')' },
-            { ';', ';' },
             { '\\', '\\' }
         };
 
@@ -72,9 +77,9 @@ namespace Rusty.Serialization.CSCD
             if (node is TimeNode t)
                 return Serialize(t);
             if (node is BytesNode byt)
-                return $"b_{byt.Value}";
+                return Serialize(byt);
             if (node is RefNode rf)
-                return $"&{FormatText(rf.ID, refEscapes)};";
+                return $"&{FormatText(rf.ID, refEscapes)}&";
             if (node is ListNode lst)
                 return Serialize(lst, prettyPrinting);
             if (node is DictNode dic)
@@ -170,13 +175,33 @@ namespace Rusty.Serialization.CSCD
             bool noTime = node.Value.hour == 0 && node.Value.minute == 0 && node.Value.second == 0;
 
             if (noDate && noTime)
-                return "@;";
+                return "@";
             else if (noTime)
-                return $"@{node.Value.year}-{node.Value.month}-{node.Value.day};";
+                return $"@{node.Value.year}/{node.Value.month}/{node.Value.day}@";
             else if (noDate)
-                return $"@{node.Value.hour}:{node.Value.minute}:{node.Value.second};";
+                return $"@{node.Value.hour}:{node.Value.minute}:{node.Value.second}@";
             else
-                return $"@{node.Value.year}-{node.Value.month}-{node.Value.day}_{node.Value.hour}:{node.Value.minute}:{node.Value.second};";
+                return $"@{node.Value.year}/{node.Value.month}/{node.Value.day},{node.Value.hour}:{node.Value.minute}:{node.Value.second}@";
+        }
+
+        private string Serialize(BytesNode node)
+        {
+            ReadOnlySpan<char> src = node.Value.AsSpan();
+
+            // Trim padding.
+            int end = src.Length;
+            while (end > 0 && src[end - 1] == '=')
+            {
+                end--;
+            }
+            src = src.Slice(0, end);
+
+            // Add b_ prefix.
+            Span<char> buffer = stackalloc char[src.Length + 2];
+            buffer[0] = 'b';
+            buffer[1] = '_';
+            src.CopyTo(buffer.Slice(2));
+            return new string(buffer);
         }
 
         private string Serialize(ListNode node, bool prettyPrinting)

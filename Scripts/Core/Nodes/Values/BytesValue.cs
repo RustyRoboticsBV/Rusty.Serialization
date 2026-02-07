@@ -37,6 +37,12 @@ namespace Rusty.Serialization.Core.Nodes
                 return Convert.ToBase64String(value);
         }
 
+        public ReadOnlySpan<char> AsSpan()
+        {
+            // TODO: make this actually not allocate a string.
+            return ToString().AsSpan();
+        }
+
         public override int GetHashCode()
         {
             if (value == null)
