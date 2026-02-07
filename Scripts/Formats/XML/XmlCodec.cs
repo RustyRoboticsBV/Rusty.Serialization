@@ -6,6 +6,8 @@ using System.Linq;
 using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Nodes;
 
+// TODO: replace gross and bad XDocument usage with a more performant implementation. 
+
 namespace Rusty.Serialization.XML
 {
     /// <summary>
@@ -44,6 +46,9 @@ namespace Rusty.Serialization.XML
         }
 
         /* Private methods. */
+
+        // Writing.
+
         private static void WriteNode(XmlWriter writer, INode node)
         {
             // Unwrap IdNode
@@ -230,6 +235,8 @@ namespace Rusty.Serialization.XML
                 writer.WriteAttributeString("type", type);
         }
 
+
+        // Parsing.
 
         private static bool IsPrimitive(string tag) => tag is "null" or "bool" or "int" or "float" or "inf" or "nan" or "char"
             or "str" or "dec" or "col" or "bytes";
