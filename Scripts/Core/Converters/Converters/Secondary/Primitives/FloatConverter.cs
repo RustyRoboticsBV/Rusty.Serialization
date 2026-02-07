@@ -12,13 +12,17 @@ namespace Rusty.Serialization.Core.Conversion
         protected override float NaN => float.NaN;
         protected override float PositiveInfinity => float.PositiveInfinity;
         protected override float NegativeInfinity => float.NegativeInfinity;
+        protected override float Pi => (float)Math.PI;
+        protected override float E => (float)Math.E;
 
         /* Protected methods. */
         protected override FloatNode CreateNode(float obj, CreateNodeContext context) => new(obj);
-        protected override float CreateObject(FloatNode node, CreateObjectContext context) => (float)node.Value;
+        protected override float CreateObject(FloatNode node, CreateObjectContext context) => (float)node.Name;
 
         protected override bool IsNaN(ref float value) => float.IsNaN(value);
         protected override bool IsPositiveInfinity(ref float value) => float.IsPositiveInfinity(value);
         protected override bool IsNegativeInfinity(ref float value) => float.IsNegativeInfinity(value);
+        protected override bool IsPi(ref float value) => Math.Abs(value - (float)Math.PI) < 1e-7f;
+        protected override bool IsE(ref float value) => Math.Abs(value - (float)Math.E) < 1e-7f;
     }
 }

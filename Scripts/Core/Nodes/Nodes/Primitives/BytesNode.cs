@@ -15,7 +15,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            return $"bytes: {Value}";
+            return $"bytes: {Name}";
         }
     }
 }

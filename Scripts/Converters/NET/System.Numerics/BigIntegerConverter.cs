@@ -12,6 +12,6 @@ namespace Rusty.Serialization.DotNet
         /* Protected method. */
         protected override IntNode CreateNode(BigInteger obj, CreateNodeContext context) => new IntNode(obj);
 
-        protected override BigInteger CreateObject(IntNode node, CreateObjectContext context) => (BigInteger)node.Value;
+        protected override BigInteger CreateObject(IntNode node, CreateObjectContext context) => (BigInteger)node.Name;
     }
 }

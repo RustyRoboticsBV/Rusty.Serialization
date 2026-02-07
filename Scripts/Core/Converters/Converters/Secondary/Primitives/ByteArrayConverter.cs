@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Conversion
     {
         /* Protected methods. */
         protected override BytesNode CreateNode(byte[] obj, CreateNodeContext context) => new(obj);
-        protected override byte[] CreateObject(BytesNode node, CreateObjectContext context) => node.Value;
+        protected override byte[] CreateObject(BytesNode node, CreateObjectContext context) => node.Name;
     }
 }

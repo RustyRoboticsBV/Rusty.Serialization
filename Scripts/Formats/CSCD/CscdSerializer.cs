@@ -20,6 +20,8 @@ namespace Rusty.Serialization.CSCD
             new HashSet<UnicodePair> { '\t', '\n', '\r' };
         private readonly static HashSet<UnicodePair> strEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', '"', '\\' };
+        private readonly static HashSet<UnicodePair> symbolEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '*', '\\' };
         private readonly static HashSet<UnicodePair> refEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', '&', '\\' };
         private readonly static HashSet<UnicodePair> memberNameEscapes =
@@ -33,10 +35,11 @@ namespace Rusty.Serialization.CSCD
             { '"', '"' },
             { '&', '&' },
             { '\'', '\'' },
-            { '`', '`' },
             { '(', '(' },
             { ')', ')' },
-            { '\\', '\\' }
+            { '*', '*' },
+            { '\\', '\\' },
+            { '`', '`' }
         };
 
         private static string tab = "  ";
@@ -57,9 +60,9 @@ namespace Rusty.Serialization.CSCD
             if (node is NullNode)
                 return "null";
             if (node is BoolNode b)
-                return b.Value ? "true" : "false";
+                return b.Name ? "true" : "false";
             if (node is IntNode i)
-                return i.Value.ToString();
+                return i.Name.ToString();
             if (node is FloatNode f)
                 return Serialize(f);
             if (node is InfinityNode inf)
@@ -69,7 +72,7 @@ namespace Rusty.Serialization.CSCD
             if (node is CharNode chr)
                 return Serialize(chr);
             if (node is StringNode str)
-                return $"\"{FormatText(str.Value, strEscapes)}\"";
+                return $"\"{FormatText(str.Name, strEscapes)}\"";
             if (node is DecimalNode dec)
                 return Serialize(dec);
             if (node is ColorNode col)
@@ -78,6 +81,8 @@ namespace Rusty.Serialization.CSCD
                 return Serialize(t);
             if (node is BytesNode byt)
                 return Serialize(byt);
+            if (node is SymbolNode sb)
+                return $"*{FormatText(sb.Name, symbolEscapes)}*";
             if (node is RefNode rf)
                 return $"&{FormatText(rf.ID, refEscapes)}&";
             if (node is ListNode lst)
@@ -92,7 +97,7 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(FloatNode node)
         {
-            string value = node.Value.ToString();
+            string value = node.Name.ToString();
 
             bool negative = value.StartsWith("-");
             if (negative)
@@ -122,28 +127,28 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(CharNode node)
         {
-            if (node.Value == '\0')
+            if (node.Name == '\0')
                 return "''";
-            return $"'{FormatText(node.Value.ToString(), charEscapes)}'";
+            return $"'{FormatText(node.Name.ToString(), charEscapes)}'";
         }
 
         private string Serialize(DecimalNode node)
         {
-            return node.Value.negative ? $"-${node.Value.ToString().Substring(1)}" : $"${node.Value}";
+            return node.Name.negative ? $"-${node.Name.ToString().Substring(1)}" : $"${node.Name}";
         }
 
         private string Serialize(ColorNode node)
         {
             // Handle clear.
-            if (node.Value.r == 0 && node.Value.g == 0 && node.Value.b == 0 && node.Value.a == 0)
+            if (node.Name.r == 0 && node.Name.g == 0 && node.Name.b == 0 && node.Name.a == 0)
                 return "#";
 
             // Format color channels.
             Span<char> span = stackalloc char[8];
-            FormatColorChannel(node.Value.r, span.Slice(0, 2));
-            FormatColorChannel(node.Value.g, span.Slice(2, 2));
-            FormatColorChannel(node.Value.b, span.Slice(4, 2));
-            FormatColorChannel(node.Value.a, span.Slice(6, 2));
+            FormatColorChannel(node.Name.r, span.Slice(0, 2));
+            FormatColorChannel(node.Name.g, span.Slice(2, 2));
+            FormatColorChannel(node.Name.b, span.Slice(4, 2));
+            FormatColorChannel(node.Name.a, span.Slice(6, 2));
 
             // Figure out format & length.
             bool shortForm = span[0] == span[1]
@@ -175,22 +180,22 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(TimeNode node)
         {
-            bool noDate = node.Value.year == 1 && node.Value.month == 1 && node.Value.day == 1;
-            bool noTime = node.Value.hour == 0 && node.Value.minute == 0 && node.Value.second == 0;
+            bool noDate = node.Name.year == 1 && node.Name.month == 1 && node.Name.day == 1;
+            bool noTime = node.Name.hour == 0 && node.Name.minute == 0 && node.Name.second == 0;
 
             if (noDate && noTime)
                 return "@";
             else if (noTime)
-                return $"@{node.Value.year}/{node.Value.month}/{node.Value.day}@";
+                return $"@{node.Name.year}/{node.Name.month}/{node.Name.day}@";
             else if (noDate)
-                return $"@{node.Value.hour}:{node.Value.minute}:{node.Value.second}@";
+                return $"@{node.Name.hour}:{node.Name.minute}:{node.Name.second}@";
             else
-                return $"@{node.Value.year}/{node.Value.month}/{node.Value.day},{node.Value.hour}:{node.Value.minute}:{node.Value.second}@";
+                return $"@{node.Name.year}/{node.Name.month}/{node.Name.day},{node.Name.hour}:{node.Name.minute}:{node.Name.second}@";
         }
 
         private string Serialize(BytesNode node)
         {
-            ReadOnlySpan<char> src = node.Value.AsSpan();
+            ReadOnlySpan<char> src = node.Name.AsSpan();
 
             // Trim padding.
             int end = src.Length;

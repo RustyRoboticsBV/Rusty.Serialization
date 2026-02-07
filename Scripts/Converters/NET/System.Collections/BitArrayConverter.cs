@@ -19,7 +19,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override BitArray CreateObject(BytesNode node, CreateObjectContext context)
         {
-            return new BitArray(node.Value);
+            return new BitArray(node.Name);
         }
     }
 }

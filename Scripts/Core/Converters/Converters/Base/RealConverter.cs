@@ -12,13 +12,15 @@ namespace Rusty.Serialization.Core.Conversion
         protected abstract T NaN { get; }
         protected abstract T PositiveInfinity { get; }
         protected abstract T NegativeInfinity { get; }
+        protected abstract T Pi { get; }
+        protected abstract T E { get; }
 
         /* Public methods. */
         void IConverter.CollectTypes(INode node, CollectTypesContext context)
         {
             if (!CanHandleNode(node))
                 NodeError(node);
-            if (node is NanNode || node is InfinityNode)
+            if (node is NanNode || node is InfinityNode || node is SymbolNode)
                 return;
             CollectTypes((FloatNode)node, context);
         }
@@ -32,6 +34,10 @@ namespace Rusty.Serialization.Core.Conversion
                 return new InfinityNode(true);
             else if (IsNegativeInfinity(ref target))
                 return new InfinityNode(false);
+            else if (IsPi(ref target))
+                return new SymbolNode("pi");
+            else if (IsE(ref target))
+                return new SymbolNode("e");
             else
                 return CreateNode(target, context);
         }
@@ -51,17 +57,29 @@ namespace Rusty.Serialization.Core.Conversion
                 else
                     return NegativeInfinity;
             }
+            if (node is SymbolNode symbol)
+            {
+                if (symbol.Name == "pi")
+                    return Pi;
+                else if (symbol.Name == "e")
+                    return E;
+                else
+                    throw new ArgumentException("Unknown symbol " + symbol.Name);
+            }
             throw new ArgumentException("Invalid node type.");
         }
 
         /* Protected methods. */
         protected override bool CanHandleNode(INode node)
         {
-            return base.CanHandleNode(node) || node is FloatNode || node is InfinityNode || node is NanNode;
+            return base.CanHandleNode(node) || node is FloatNode || node is InfinityNode || node is NanNode
+                || node is SymbolNode;
         }
 
         protected abstract bool IsNaN(ref T value);
         protected abstract bool IsPositiveInfinity(ref T value);
         protected abstract bool IsNegativeInfinity(ref T value);
+        protected abstract bool IsPi(ref T value);
+        protected abstract bool IsE(ref T value);
     }
 }

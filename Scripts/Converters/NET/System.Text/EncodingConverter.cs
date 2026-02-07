@@ -17,7 +17,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override Encoding CreateObject(StringNode node, CreateObjectContext context)
         {
-            return Encoding.GetEncoding(node.Value);
+            return Encoding.GetEncoding(node.Name);
         }
     }
 }

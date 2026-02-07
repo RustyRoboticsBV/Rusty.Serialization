@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Unity
 
         protected override Color32 CreateObject(ColorNode node, CreateObjectContext context)
         {
-            return new Color32(node.Value.r, node.Value.g, node.Value.b, node.Value.a);
+            return new Color32(node.Name.r, node.Name.g, node.Name.b, node.Name.a);
         }
     }
 }

@@ -11,6 +11,6 @@ namespace Rusty.Serialization.DotNet
     {
         /* Protected method. */
         protected override IntNode CreateNode(TimeSpan obj, CreateNodeContext context) => new IntNode(obj.Ticks);
-        protected override TimeSpan CreateObject(IntNode node, CreateObjectContext context) => new TimeSpan((long)node.Value);
+        protected override TimeSpan CreateObject(IntNode node, CreateObjectContext context) => new TimeSpan((long)node.Name);
     }
 }

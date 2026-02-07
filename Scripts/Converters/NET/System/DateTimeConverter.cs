@@ -23,7 +23,7 @@ namespace Rusty.Serialization.DotNet
         protected override DateTime CreateObject(TimeNode node, CreateObjectContext context)
         {
             // Convert fractional seconds into ticks.
-            double totalSeconds = (double)node.Value.second;
+            double totalSeconds = (double)node.Name.second;
             int intSeconds = (int)Math.Floor(totalSeconds);
             double fractionSeconds = totalSeconds - intSeconds;
             long fractionTicks = (long)Math.Round(fractionSeconds * TimeSpan.TicksPerSecond);
@@ -32,8 +32,8 @@ namespace Rusty.Serialization.DotNet
             try
             {
                 return new DateTime(
-                    (int)node.Value.year, (int)node.Value.month, (int)node.Value.day,
-                    (int)node.Value.hour, (int)node.Value.minute, intSeconds
+                    (int)node.Name.year, (int)node.Name.month, (int)node.Name.day,
+                    (int)node.Name.hour, (int)node.Name.minute, intSeconds
                 ).AddTicks(fractionTicks);
             }
             catch

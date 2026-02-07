@@ -17,7 +17,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override StringBuilder CreateObject(StringNode node, CreateObjectContext context)
         {
-            return new StringBuilder(node.Value);
+            return new StringBuilder(node.Name);
         }
     }
 }

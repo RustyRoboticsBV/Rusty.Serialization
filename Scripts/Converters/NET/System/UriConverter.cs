@@ -17,7 +17,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override Uri CreateObject(StringNode node, CreateObjectContext context)
         {
-            return new Uri(node.Value);
+            return new Uri(node.Name);
         }
     }
 }

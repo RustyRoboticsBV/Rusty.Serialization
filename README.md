@@ -108,6 +108,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_time: @1990-2-13,18:30:05.001@,
     my_decimal: $1.00,
     my_bytes: b_SGVsbG8sIHdvcmxkIQ,
+    my_symbol: *Wednesday*
     my_list: [1, 2., "def"],
     my_dict: {
         10: 1.,

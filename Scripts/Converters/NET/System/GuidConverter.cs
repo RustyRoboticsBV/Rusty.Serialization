@@ -17,7 +17,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override Guid CreateObject(BytesNode node, CreateObjectContext context)
         {
-            return new Guid((byte[])node.Value);
+            return new Guid((byte[])node.Name);
         }
     }
 }

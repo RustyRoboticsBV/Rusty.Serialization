@@ -13,25 +13,25 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            if (Value == '\0')
+            if (Name == '\0')
                 return "char: null";
-            if (Value == ' ')
+            if (Name == ' ')
                 return "char: space";
-            if (Value == '\t')
+            if (Name == '\t')
                 return "char: horizontal tab";
-            if (Value == '\v')
+            if (Name == '\v')
                 return "char: vertical tab";
-            if (Value == '\n')
+            if (Name == '\n')
                 return "char: line feed";
-            if (Value == '\f')
+            if (Name == '\f')
                 return "char: form feed";
-            if (Value == '\r')
+            if (Name == '\r')
                 return "char: carriage return";
-            if (Value == '\a')
+            if (Name == '\a')
                 return "char: alert";
-            if (Value == '\b')
+            if (Name == '\b')
                 return "char: backspace";
-            return "char: " + Value;
+            return "char: " + Name;
         }
     }
 }

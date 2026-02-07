@@ -17,7 +17,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override Version CreateObject(StringNode node, CreateObjectContext context)
         {
-            return Version.Parse(node.Value);
+            return Version.Parse(node.Name);
         }
     }
 }

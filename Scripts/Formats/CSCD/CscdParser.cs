@@ -20,6 +20,8 @@ namespace Rusty.Serialization.CSCD
             new HashSet<UnicodePair> { '\t', '\n', '\r' };
         private readonly static HashSet<UnicodePair> strEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', '"', '\\' };
+        private readonly static HashSet<UnicodePair> symbolEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '*', '\\' };
         private readonly static HashSet<UnicodePair> refEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', '&', '\\' };
         private readonly static HashSet<UnicodePair> memberNameEscapes =
@@ -33,10 +35,11 @@ namespace Rusty.Serialization.CSCD
             { '"', '"' },
             { '&', '&' },
             { '\'', '\'' },
-            { '`', '`' },
             { '(', '(' },
             { ')', ')' },
-            { '\\', '\\' }
+            { '*', '*' },
+            { '\\', '\\' },
+            { '`', '`' }
         };
 
         /* Public methods. */
@@ -147,6 +150,10 @@ namespace Rusty.Serialization.CSCD
             // Bytes.
             if (token.Text.StartsWith("b_"))
                 return ParseBytes(token);
+
+            // Symbol.
+            if (token.Text.StartsWith('*') && token.Text.EndsWith('*'))
+                return new SymbolNode(ParseText(token, symbolEscapes, "*", "*"));
 
             // Ref.
             if (token.Text.StartsWith('&') && token.Text.EndsWith('&'))

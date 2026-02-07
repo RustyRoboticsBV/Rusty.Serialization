@@ -15,7 +15,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            return $"color: {Value}";
+            return $"color: {Name}";
         }
     }
 }

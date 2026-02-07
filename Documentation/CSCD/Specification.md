@@ -55,11 +55,12 @@ The following escape sequences MUST be recognized by parsers if they appear in a
 
 |Character  |Code point |Escape sequence|       |Character  |Code point |Escape sequence|
 |-----------|-----------|---------------|-------|-----------|-----------|---------------|
-|tab        |`0x09`     |`\t`           |       |`'`        |`0x27`     |`\'`           |
-|line feed  |`0x0A`     |`\n`           |       |`(`        |`0x28`     |`\(`           |
-|space      |`0x20`     |`\s`           |       |`)`        |`0x29`     |`\)`           |
+|tab        |`0x09`     |`\t`           |       |`(`        |`0x28`     |`\(`           |
+|line feed  |`0x0A`     |`\n`           |       |`)`        |`0x29`     |`\)`           |
+|space      |`0x20`     |`\s`           |       |`*`        |`0x2A`     |`\*`           |
 |`"`        |`0x22`     |`\"`           |       |`\`        |`0x5C`     |`\\`           |
 |`&`        |`0x26`     |`\&`           |       |`` ` ``    |`0x60`     |`` \` ``       |
+|`'`        |`0x27`     |`\'`           |       |           |           |               |
 
 Parsers MUST recognize and correctly interpret all escape sequences from this table when they appear in a literal that allows escape sequences. Invalid escape sequences MUST be rejected by a parser.
 
@@ -213,7 +214,7 @@ Colors literals MUST start with a `#` number sign, followed by the hexadecimal r
 Color literals MUST use uppercase hexadecimal digits (`0`–`9`, `A`–`F`). Parsers MUST interpret the values according to the rules above.
 
 #### Times
-Time literals represent absolute moments in time. They are intended to express date and/or time values, but do not represent durations or timespans.
+Time literals represent absolute moments in time. They are intended to express date and/or time values, but do not represent durations or timespans. The time literal exists primarily to provide a dedicated, canonical form for timestamp types and discourage ad-hoc solutions using strings or object literals.
 
 Time literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
 - `@{year}/{month}/{day},{hour}:{minute}:{second}@`.
@@ -241,6 +242,25 @@ They MUST start with the prefix `b_`, followed by the data encoded in [RFC 4648 
 Padding using `=` MAY be used, but this is not enforced; parsers MUST handle bytes literals without padding by assuming trailing `=` padding characters. For example, the bytestring `00 02 04 07 09 0E 03` can be represented by the bytes literals `b_AAIEBwkPAw` and `b_AAIEBwkPAw==`.
 
 An empty byte literal (representing zero bytes) MUST be written as `b_`.
+
+#### Symbols
+Symbol literals represent named constants, identifiers, or enum values. They provide a semantic, human-readable alternative to integers or strings when representing values whose internal numeric representations may vary or whose meaning is best captured by a stable name. Symbols are primarily intended for use with enumerations or well-known static constants.
+
+A symbol literal MUST start and end with `*` asterisk characters, with the symbol name in between.
+
+The following characters MUST NOT appear in reference literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
+
+|Character      |Code point |   |Character      |Code point |
+|---------------|-----------|---|---------------|-----------|
+|Tab            |`0x09`     |   |`*`            |`0x2A`     |
+|Line feed      |`0x0A`     |   |`\`            |`0x5C`     |
+|Carriage return|`0x0D`     |   |               |           |
+
+All other characters from the character set MAY appear unescaped.
+
+Symbol literals MAY be annotated with IDs and type labels. Symbol literals MUST NOT be empty; a valid symbol must contain at least one character after escape processing.
+
+Parsers MUST preserve the exact symbol text, including case, as it may be used to map to runtime constants or enumeration members. Serializers SHOULD use symbol literals when encoding values that are conceptually named constants, enums, or other identifiers, to improve readability and maintain semantic stability.
 
 #### References
 Reference values are used to link to values that have been marked with an ID. They MUST start and end with an `&` ampersand, with the name of an ID between them (example: `&my_id&`). This ID MUST exist elsewhere in the data.

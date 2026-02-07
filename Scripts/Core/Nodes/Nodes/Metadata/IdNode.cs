@@ -43,7 +43,7 @@ namespace Rusty.Serialization.Core.Nodes
                 throw new NullReferenceException(nameof(value));
 
             // Create a new type node.
-            return new IdNode(id.Value, value);
+            return new IdNode(id.Name, value);
         }
 
         /* Public methods. */

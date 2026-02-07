@@ -6,31 +6,22 @@ namespace Rusty.Serialization.Core.Conversion
     /// <summary>
     /// An enum converter.
     /// </summary>
-    public sealed class EnumConverter<T> : Converter<T, IntNode>
+    public sealed class EnumConverter<T> : Converter<T, SymbolNode>
         where T : struct, Enum
     {
         /* Protected methods. */
-        protected override IntNode CreateNode(T obj, CreateNodeContext context) => new(Convert.ToInt32(obj));
+        protected override SymbolNode CreateNode(T obj, CreateNodeContext context) => new SymbolNode(obj.ToString());
 
-        protected override T CreateObject(IntNode node, CreateObjectContext context)
+        protected override T CreateObject(SymbolNode node, CreateObjectContext context)
         {
-            Type enumType = typeof(T);
-            Type underlyingType = enumType.GetEnumUnderlyingType();
-
-            object value = underlyingType switch
+            try
             {
-                Type t when t == typeof(byte) => (byte)node.Value,
-                Type t when t == typeof(sbyte) => (sbyte)node.Value,
-                Type t when t == typeof(short) => (short)node.Value,
-                Type t when t == typeof(ushort) => (ushort)node.Value,
-                Type t when t == typeof(int) => (int)node.Value,
-                Type t when t == typeof(uint) => (uint)node.Value,
-                Type t when t == typeof(long) => (long)node.Value,
-                Type t when t == typeof(ulong) => (ulong)node.Value,
-                _ => throw new NotSupportedException($"Unsupported enum underlying type {underlyingType}")
-            };
-
-            return (T)Enum.ToObject(enumType, value);
+                return (T)Enum.Parse(typeof(T), node.Name, false);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidOperationException($"Could not convert value '{node.Name}' to enum type '{typeof(T).FullName}'.", ex);
+            }
         }
     }
 }

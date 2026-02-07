@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            return "bool: " + Value;
+            return "bool: " + Name;
         }
     }
 }

@@ -13,13 +13,13 @@
         /* Public methods. */
         public override string ToString()
         {
-            return "decimal: " + Value;
+            return "decimal: " + Name;
         }
 
         public override void Clear()
         {
             Parent = null;
-            Value = 0m;
+            Name = 0m;
         }
     }
 }

@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Conversion
     {
         /* Protected methods. */
         protected override CharNode CreateNode(char obj, CreateNodeContext context) => new(obj.ToString());
-        protected override char CreateObject(CharNode node, CreateObjectContext context) => (char)node.Value;
+        protected override char CreateObject(CharNode node, CreateObjectContext context) => (char)node.Name;
     }
 }
