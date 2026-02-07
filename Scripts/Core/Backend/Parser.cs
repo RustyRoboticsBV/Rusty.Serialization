@@ -260,6 +260,22 @@ namespace Rusty.Serialization.Core.Codecs
             return value >= min && value <= max;
         }
 
+        /// <summary>
+        /// Parse a color channel in hex format.
+        /// </summary>
+        protected static byte ParseColorChannel(TextSpan span)
+        {
+            if (span.Length < 1 || span.Length > 2)
+                throw new ArgumentOutOfRangeException(nameof(span));
+
+            if (span.Length == 1)
+            {
+                byte shorthand = ParseHexDigit(span[0], HexParseMode.Uppercase);
+                return (byte)((shorthand << 4) | shorthand);
+            }
+            else
+                return (byte)ParseHex(span, HexParseMode.Uppercase);
+        }
         #endregion
     }
 }
