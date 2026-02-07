@@ -20,7 +20,7 @@ Key features:
 - **Reference preservation**: shared and cyclic references are preserved during serialization and deserialization.
 - **Extendible design**: can be extended to provide support for additional types or data formats.
 
-UCS prioritizes round-tripping correctness, extendability and ease-of-use over runtime performance. It is *not fully zero-allocation* and makes extensive use of reflection when handling types without explicit support. Consequently, it is NOT recommended for performance-critical or highly real-time scenarios. Object pooling is used to reduce GC pressure where possible.
+UCS prioritizes round-tripping correctness, extendability and ease-of-use over runtime performance. It is *not fully zero-allocation* and makes extensive use of reflection when handling types without explicit support. Consequently, it is NOT recommended for performance-critical or highly real-time scenarios.
 
 ## Version Requirements
 C# 9 or higher.

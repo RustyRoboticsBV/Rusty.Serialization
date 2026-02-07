@@ -2,32 +2,38 @@
 
 Below you can view the types that have built-in serialization/deserialization support, and what literal types they will serialize to.
 
-If an object of a type is serialized that is not in the table below, then the system will serialize *ALL* of its public, non-static, non-readonly fields and properties.
+If an object of a type is serialized that is not in the table below, then the system will serialize using:
+- Fields that are public and non-static.
+- Properties that are public, non-static and non-readonly.
+- Non-public fields and properties with the `[DataMember]` attribute.
+- *Unity only*: Non-public fields with the `[SerializeField]` or `[SerializeReference]` attribute.
+- *Godot only*: Non-public fields and properties with the `[Export]` attribute.
+- **Note**: members with the `[NonSerialized]` attribute are never serialized.
 
 ## Built-In C# Types
-|C#|.NET|Serialized|
-|-|-|-|
-|bool|System.Boolean|bool|
-|sbyte|System.SByte|int|
-|short|System.Int16|int|
-|int|System.Int32|int|
-|long|System.Int64|int|
-|byte|System.Byte|int|
-|ushort|System.UInt16|int|
-|uint|System.UInt32|int|
-|ulong|System.UInt64|int|
-|float|System.Single|real|
-|double|System.Double|real|
-|decimal|System.Decimal|currency|
-|char|System.Char|char|
-|string|System.String|string/null|
-|T[]|System.Array|list/null|
-|byte[]|System.Byte[]|binary/null|
-|(...)|System.ValueTuple<...>|list|
-|T?|System.Nullable&lt;T&gt;|*varies*|
-|enum|System.Enum|int|
-|struct|System.ValueType|object|
-|class|System.Object|object/null|
+|C#|.NET|Serialized|Notes|
+|-|-|-|-|
+|bool|System.Boolean|bool||
+|sbyte|System.SByte|int||
+|short|System.Int16|int||
+|int|System.Int32|int||
+|long|System.Int64|int||
+|byte|System.Byte|int||
+|ushort|System.UInt16|int||
+|uint|System.UInt32|int||
+|ulong|System.UInt64|int||
+|float|System.Single|real||
+|double|System.Double|real||
+|decimal|System.Decimal|decimal||
+|char|System.Char|char||
+|string|System.String|string/null||
+|T[]|System.Array|list/null||
+|byte[]|System.Byte[]|binary/null||
+|(...)|System.ValueTuple<...>|list||
+|T?|System.Nullable&lt;T&gt;|*varies* or null|Depends on the underlying type|
+|enum|System.Enum|symbol|list if annotated with `[Flags]`|
+|struct|System.ValueType|object||
+|class|System.Object|object/null||
 
 ## Other .NET Types
 ### System
@@ -41,7 +47,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 |Version|string||
 |Uri|string||
 |Guid|binary||
-|TimeSpan|time||
+|TimeSpan|int||
 |DateTime|time||
 |DateTimeOffset|list|
 |DateOnly|time|.NET 6 or higher|
@@ -104,7 +110,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 
 |C#|Serialized|Notes|
 |-|-|-|
-|Variant|*varies*||
+|Variant|*varies*|Depends on the stored value|
 |Resource|object/null|Built-in resources serialize using their resource path instead|
 |Array|list/null||
 |Array&lt;T&gt;|list/null||
