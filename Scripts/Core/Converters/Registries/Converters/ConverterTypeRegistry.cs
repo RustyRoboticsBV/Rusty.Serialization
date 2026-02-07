@@ -91,7 +91,12 @@ namespace Rusty.Serialization.Core.Conversion
 
             // Resolve enum types.
             if (targetType.IsEnum)
-                return typeof(EnumConverter<>).MakeGenericType(targetType);
+            {
+                if (IsFlags(targetType))
+                    return typeof(FlagsConverter<>).MakeGenericType(targetType);
+                else
+                    return typeof(EnumConverter<>).MakeGenericType(targetType);
+            }
 
             // Resolve array types.
             if (targetType.IsArray)
@@ -135,6 +140,20 @@ namespace Rusty.Serialization.Core.Conversion
 
             // Could not resolve.
             throw new Exception($"Could not find a converterType for type '{targetType}'.");
+        }
+
+        /// <summary>
+        /// Check if an enum type has the flags attribute.
+        /// </summary>
+        private static bool IsFlags(Type type)
+        {
+            var attributes = type.GetCustomAttributes(false);
+            for (int i = 0; i < attributes.Length; i++)
+            {
+                if (attributes[i] is FlagsAttribute)
+                    return true;
+            }
+            return false;
         }
     }
 }

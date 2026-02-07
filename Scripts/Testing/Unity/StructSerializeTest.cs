@@ -2,6 +2,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -20,6 +21,7 @@ namespace Rusty.Serialization.Testing
         public Cheese cheese;
 
         public LayerMask layerMask;
+        public FileAttributes flags;
 
         [Serializable]
         public class Scalars
