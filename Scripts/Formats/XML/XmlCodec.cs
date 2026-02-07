@@ -33,22 +33,14 @@ namespace Rusty.Serialization.XML
 
         public override NodeTree Parse(string serialized)
         {
-            XmlReaderSettings settings = new XmlReaderSettings
-            {
-                IgnoreComments = true,
-                IgnoreWhitespace = true,
-                DtdProcessing = DtdProcessing.Ignore
-            };
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(serialized);
 
-            using XmlReader reader = XmlReader.Create(new StringReader(serialized), settings);
+            XmlNode rootNode = doc.DocumentElement;
+            if (rootNode == null)
+                throw new ArgumentException("XML does not contain a root element.");
 
-            reader.MoveToContent();
-
-            if (reader.NodeType != XmlNodeType.Element)
-                throw new ArgumentException("XML does not start with an element.");
-
-            INode root = ReadNode(reader);
-
+            INode root = ReadNode(rootNode);
             return new NodeTree(root);
         }
 
@@ -239,51 +231,6 @@ namespace Rusty.Serialization.XML
                 writer.WriteAttributeString("type", type);
         }
 
-
-        private static INode ReadNode(XmlReader reader)
-        {
-            if (reader.NodeType != XmlNodeType.Element)
-                throw new InvalidOperationException("Expected XML element.");
-
-            string tag = reader.Name;
-            INode node;
-
-            // Read metadata attributes.
-            string idAttr = reader.GetAttribute("id");
-            string typeAttr = reader.GetAttribute("type");
-
-            // Primitive nodes.
-            if (IsPrimitive(tag))
-            {
-                string value = ReadElementTextRaw(reader);
-                UnityEngine.Debug.Log($"tag: {tag}, value: \"{value}\"");
-                node = ParsePrimitive(tag, value);
-            }
-
-            // Containers.
-            else
-            {
-                node = tag switch
-                {
-                    "time" => ReadTime(reader),
-                    "list" => ReadList(reader),
-                    "dict" => ReadDict(reader),
-                    "obj" => ReadObject(reader),
-                    _ => throw new ArgumentException($"Illegal XML tag <{tag}>.")
-                };
-            }
-
-            // Wrap in TypeNode if type attribute exists
-            if (!string.IsNullOrEmpty(typeAttr))
-                node = new TypeNode(typeAttr, node);
-
-            // Wrap in IdNode if id attribute exists
-            if (!string.IsNullOrEmpty(idAttr))
-                node = new IdNode(idAttr, node);
-
-            return node;
-        }
-
         private static bool IsPrimitive(string tag) => tag is "null" or "bool" or "int" or "float" or "inf" or "nan" or "char"
             or "str" or "dec" or "col" or "bytes";
 
@@ -306,7 +253,106 @@ namespace Rusty.Serialization.XML
             };
         }
 
-        private static INode ReadTime(XmlReader reader)
+        private static INode ReadNode(XmlNode xmlNode)
+        {
+            if (xmlNode.NodeType != XmlNodeType.Element)
+                throw new InvalidOperationException("Expected XML element.");
+
+            string tag = xmlNode.Name;
+            INode node;
+
+            // Metadata
+            string idAttr = (xmlNode as XmlElement)?.GetAttribute("id");
+            string typeAttr = (xmlNode as XmlElement)?.GetAttribute("type");
+
+            // Primitive nodes
+            if (IsPrimitive(tag))
+            {
+                string value = xmlNode.InnerText;
+                node = ParsePrimitive(tag, value);
+            }
+            else
+            {
+                node = tag switch
+                {
+                    "time" => ReadTime(xmlNode),
+                    "list" => ReadList(xmlNode),
+                    "dict" => ReadDict(xmlNode),
+                    "obj" => ReadObject(xmlNode),
+                    _ => throw new ArgumentException($"Illegal XML tag <{tag}>.")
+                };
+            }
+
+            if (!string.IsNullOrEmpty(typeAttr)) node = new TypeNode(typeAttr, node);
+            if (!string.IsNullOrEmpty(idAttr)) node = new IdNode(idAttr, node);
+
+            return node;
+        }
+
+        private static INode ReadObject(XmlNode xmlNode)
+        {
+            ObjectNode obj = new ObjectNode();
+
+            foreach (XmlNode field in xmlNode.ChildNodes)
+            {
+                if (field.Name != "field")
+                    throw new ArgumentException($"Expected <field> inside <obj>, found <{field.Name}>");
+
+                string fieldName = (field as XmlElement)?.GetAttribute("name");
+                XmlNode valueNode = null;
+
+                foreach (XmlNode child in field.ChildNodes)
+                {
+                    if (child.NodeType == XmlNodeType.Element)
+                    {
+                        valueNode = child;
+                        break;
+                    }
+                }
+
+                if (valueNode == null)
+                    throw new ArgumentException($"Field {fieldName} has no value element.");
+
+                obj.AddMember(fieldName, ReadNode(valueNode));
+            }
+
+            return obj;
+        }
+
+        private static INode ReadList(XmlNode xmlNode)
+        {
+            ListNode list = new ListNode();
+
+            foreach (XmlNode child in xmlNode.ChildNodes)
+            {
+                if (child.NodeType == XmlNodeType.Element)
+                    list.AddValue(ReadNode(child));
+            }
+
+            return list;
+        }
+
+        private static INode ReadDict(XmlNode xmlNode)
+        {
+            DictNode dict = new DictNode();
+
+            foreach (XmlNode entry in xmlNode.ChildNodes)
+            {
+                if (entry.Name != "entry") continue;
+
+                XmlNode keyNode = entry.SelectSingleNode("key/*");
+                XmlNode valueNode = entry.SelectSingleNode("value/*");
+
+                if (keyNode == null || valueNode == null)
+                    throw new ArgumentException("<entry> must contain <key> and <value> elements.");
+
+                dict.AddPair(ReadNode(keyNode), ReadNode(valueNode));
+            }
+
+            return dict;
+        }
+
+        private static INode ReadTime(XmlNode xmlNode)
         {
             IntValue year = 1;
             byte month = 1;
@@ -315,14 +361,10 @@ namespace Rusty.Serialization.XML
             byte minute = 0;
             FloatValue second = 0;
 
-            reader.ReadStartElement("time");
-
-            while (reader.NodeType == XmlNodeType.Element)
+            foreach (XmlNode child in xmlNode.ChildNodes)
             {
-                string name = reader.Name;
-                string value = reader.ReadElementContentAsString();
-
-                switch (name)
+                string value = child.InnerText;
+                switch (child.Name)
                 {
                     case "year": year = IntValue.Parse(value); break;
                     case "month": month = byte.Parse(value); break;
@@ -331,92 +373,11 @@ namespace Rusty.Serialization.XML
                     case "minute": minute = byte.Parse(value); break;
                     case "second": second = FloatValue.Parse(value); break;
                     default:
-                        throw new ArgumentException($"Invalid <time> field <{name}>.");
+                        throw new ArgumentException($"Invalid <time> field <{child.Name}>.");
                 }
             }
 
-            reader.ReadEndElement();
-
             return new TimeNode(year, month, day, hour, minute, second);
-        }
-
-        private static INode ReadList(XmlReader reader)
-        {
-            ListNode list = new ListNode();
-
-            reader.ReadStartElement("list");
-
-            while (reader.NodeType == XmlNodeType.Element)
-            {
-                list.AddValue(ReadNode(reader));
-            }
-
-            reader.ReadEndElement();
-            return list;
-        }
-
-        private static INode ReadDict(XmlReader reader)
-        {
-            DictNode dict = new DictNode();
-
-            reader.ReadStartElement("dict");
-
-            while (reader.NodeType == XmlNodeType.Element)
-            {
-                reader.ReadStartElement("entry");
-
-                reader.ReadStartElement("key");
-                INode key = ReadNode(reader);
-                reader.ReadEndElement();
-
-                reader.ReadStartElement("value");
-                INode value = ReadNode(reader);
-                reader.ReadEndElement();
-
-                reader.ReadEndElement();
-
-                dict.AddPair(key, value);
-            }
-
-            reader.ReadEndElement();
-            return dict;
-        }
-
-        private static INode ReadObject(XmlReader reader)
-        {
-            ObjectNode obj = new ObjectNode();
-
-            reader.ReadStartElement("obj");
-
-            while (reader.NodeType == XmlNodeType.Element)
-            {
-                if (reader.Name != "field")
-                    throw new ArgumentException($"Expected <field> inside <obj>, found <{reader.Name}>");
-
-                string fieldName = reader.GetAttribute("name");
-                reader.ReadStartElement("field");
-
-                INode value = ReadNode(reader);
-
-                reader.ReadEndElement();
-
-                obj.AddMember(fieldName, value);
-            }
-
-            reader.ReadEndElement();
-            return obj;
-        }
-
-        private static string ReadElementTextRaw(XmlReader reader)
-        {
-            if (reader.IsEmptyElement)
-            {
-                reader.ReadStartElement();
-                return "";
-            }
-            string raw = reader.ReadInnerXml();
-            //reader.ReadEndElement();
-            return raw;
         }
     }
 }
