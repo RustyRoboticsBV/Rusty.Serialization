@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Xml;
+using System.Xml.Linq;
 using System.IO;
+using System.Linq;
 using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Nodes;
 
@@ -33,15 +35,12 @@ namespace Rusty.Serialization.XML
 
         public override NodeTree Parse(string serialized)
         {
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(serialized);
-
-            XmlNode rootNode = doc.DocumentElement;
-            if (rootNode == null)
+            XDocument doc = XDocument.Parse(serialized, LoadOptions.PreserveWhitespace);
+            XElement rootElement = doc.Root;
+            if (rootElement == null)
                 throw new ArgumentException("XML does not contain a root element.");
-
-            INode root = ReadNode(rootNode);
-            return new NodeTree(root);
+            INode rootNode = ReadNode(rootElement);
+            return new NodeTree(rootNode);
         }
 
         /* Private methods. */
@@ -231,54 +230,47 @@ namespace Rusty.Serialization.XML
                 writer.WriteAttributeString("type", type);
         }
 
+
         private static bool IsPrimitive(string tag) => tag is "null" or "bool" or "int" or "float" or "inf" or "nan" or "char"
             or "str" or "dec" or "col" or "bytes";
 
-        private static INode ParsePrimitive(string tag, string value)
+        private static INode ParsePrimitive(string tag, string value) => tag switch
         {
-            return tag switch
-            {
-                "null" => new NullNode(),
-                "bool" => new BoolNode(bool.Parse(value)),
-                "int" => new IntNode(IntValue.Parse(value)),
-                "float" => new FloatNode(FloatValue.Parse(value)),
-                "inf" => value == "+" ? new InfinityNode(true) : new InfinityNode(false),
-                "nan" => new NanNode(),
-                "char" => new CharNode(new UnicodePair(value)),
-                "str" => new StringNode(value),
-                "dec" => new DecimalNode(DecimalValue.Parse(value)),
-                "col" => new ColorNode(ColorValue.Parse(value)),
-                "bytes" => new BytesNode(BytesValue.Parse(value)),
-                _ => throw new ArgumentException($"Invalid primitive tag <{tag}>.")
-            };
-        }
+            "null" => new NullNode(),
+            "bool" => new BoolNode(bool.Parse(value)),
+            "int" => new IntNode(IntValue.Parse(value)),
+            "float" => new FloatNode(FloatValue.Parse(value)),
+            "inf" => value == "+" ? new InfinityNode(true) : new InfinityNode(false),
+            "nan" => new NanNode(),
+            "char" => new CharNode(new UnicodePair(value)),
+            "str" => new StringNode(value),
+            "dec" => new DecimalNode(DecimalValue.Parse(value)),
+            "col" => new ColorNode(ColorValue.Parse(value)),
+            "bytes" => new BytesNode(BytesValue.Parse(value)),
+            _ => throw new ArgumentException($"Invalid primitive tag <{tag}>.")
+        };
 
-        private static INode ReadNode(XmlNode xmlNode)
+        private static INode ReadNode(XElement element)
         {
-            if (xmlNode.NodeType != XmlNodeType.Element)
-                throw new InvalidOperationException("Expected XML element.");
-
-            string tag = xmlNode.Name;
+            string tag = element.Name.LocalName;
             INode node;
 
-            // Metadata
-            string idAttr = (xmlNode as XmlElement)?.GetAttribute("id");
-            string typeAttr = (xmlNode as XmlElement)?.GetAttribute("type");
+            string idAttr = (string)element.Attribute("id");
+            string typeAttr = (string)element.Attribute("type");
 
-            // Primitive nodes
             if (IsPrimitive(tag))
             {
-                string value = xmlNode.InnerText;
+                string value = element.Value;
                 node = ParsePrimitive(tag, value);
             }
             else
             {
                 node = tag switch
                 {
-                    "time" => ReadTime(xmlNode),
-                    "list" => ReadList(xmlNode),
-                    "dict" => ReadDict(xmlNode),
-                    "obj" => ReadObject(xmlNode),
+                    "time" => ReadTime(element),
+                    "list" => ReadList(element),
+                    "dict" => ReadDict(element),
+                    "obj" => ReadObject(element),
                     _ => throw new ArgumentException($"Illegal XML tag <{tag}>.")
                 };
             }
@@ -289,82 +281,53 @@ namespace Rusty.Serialization.XML
             return node;
         }
 
-        private static INode ReadObject(XmlNode xmlNode)
+        private static ObjectNode ReadObject(XElement element)
         {
             ObjectNode obj = new ObjectNode();
-
-            foreach (XmlNode field in xmlNode.ChildNodes)
+            foreach (XElement field in element.Elements("field"))
             {
-                if (field.Name != "field")
-                    throw new ArgumentException($"Expected <field> inside <obj>, found <{field.Name}>");
-
-                string fieldName = (field as XmlElement)?.GetAttribute("name");
-                XmlNode valueNode = null;
-
-                foreach (XmlNode child in field.ChildNodes)
-                {
-                    if (child.NodeType == XmlNodeType.Element)
-                    {
-                        valueNode = child;
-                        break;
-                    }
-                }
-
-                if (valueNode == null)
-                    throw new ArgumentException($"Field {fieldName} has no value element.");
-
+                string fieldName = (string)field.Attribute("name");
+                XElement valueNode = field.Elements().FirstOrDefault();
+                if (valueNode == null) throw new ArgumentException($"Field {fieldName} has no value element.");
                 obj.AddMember(fieldName, ReadNode(valueNode));
             }
-
             return obj;
         }
 
-        private static INode ReadList(XmlNode xmlNode)
+        private static ListNode ReadList(XElement element)
         {
             ListNode list = new ListNode();
-
-            foreach (XmlNode child in xmlNode.ChildNodes)
+            foreach (XElement child in element.Elements())
             {
-                if (child.NodeType == XmlNodeType.Element)
-                    list.AddValue(ReadNode(child));
+                list.AddValue(ReadNode(child));
             }
-
             return list;
         }
 
-        private static INode ReadDict(XmlNode xmlNode)
+        private static DictNode ReadDict(XElement element)
         {
             DictNode dict = new DictNode();
-
-            foreach (XmlNode entry in xmlNode.ChildNodes)
+            foreach (XElement entry in element.Elements("entry"))
             {
-                if (entry.Name != "entry") continue;
-
-                XmlNode keyNode = entry.SelectSingleNode("key/*");
-                XmlNode valueNode = entry.SelectSingleNode("value/*");
-
+                XElement keyNode = entry.Element("key")?.Elements().FirstOrDefault();
+                XElement valueNode = entry.Element("value")?.Elements().FirstOrDefault();
                 if (keyNode == null || valueNode == null)
                     throw new ArgumentException("<entry> must contain <key> and <value> elements.");
-
                 dict.AddPair(ReadNode(keyNode), ReadNode(valueNode));
             }
-
             return dict;
         }
 
-        private static INode ReadTime(XmlNode xmlNode)
+        private static TimeNode ReadTime(XElement element)
         {
             IntValue year = 1;
-            byte month = 1;
-            byte day = 1;
-            byte hour = 0;
-            byte minute = 0;
+            byte month = 1, day = 1, hour = 0, minute = 0;
             FloatValue second = 0;
 
-            foreach (XmlNode child in xmlNode.ChildNodes)
+            foreach (XElement child in element.Elements())
             {
-                string value = child.InnerText;
-                switch (child.Name)
+                string value = child.Value;
+                switch (child.Name.LocalName)
                 {
                     case "year": year = IntValue.Parse(value); break;
                     case "month": month = byte.Parse(value); break;
@@ -372,8 +335,7 @@ namespace Rusty.Serialization.XML
                     case "hour": hour = byte.Parse(value); break;
                     case "minute": minute = byte.Parse(value); break;
                     case "second": second = FloatValue.Parse(value); break;
-                    default:
-                        throw new ArgumentException($"Invalid <time> field <{child.Name}>.");
+                    default: throw new ArgumentException($"Invalid <time> field <{child.Name}>.");
                 }
             }
 
