@@ -34,13 +34,13 @@ Simply add the project folder to your C# project and add `using Rusty.Serializat
 #### Serializing
 ```
 MyClass obj = new();
-UCS ucs = new(Format.Cscd);                               // Contains pre-defined serialization schema for all built-in types.
-string serialized = ucs.Serialize(obj);                   // Serializes all public properties and fields of MyClass.
+UCS ucs = new(Format.Cscd);                         // Contains pre-defined serialization schema for all built-in types.
+string serialized = ucs.Serialize(obj);             // Serializes all public properties and fields of MyClass.
 ```
 
 #### Deserializing
 ```
-obj = ucs.Deserialize<MyClass>(serialized);               // Deserializes back to MyClass.
+obj = ucs.Deserialize<MyClass>(serialized);         // Deserializes back to MyClass.
 ```
 
 #### Conversion Between Formats
@@ -48,17 +48,17 @@ obj = ucs.Deserialize<MyClass>(serialized);               // Deserializes back t
 string xml = "...";
 UCS xmlContext = new(Format.Xml);
 UCS jsonContext = new(Format.Json);
-string json = xmlContext.Convert(xml, jsonContext);       // Convert XML to JSON.
+string json = xmlContext.Convert(xml, jsonContext); // Convert XML to JSON.
 ```
 
 #### Freeing Up Memory
-The module makes use of object pooling to avoid unnecessary GC pressure.
+The module makes use of object pooling to avoid unnecessary GC pressure. Memory can be freed up for garbage collection manually.
 
 ```
 ucs.Dispose();
 ```
 
-This will release all memory allocated by the context (if any). It is recommended to call this method after any (de)serialization operation that is not performance-sensitive.
+It is recommended to call this method after any (de)serialization operation that is not performance-sensitive.
 
 #### Notes
 Classes and structs without explicit support will automatically serialize using:
@@ -98,7 +98,6 @@ Below is an example of a custom serialized object with pretty printing. See the 
 ~CSCD~
 ;; Copyright <My Name> ;;
 ;; Licensed under <my license> ;;
-
 (MyType)<
     my_null: null,
     my_bool: true,
