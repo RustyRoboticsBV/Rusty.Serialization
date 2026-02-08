@@ -38,6 +38,11 @@ Parsers MUST reject input strings containing code points outside of the allowed 
 ### 1.2 Structure
 A serialized CSCD string MUST contain exactly one top-level value, which forms the root of the serialized representation. Parsers MUST interpret this top-level value as the entry point for deserialization. The top-level value MAY be annotated with metadata. Values that support nested content MAY contain nested values.
 
+#### Format Marker
+Strings of CSCD MAY be marked as such by adding the header text `~CSCD~` at the beginning of the string. It MUST NOT appear anywhere else in the string. Parsers that handle multiple formats MUST use this to recognize a string as CSCD. Parsers that only handle CSCD SHOULD not require the marker, but MUST recognize strings starting with one as correct input.
+
+Serializers SHOULD always emit it regardless.
+
 ### 1.3 Whitespace
 Whitespace MAY appear between literals and punctuation (`, : [ ] { } < >`) for formatting purposes. Whitespace MAY also appear before and after the top-level value. Unless otherwise stated, whitespace MUST NOT break up literals that are multiple characters long.
 
@@ -46,7 +51,7 @@ Serializers SHOULD NOT emit whitespace in situations where readability is not im
 ### 1.4 Comments
 Comments MUST start and end with `;;` two semicolons (e.g. `;; Comment text ;;`). They MAY appear anywhere where whitespace may appear; parsers MUST treat them as whitespace and strip them - they SHOULD not preserve comments on reserialization. Comments MUST NOT be nested, but MAY consist of multiple lines.
 
-Comments MUST NOT be recognized inside type, ID, character, string or reference literals. Within such literals, substrings that match the comment syntax MUST be treated as literal content.
+Comments MUST NOT be recognized inside delimited literals. Within such literals, substrings that match the comment syntax MUST be treated as literal content.
 
 ### 1.5 Escape Sequences
 Escape sequences MAY appear in literals that support them. Literals MUST NOT allow escape sequences unless explicitly stated otherwise in their definition.
@@ -211,16 +216,16 @@ Colors literals MUST start with a `#` number sign, followed by the hexadecimal r
 - `#RRGGBBAA`: full notation with alpha.
 - `#`: MUST be interpreted as `#00000000`.
 
-Color literals MUST use uppercase hexadecimal digits (`0`–`9`, `A`–`F`). Parsers MUST interpret the values according to the rules above.
+Color literals MUST use uppercase hexadecimal digits (`0`-`9`, `A`-`F`). Parsers MUST interpret the values according to the rules above.
 
-#### Times
-Time literals represent absolute moments in time. They are intended to express date and/or time values, but do not represent durations or timespans. The time literal exists primarily to provide a dedicated, canonical form for timestamp types and discourage ad-hoc solutions using strings or object literals.
+#### Timestamps
+Timestamp literals represent absolute moments in time. They are intended to express date and/or time values, but do not represent durations or timespans. The timestamp literal exists primarily to provide a dedicated, canonical form for date/time types and discourage ad-hoc solutions using strings or object literals.
 
-Time literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
+Timestamp literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
 - `@{year}/{month}/{day},{hour}:{minute}:{second}@`.
 - `@{year}/{month}/{day}@`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
 - `@{hour}:{minute}:{second}@`. The date component MUST be assumed by a parser to be `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
-- `@`. MUST be interpreted as a the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
+- `@@`. MUST be interpreted as a the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
 
 Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
 - Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 1 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value. The year `0` MUST NOT be used.
@@ -237,18 +242,22 @@ Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00@`.
 #### Bytes
 Bytes literals represent arbitrary data that cannot be efficiently expressed using another literal.
 
-They MUST start with the prefix `b_`, followed by the data encoded in [RFC 4648 Base64](https://datatracker.ietf.org/doc/html/rfc4648), using the alphabet `A`-`Z`, `a`-`z`, `0`-`9`, `+`, `/` and `=`.
+They MUST start with the prefix `!`, followed by the data encoded in [RFC 4648 Base64](https://datatracker.ietf.org/doc/html/rfc4648), using the alphabet `A`-`Z`, `a`-`z`, `0`-`9`, `+`, `/` and `=`.
 
-Padding using `=` MAY be used, but this is not enforced; parsers MUST handle bytes literals without padding by assuming trailing `=` padding characters. For example, the bytestring `00 02 04 07 09 0E 03` can be represented by the bytes literals `b_AAIEBwkPAw` and `b_AAIEBwkPAw==`.
+Padding using `=` MAY be used, but this is not enforced; parsers MUST handle bytes literals without padding by assuming trailing `=` padding characters. For example, the bytestring `00 02 04 07 09 0E 03` can be represented by the bytes literals `!AAIEBwkPAw` and `!AAIEBwkPAw==`.
 
-An empty byte literal (representing zero bytes) MUST be written as `b_`.
+An empty byte literal (representing zero bytes) MUST be written as `!`.
 
 #### Symbols
 Symbol literals represent named constants, identifiers, or enum values. They provide a semantic, human-readable alternative to integers or strings when representing values whose internal numeric representations may vary or whose meaning is best captured by a stable name. Symbols are primarily intended for use with enumerations or well-known static constants.
 
-A symbol literal MUST start and end with `*` asterisk characters, with the symbol name in between.
+A symbol literal MUST start and end with `*` asterisk characters, with the symbol name in between. They are case-sensitive. Empty symbols MAY be used, which MUST be represented using `**`.
 
-The following characters MUST NOT appear in reference literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
+If a symbol starts with an ASCII letter (`A`-`Z`, `a`-`z`) or an `_` underscore, and contains only ASCII letters (`A`-`Z`, `a`-`z`), digits (`0`-`9`) and underscores (`_`), then the enclosing `*` asterisks may be omitted. For example, `_abc123` is equivalent to `*_abc123*`. The symbols `null`, `true`, `false`, `nan` and `inf` cannot be used as bare symbol names and MUST be enclosed in `*` asterisks, as these are already reserved by other literals.
+
+Symbol literals MAY be annotated with an ID and type label.
+
+The following characters MUST NOT appear in `*` asterisk-delimited symbol literals and MUST instead be represented with [escape sequences](#15-escape-sequences):
 
 |Character      |Code point |   |Character      |Code point |
 |---------------|-----------|---|---------------|-----------|
@@ -256,11 +265,9 @@ The following characters MUST NOT appear in reference literals and MUST instead 
 |Line feed      |`0x0A`     |   |`\`            |`0x5C`     |
 |Carriage return|`0x0D`     |   |               |           |
 
-All other characters from the character set MAY appear unescaped.
+All other characters from the character set MAY appear unescaped. Bare symbol literals MUST NOT contain escape sequences.
 
-Symbol literals MAY be annotated with IDs and type labels. Symbol literals MUST NOT be empty; a valid symbol must contain at least one character after escape processing.
-
-Parsers MUST preserve the exact symbol text, including case, as it may be used to map to runtime constants or enumeration members. Serializers SHOULD use symbol literals when encoding values that are conceptually named constants, enums, or other identifiers, to improve readability and maintain semantic stability.
+Serializers SHOULD emit the bare symbol form if the name is an allowed bare symbol name.
 
 #### References
 Reference values are used to link to values that have been marked with an ID. They MUST start and end with an `&` ampersand, with the name of an ID between them (example: `&my_id&`). This ID MUST exist elsewhere in the data.
@@ -282,7 +289,7 @@ All other characters from the character set MAY appear unescaped.
 ### 2.3. Collections
 
 #### Lists
-Lists represent ordered collections of zero or more values.
+Lists represent collections of zero or more values. They MAY be used to represent ordered, unordered, resizable and fixed-size collections.
 
 A list MUST be enclosed in `[]` square brackets. Element values MUST be separated by `,` commas. Whitespace MAY appear before or after any element value or comma; parsers MUST ignore this whitespace.
 
@@ -310,23 +317,8 @@ Object literals represent a collection of name-value pairs. Objects function sim
 
 An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by `,` commas, and names and values MUST be separated by a `:` colon. Trailing commas are MUST NOT appear in an object (e.g., `<id:0,>` is invalid).
 
-Objects MAY contain values of any type, including other collections. Member values MAY be annotated with type labels or IDs.
+Member names MUST be symbols. Member values MAY be any literal type, including other collections. Member values MAY be annotated with a type labels and/or ID, member names MUST NOT be annotated with a type label or ID.
 
 Objects MAY be empty, which MUST be represented by the literal `<>`.
 
-Example: `<my_int:0,my_float:0.0,my_char:'A'>`.
-
-##### Object Member Names
-Member names MUST be plain, unquoted character sequences. They are case sensitive.
-
-The following characters MUST NOT appear in object member names and MUST instead be represented with [escape sequences](#15-escape-sequences):
-
-|Character      |Code point |   |Character      |Code point |
-|---------------|-----------|---|---------------|-----------|
-|Tab            |`0x09`     |   |Space          |`0x20`     |
-|Line feed      |`0x0A`     |   |`:`            |`0x3A`     |
-|Carriage return|`0x0D`     |   |`\`            |`0x5C`     |
-
-All other characters from the character set MAY appear unescaped.
-
-Member names are not considered to be values, and MUST NOT be annotated with metadata. Just like with dictionary keys, member names are NOT required to be unique.
+Example: `<my_int:0,my_float:0.0,my_char:'A',*my_stríng*:"abc">`.

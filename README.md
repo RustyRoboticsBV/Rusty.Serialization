@@ -95,6 +95,10 @@ The module uses a custom, human-readable serialization format called Compact Ser
 Below is an example of a custom serialized object with pretty printing. See the [CSCD user manual](Documentation/CSCD/Manual.md) for more information, and the [specification document](Documentation/CSCD/Specification.md) for a formal syntax description.
 
 ```
+~CSCD~
+;; Copyright <My Name> ;;
+;; Licensed under <my license> ;;
+
 (MyType)<
     my_null: null,
     my_bool: true,
@@ -107,8 +111,8 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_color: #F08080,
     my_time: @1990-2-13,18:30:05.001@,
     my_decimal: $1.00,
-    my_bytes: b_SGVsbG8sIHdvcmxkIQ,
-    my_symbol: *Wednesday*
+    my_bytes: !SGVsbG8sIHdvcmxkIQ,
+    my_symbol: Wednesday
     my_list: [1, 2., "def"],
     my_dict: {
         10: 1.,
@@ -118,7 +122,8 @@ Below is an example of a custom serialized object with pretty printing. See the 
     `my_id` my_object: <
         a: 0,
         b: '\1F4A9;',
-        c: @14:2:10.005@
+        c: @14:2:10.005@,
+        d: Red
     >,
     my_reference: &my_id&
 >
