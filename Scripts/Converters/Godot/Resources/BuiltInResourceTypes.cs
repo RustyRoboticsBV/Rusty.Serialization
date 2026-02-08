@@ -1,4 +1,4 @@
-﻿#if GODOT
+#if GODOT
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Gd
         {
             foreach (var type in EngineAssembly.GetTypes())
             {
-                if (!typeof(Resource).IsAssignableFrom(type))
+                if (!typeof(Resource).IsAssignableFrom(type) && type != typeof(Resource))
                     continue;
 
                 if (type.IsAbstract)

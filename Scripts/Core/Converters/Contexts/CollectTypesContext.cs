@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
@@ -38,10 +38,17 @@ namespace Rusty.Serialization.Core.Conversion
             }
 
             // Collect child types.
-            else
+            else if (node is ICollectionNode)
             {
                 IConverter converter = Converters.Get(objType);
                 converter.CollectTypes(node, this);
+                if (!NodeTypeTable.Has(node))
+                    NodeTypeTable.Add(node, objType);
+            }
+
+            // Other nodes.
+            else
+            {
                 if (!NodeTypeTable.Has(node))
                     NodeTypeTable.Add(node, objType);
             }

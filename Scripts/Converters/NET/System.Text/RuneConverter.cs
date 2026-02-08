@@ -1,4 +1,4 @@
-﻿#if NET5_0_OR_GREATER
+#if NET5_0_OR_GREATER
 using System.Text;
 using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
@@ -13,7 +13,7 @@ namespace Rusty.Serialization.DotNet
         /* Protected method. */
         protected override CharNode CreateNode(Rune obj, CreateNodeContext context)
         {
-            return new CharNode(obj.ToString());
+            return new CharNode(obj.Value);
         }
 
         protected override Rune CreateObject(CharNode node, CreateObjectContext context)

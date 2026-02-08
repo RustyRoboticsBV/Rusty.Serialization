@@ -14,6 +14,8 @@ namespace Rusty.Serialization
         private void AddGodot()
         {
             // Structs.
+            ConverterRegistry.Add<Variant, VariantConverter>();
+
             ConverterRegistry.Add<StringName, StringNameConverter>();
             ConverterRegistry.Add<NodePath, NodePathConverter>();
 
@@ -43,7 +45,7 @@ namespace Rusty.Serialization
             }
 
             // User-defined resources.
-            ConverterRegistry.Add<Resource, ClassConverter<Resource>>();
+            ConverterRegistry.Add(typeof(Resource), typeof(ResourceConverter<>));
         }
     }
 }

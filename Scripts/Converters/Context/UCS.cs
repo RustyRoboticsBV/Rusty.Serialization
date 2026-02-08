@@ -29,7 +29,9 @@ namespace Rusty.Serialization
         public Codec Codec { get; set; }
 
         /* Constructors. */
-        public UCS(Converters converters, Format format)
+        public UCS(Format format = Format.Cscd) : this(DefaultConverters, format) { }
+
+        public UCS(Converters converters, Format format = Format.Cscd)
         {
             Converters = converters;
             switch (format)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using Rusty.Serialization.Core.Nodes;
@@ -32,7 +32,11 @@ namespace Rusty.Serialization.Core.Conversion
 
             object obj;
 
-            // Handle ID node.
+            // Hande null node.
+            if (node is NullNode)
+                return null;
+
+            // Handle ref node.
             if (node is RefNode refNode)
             {
                 IdNode refIdNode = NodeTypeTable.GetId(refNode);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
@@ -30,7 +30,7 @@ namespace Rusty.Serialization.Core.Conversion
         protected virtual bool CanHandleNode(INode node) => typeof(NodeT).IsAssignableFrom(node.GetType());
         protected void NodeError(INode node)
         {
-            throw new InvalidCastException($"The converter {GetType().Name} cannot handle {node.GetType().Name} nodes\n{node}.");
+            throw new InvalidCastException($"The converter {GetType().FullName} cannot handle {node.GetType().Name} nodes\n{node}.");
         }
 
         /// <summary>
