@@ -24,8 +24,6 @@ namespace Rusty.Serialization.CSCD
             new HashSet<UnicodePair> { '\t', '\n', '\r', '*', '\\' };
         private readonly static HashSet<UnicodePair> refEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', '&', '\\' };
-        private readonly static HashSet<UnicodePair> memberNameEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', ' ', ':', '\\' };
 
         private static readonly Dictionary<UnicodePair, char> simpleEscapes = new Dictionary<UnicodePair, char>()
         {
@@ -331,7 +329,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Name.
-                sb.Append(FormatText(node.GetNameAt(i), memberNameEscapes));
+                sb.Append(Serialize(new SymbolNode(node.GetNameAt(i)))); // TODO: modify object node to use symbol nodes as keys.
 
                 // Colon.
                 if (prettyPrinting)

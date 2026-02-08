@@ -24,8 +24,6 @@ namespace Rusty.Serialization.CSCD
             new HashSet<UnicodePair> { '\t', '\n', '\r', '*', '\\' };
         private readonly static HashSet<UnicodePair> refEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', '&', '\\' };
-        private readonly static HashSet<UnicodePair> memberNameEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', ' ', ':', '\\' };
 
         private static readonly Dictionary<char, UnicodePair> simpleEscapes = new Dictionary<char, UnicodePair>
         {
@@ -340,6 +338,17 @@ namespace Rusty.Serialization.CSCD
         }
 
         /// <summary>
+        /// Parse a symbol literal.
+        /// </summary>
+        private static SymbolNode ParseSymbol(Token token)
+        {
+            if (token.Text.StartsWith('*') && token.Text.EndsWith('*'))
+                return new SymbolNode(ParseText(token, symbolEscapes, "*", "*"));
+            else
+                return ParseBareSymbol(token);
+        }
+
+        /// <summary>
         /// Parse a sequence of tokens as a list node.
         /// </summary>
         private static ListNode ParseList(TextSpan text, CscdLexer lexer)
@@ -455,8 +464,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Parse member name & value.
-                DisallowEqual(next, ':', "Object names may not equal ':'.");
-                string name = ParseText(next, memberNameEscapes);
+                SymbolNode name = ParseSymbol(next);
 
                 ExpectSymbol(text, lexer, ':', "Object member names must be followed by a colon.");
 
@@ -466,7 +474,7 @@ namespace Rusty.Serialization.CSCD
                 DisallowEqual(next, '>', "Objects may not contain trailing colons.");
                 INode valueNode = ParseToken(text, next, lexer);
 
-                obj.AddMember(name, valueNode);
+                obj.AddMember(name.Name, valueNode);
 
                 // Next token: comma or object closer.
                 next = ExpectToken(text, lexer, "Unclosed object.");
