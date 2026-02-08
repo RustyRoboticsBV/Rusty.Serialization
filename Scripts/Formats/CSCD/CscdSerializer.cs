@@ -219,14 +219,14 @@ namespace Rusty.Serialization.CSCD
         {
             // Check if the symbol can be bare or not.
             bool canBeBare = false;
-            if (node.Value.Length > 0)
+            if (node.Name.Length > 0)
             {
-                char c = node.Value[0];
+                char c = node.Name[0];
                 canBeBare = c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_';
             }
-            for (int i = 1; i < node.Value.Length; i++)
+            for (int i = 1; i < node.Name.Length; i++)
             {
-                char c = node.Value[i];
+                char c = node.Name[i];
                 if (!(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '_'))
                 {
                     canBeBare = false;
@@ -234,16 +234,16 @@ namespace Rusty.Serialization.CSCD
                 }
             }
             if (!allowReservedKeywords
-                && (node.Value == "null" || node.Value == "false" || node.Value == "true" || node.Value == "nan" || node.Value == "inf"))
+                && (node.Name == "null" || node.Name == "false" || node.Name == "true" || node.Name == "nan" || node.Name == "inf"))
             {
                 canBeBare = false;
             }
 
             // Create symbol text.
             if (canBeBare)
-                return node.Value;
+                return node.Name;
             else
-                return $"*{FormatText(node.Value, symbolEscapes)}*";
+                return $"*{FormatText(node.Name, symbolEscapes)}*";
         }
 
         private string Serialize(ListNode node, bool prettyPrinting)

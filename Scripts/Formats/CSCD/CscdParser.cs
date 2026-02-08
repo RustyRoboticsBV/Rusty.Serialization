@@ -474,7 +474,7 @@ namespace Rusty.Serialization.CSCD
                 DisallowEqual(next, '>', "Objects may not contain trailing colons.");
                 INode valueNode = ParseToken(text, next, lexer);
 
-                obj.AddMember(name.Value, valueNode);
+                obj.AddMember(name.Name, valueNode);
 
                 // Next token: comma or object closer.
                 next = ExpectToken(text, lexer, "Unclosed object.");

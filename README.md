@@ -96,8 +96,8 @@ Below is an example of a custom serialized object with pretty printing. See the 
 
 ```
 ~CSCD~
-;; Copyright <My Name> ;;
-;; Licensed under <my license> ;;
+;; Copyright <My Name>         ;;
+;; Licensed under <My License> ;;
 (MyType)<
     my_null: null,
     my_bool: true,

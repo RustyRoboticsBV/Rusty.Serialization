@@ -183,7 +183,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("symbol");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(smb.Value);
+                    writer.WriteString(smb.Name);
                     writer.WriteEndElement();
                     break;
 

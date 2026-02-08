@@ -23,7 +23,7 @@ namespace Rusty.Serialization.Unity
 
         protected override Color CreateObject(ColorNode node, CreateObjectContext context)
         {
-            return new Color(node.Name.r / 255f, node.Name.g / 255f, node.Name.b / 255f, node.Name.a / 255f);
+            return new Color(node.Value.r / 255f, node.Value.g / 255f, node.Value.b / 255f, node.Value.a / 255f);
         }
     }
 }

@@ -75,13 +75,13 @@ namespace Rusty.Serialization.Core.Conversion
                 {
                     try
                     {
-                        T enumValue = (T)Enum.Parse(typeof(T), s.Value, false);
+                        T enumValue = (T)Enum.Parse(typeof(T), s.Name, false);
                         combinedValue |= Convert.ToUInt64(enumValue);
                     }
                     catch (ArgumentException)
                     {
                         throw new InvalidOperationException(
-                            $"Could not convert value '{s.Value}' to enum type '{typeof(T).FullName}'.");
+                            $"Could not convert value '{s.Name}' to enum type '{typeof(T).FullName}'.");
                     }
                 }
                 else

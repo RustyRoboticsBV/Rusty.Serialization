@@ -1,19 +1,30 @@
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// A symbol serializer node.
+    /// A reference serializer node.
     /// </summary>
-    public class SymbolNode : ValueNode<string>
+    public class SymbolNode : INode
     {
-        /* Constructors. */
-        public SymbolNode() : base() { }
+        /* Public properties. */
+        public ITreeElement Parent { get; set; }
+        public string Name { get; set; }
 
-        public SymbolNode(string value) : base(value) { }
+        /* Constructors. */
+        public SymbolNode(string name)
+        {
+            Name = name.ToString() ?? "";
+        }
 
         /* Public methods. */
         public override string ToString()
         {
-            return "symbol: " + (Value ?? "(null)");
+            return "symbol: " + Name;
+        }
+
+        public void Clear()
+        {
+            Parent = null;
+            Name = "";
         }
     }
 }
