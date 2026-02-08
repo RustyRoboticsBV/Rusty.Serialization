@@ -45,13 +45,10 @@ namespace Rusty.Serialization.CSCD
         /* Public methods. */
         public override string Serialize(NodeTree tree, Settings settings)
         {
-            bool prettyPrint = (settings & Settings.PrettyPrint) != 0;
-            bool includeFormatHeader = (settings & Settings.IncludeFormatHeader) != 0;
+            string str = Serialize(tree.Root, settings.PrettyPrint);
 
-            string str = Serialize(tree.Root, prettyPrint);
-
-            if (includeFormatHeader)
-                str = "~CSCD~" + (prettyPrint ? "\n" : "") + str;
+            if (settings.IncludeFormatHeader)
+                str = "~CSCD~" + (settings.PrettyPrint ? "\n" : "") + str;
 
             return str;
         }

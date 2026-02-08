@@ -56,7 +56,7 @@ namespace Rusty.Serialization
         /// <summary>
         /// Serialize an object to a string.
         /// </summary>
-        public string Serialize<T>(T obj, Settings settings = Settings.IncludeFormatHeader)
+        public string Serialize<T>(T obj, Settings settings)
         {
             if (Codec == null)
                 throw new InvalidOperationException("No codec format specified.");
@@ -68,7 +68,7 @@ namespace Rusty.Serialization
         /// <summary>
         /// Serialize an object to a string.
         /// </summary>
-        public string Serialize(object obj, Settings settings = Settings.IncludeFormatHeader)
+        public string Serialize(object obj, Settings settings)
         {
             if (Codec == null)
                 throw new InvalidOperationException("No codec format specified.");
@@ -109,18 +109,18 @@ namespace Rusty.Serialization
         /// <summary>
         /// Reformat a string from this format to another.
         /// </summary>
-        public string ReformatTo(string serialized, UCS targetFormat, Settings settings = Settings.IncludeFormatHeader)
+        public string ReformatTo(string serialized, UCS targetFormat, Settings settings)
         {
             if (targetFormat == null)
                 throw new ArgumentNullException(nameof(targetFormat));
 
-            return ReformatTo(serialized, targetFormat.Codec);
+            return ReformatTo(serialized, targetFormat.Codec, settings);
         }
 
         /// <summary>
         /// Reformat a string from this format to another.
         /// </summary>
-        public string ReformatTo(string serialized, Codec targetFormat, Settings settings = Settings.IncludeFormatHeader)
+        public string ReformatTo(string serialized, Codec targetFormat, Settings settings)
         {
             if (Codec == null)
                 throw new InvalidOperationException("No source codec format specified.");

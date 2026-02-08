@@ -18,13 +18,10 @@ namespace Rusty.Serialization.XML
         /* Public methods. */
         public override string Serialize(NodeTree node, Settings settings)
         {
-            bool prettyPrint = (settings & Settings.PrettyPrint) != 0;
-            bool includeHeader = (settings & Settings.IncludeFormatHeader) != 0;
-
             XmlWriterSettings xmlSettings = new XmlWriterSettings
             {
-                OmitXmlDeclaration = true,
-                Indent = prettyPrint,
+                OmitXmlDeclaration = !settings.IncludeFormatHeader,
+                Indent = settings.PrettyPrint,
                 IndentChars = "  ",
                 NewLineHandling = NewLineHandling.Replace
             };

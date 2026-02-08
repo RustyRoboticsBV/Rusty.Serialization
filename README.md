@@ -48,7 +48,7 @@ obj = ucs.Deserialize<MyClass>(serialized);               // Deserializes back t
 string xml = "...";
 UCS xmlContext = new(Format.Xml);
 UCS jsonContext = new(Format.Json);
-string json = UCS.Convert(xml, xmlContext, jsonContext);  // Convert XML to JSON.
+string json = xmlContext.Convert(xml, jsonContext);       // Convert XML to JSON.
 ```
 
 #### Freeing Up Memory

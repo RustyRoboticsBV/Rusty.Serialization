@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Testing
         private enum PerformanceTest { Off, Serialize, Parse, RoundTrip }
 
         [SerializeField] public Format Format = Format.Cscd;
-        [SerializeField] public bool PrettyPrint;
+        [SerializeField] public Settings Settings = Settings.All;
         [SerializeField] PerformanceTest TestPerformance;
         [SerializeField] public T Object;
         [SerializeField, Multiline(50)] public string Serialized;
@@ -38,7 +38,6 @@ namespace Rusty.Serialization.Testing
         {
             T t = (T)target;
 
-            Settings settings = t.PrettyPrint ? Settings.All : Settings.IncludeFormatHeader;
             UCS ucs = cscd;
             if (t.Format == Format.Json)
                 ucs = json;
@@ -48,7 +47,7 @@ namespace Rusty.Serialization.Testing
             // Draw buttons.
             if (GUILayout.Button("Serialize"))
             {
-                string serialized = ucs.Serialize(t.Object, settings);
+                string serialized = ucs.Serialize(t.Object, t.Settings);
                 t.Serialized = serialized;
             }
             if (GUILayout.Button("Deserialize"))

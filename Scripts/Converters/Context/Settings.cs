@@ -1,16 +1,30 @@
 ﻿using System;
+#if UNITY_5_3_OR_NEWER
+using UnityEngine;
+#endif
 
 namespace Rusty.Serialization
 {
     /// <summary>
     /// The settings used by the serializer.
     /// </summary>
-    [Flags]
-    public enum Settings
+    [Serializable]
+    public struct Settings
     {
-        None = 0,
-        IncludeFormatHeader = 1,
-        PrettyPrint = 2,
-        All = IncludeFormatHeader | PrettyPrint
+        /* Fields. */
+        public static Settings All => new Settings()
+        {
+            PrettyPrint = true,
+            IncludeFormatHeader = true
+        };
+
+#if UNITY_5_3_OR_NEWER
+        [SerializeField]
+#endif
+        public bool PrettyPrint;
+#if UNITY_5_3_OR_NEWER
+        [SerializeField]
+#endif
+        public bool IncludeFormatHeader;
     }
 }
