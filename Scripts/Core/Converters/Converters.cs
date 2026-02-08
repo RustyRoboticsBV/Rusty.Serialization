@@ -122,7 +122,7 @@ namespace Rusty.Serialization.Core.Conversion
             ParsingTable.Clear();
 
             // Collect the type of each node.
-            CollectTypesContext.CollectTypes(tree.Root, typeof(T));
+            CollectTypesContext.CollectTypesAndReferences(tree.Root, typeof(T));
             NodeTypeTable.ResolveRefs();
 
             // Deconvert.
@@ -139,7 +139,7 @@ namespace Rusty.Serialization.Core.Conversion
             ParsingTable.Clear();
 
             // Collect the type of each node.
-            CollectTypesContext.CollectTypes(tree.Root, type);
+            CollectTypesContext.CollectTypesAndReferences(tree.Root, type);
             NodeTypeTable.ResolveRefs();
 
             // Deconvert.

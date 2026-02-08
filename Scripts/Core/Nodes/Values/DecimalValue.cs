@@ -160,7 +160,7 @@ namespace Rusty.Serialization.Core.Nodes
                 fractional.CopyTo(mantissaChars.AsSpan(integer.Length, fractional.Length));
                 mantissa = BigInteger.Parse(mantissaChars);
             }
-            return new DecimalValue(negative, mantissa, scale);
+            return new DecimalValue(negative, BigInteger.Abs(mantissa), scale);
         }
     }
 }

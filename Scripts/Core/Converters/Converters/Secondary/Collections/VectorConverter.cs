@@ -41,7 +41,7 @@ namespace Rusty.Serialization.Core.Conversion
         {
             for (int i = 0; i < node.Count && i < GetLength(); i++)
             {
-                context.CollectTypes(node.Elements[i], typeof(ElementT));
+                context.CollectTypesAndReferences(node.Elements[i], typeof(ElementT));
             }
         }
 

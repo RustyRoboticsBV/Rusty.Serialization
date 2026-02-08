@@ -10,9 +10,9 @@ namespace Rusty.Serialization.Core.Conversion
 
         /* Public methods. */
         /// <summary>
-        /// Register a node's type.
+        /// Register a node's type and store references.
         /// </summary>
-        public void CollectTypes(INode node, Type objType)
+        public void CollectTypesAndReferences(INode node, Type objType)
         {
             // Defer references.
             if (node is RefNode @ref)
@@ -25,14 +25,14 @@ namespace Rusty.Serialization.Core.Conversion
             else if (node is TypeNode type)
             {
                 objType = new TypeName(type.Name);
-                CollectTypes(type.Value, objType);
+                CollectTypesAndReferences(type.Value, objType);
                 if (!NodeTypeTable.Has(node))
                     NodeTypeTable.Add(node, NodeTypeTable[type.Value]);
             }
 
             else if (node is IdNode id)
             {
-                CollectTypes(id.Value, objType);
+                CollectTypesAndReferences(id.Value, objType);
                 if (!NodeTypeTable.Has(node))
                     NodeTypeTable.Add(node, NodeTypeTable[id.Value]);
             }

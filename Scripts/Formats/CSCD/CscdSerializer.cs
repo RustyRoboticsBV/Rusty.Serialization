@@ -82,7 +82,7 @@ namespace Rusty.Serialization.CSCD
             if (node is BytesNode byt)
                 return Serialize(byt);
             if (node is SymbolNode sb)
-                return $"*{FormatText(sb.Name, symbolEscapes)}*";
+                return Serialize(sb);
             if (node is RefNode rf)
                 return $"&{FormatText(rf.ID, refEscapes)}&";
             if (node is ListNode lst)
@@ -205,12 +205,39 @@ namespace Rusty.Serialization.CSCD
             }
             src = src.Slice(0, end);
 
-            // Add b_ prefix.
-            Span<char> buffer = stackalloc char[src.Length + 2];
-            buffer[0] = 'b';
-            buffer[1] = '_';
-            src.CopyTo(buffer.Slice(2));
+            // Add ! prefix.
+            Span<char> buffer = stackalloc char[src.Length + 1];
+            buffer[0] = '!';
+            src.CopyTo(buffer.Slice(1));
             return new string(buffer);
+        }
+
+        private string Serialize(SymbolNode node)
+        {
+            // Check if the symbol can be bare or not.
+            bool canBeBare = false;
+            if (node.Name.Length > 0)
+            {
+                char c = node.Name[0];
+                canBeBare = c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_';
+            }
+            for (int i = 1; i < node.Name.Length; i++)
+            {
+                char c = node.Name[i];
+                if (!(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '_'))
+                {
+                    canBeBare = false;
+                    break;
+                }
+            }
+            if (node.Name == "null" || node.Name == "false" || node.Name == "true" || node.Name == "nan" || node.Name == "inf")
+                canBeBare = false;
+
+            // Create symbol text.
+            if (canBeBare)
+                return node.Name;
+            else
+                return $"*{FormatText(node.Name, symbolEscapes)}*";
         }
 
         private string Serialize(ListNode node, bool prettyPrinting)

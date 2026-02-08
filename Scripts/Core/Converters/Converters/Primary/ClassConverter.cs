@@ -86,9 +86,9 @@ namespace Rusty.Serialization.Core.Conversion
             {
                 MemberInfo member = Members[i];
                 if (member is FieldInfo field)
-                    context.CollectTypes(node.Members[i].Value, field.FieldType);
+                    context.CollectTypesAndReferences(node.Members[i].Value, field.FieldType);
                 else if (member is PropertyInfo property)
-                    context.CollectTypes(node.Members[i].Value, property.PropertyType);
+                    context.CollectTypesAndReferences(node.Members[i].Value, property.PropertyType);
             }
         }
 

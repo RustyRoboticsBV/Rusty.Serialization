@@ -12,8 +12,8 @@ namespace Rusty.Serialization.DotNet
         /* Protected methods. */
         protected override void CollectTypes(DictNode node, CollectTypesContext context)
         {
-            context.CollectTypes(node.GetKeyAt(0), typeof(KeyT));
-            context.CollectTypes(node.GetValueAt(0), typeof(ValueT));
+            context.CollectTypesAndReferences(node.GetKeyAt(0), typeof(KeyT));
+            context.CollectTypesAndReferences(node.GetValueAt(0), typeof(ValueT));
         }
 
         protected override DictNode CreateNode(KeyValuePair<KeyT, ValueT> obj, CreateNodeContext context)

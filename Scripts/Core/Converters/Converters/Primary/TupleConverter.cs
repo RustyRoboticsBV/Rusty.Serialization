@@ -43,7 +43,7 @@ namespace Rusty.Serialization.Core.Conversion
             for (int i = 0; i < node.Count && i < fields.Length; i++)
             {
                 Type elementType = fields[i].FieldType;
-                context.CollectTypes(node.Elements[i], elementType);
+                context.CollectTypesAndReferences(node.Elements[i], elementType);
             }
         }
 

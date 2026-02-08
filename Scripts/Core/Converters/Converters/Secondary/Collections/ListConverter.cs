@@ -33,7 +33,7 @@ namespace Rusty.Serialization.Core.Conversion
 
             for (int i = 0; i < node.Count; i++)
             {
-                context.CollectTypes(node.Elements[i], elementType);
+                context.CollectTypesAndReferences(node.Elements[i], elementType);
             }
         }
     }

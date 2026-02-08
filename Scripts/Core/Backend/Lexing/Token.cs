@@ -42,11 +42,7 @@
         }
 
         /* Conversion operators. */
-        public static implicit operator TextSpan(Token token) => token.Text;
-
-        /* Comparison operators. */
-        public static bool operator ==(Token token, string str) => token.Text == str;
-        public static bool operator !=(Token token, string str) => token.Text != str;
+        public static explicit operator TextSpan(Token token) => token.Text;
 
         /* Public methods. */
         public override string ToString() => new string(Text);

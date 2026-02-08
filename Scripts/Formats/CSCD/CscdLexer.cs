@@ -77,9 +77,9 @@ namespace Rusty.Serialization.CSCD
         }
 
         /// <summary>
-        /// Check if the a substring starts with a whitespace at some index. Comments are considered to be whitespace.
+        /// Check if the a substring starts with a whitespace or comment at some index.
         /// </summary>
-        private static bool StartsWithWhitespace(TextSpan text, int index)
+        private static bool StartsWithWhitespaceOrComment(TextSpan text, int index)
         {
             if (index >= text.Length)
                 return false;
@@ -96,7 +96,7 @@ namespace Rusty.Serialization.CSCD
             if (IsAtEnd(text))
                 return;
 
-            while (StartsWithWhitespace(text, Cursor))
+            while (StartsWithWhitespaceOrComment(text, Cursor))
             {
                 // Comment.
                 if (text.StartsWith(Cursor, CommentStart))
@@ -147,7 +147,7 @@ namespace Rusty.Serialization.CSCD
             for (int i = Cursor; i < text.Length; i++)
             {
                 // Check for trailing whitespace.
-                if (StartsWithWhitespace(text, i))
+                if (StartsWithWhitespaceOrComment(text, i))
                     return i - Cursor;
 
                 // Check for interpunction.

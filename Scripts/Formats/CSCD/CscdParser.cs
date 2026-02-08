@@ -47,9 +47,9 @@ namespace Rusty.Serialization.CSCD
         {
             INode root = null;
 
-            // Format marker.
+            // Skip format marker (if present).
             lexer.GetNextToken(text, out Token marker);
-            if (marker.Text != "~CSCD~")
+            if (!marker.Text.Equals("~CSCD~"))
                 lexer.ResetCursor();
 
             // Root.
@@ -80,7 +80,7 @@ namespace Rusty.Serialization.CSCD
         protected static INode ParseToken(TextSpan text, Token token, CscdLexer lexer)
         {
             // Format marker.
-            if (token.Text == "~CSCD~")
+            if (token.Text.Equals("~CSCD~"))
                 TokenError(token, "Format marker may not appear after first token.");
 
             // Type.
@@ -156,13 +156,13 @@ namespace Rusty.Serialization.CSCD
 
             // Time.
             if (token.Text.StartsWith('@') && token.Text.EndsWith('@'))
-                return ParseDateTime(token);
+                return ParseTimestamp(token);
 
             // Bytes.
-            if (token.Text.StartsWith("b_"))
+            if (token.Text.StartsWith('!'))
                 return ParseBytes(token);
 
-            // Symbol.
+            // Symbol (delimited).
             if (token.Text.StartsWith('*') && token.Text.EndsWith('*'))
                 return new SymbolNode(ParseText(token, symbolEscapes, "*", "*"));
 
@@ -182,9 +182,8 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.Equals('<'))
                 return ParseObject(text, lexer);
 
-            // Illegal tokens.
-            TokenError(token, $"Unexpected token.");
-            return null;
+            // Symbol (bare).
+            return ParseBareSymbol(token);
         }
 
         /* Private methods. */
@@ -241,7 +240,7 @@ namespace Rusty.Serialization.CSCD
             if (!token.Text.StartsWith('#'))
                 TokenError(token, "Missing # prefix.");
 
-            if (token.Text == "#")
+            if (token.Text.Equals('#'))
                 return new ColorNode(new ColorValue(0, 0, 0, 0));
 
             try
@@ -258,7 +257,7 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a date/time literal.
         /// </summary>
-        private static TimeNode ParseDateTime(Token token)
+        private static TimeNode ParseTimestamp(Token token)
         {
             TextSpan contents = token.Unpack(1, 1);
 
@@ -321,11 +320,11 @@ namespace Rusty.Serialization.CSCD
         /// </summary>
         private static BytesNode ParseBytes(Token token)
         {
-            if (!token.Text.StartsWith("b_"))
-                TokenError(token, "Missing b_ prefix.");
+            if (!token.Text.StartsWith('!'))
+                TokenError(token, "Missing ! prefix.");
 
             // Get Base64 contents.
-            TextSpan contents = token.Text.Slice(2);
+            TextSpan contents = token.Text.Slice("!".Length);
 
             // Add padding if needed.
             int paddedLength = contents.Length % 4 != 0 ? (contents.Length / 4 + 1) * 4 : contents.Length;
@@ -476,6 +475,28 @@ namespace Rusty.Serialization.CSCD
 
                 MustEqual(next, ',', "Object members must be separated by commas.");
             }
+        }
+
+        /// <summary>
+        /// Parse a sequence of tokens as an object node.
+        /// </summary>
+        private static SymbolNode ParseBareSymbol(Token token)
+        {
+            if (token.Length == 0)
+                TokenError(token, "Bare tokens may not be empty.");
+
+            char c = token.Text[0];
+            if (!(c == '_' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' ))
+                TokenError(token, "Bare tokens must starts with an ASCII letter or underscore.");
+
+            for (int i = 1; i < token.Length; i++)
+            {
+                c = token.Text[i];
+                if (!(c == '_' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9'))
+                    TokenError(token, "Bare tokens may only consist of ASCII letters, digits or underscores.");
+            }
+
+            return new SymbolNode(new string(token.Text));
         }
 
         // Helper methods.

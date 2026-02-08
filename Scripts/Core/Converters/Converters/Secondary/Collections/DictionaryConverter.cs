@@ -36,8 +36,8 @@ namespace Rusty.Serialization.Core.Conversion
             Type valueType = typeof(ValueT);
             for (int i = 0; i < node.Count; i++)
             {
-                context.CollectTypes(node.Pairs[i].Key, keyType);
-                context.CollectTypes(node.Pairs[i].Value, valueType);
+                context.CollectTypesAndReferences(node.Pairs[i].Key, keyType);
+                context.CollectTypesAndReferences(node.Pairs[i].Value, valueType);
             }
         }
 
