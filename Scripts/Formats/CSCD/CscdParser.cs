@@ -181,7 +181,7 @@ namespace Rusty.Serialization.CSCD
                 return ParseObject(text, lexer);
 
             // Symbol (bare).
-            return ParseBareSymbol(token);
+            return ParseBareSymbol(token, false);
         }
 
         /* Private methods. */
@@ -340,12 +340,12 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a symbol literal.
         /// </summary>
-        private static SymbolNode ParseSymbol(Token token)
+        private static SymbolNode ParseSymbol(Token token, bool allowReservedKeywords)
         {
             if (token.Text.StartsWith('*') && token.Text.EndsWith('*'))
                 return new SymbolNode(ParseText(token, symbolEscapes, "*", "*"));
             else
-                return ParseBareSymbol(token);
+                return ParseBareSymbol(token, allowReservedKeywords);
         }
 
         /// <summary>
@@ -464,7 +464,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Parse member name & value.
-                SymbolNode name = ParseSymbol(next);
+                SymbolNode name = ParseSymbol(next, true);
 
                 ExpectSymbol(text, lexer, ':', "Object member names must be followed by a colon.");
 
@@ -488,10 +488,19 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a sequence of tokens as an object node.
         /// </summary>
-        private static SymbolNode ParseBareSymbol(Token token)
+        private static SymbolNode ParseBareSymbol(Token token, bool allowReservedKeywords)
         {
             if (token.Length == 0)
                 TokenError(token, "Bare tokens may not be empty.");
+
+            if (!allowReservedKeywords)
+            {
+                if (token.Text.Equals("null") || token.Text.Equals("true") || token.Text.Equals("false")
+                    || token.Text.Equals("nan") || token.Text.Equals("inf"))
+                {
+                    TokenError(token, "Symbol may not be a reserved keyword.");
+                }
+            }
 
             char c = token.Text[0];
             if (!(c == '_' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' ))

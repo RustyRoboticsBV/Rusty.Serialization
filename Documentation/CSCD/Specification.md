@@ -315,11 +315,11 @@ Dictionaries MAY be empty, which MUST be represented by the literal `{}`.
 Example: `{"a":"abc",'b':"def",["c"]:"hij"}`.
 
 #### Objects
-Object literals represent a collection of name-value pairs. Objects function similarly to dictionaries but provide a more compact and stricter syntax intended for serializing struct-like data.
+Object literals represent a collection of name-value pairs. Objects function similarly to dictionaries but provide a more compact and stricter syntax intended for serializing struct-like data. They exist to force a name-value syntax.
 
 An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by `,` commas, and names and values MUST be separated by a `:` colon. Trailing commas are MUST NOT appear in an object (e.g., `<id:0,>` is invalid).
 
-Member names MUST be symbols (delimited or bare). Member values MAY be any literal type, including other collections. Member values MAY be annotated with a type labels and/or ID. Member names MUST NOT be annotated with a type label and/or ID.
+Member names MUST be symbols (delimited or bare). Unlike regular symbol literals, bare member name symbols MAY be any of the reserved keywords (`null`, `true`, `false`, `nan`, `inf`) without needing to be `*` asterisk-delimited. Member values MAY be any literal type, including other collections. Member values MAY be annotated with a type labels and/or ID. Member names MUST NOT be annotated with a type label and/or ID.
 
 Objects MAY be empty, which MUST be represented by the literal `<>`.
 

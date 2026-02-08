@@ -80,7 +80,7 @@ namespace Rusty.Serialization.CSCD
             if (node is BytesNode byt)
                 return Serialize(byt);
             if (node is SymbolNode sb)
-                return Serialize(sb);
+                return Serialize(sb, false);
             if (node is RefNode rf)
                 return $"&{FormatText(rf.ID, refEscapes)}&";
             if (node is ListNode lst)
@@ -210,7 +210,7 @@ namespace Rusty.Serialization.CSCD
             return new string(buffer);
         }
 
-        private string Serialize(SymbolNode node)
+        private string Serialize(SymbolNode node, bool allowReservedKeywords)
         {
             // Check if the symbol can be bare or not.
             bool canBeBare = false;
@@ -228,8 +228,11 @@ namespace Rusty.Serialization.CSCD
                     break;
                 }
             }
-            if (node.Name == "null" || node.Name == "false" || node.Name == "true" || node.Name == "nan" || node.Name == "inf")
+            if (!allowReservedKeywords
+                && (node.Name == "null" || node.Name == "false" || node.Name == "true" || node.Name == "nan" || node.Name == "inf"))
+            {
                 canBeBare = false;
+            }
 
             // Create symbol text.
             if (canBeBare)
@@ -329,7 +332,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Name.
-                sb.Append(Serialize(new SymbolNode(node.GetNameAt(i)))); // TODO: modify object node to use symbol nodes as keys.
+                sb.Append(Serialize(new SymbolNode(node.GetNameAt(i)), true)); // TODO: modify object node to use symbol nodes as keys.
 
                 // Colon.
                 if (prettyPrinting)
