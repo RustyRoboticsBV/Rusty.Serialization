@@ -30,10 +30,6 @@ namespace Rusty.Serialization.Core.Codecs
         public static implicit operator TextSpan(ReadOnlySpan<char> span) => new TextSpan(span);
         public static implicit operator ReadOnlySpan<char>(TextSpan textSpan) => textSpan.span;
 
-        /* Comparison operators. */
-        public static bool operator ==(TextSpan a, string b) => a.Equals(b);
-        public static bool operator !=(TextSpan a, string b) => !a.Equals(b);
-
         /* Public methods. */
         public override string ToString() => new string(span);
         public ReadOnlySpan<char> AsSpan() => span;

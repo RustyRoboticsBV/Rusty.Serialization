@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Core.Codecs
         /// <summary>
         /// Serialize a node tree into a string.
         /// </summary>
-        public abstract string Serialize(NodeTree tree, bool prettyPrint);
+        public abstract string Serialize(NodeTree tree, Settings prettyPrint);
 
         /// <summary>
         /// Deserialize a string into a node tree.

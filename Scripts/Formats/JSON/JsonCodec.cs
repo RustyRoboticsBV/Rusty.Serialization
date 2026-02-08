@@ -10,7 +10,7 @@ namespace Rusty.Serialization.JSON
     public class JsonCodec : Codec
     {
         /* Public methods. */
-        public override string Serialize(NodeTree node, bool prettyPrint)
+        public override string Serialize(NodeTree node, Settings prettyPrint)
         {
             throw new NotImplementedException();
         }

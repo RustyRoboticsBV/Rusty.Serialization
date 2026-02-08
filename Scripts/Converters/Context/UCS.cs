@@ -15,7 +15,7 @@ namespace Rusty.Serialization
     /// It can serialize objects to text and deserialize text back to an object, using an object-to-node tree front-end and a 
     /// node tree-to-format back-end.
     /// </summary>
-    public static class UCS
+    public sealed class UCS
     {
         /* Fields. */
         public static DefaultConverters DefaultConverters = new DefaultConverters();
@@ -24,199 +24,112 @@ namespace Rusty.Serialization
         public static JsonCodec Json = new JsonCodec();
         public static XmlCodec Xml = new XmlCodec();
 
+        /* Public properties. */
+        public Converters Converters { get; set; }
+        public Codec Codec { get; set; }
+
+        /* Constructors. */
+        public UCS(Converters converters, Format format)
+        {
+            Converters = converters;
+            switch (format)
+            {
+                case Format.Cscd:
+                    Codec = Cscd;
+                    break;
+                case Format.Json:
+                    Codec = Json;
+                    break;
+                case Format.Xml:
+                    Codec = Xml;
+                    break;
+            }
+        }
+
+        public UCS(Converters converters, Codec format)
+        {
+            Converters = converters;
+            Codec = format;
+        }
+
         /* Public methods. */
         /// <summary>
         /// Serialize an object to a string.
         /// </summary>
-        public static string Serialize<T>(T obj, Format format = Format.Cscd, bool prettyPrint = true)
+        public string Serialize<T>(T obj, Settings settings = Settings.IncludeFormatHeader)
         {
-            return Serialize(obj, DefaultConverters, format, prettyPrint);
+            if (Codec == null)
+                throw new InvalidOperationException("No codec format specified.");
+
+            NodeTree tree = Converters.Convert(obj);
+            return Codec.Serialize(tree, settings);
         }
 
         /// <summary>
         /// Serialize an object to a string.
         /// </summary>
-        public static string Serialize<T>(T obj, Converters converters, Format format = Format.Cscd, bool prettyPrint = true)
+        public string Serialize(object obj, Settings settings = Settings.IncludeFormatHeader)
         {
-            switch (format)
-            {
-                case Format.Cscd: return Serialize(obj, converters, Cscd, prettyPrint);
-                case Format.Json: return Serialize(obj, converters, Json, prettyPrint);
-                case Format.Xml: return Serialize(obj, converters, Xml, prettyPrint);
-                default: throw new NotImplementedException(format.ToString());
-            }
-        }
+            if (Codec == null)
+                throw new InvalidOperationException("No codec format specified.");
 
-        /// <summary>
-        /// Serialize an object to a string.
-        /// </summary>
-        public static string Serialize<T>(T obj, Converters converters, Codec codec, bool prettyPrint = true)
-        {
-            NodeTree tree = ConvertObject(obj, converters);
-            return SerializeTree(tree, codec, prettyPrint);
-        }
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
 
-        /// <summary>
-        /// Serialize an object to a string.
-        /// </summary>
-        public static string Serialize(object obj, Type type, Converters converters, Codec codec, bool prettyPrint = true)
-        {
-            NodeTree tree = ConvertObject(obj, type, converters);
-            return SerializeTree(tree, codec, prettyPrint);
+            NodeTree tree = Converters.Convert(obj, obj.GetType());
+            return Codec.Serialize(tree, settings);
         }
 
 
         /// <summary>
         /// Deserialize a string into an object.
         /// </summary>
-        public static T Parse<T>(string serialized, Format format = Format.Cscd)
+        public T Parse<T>(string serialized)
         {
-            return Parse<T>(serialized, DefaultConverters, format);
+            if (Codec == null)
+                throw new InvalidOperationException("No codec format specified.");
+
+            NodeTree tree = Codec.Parse(serialized);
+            return Converters.Deconvert<T>(tree);
         }
 
         /// <summary>
         /// Deserialize a string into an object.
         /// </summary>
-        public static T Parse<T>(string serialized, Converters converters, Format format = Format.Cscd)
+        public object Parse(string serialized)
         {
-            switch (format)
-            {
-                case Format.Cscd: return Parse<T>(serialized, converters, Cscd);
-                case Format.Json: return Parse<T>(serialized, converters, Json);
-                case Format.Xml: return Parse<T>(serialized, converters, Xml);
-                default: throw new NotImplementedException(format.ToString());
-            }
-        }
+            if (Codec == null)
+                throw new InvalidOperationException("No codec format specified.");
 
-        /// <summary>
-        /// Deserialize a string into an object.
-        /// </summary>
-        public static T Parse<T>(string serialized, Converters converters, Codec codec)
-        {
-            NodeTree tree = ParseText(serialized, codec);
-#if UNITY_5_3_OR_NEWER
-            UnityEngine.Debug.Log(tree);
-#endif
-            return DeconvertTree<T>(tree, converters);
-        }
-
-        /// <summary>
-        /// Deserialize a string into an object.
-        /// </summary>
-        public static object Parse(string serialized, Type type, Converters converters, Codec codec)
-        {
-            NodeTree tree = ParseText(serialized, codec);
-#if UNITY_5_3_OR_NEWER
-            UnityEngine.Debug.Log(tree);
-#endif
-            return DeconvertTree(type, tree, converters);
+            NodeTree tree = Codec.Parse(serialized);
+            return Converters.Deconvert(tree);
         }
 
 
         /// <summary>
-        /// Convert serialized text from one format to another.
+        /// Reformat a string from this format to another.
         /// </summary>
-        public static string Reformat(string serialized, Format sourceFormat, Format targetFormat, bool prettyPrint = true)
+        public string ReformatTo(string serialized, UCS targetFormat, Settings settings = Settings.IncludeFormatHeader)
         {
-            Codec sourceCodec;
-            switch (sourceFormat)
-            {
-                case Format.Cscd: sourceCodec = Cscd; break;
-                case Format.Json: sourceCodec = Json; break;
-                case Format.Xml: sourceCodec = Xml; break;
-                default: throw new NotImplementedException(sourceFormat.ToString());
-            }
+            if (targetFormat == null)
+                throw new ArgumentNullException(nameof(targetFormat));
 
-            Codec targetCodec;
-            switch (targetFormat)
-            {
-                case Format.Cscd: targetCodec = Cscd; break;
-                case Format.Json: targetCodec = Json; break;
-                case Format.Xml: targetCodec = Xml; break;
-                default: throw new NotImplementedException(targetFormat.ToString());
-            }
-
-            NodeTree tree = ParseText(serialized, sourceCodec);
-            return SerializeTree(tree, targetCodec, prettyPrint);
+            return ReformatTo(serialized, targetFormat.Codec);
         }
 
         /// <summary>
-        /// Convert serialized text from one format to another.
+        /// Reformat a string from this format to another.
         /// </summary>
-        public static string Reformat(string serialized, Codec sourceCodec, Codec targetCodec, bool prettyPrint = true)
+        public string ReformatTo(string serialized, Codec targetFormat, Settings settings = Settings.IncludeFormatHeader)
         {
-            NodeTree tree = sourceCodec.Parse(serialized);
-            return targetCodec.Serialize(tree, prettyPrint);
-        }
+            if (Codec == null)
+                throw new InvalidOperationException("No source codec format specified.");
 
-        /* Private methods. */
+            if (targetFormat == null)
+                throw new ArgumentNullException(nameof(targetFormat));
 
-        // Conversion.
-
-        /// <summary>
-        /// Serialize an object to a node tree.
-        /// </summary>
-        private static NodeTree ConvertObject<T>(T obj, Converters converters)
-        {
-            if (converters == null)
-                throw new ArgumentNullException(nameof(converters));
-            return converters.Convert(obj);
-        }
-
-        /// <summary>
-        /// Convert an object to a node tree.
-        /// </summary>
-        private static NodeTree ConvertObject(object obj, Type type, Converters converters)
-        {
-            if (converters == null)
-                throw new ArgumentNullException(nameof(converters));
-            return converters.Convert(obj, type);
-        }
-
-        // Deconversion.
-
-        /// <summary>
-        /// Deserialize a node tree to an object.
-        /// </summary>
-        private static T DeconvertTree<T>(NodeTree tree, Converters converters)
-        {
-            if (converters == null)
-                throw new ArgumentNullException(nameof(converters));
-            return converters.Deconvert<T>(tree);
-        }
-
-        /// <summary>
-        /// Deserialize a node tree to an object.
-        /// </summary>
-        private static object DeconvertTree(Type type, NodeTree tree, Converters converters)
-        {
-            if (converters == null)
-                throw new ArgumentNullException(nameof(converters));
-            return converters.Deconvert(type, tree);
-        }
-
-        // Serialization.
-
-        /// <summary>
-        /// Serialize a node tree to text.
-        /// </summary>
-        private static string SerializeTree(NodeTree tree, Codec codec, bool prettyPrint)
-        {
-            if (codec == null)
-                throw new ArgumentNullException(nameof(codec));
-            return codec.Serialize(tree, prettyPrint);
-        }
-
-        // Parsing.
-
-        /// <summary>
-        /// Deserialize text to a node tree.
-        /// </summary>
-        private static NodeTree ParseText(string serialized, Codec codec)
-        {
-            if (codec == null)
-                throw new ArgumentNullException(nameof(codec));
-            return codec.Parse(serialized);
+            NodeTree tree = Codec.Parse(serialized);
+            return targetFormat.Serialize(tree, settings);
         }
     }
 }

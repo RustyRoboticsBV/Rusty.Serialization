@@ -16,9 +16,12 @@ namespace Rusty.Serialization.XML
     public class XmlCodec : Codec
     {
         /* Public methods. */
-        public override string Serialize(NodeTree node, bool prettyPrint)
+        public override string Serialize(NodeTree node, Settings settings)
         {
-            XmlWriterSettings settings = new XmlWriterSettings
+            bool prettyPrint = (settings & Settings.PrettyPrint) != 0;
+            bool includeHeader = (settings & Settings.IncludeFormatHeader) != 0;
+
+            XmlWriterSettings xmlSettings = new XmlWriterSettings
             {
                 OmitXmlDeclaration = true,
                 Indent = prettyPrint,
@@ -27,7 +30,7 @@ namespace Rusty.Serialization.XML
             };
 
             using StringWriter sw = new StringWriter();
-            using XmlWriter writer = XmlWriter.Create(sw, settings);
+            using XmlWriter writer = XmlWriter.Create(sw, xmlSettings);
 
             WriteNode(writer, node.Root);
 

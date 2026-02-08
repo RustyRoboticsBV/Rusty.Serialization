@@ -29,15 +29,26 @@ namespace Rusty.Serialization.Testing
     public class SerializerTestEditor<T, U> : Editor
         where T : SerializeTest<U>
     {
+        public UCS cscd = new UCS(UCS.DefaultConverters, Format.Cscd);
+        public UCS json = new UCS(UCS.DefaultConverters, Format.Json);
+        public UCS xml = new UCS(UCS.DefaultConverters, Format.Xml);
+
         /* Unity events. */
         public override void OnInspectorGUI()
         {
-
             T t = (T)target;
+
+            Settings settings = t.PrettyPrint ? Settings.All : Settings.IncludeFormatHeader;
+            UCS ucs = cscd;
+            if (t.Format == Format.Json)
+                ucs = json;
+            if (t.Format == Format.Xml)
+                ucs = xml;
+
             // Draw buttons.
             if (GUILayout.Button("Serialize"))
             {
-                string serialized = UCS.Serialize(t.Object, t.Format, t.PrettyPrint);
+                string serialized = ucs.Serialize(t.Object, settings);
                 t.Serialized = serialized;
             }
             if (GUILayout.Button("Deserialize"))
@@ -45,7 +56,7 @@ namespace Rusty.Serialization.Testing
                 if (t.Serialized == "")
                     Debug.LogError("Serialized text field is empty!! This is not a serializer bug!");
                 else
-                    t.Object = UCS.Parse<U>(t.Serialized, t.Format);
+                    t.Object = ucs.Parse<U>(t.Serialized);
             }
             if (GUILayout.Button("Clear Object"))
                 t.Object = GetCleared();

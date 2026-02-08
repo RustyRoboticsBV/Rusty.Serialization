@@ -43,9 +43,17 @@ namespace Rusty.Serialization.CSCD
         private static string tab = "  ";
 
         /* Public methods. */
-        public override string Serialize(NodeTree tree, bool prettyPrint)
+        public override string Serialize(NodeTree tree, Settings settings)
         {
-            return "~CSCD~" + (prettyPrint ? "\n" : "") + Serialize(tree.Root, prettyPrint);
+            bool prettyPrint = (settings & Settings.PrettyPrint) != 0;
+            bool includeFormatHeader = (settings & Settings.IncludeFormatHeader) != 0;
+
+            string str = Serialize(tree.Root, prettyPrint);
+
+            if (includeFormatHeader)
+                str = "~CSCD~" + (prettyPrint ? "\n" : "") + str;
+
+            return str;
         }
 
         /* Private methods. */

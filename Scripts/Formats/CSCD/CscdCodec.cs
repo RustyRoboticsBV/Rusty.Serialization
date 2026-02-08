@@ -15,9 +15,9 @@ namespace Rusty.Serialization.CSCD
         private CscdParser parser = new CscdParser();
 
         /* Public methods. */
-        public override string Serialize(NodeTree tree, bool prettyPrint)
+        public override string Serialize(NodeTree tree, Settings settings)
         {
-            return serializer.Serialize(tree, prettyPrint);
+            return serializer.Serialize(tree, settings);
         }
 
         public override NodeTree Parse(string serialized)
