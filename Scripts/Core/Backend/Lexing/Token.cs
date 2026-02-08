@@ -24,7 +24,7 @@
         /// <summary>
         /// Whether or not this token represents the end of the file.
         /// </summary>
-        public bool IsEOF => Lexeme.Start >= Text.Length;
+        public bool IsEOF => Lexeme.Start >= SourceText.Length;
         /// <summary>
         /// The length the token in the source text.
         /// </summary>

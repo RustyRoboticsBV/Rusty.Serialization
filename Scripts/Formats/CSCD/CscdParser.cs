@@ -46,6 +46,13 @@ namespace Rusty.Serialization.CSCD
         public override NodeTree Parse(TextSpan text, CscdLexer lexer)
         {
             INode root = null;
+
+            // Format marker.
+            lexer.GetNextToken(text, out Token marker);
+            if (marker.Text != "~CSCD~")
+                lexer.ResetCursor();
+
+            // Root.
             while (lexer.GetNextToken(text, out Token token))
             {
                 if (root != null)
@@ -72,6 +79,10 @@ namespace Rusty.Serialization.CSCD
         /* Protected methods. */
         protected static INode ParseToken(TextSpan text, Token token, CscdLexer lexer)
         {
+            // Format marker.
+            if (token.Text == "~CSCD~")
+                TokenError(token, "Format marker may not appear after first token.");
+
             // Type.
             if (token.Text.StartsWith('(') && token.Text.EndsWith(')'))
             {

@@ -47,7 +47,7 @@ namespace Rusty.Serialization.CSCD
         /* Public methods. */
         public override string Serialize(NodeTree tree, bool prettyPrint)
         {
-            return Serialize(tree.Root, prettyPrint);
+            return "~CSCD~" + (prettyPrint ? "\n" : "") + Serialize(tree.Root, prettyPrint);
         }
 
         /* Private methods. */
