@@ -34,28 +34,28 @@ Simply add the project folder to your C# project and add `using Rusty.Serializat
 #### Serializing
 ```
 MyClass obj = new();
-UCS ucs = new(Format.Cscd);                         // Contains pre-defined serialization schema for all built-in types.
-string serialized = ucs.Serialize(obj);             // Serializes all public properties and fields of MyClass.
+UCS cscd = new(Format.Cscd);                    // Contains pre-defined serialization schema for all built-in types.
+string serialized = cscd.Serialize(obj);        // Serializes all public properties and fields of MyClass.
 ```
 
 #### Deserializing
 ```
-obj = ucs.Deserialize<MyClass>(serialized);         // Deserializes back to MyClass.
+obj = cscd.Deserialize<MyClass>(serialized);    // Deserializes back to MyClass.
 ```
 
 #### Conversion Between Formats
 ```
-string xml = "...";
-UCS xmlContext = new(Format.Xml);
-UCS jsonContext = new(Format.Json);
-string json = xmlContext.Convert(xml, jsonContext); // Convert XML to JSON.
+UCS xml = new(Format.Xml);
+UCS json = new(Format.Json);
+string xmlStr = "...";
+string jsonStr = xml.Reformat(xmlStr, json);    // Convert XML to JSON.
 ```
 
 #### Freeing Up Memory
-The module makes use of object pooling to avoid unnecessary GC pressure. Memory can be freed up for garbage collection manually.
+The module makes use of object reusing and pooling to avoid unnecessary GC pressure. Heap memory can be freed up for garbage collection manually by calling the following method.
 
 ```
-ucs.Dispose();
+cscd.Free();
 ```
 
 It is recommended to call this method after any (de)serialization operation that is not performance-sensitive.
@@ -108,7 +108,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_char: 'A',
     my_string: "abc",
     my_color: #F08080,
-    my_time: @1990-2-13,18:30:05.001@,
+    my_time: @1990/2/13,18:30:05.001@,
     my_decimal: $1.00,
     my_bytes: !SGVsbG8sIHdvcmxkIQ,
     my_symbol: Wednesday

@@ -17,5 +17,10 @@ namespace Rusty.Serialization.Core.Codecs
         /// Deserialize a string into a node tree.
         /// </summary>
         public abstract NodeTree Parse(string serialized);
+
+        /// <summary>
+        /// Free owned heap memory. Warning: this may trigger a garbage collection spike!
+        /// </summary>
+        public virtual void Free() { }
     }
 }

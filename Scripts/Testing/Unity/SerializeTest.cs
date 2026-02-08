@@ -61,6 +61,8 @@ namespace Rusty.Serialization.Testing
                 t.Object = GetCleared();
             if (GUILayout.Button("Clear Text"))
                 t.Serialized = "";
+            if (GUILayout.Button("Free Memory"))
+                ucs.Free();
             GUILayout.Space(10);
 
             // Draw normal inspector.

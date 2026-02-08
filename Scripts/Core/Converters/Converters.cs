@@ -168,5 +168,15 @@ namespace Rusty.Serialization.Core.Conversion
             else
                 throw new ArgumentException("Cannot parse node tree due to ambiguous root type:\n" + tree);
         }
+
+        /// <summary>
+        /// Free owned heap memory. Warning: this may trigger a garbage collection spike!
+        /// </summary>
+        public virtual void Free()
+        {
+            SymbolTable = new SymbolTable();
+            NodeTypeTable = new NodeTypeTable();
+            ParsingTable = new ParsingTable();
+        }
     }
 }

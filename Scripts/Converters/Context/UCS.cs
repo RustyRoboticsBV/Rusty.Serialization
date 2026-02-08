@@ -109,18 +109,18 @@ namespace Rusty.Serialization
         /// <summary>
         /// Reformat a string from this format to another.
         /// </summary>
-        public string ReformatTo(string serialized, UCS targetFormat, Settings settings)
+        public string Reformat(string serialized, UCS targetFormat, Settings settings)
         {
             if (targetFormat == null)
                 throw new ArgumentNullException(nameof(targetFormat));
 
-            return ReformatTo(serialized, targetFormat.Codec, settings);
+            return Reformat(serialized, targetFormat.Codec, settings);
         }
 
         /// <summary>
         /// Reformat a string from this format to another.
         /// </summary>
-        public string ReformatTo(string serialized, Codec targetFormat, Settings settings)
+        public string Reformat(string serialized, Codec targetFormat, Settings settings)
         {
             if (Codec == null)
                 throw new InvalidOperationException("No source codec format specified.");
@@ -130,6 +130,15 @@ namespace Rusty.Serialization
 
             NodeTree tree = Codec.Parse(serialized);
             return targetFormat.Serialize(tree, settings);
+        }
+
+        /// <summary>
+        /// Free owned heap memory. Warning: this may trigger a garbage collection spike!
+        /// </summary>
+        public void Free()
+        {
+            Converters?.Free();
+            Codec?.Free();
         }
     }
 }
