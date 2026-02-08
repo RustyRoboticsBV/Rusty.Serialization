@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
@@ -59,12 +59,12 @@ namespace Rusty.Serialization.Core.Conversion
             }
             if (node is SymbolNode symbol)
             {
-                if (symbol.Name == "pi")
+                if (symbol.Value == "pi")
                     return Pi;
-                else if (symbol.Name == "e")
+                else if (symbol.Value == "e")
                     return E;
                 else
-                    throw new ArgumentException("Unknown symbol " + symbol.Name);
+                    throw new ArgumentException("Unknown symbol " + symbol.Value);
             }
             throw new ArgumentException("Invalid node type.");
         }

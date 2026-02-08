@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
@@ -16,11 +16,11 @@ namespace Rusty.Serialization.Core.Conversion
         {
             try
             {
-                return (T)Enum.Parse(typeof(T), node.Name, false);
+                return (T)Enum.Parse(typeof(T), node.Value, false);
             }
             catch (ArgumentException ex)
             {
-                throw new InvalidOperationException($"Could not convert value '{node.Name}' to enum type '{typeof(T).FullName}'.", ex);
+                throw new InvalidOperationException($"Could not convert value '{node.Value}' to enum type '{typeof(T).FullName}'.", ex);
             }
         }
     }

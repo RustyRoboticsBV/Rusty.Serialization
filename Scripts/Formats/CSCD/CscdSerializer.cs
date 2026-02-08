@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Rusty.Serialization.Core.Codecs;
@@ -63,9 +63,9 @@ namespace Rusty.Serialization.CSCD
             if (node is NullNode)
                 return "null";
             if (node is BoolNode b)
-                return b.Name ? "true" : "false";
+                return b.Value ? "true" : "false";
             if (node is IntNode i)
-                return i.Name.ToString();
+                return i.Value.ToString();
             if (node is FloatNode f)
                 return Serialize(f);
             if (node is InfinityNode inf)
@@ -75,7 +75,7 @@ namespace Rusty.Serialization.CSCD
             if (node is CharNode chr)
                 return Serialize(chr);
             if (node is StringNode str)
-                return $"\"{FormatText(str.Name, strEscapes)}\"";
+                return $"\"{FormatText(str.Value, strEscapes)}\"";
             if (node is DecimalNode dec)
                 return Serialize(dec);
             if (node is ColorNode col)
@@ -100,7 +100,7 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(FloatNode node)
         {
-            string value = node.Name.ToString();
+            string value = node.Value.ToString();
 
             bool negative = value.StartsWith("-");
             if (negative)
@@ -130,28 +130,28 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(CharNode node)
         {
-            if (node.Name == '\0')
+            if (node.Value == '\0')
                 return "''";
-            return $"'{FormatText(node.Name.ToString(), charEscapes)}'";
+            return $"'{FormatText(node.Value.ToString(), charEscapes)}'";
         }
 
         private string Serialize(DecimalNode node)
         {
-            return node.Name.negative ? $"-${node.Name.ToString().Substring(1)}" : $"${node.Name}";
+            return node.Value.negative ? $"-${node.Value.ToString().Substring(1)}" : $"${node.Value}";
         }
 
         private string Serialize(ColorNode node)
         {
             // Handle clear.
-            if (node.Name.r == 0 && node.Name.g == 0 && node.Name.b == 0 && node.Name.a == 0)
+            if (node.Value.r == 0 && node.Value.g == 0 && node.Value.b == 0 && node.Value.a == 0)
                 return "#";
 
             // Format color channels.
             Span<char> span = stackalloc char[8];
-            FormatColorChannel(node.Name.r, span.Slice(0, 2));
-            FormatColorChannel(node.Name.g, span.Slice(2, 2));
-            FormatColorChannel(node.Name.b, span.Slice(4, 2));
-            FormatColorChannel(node.Name.a, span.Slice(6, 2));
+            FormatColorChannel(node.Value.r, span.Slice(0, 2));
+            FormatColorChannel(node.Value.g, span.Slice(2, 2));
+            FormatColorChannel(node.Value.b, span.Slice(4, 2));
+            FormatColorChannel(node.Value.a, span.Slice(6, 2));
 
             // Figure out format & length.
             bool shortForm = span[0] == span[1]
@@ -183,22 +183,22 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(TimeNode node)
         {
-            bool noDate = node.Name.year == 1 && node.Name.month == 1 && node.Name.day == 1;
-            bool noTime = node.Name.hour == 0 && node.Name.minute == 0 && node.Name.second == 0;
+            bool noDate = node.Value.year == 1 && node.Value.month == 1 && node.Value.day == 1;
+            bool noTime = node.Value.hour == 0 && node.Value.minute == 0 && node.Value.second == 0;
 
             if (noDate && noTime)
                 return "@";
             else if (noTime)
-                return $"@{node.Name.year}/{node.Name.month}/{node.Name.day}@";
+                return $"@{node.Value.year}/{node.Value.month}/{node.Value.day}@";
             else if (noDate)
-                return $"@{node.Name.hour}:{node.Name.minute}:{node.Name.second}@";
+                return $"@{node.Value.hour}:{node.Value.minute}:{node.Value.second}@";
             else
-                return $"@{node.Name.year}/{node.Name.month}/{node.Name.day},{node.Name.hour}:{node.Name.minute}:{node.Name.second}@";
+                return $"@{node.Value.year}/{node.Value.month}/{node.Value.day},{node.Value.hour}:{node.Value.minute}:{node.Value.second}@";
         }
 
         private string Serialize(BytesNode node)
         {
-            ReadOnlySpan<char> src = node.Name.AsSpan();
+            ReadOnlySpan<char> src = node.Value.AsSpan();
 
             // Trim padding.
             int end = src.Length;
@@ -219,14 +219,14 @@ namespace Rusty.Serialization.CSCD
         {
             // Check if the symbol can be bare or not.
             bool canBeBare = false;
-            if (node.Name.Length > 0)
+            if (node.Value.Length > 0)
             {
-                char c = node.Name[0];
+                char c = node.Value[0];
                 canBeBare = c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_';
             }
-            for (int i = 1; i < node.Name.Length; i++)
+            for (int i = 1; i < node.Value.Length; i++)
             {
-                char c = node.Name[i];
+                char c = node.Value[i];
                 if (!(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '_'))
                 {
                     canBeBare = false;
@@ -234,16 +234,16 @@ namespace Rusty.Serialization.CSCD
                 }
             }
             if (!allowReservedKeywords
-                && (node.Name == "null" || node.Name == "false" || node.Name == "true" || node.Name == "nan" || node.Name == "inf"))
+                && (node.Value == "null" || node.Value == "false" || node.Value == "true" || node.Value == "nan" || node.Value == "inf"))
             {
                 canBeBare = false;
             }
 
             // Create symbol text.
             if (canBeBare)
-                return node.Name;
+                return node.Value;
             else
-                return $"*{FormatText(node.Name, symbolEscapes)}*";
+                return $"*{FormatText(node.Value, symbolEscapes)}*";
         }
 
         private string Serialize(ListNode node, bool prettyPrinting)

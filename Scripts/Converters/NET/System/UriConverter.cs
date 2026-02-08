@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
@@ -17,7 +17,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override Uri CreateObject(StringNode node, CreateObjectContext context)
         {
-            return new Uri(node.Name);
+            return new Uri(node.Value);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml;
 using System.Xml.Linq;
 using System.IO;
@@ -81,7 +81,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("bool");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(b.Name.ToString().ToLowerInvariant());
+                    writer.WriteString(b.Value.ToString().ToLowerInvariant());
                     writer.WriteEndElement();
                     break;
 
@@ -89,7 +89,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("int");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(i.Name.ToString());
+                    writer.WriteString(i.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
@@ -97,7 +97,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("float");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(f.Name.ToString());
+                    writer.WriteString(f.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
@@ -123,7 +123,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("char");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(chr.Name.ToString());
+                    writer.WriteString(chr.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
@@ -131,7 +131,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("str");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(s.Name);
+                    writer.WriteString(s.Value);
                     writer.WriteEndElement();
                     break;
 
@@ -139,7 +139,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("dec");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(d.Name.ToString());
+                    writer.WriteString(d.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
@@ -147,7 +147,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("col");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(col.Name.ToString());
+                    writer.WriteString(col.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
@@ -155,18 +155,18 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("time");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    if (t.Name.year != 1)
-                        writer.WriteElementString("year", t.Name.year.ToString());
-                    if (t.Name.month != 1)
-                        writer.WriteElementString("month", t.Name.month.ToString());
-                    if (t.Name.day != 1)
-                        writer.WriteElementString("day", t.Name.day.ToString());
-                    if (t.Name.hour != 0)
-                        writer.WriteElementString("hour", t.Name.hour.ToString());
-                    if (t.Name.minute != 0)
-                        writer.WriteElementString("minute", t.Name.minute.ToString());
-                    if (t.Name.second != 0)
-                        writer.WriteElementString("second", t.Name.second.ToString());
+                    if (t.Value.year != 1)
+                        writer.WriteElementString("year", t.Value.year.ToString());
+                    if (t.Value.month != 1)
+                        writer.WriteElementString("month", t.Value.month.ToString());
+                    if (t.Value.day != 1)
+                        writer.WriteElementString("day", t.Value.day.ToString());
+                    if (t.Value.hour != 0)
+                        writer.WriteElementString("hour", t.Value.hour.ToString());
+                    if (t.Value.minute != 0)
+                        writer.WriteElementString("minute", t.Value.minute.ToString());
+                    if (t.Value.second != 0)
+                        writer.WriteElementString("second", t.Value.second.ToString());
 
                     writer.WriteEndElement();
                     break;
@@ -175,7 +175,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("bytes");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(by.Name.ToString());
+                    writer.WriteString(by.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
@@ -183,7 +183,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("symbol");
                     WriteMetadata(writer, idAttr, typeAttr);
 
-                    writer.WriteString(smb.Name);
+                    writer.WriteString(smb.Value);
                     writer.WriteEndElement();
                     break;
 

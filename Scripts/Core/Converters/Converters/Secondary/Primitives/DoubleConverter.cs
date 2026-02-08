@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
@@ -17,7 +17,7 @@ namespace Rusty.Serialization.Core.Conversion
 
         /* Protected methods. */
         protected override FloatNode CreateNode(double obj, CreateNodeContext context) => new(obj);
-        protected override double CreateObject(FloatNode node, CreateObjectContext context) => (double)node.Name;
+        protected override double CreateObject(FloatNode node, CreateObjectContext context) => (double)node.Value;
 
         protected override bool IsNaN(ref double value) => double.IsNaN(value);
         protected override bool IsPositiveInfinity(ref double value) => double.IsPositiveInfinity(value);

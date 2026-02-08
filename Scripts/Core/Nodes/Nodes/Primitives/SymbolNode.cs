@@ -1,4 +1,4 @@
-﻿namespace Rusty.Serialization.Core.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A symbol serializer node.
@@ -13,7 +13,7 @@
         /* Public methods. */
         public override string ToString()
         {
-            return "symbol: " + (Name ?? "(null)");
+            return "symbol: " + (Value ?? "(null)");
         }
     }
 }

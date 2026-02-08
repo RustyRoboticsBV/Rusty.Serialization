@@ -1,4 +1,4 @@
-﻿using Rusty.Serialization.Core.Nodes;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Conversion
     {
         /* Protected methods. */
         protected override BoolNode CreateNode(bool obj, CreateNodeContext context) => new(obj);
-        protected override bool CreateObject(BoolNode node, CreateObjectContext context) => node.Name;
+        protected override bool CreateObject(BoolNode node, CreateObjectContext context) => node.Value;
     }
 }

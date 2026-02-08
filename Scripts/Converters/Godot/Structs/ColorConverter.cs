@@ -1,4 +1,4 @@
-﻿#if GODOT
+#if GODOT
 using Godot;
 using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Gd
 
         protected override Color CreateObject(ColorNode node, CreateObjectContext context)
         {
-            return new Color(node.R / 255f, node.G / 255f, node.B / 255f, node.A / 255f);
+            return new Color(node.Value.r / 255f, node.Value.g / 255f, node.Value.b / 255f, node.Value.a / 255f);
         }
     }
 }

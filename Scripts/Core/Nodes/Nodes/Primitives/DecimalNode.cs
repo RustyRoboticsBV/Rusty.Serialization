@@ -1,4 +1,4 @@
-﻿namespace Rusty.Serialization.Core.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A decimal number serializer node.
@@ -13,13 +13,13 @@
         /* Public methods. */
         public override string ToString()
         {
-            return "decimal: " + Name;
+            return "decimal: " + Value;
         }
 
         public override void Clear()
         {
             Parent = null;
-            Name = 0m;
+            Value = 0m;
         }
     }
 }

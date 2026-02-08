@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
@@ -17,7 +17,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override StringBuilder CreateObject(StringNode node, CreateObjectContext context)
         {
-            return new StringBuilder(node.Name);
+            return new StringBuilder(node.Value);
         }
     }
 }

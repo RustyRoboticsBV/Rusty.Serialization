@@ -1,4 +1,4 @@
-﻿using Rusty.Serialization.Core.Nodes;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -9,6 +9,6 @@ namespace Rusty.Serialization.Core.Conversion
     {
         /* Protected methods. */
         protected override IntNode CreateNode(ulong obj, CreateNodeContext context) => new IntNode(obj);
-        protected override ulong CreateObject(IntNode node, CreateObjectContext context) => (ulong)node.Name;
+        protected override ulong CreateObject(IntNode node, CreateObjectContext context) => (ulong)node.Value;
     }
 }

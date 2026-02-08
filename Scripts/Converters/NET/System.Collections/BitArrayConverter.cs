@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using Rusty.Serialization.Core.Conversion;
 using Rusty.Serialization.Core.Nodes;
 
@@ -19,7 +19,7 @@ namespace Rusty.Serialization.DotNet
 
         protected override BitArray CreateObject(BytesNode node, CreateObjectContext context)
         {
-            return new BitArray(node.Name);
+            return new BitArray(node.Value);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Rusty.Serialization.Core.Nodes
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A base class for serializer nodes with a value.
@@ -7,21 +7,21 @@
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public T Name { get; set; }
+        public T Value { get; set; }
 
         /* Constructors. */
         public ValueNode() { }
 
         public ValueNode(T value)
         {
-            Name = value;
+            Value = value;
         }
 
         /* Public methods. */
         public virtual void Clear()
         {
             Parent = null;
-            Name = default;
+            Value = default;
         }
     }
 }

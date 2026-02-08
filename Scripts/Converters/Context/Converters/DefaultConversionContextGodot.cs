@@ -1,4 +1,4 @@
-﻿#if GODOT
+#if GODOT
 using Godot;
 using System;
 using Rusty.Serialization.Core.Conversion;
@@ -6,7 +6,7 @@ using Rusty.Serialization.Gd;
 
 namespace Rusty.Serialization
 {
-    public partial class DefaultConversionContext : ConversionContext
+    public partial class DefaultConverters : Converters
     {
         /// <summary>
         /// Add the Godot type converters.
