@@ -36,7 +36,7 @@ namespace Rusty.Serialization.JSON
             else if (c == '"')
                 token = MakeTokenAndAdvance(text, ReadStringLexeme(text));
 
-            // Bare value: number, boolean, null.
+            // Bare value: number, true, false, null.
             else
                 token = MakeTokenAndAdvance(text, ReadBareLexeme(text));
 
@@ -104,7 +104,12 @@ namespace Rusty.Serialization.JSON
                 char c = text[i];
 
                 if (IsWhitespace(c) || c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}')
-                    return i - Cursor;
+                {
+                    int length = i - Cursor;
+                    if (length <= 0)
+                        throw new FormatException($"Unexpected token length '{length}' at {Cursor}.");
+                    return length;
+                }
             }
 
             return text.Length - Cursor;

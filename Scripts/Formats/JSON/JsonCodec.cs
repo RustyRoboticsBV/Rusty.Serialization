@@ -18,7 +18,8 @@ namespace Rusty.Serialization.JSON
 
         public override NodeTree Parse(string serialized)
         {
-            throw new NotImplementedException();
+            TextSpan span = serialized;
+            return new NodeTree(JsonParser.ParseNode(ref span));
         }
 
         /* Private methods. */
