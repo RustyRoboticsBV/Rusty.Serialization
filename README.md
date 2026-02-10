@@ -14,7 +14,7 @@ Key features:
 - **Easy to use**: simple, one-line serialization and deserialization.
 - **Engine-agnostic**: compatible with plain C#, Godot or Unity.
 - **Broad type support**: supports a wide variety of types from the .NET, Godot and Unity APIs.
-- **Multiple formats**: includes support for JSON, XML and a custom, compact data format called CSCD.
+- **Multiple formats**: includes support for CSV, JSON, XML and CSCD, a custom, compact data format.
 - **Flexible type handling**: handles arbitrary types that lack explicit support.
 - **Reference preservation**: shared and cyclic references are preserved during serialization and deserialization.
 - **Extendible design**: can be extended to provide support for additional types or data formats.
@@ -32,6 +32,8 @@ Simply add the project folder to your C# project and add `using Rusty.Serializat
 
 #### Serializing
 ```
+using Rusty.Serialization;
+
 MyClass obj = new();
 UCS cscd = new(Format.Cscd);                    // Contains pre-defined serialization schema for all built-in types.
 string serialized = cscd.Serialize(obj);        // Serializes all public properties and fields of MyClass.
@@ -39,7 +41,7 @@ string serialized = cscd.Serialize(obj);        // Serializes all public propert
 
 #### Deserializing
 ```
-obj = cscd.Deserialize<MyClass>(serialized);    // Deserializes back to MyClass.
+obj = cscd.Parse<MyClass>(serialized);          // Deserializes back to MyClass.
 ```
 
 #### Conversion Between Formats
@@ -82,11 +84,16 @@ The module separates the serialization process into two steps.
   <img src="Images/Diagram.svg" alt="The structure of the serializer/deserializer architecture.">
 </p>
 
-Both the converter and serializer layers can be freely swapped out.
-- The default converter layer has explicit support for various .NET, Godot and Unity data types (see the [type table](Documentation/TypeTable.md) for a comprehensive list).
-- The default serializer layer uses a custom serialization format (see below). The JSON and XML formats are also supported, though input must be structured in a way that [matches the parser's expectations](Documentation/FormatTable.md).
+Both the converter and serializer layers can be freely swapped out. This allows the system to be easily extended with additional C# object converters and support for additional formats.
+
+The default converter layer has explicit support for various .NET, Godot and Unity data types (see the [type table](Documentation/TypeTable.md) for a comprehensive list).
 
 The node layer is fixed cannot be swapped. See the [node documentation document](Documentation/Nodes.md) a list of nodes and their purpose.
+
+## Format Support
+The default serializer layer uses **[CSCD](#compact-serialized-c-data)**, a custom serialization format that can natively express the node tree layer.
+
+Other supported formats include **[CSV](Documentation/Formats/CSV.md)**, **[JSON](Documentation/Formats/JSON.md)** and **[XML](Documentation/Formats/XML.md)**. Each format requires specific non-standard formatting in order to be parsed, as node tree metadata is needed to reconstruct the original object graph. This leads to some verbosity, particularly with JSON.
 
 ## Compact Serialized C# Data
 The module uses a custom, human-readable serialization format called Compact Serialized C# Data (CSCD). It is designed to represent complex object graphs with minimal structural overhead, preserving types, references, and supporting a variety of literal types. These literals allow common .NET and game engine types (such as date/time, color and array-like collections) to be encoded concisely while keeping the data readable and easy to maintain.
@@ -128,6 +135,6 @@ Below is an example of a custom serialized object with pretty printing. See the 
 ```
 
 ## Future Work
-- The current JSON implementation relies on heavy usage of `{ "$tag": ... }` containers to tell various node types apart from each other, resulting in very verbose JSON that is difficult to read. This should be addressed.
+- The current JSON implementation relies on heavy usage of `{ "$tag": ... }` containers to tell various node types apart from each other, resulting in very verbose JSON that is difficult to read. This should be addressed in a future release.
 - Significant performance improvements are still possible.
-- Better unit testing.
+- Writing more comprehensive unit tests.

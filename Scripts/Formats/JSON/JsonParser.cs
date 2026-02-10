@@ -1,5 +1,4 @@
-﻿using System;
-using Rusty.Serialization.Core.Codecs;
+﻿using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.JSON
@@ -21,9 +20,6 @@ namespace Rusty.Serialization.JSON
                 TokenError(Token.EOF, "No root value.");
 
             NodeTree tree = new NodeTree(root);
-#if UNITY_5_3_OR_NEWER
-            UnityEngine.Debug.Log(tree);
-#endif
             return tree;
         }
 

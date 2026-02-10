@@ -337,7 +337,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Name.
-                sb.Append(Serialize(new SymbolNode(node.GetNameAt(i)), true)); // TODO: modify object node to use symbol nodes as keys.
+                sb.Append(Serialize(new SymbolNode(node.GetNameAt(i)), true)); // TODO: this is a little awkward
 
                 // Colon.
                 if (prettyPrinting)

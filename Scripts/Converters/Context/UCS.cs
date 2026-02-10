@@ -58,6 +58,10 @@ namespace Rusty.Serialization
         /// <summary>
         /// Serialize an object to a string.
         /// </summary>
+        public string Serialize<T>(T obj) => Serialize(obj, Settings.All);
+        /// <summary>
+        /// Serialize an object to a string.
+        /// </summary>
         public string Serialize<T>(T obj, Settings settings)
         {
             if (Codec == null)
@@ -67,6 +71,10 @@ namespace Rusty.Serialization
             return Codec.Serialize(tree, settings);
         }
 
+        /// <summary>
+        /// Serialize an object to a string.
+        /// </summary>
+        public string Serialize(object obj) => Serialize(obj, Settings.All);
         /// <summary>
         /// Serialize an object to a string.
         /// </summary>
@@ -111,6 +119,10 @@ namespace Rusty.Serialization
         /// <summary>
         /// Reformat a string from this format to another.
         /// </summary>
+        public string Reformat(string serialized, UCS targetFormat) => Reformat(serialized, targetFormat, Settings.All);
+        /// <summary>
+        /// Reformat a string from this format to another.
+        /// </summary>
         public string Reformat(string serialized, UCS targetFormat, Settings settings)
         {
             if (targetFormat == null)
@@ -119,6 +131,10 @@ namespace Rusty.Serialization
             return Reformat(serialized, targetFormat.Codec, settings);
         }
 
+        /// <summary>
+        /// Reformat a string from this format to another.
+        /// </summary>
+        public string Reformat(string serialized, Codec targetFormat) => Reformat(serialized, targetFormat, Settings.All);
         /// <summary>
         /// Reformat a string from this format to another.
         /// </summary>
