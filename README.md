@@ -1,5 +1,4 @@
 # Universal C# Serializer
-**THIS PROJECT IS STILL IN PRE-ALPHA, DO NOT USE YET**
 
 <p align="center">
   <img src="Images/Logo.svg" width="250">
@@ -127,3 +126,8 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_reference: &my_id&
 >
 ```
+
+## Future Work
+- The current JSON implementation relies on heavy usage of `{ "$tag": ... }` containers to tell various node types apart from each other, resulting in very verbose JSON that is difficult to read. This should be addressed.
+- Significant performance improvements are still possible.
+- Better unit testing.
