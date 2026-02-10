@@ -83,6 +83,11 @@ namespace Rusty.Serialization.Core.Codecs
         }
 
         /// <summary>
+        /// Check if the text starts and ends with some character. The string must be at least two characters long.
+        /// </summary>
+        public bool EnclosedWith(char chr) => Length >= 2 && StartsWith(chr) && EndsWith(chr);
+
+        /// <summary>
         /// Find the first index of a character.
         /// </summary>
         public int FirstIndexOf(char chr) => FirstIndexOf(0, chr);

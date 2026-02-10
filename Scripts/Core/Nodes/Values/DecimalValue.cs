@@ -151,7 +151,14 @@ namespace Rusty.Serialization.Core.Nodes
                 Span<char> mantissaStr = stackalloc char[length];
                 integer.CopyTo(mantissaStr);
                 fractional.CopyTo(mantissaStr.Slice(integer.Length));
-                mantissa = BigInteger.Parse(mantissaStr);
+                try
+                {
+                    mantissa = BigInteger.Parse(mantissaStr);
+                }
+                catch
+                {
+                    throw new FormatException($"Cannot parse mantissa \"{new string(mantissaStr)}\"");
+                }
             }
             else
             {

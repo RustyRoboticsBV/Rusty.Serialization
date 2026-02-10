@@ -2,8 +2,6 @@
 using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Nodes;
 
-// TODO: this code is bad.
-
 namespace Rusty.Serialization.JSON
 {
     public sealed class JsonParser : Parser<JsonLexer>
@@ -12,220 +10,287 @@ namespace Rusty.Serialization.JSON
 
         public override NodeTree Parse(TextSpan text, JsonLexer lexer)
         {
-            INode root = null;
-            while (lexer.GetNextToken(text, out Token token))
-            {
-                if (root != null)
-                    TokenError(token, "Token found after root value.");
+            ExpectSymbol(text, lexer, '{', "No opening { for node.");
 
-                root = ParseToken(text, token, lexer);
-            }
+            INode root = ParseNode(text, lexer);
+
+            if (lexer.GetNextToken(text, out Token token))
+                TokenError(token, "Unexpected token after root value.");
 
             if (root == null)
                 TokenError(Token.EOF, "No root value.");
 
-            return new NodeTree(root);
+            NodeTree tree = new NodeTree(root);
+#if UNITY_5_3_OR_NEWER
+            UnityEngine.Debug.Log(tree);
+#endif
+            return tree;
         }
 
-
-        /* ------------------------------------------------------------ */
-        /* Core helpers */
-
-        private static Token Next(ref TextSpan span)
+        /* Private methods. */
+        private static INode ParseNode(TextSpan text, JsonLexer lexer)
         {
-            if (!lexer.GetNextToken(span, out Token token))
-                throw new FormatException("Unexpected end of input.");
+            INode node = null;
 
-            // ADVANCE THE SPAN
-            span = span.Slice(token.Length);
+            if (!lexer.GetNextToken(text, out Token token))
+                TokenError(Token.EOF, "Unexpected end of file.");
+
+            if (!token.Text.EnclosedWith('"'))
+                TokenError(token, "Missing node tag.");
+
+            TextSpan tag = token.Text.Slice(1, token.Text.Length - 2);
+
+            string id = null;
+            if (tag.Equals("$id"))
+            {
+                Token name = GetStringValue(text, lexer);
+                id = ParseString(name);
+                ExpectSymbol(text, lexer, ',', "Missing comma after id.");
+                token = ExpectToken(text, lexer, "Unexpected end of file after id.");
+                tag = token.Text.Slice(1, token.Text.Length - 2);
+            }
+
+            string type = null;
+            if (tag.Equals("$type"))
+            {
+                Token name = GetStringValue(text, lexer);
+                type = ParseString(name);
+                ExpectSymbol(text, lexer, ',', "Missing comma after type.");
+                token = ExpectToken(text, lexer, "Unexpected end of file after type.");
+                tag = token.Text.Slice(1, token.Text.Length - 2);
+            }
+
+            if (tag.Equals("$null"))
+            {
+                GetValue(text, lexer);
+                node = new NullNode();
+            }
+            else if (tag.Equals("$bool"))
+            {
+                Token value = GetBoolValue(text, lexer);
+                node = new BoolNode(value.Text.Length == 4);
+            }
+            else if (tag.Equals("$int"))
+            {
+                Token value = GetValue(text, lexer);
+                node = new IntNode(IntValue.Parse(value.ToString()));
+            }
+            else if (tag.Equals("$float"))
+            {
+                Token value = GetValue(text, lexer);
+                node = new FloatNode(FloatValue.Parse(value.ToString()));
+            }
+            else if (tag.Equals("$inf"))
+            {
+                Token value = GetInfinityValue(text, lexer);
+                if (ParseString(value) == "+")
+                    node = new InfinityNode(true);
+                else
+                    node = new InfinityNode(false);
+            }
+            else if (tag.Equals("$nan"))
+            {
+                GetValue(text, lexer);
+                node = new NanNode();
+            }
+            else if (tag.Equals("$char"))
+            {
+                Token value = GetStringValue(text, lexer);
+                node = new CharNode(ParseString(value));
+            }
+            else if (tag.Equals("$str"))
+            {
+                Token value = GetStringValue(text, lexer);
+                node = new StringNode(ParseString(value));
+            }
+            else if (tag.Equals("$dec"))
+            {
+                Token value = GetValue(text, lexer);
+                node = new DecimalNode(DecimalValue.Parse(value.ToString()));
+            }
+            else if (tag.Equals("$col"))
+            {
+                Token value = GetStringValue(text, lexer);
+                node = new ColorNode(ColorValue.Parse(ParseString(value)));
+            }
+            else if (tag.Equals("$time"))
+            {
+                Token value = GetStringValue(text, lexer);
+                node = new TimeNode(TimeValue.Parse(ParseString(value)));
+            }
+            else if (tag.Equals("$bytes"))
+            {
+                Token value = GetStringValue(text, lexer);
+                node = new BytesNode(BytesValue.Parse(ParseString(value)));
+            }
+            else if (tag.Equals("$symbol"))
+            {
+                Token value = GetStringValue(text, lexer);
+                node = new SymbolNode(ParseString(value));
+            }
+            else if (tag.Equals("$ref"))
+            {
+                Token value = GetStringValue(text, lexer);
+                node = new RefNode(ParseString(value));
+            }
+            else if (tag.Equals("$list"))
+                node = ParseList(text, lexer);
+            else if (tag.Equals("$dict"))
+                node = ParseDict(text, lexer);
+            else if (tag.Equals("$obj"))
+                node = ParseObject(text, lexer);
+            else
+                TokenError(token, $"Unrecognized node tag {tag.ToString()}");
+
+            ExpectSymbol(text, lexer, '}', "Expected closing } after " + new string(tag) + " node contents.");
+
+            if (type != null)
+                node = new TypeNode(type, node);
+
+            if (id != null)
+                node = new IdNode(id, node);
+            return node;
+        }
+
+        private static Token GetValue(TextSpan text, JsonLexer lexer)
+        {
+            ExpectSymbol(text, lexer, ':', "Expected : symbol before value.");
+
+            if (!lexer.GetNextToken(text, out Token token))
+                TokenError(Token.EOF, "Missing value after : symbol.");
 
             return token;
         }
 
-        private static void Expect(ref TextSpan span, string value)
+        private static Token GetBoolValue(TextSpan text, JsonLexer lexer)
         {
-            Token t = Next(ref span);
-            if (t.ToString() != value)
-                throw new FormatException(
-                    $"Expected '{value}', got '{t.ToString()}'.");
+            Token value = GetValue(text, lexer);
+
+            if (!value.Text.Equals("true") && !value.Text.Equals("false"))
+                TokenError(value, "Expected a boolean.");
+
+            return value;
         }
 
-        private static bool TryPeek(ref TextSpan span, string value)
+        private static Token GetStringValue(TextSpan text, JsonLexer lexer)
         {
-            TextSpan copy = span;
-            if (!lexer.GetNextToken(copy, out Token token))
-                return false;
-            return token.ToString() == value;
+            Token value = GetValue(text, lexer);
+
+            if (!value.Text.EnclosedWith('"'))
+                TokenError(value, "Expected a string.");
+
+            return value;
         }
 
-        private static string ParseString(ref TextSpan span)
+        private static Token GetInfinityValue(TextSpan text, JsonLexer lexer)
         {
-            Token t = Next(ref span);
-            string s = t.ToString();
-            return s.Substring(1, s.Length - 2);
+            Token value = GetStringValue(text, lexer);
+
+            if (!value.Text.Equals("\"+\"") && !value.Text.Equals("\"-\""))
+                TokenError(value, "Expected a + or - character.");
+
+            return value;
         }
 
-        /* ------------------------------------------------------------ */
-        /* Node parsing */
-
-        public static INode ParseNode(ref TextSpan span)
+        private static string ParseString(Token token)
         {
-            Expect(ref span, "{");
-
-            string id = null;
-            string type = null;
-            INode payload = null;
-
-            while (!TryPeek(ref span, "}"))
-            {
-                UnityEngine.Debug.Log(span.ToString());
-                string key = ParseString(ref span);
-                Expect(ref span, ":");
-
-                if (key == "$id")
-                    id = ParseString(ref span);
-                else if (key == "$type")
-                    type = ParseString(ref span);
-                else
-                    payload = ParseTaggedValue(ref span, key);
-
-                if (TryPeek(ref span, ","))
-                    Expect(ref span, ",");
-            }
-
-            Expect(ref span, "}");
-
-            if (payload == null)
-                throw new FormatException("Missing node payload.");
-
-            if (type != null)
-                payload = new TypeNode(type, payload);
-
-            if (id != null)
-                payload = new IdNode(id, payload);
-
-            return payload;
+            if (!token.Text.EnclosedWith('"'))
+                TokenError(token, "Expected a string.");
+            return token.Text.Slice(1, token.Length - 2).ToString();
         }
 
-        /* ------------------------------------------------------------ */
-        /* Tagged values */
-
-        private static INode ParseTaggedValue(ref TextSpan span, string tag)
+        private static ListNode ParseList(TextSpan text, JsonLexer lexer)
         {
-            return tag switch
-            {
-                "$null" => ParseNull(ref span),
-                "$bool" => ParseBool(ref span),
-                "$int" => ParseInt(ref span),
-                "$float" => ParseFloat(ref span),
-                "$inf" => new InfinityNode(true), // TODO: implement
-                "$nan" => new NanNode(),
-                "$char" => ParseChar(ref span),
-                "$str" => new StringNode(ParseString(ref span)),
-                "$dec" => ParseDecimal(ref span),
-                "$col" => new ColorNode(), // TODO: implement
-                "$time" => new TimeNode(), // TODO: implement
-                "$bytes" => new BytesNode(), // TODO: implement
-                "$symbol" => new SymbolNode(ParseString(ref span)),
-                "$ref" => new RefNode(ParseString(ref span)),
-                "$list" => ParseList(ref span),
-                "$dict" => ParseDict(ref span),
-                "$obj" => ParseObject(ref span),
-                _ => throw new FormatException($"Unknown node tag '{tag}'.")
-            };
-        }
-
-        /* ------------------------------------------------------------ */
-        /* Primitives */
-
-        private static INode ParseNull(ref TextSpan span)
-        {
-            Expect(ref span, "null");
-            return new NullNode();
-        }
-
-        private static INode ParseBool(ref TextSpan span)
-        {
-            Token t = Next(ref span);
-            return new BoolNode(t.ToString() == "true");
-        }
-
-        private static INode ParseInt(ref TextSpan span)
-            => new IntNode(IntValue.Parse(Next(ref span).ToString()));
-
-        private static INode ParseFloat(ref TextSpan span)
-            => new FloatNode(FloatValue.Parse(Next(ref span).ToString()));
-
-        private static INode ParseDecimal(ref TextSpan span)
-            => new DecimalNode(DecimalValue.Parse(ParseString(ref span)));
-
-        private static INode ParseChar(ref TextSpan span)
-            => new CharNode(ParseString(ref span));
-
-        /* ------------------------------------------------------------ */
-        /* Containers */
-
-        private static INode ParseList(ref TextSpan span)
-        {
-            Expect(ref span, "[");
+            ExpectSymbol(text, lexer, ':', "Expected ':' before list.");
+            ExpectSymbol(text, lexer, '[', "Expected list to start with '['.");
 
             ListNode list = new ListNode();
 
-            while (!TryPeek(ref span, "]"))
+            while (true)
             {
-                list.AddValue(ParseNode(ref span));
+                Token token = ExpectToken(text, lexer, "Unexpected end of file (unclosed list).");
+                if (token.Text.Equals(']'))
+                    break;
 
-                if (TryPeek(ref span, ","))
-                    Expect(ref span, ",");
+                if (list.Count > 0)
+                {
+                    MustEqual(token, ',', "List elements must be separated with a comma.");
+                    token = ExpectToken(text, lexer, "Unexpected end of file (unclosed object).");
+                }
+
+                MustEqual(token, '{', "Expected start of node using a { symbol.");
+                list.AddValue(ParseNode(text, lexer));
             }
 
-            Expect(ref span, "]");
             return list;
         }
 
-        private static INode ParseDict(ref TextSpan span)
+        private static DictNode ParseDict(TextSpan text, JsonLexer lexer)
         {
-            Expect(ref span, "[");
+            ExpectSymbol(text, lexer, ':', "Expected : symbol before dictionary.");
+            ExpectSymbol(text, lexer, '[', "Expected dictionary to start with [ symbol.");
 
             DictNode dict = new DictNode();
 
-            while (!TryPeek(ref span, "]"))
+            while (true)
             {
-                Expect(ref span, "[");
+                Token token = ExpectToken(text, lexer, "Unexpected end of file (unclosed dictionary).");
+                if (token.Text.Equals(']'))
+                    break;
 
-                INode key = ParseNode(ref span);
-                Expect(ref span, ",");
-                INode value = ParseNode(ref span);
+                if (dict.Count > 0)
+                {
+                    MustEqual(token, ',', "Dictionary elements must be separated with a comma.");
+                    token = ExpectToken(text, lexer, "Unexpected end of file (unclosed object).");
+                }
 
-                Expect(ref span, "]");
+                MustEqual(token, '[', "Dictionary entries must start with a [ symbol.");
+
+                ExpectSymbol(text, lexer, '{', "Expected start of key node using a { symbol.");
+                INode key = ParseNode(text, lexer);
+
+                ExpectSymbol(text, lexer, ',', "Dictionary keys and values must be separated with a comma.");
+
+                ExpectSymbol(text, lexer, '{', "Expected start of value node using a { symbol.");
+                INode value = ParseNode(text, lexer);
+
+                ExpectSymbol(text, lexer, ']', "Dictionary entries must end with a ] symbol.");
 
                 dict.AddPair(key, value);
-
-                if (TryPeek(ref span, ","))
-                    Expect(ref span, ",");
             }
 
-            Expect(ref span, "]");
             return dict;
         }
 
-        private static INode ParseObject(ref TextSpan span)
+        private static ObjectNode ParseObject(TextSpan text, JsonLexer lexer)
         {
-            Expect(ref span, "{");
+            ExpectSymbol(text, lexer, ':', "Expected : symbol before object.");
+            ExpectSymbol(text, lexer, '{', "Expected object to start with { symbol.");
 
             ObjectNode obj = new ObjectNode();
 
-            while (!TryPeek(ref span, "}"))
+            while (true)
             {
-                string key = ParseString(ref span);
-                Expect(ref span, ":");
-                obj.AddMember(key, ParseNode(ref span));
+                Token token = ExpectToken(text, lexer, "Unexpected end of file (unclosed object).");
+                if (token.Text.Equals('}'))
+                    break;
 
-                if (TryPeek(ref span, ","))
-                    Expect(ref span, ",");
+                if (obj.Count > 0)
+                {
+                    MustEqual(token, ',', "Object members must be separated with a comma.");
+                    token = ExpectToken(text, lexer, "Unexpected end of file (unclosed object).");
+                }
+
+                Token key = token;
+
+                ExpectSymbol(text, lexer, ':', "Object member names and values must be separated with a colon.");
+
+                ExpectSymbol(text, lexer, '{', "Expected object member value to start with a left curly-brace.");
+                INode value = ParseNode(text, lexer);
+
+                obj.AddMember(ParseString(key), value);
             }
 
-            Expect(ref span, "}");
             return obj;
         }
     }
