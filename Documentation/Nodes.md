@@ -16,7 +16,7 @@ The node layer recognizes the following nodes listed below. Each node correspond
 - **String**: encodes a string value.
 - **Decimal**: encodes a decimal value of arbitrary precision, composed of a sign, mantissa and range. Unlike float nodes, it preserves trailing zeros after the decimal point.
 - **Color**: encodes a color value, composed of a red, green, blue and alpha byte.
-- **Time**: encodes a date/time value, composed of a year, month, day, hour, minute and second. The year is an integer value of arbitrary precision, the second a floating-point value of arbitrary precision that may not be negative. The rest are byte values.
+- **Time**: encodes a timestamp value, composed of a year, month, day, hour, minute and second. The year is an integer value of arbitrary precision, the second a floating-point value of arbitrary precision that may not be negative. The rest are byte values.
 - **Bytes**: encodes a byte array value.
 - **Symbol**: encodes enums and special constants (such as the mathematical constants `pi` and `e`).
 - **Ref**: a reference to an ID node. Used to avoid duplication of shared references, and cycles in cyclic references.
@@ -29,5 +29,5 @@ The node layer recognizes the following nodes listed below. Each node correspond
 
 ### Metadata
 
+- **ID**: a reference ID, used to mark shared or cyclic reference objects.
 - **Type**: a type label, used to disambiguify polymorphic types.
-- **ID**: a reference ID, used to mark shared or cyclic reference objects. 

@@ -100,20 +100,20 @@ Below is an example of a custom serialized object with pretty printing. See the 
 ;; Licensed under <My License> ;;
 (MyType)<
     my_null: null,
-    my_bool: true,
-    my_int: 123,
+    my_boolean: true,
+    my_integer: 123,
     my_float: .45,
     my_infinity: -inf,
     my_nan: nan,
-    my_char: 'A',
+    my_character: 'A',
     my_string: "abc",
     my_color: #F08080,
-    my_time: @1990/2/13,18:30:05.001@,
+    my_timestamp: @1990/2/13,18:30:05.001@,
     my_decimal: $1.00,
     my_bytes: !SGVsbG8sIHdvcmxkIQ,
-    my_symbol: Wednesday
+    my_symbol: Wednesday,
     my_list: [1, 2., "def"],
-    my_dict: {
+    my_dictionary: {
         10: 1.,
         'A': "ABC",
         [1, 2, 3] : false

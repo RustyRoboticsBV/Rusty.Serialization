@@ -5,9 +5,9 @@ This formal specification document describes the syntax of an object graph seria
 
 The format is self-describing and does not require an external schema for parsing or round-trip serialization. Values may be annotated with optional type labels and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference links.
 
-Note that many of the CSCD literals are more abstract than a C# type. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common data structures, such as lists, date/times and colors, have dedicated compact literal forms in order to reduce verbosity.
+Note that many of the CSCD literals are more abstract than a C# type. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common data structures, such as timestamps and colors, have dedicated compact literal forms in order to reduce verbosity.
 
-The main design goals are generality, compactness and unambiguousness. While usable in any programming language, it was specifically designed to be used in a C# context where object graphs may contain polymorphic types or shared / cyclic references.
+The main design goals are generality, compactness and unambiguousness. While usable in any programming language, it was designed to be used in a C# context where object graphs may contain polymorphic types or shared / cyclic references.
 
 This document will first describe some format-wide syntax rules. After that, it will describe each literal type and their syntaxes, starting with metadata, followed by primitives and finally collections.
 

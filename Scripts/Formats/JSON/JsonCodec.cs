@@ -44,13 +44,13 @@ namespace Rusty.Serialization.JSON
             switch (node)
             {
                 case NullNode:
-                    AddName(sb, "$const");
+                    AddName(sb, "$null");
                     AddColon(sb, prettyPrint);
                     sb.Append("null");
                     break;
 
                 case BoolNode @bool:
-                    AddName(sb, "$const");
+                    AddName(sb, "$bool");
                     AddColon(sb, prettyPrint);
                     sb.Append(@bool.Value ? "true" : "false");
                     break;
@@ -68,7 +68,7 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case InfinityNode inf:
-                    AddName(sb, "$const");
+                    AddName(sb, "$inf");
                     AddColon(sb, prettyPrint);
                     if (inf.Positive)
                         AddName(sb, "inf");
@@ -77,7 +77,7 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case NanNode nan:
-                    AddName(sb, "$const");
+                    AddName(sb, "$nan");
                     AddColon(sb, prettyPrint);
                     AddName(sb, "nan");
                     break;
@@ -124,27 +124,65 @@ namespace Rusty.Serialization.JSON
                     AddName(sb, symbol.Name);
                     break;
 
+                case ListNode list:
+                    AddName(sb, "$list");
+                    AddColon(sb, prettyPrint);
+
+                    StringBuilder items = new StringBuilder();
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        items.Append(Serialize(list.GetValueAt(i), settings));
+
+                        if (i < list.Count - 1)
+                            AddComma(items, prettyPrint);
+                    }
+
+                    Wrap(items, "[", "]", prettyPrint);
+                    sb.Append(items.ToString());
+                    break;
+
                 case DictNode dict:
                     AddName(sb, "$dict");
                     AddColon(sb, prettyPrint);
 
-                    sb.Append('{');
+                    StringBuilder entries = new StringBuilder();
+
                     for (int i = 0; i < dict.Count; i++)
                     {
-                    }
-                    sb.Append('}');
+                        StringBuilder pair = new StringBuilder();
 
+                        pair.Append(Serialize(dict.Pairs[i].Key, settings));
+                        AddComma(pair, prettyPrint);
+
+                        pair.Append(Serialize(dict.Pairs[i].Value, settings));
+
+                        Wrap(pair, "[", "]", prettyPrint);
+                        entries.Append(pair.ToString());
+
+                        if (i < dict.Count - 1)
+                            AddComma(entries, prettyPrint);
+                    }
+
+                    Wrap(entries, "[", "]", prettyPrint);
+                    sb.Append(entries.ToString());
                     break;
 
                 case ObjectNode obj:
                     AddName(sb, "$obj");
                     AddColon(sb, prettyPrint);
 
-                    sb.Append('{');
+                    StringBuilder members = new StringBuilder();
                     for (int i = 0; i < obj.Count; i++)
                     {
+                        AddName(members, obj.Members[i].Key);
+                        AddColon(members, prettyPrint);
+                        members.Append(Serialize(obj.Members[i].Value, settings));
+
+                        if (i < obj.Count - 1)
+                            AddComma(members, prettyPrint);
                     }
-                    sb.Append('}');
+                    Wrap(members, "{", "}", prettyPrint);
+                    sb.Append(members.ToString());
 
                     break;
 
@@ -152,7 +190,7 @@ namespace Rusty.Serialization.JSON
                     throw new ArgumentException($"Invalid node type '{node.GetType()}'.");
             }
 
-            Wrap(sb, "{", "}", prettyPrint);
+            Wrap(sb, "{", "}", prettyPrint, idStr, typeStr);
             return sb.ToString();
         }
 
@@ -179,23 +217,43 @@ namespace Rusty.Serialization.JSON
                 sb.Append('\n');
         }
 
-        private static void Wrap(StringBuilder sb, string start, string end, bool prettyPrint)
+        private static void Wrap(StringBuilder sb, string start, string end, bool prettyPrint, string idStr = null, string typeStr = null)
         {
             string str = sb.ToString();
 
             sb.Clear();
 
-            sb.Append(str);
+            sb.Append(start);
             if (prettyPrint)
                 sb.Append('\n');
 
+            if (idStr != null)
+            {
+                if (prettyPrint)
+                    sb.Append("  ");
+                AddName(sb, "$id");
+                AddColon(sb, prettyPrint);
+                AddName(sb, idStr);
+                AddComma(sb, prettyPrint);
+            }
+
+            if (typeStr != null)
+            {
+                if (prettyPrint)
+                    sb.Append("  ");
+                AddName(sb, "$type");
+                AddColon(sb, prettyPrint);
+                AddName(sb, typeStr);
+                AddComma(sb, prettyPrint);
+            }
+
             if (prettyPrint)
-                str.Replace("\n", "\n  ");
+                str = "  " + str.Replace("\n", "\n  ");
             sb.Append(str);
 
             if (prettyPrint)
                 sb.Append('\n');
-            sb.Append(str);
+            sb.Append(end);
         }
     }
 }
