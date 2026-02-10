@@ -187,7 +187,7 @@ namespace Rusty.Serialization.CSCD
             bool noTime = node.Value.hour == 0 && node.Value.minute == 0 && node.Value.second == 0;
 
             if (noDate && noTime)
-                return "@";
+                return "@@";
             else if (noTime)
                 return $"@{node.Value.year}/{node.Value.month}/{node.Value.day}@";
             else if (noDate)
