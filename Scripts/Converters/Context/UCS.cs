@@ -7,6 +7,7 @@ using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.CSCD;
 using Rusty.Serialization.JSON;
 using Rusty.Serialization.XML;
+using Rusty.Serialization.CSV;
 
 namespace Rusty.Serialization
 {
@@ -23,6 +24,7 @@ namespace Rusty.Serialization
         public static CscdCodec Cscd = new CscdCodec();
         public static JsonCodec Json = new JsonCodec();
         public static XmlCodec Xml = new XmlCodec();
+        public static CsvCodec Csv = new CsvCodec();
 
         /* Public properties. */
         public Converters Converters { get; set; }
@@ -44,6 +46,9 @@ namespace Rusty.Serialization
                     break;
                 case Format.Xml:
                     Codec = Xml;
+                    break;
+                case Format.Csv:
+                    Codec = Csv;
                     break;
             }
         }

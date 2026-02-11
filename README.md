@@ -35,13 +35,13 @@ Simply add the project folder to your C# project and add `using Rusty.Serializat
 using Rusty.Serialization;
 
 MyClass obj = new();
-UCS cscd = new(Format.Cscd);                    // Contains pre-defined serialization schema for all built-in types.
-string serialized = cscd.Serialize(obj);        // Serializes all public properties and fields of MyClass.
+UCS cscd = new(Format.Cscd);                  // Create CSCD serializer.
+string serialized = cscd.Serialize(obj);      // Serializes MyClass object graph.
 ```
 
 #### Deserializing
 ```
-obj = cscd.Parse<MyClass>(serialized);          // Deserializes back to MyClass.
+obj = cscd.Parse<MyClass>(serialized);        // Deserializes back to MyClass.
 ```
 
 #### Conversion Between Formats
@@ -49,17 +49,15 @@ obj = cscd.Parse<MyClass>(serialized);          // Deserializes back to MyClass.
 UCS xml = new(Format.Xml);
 UCS json = new(Format.Json);
 string xmlStr = "...";
-string jsonStr = xml.Reformat(xmlStr, json);    // Convert XML to JSON.
+string jsonStr = xml.Reformat(xmlStr, json);  // Convert XML to JSON.
 ```
 
 #### Freeing Up Memory
 The module makes use of object reusing and pooling to avoid unnecessary GC pressure. Heap memory can be freed up for garbage collection manually by calling the following method.
 
 ```
-cscd.Free();
+cscd.Clear();                                 // Release allocated resources.
 ```
-
-It is recommended to call this method after any (de)serialization operation that is not performance-sensitive.
 
 #### Notes
 Classes and structs without explicit support will automatically serialize using:
@@ -91,9 +89,9 @@ The default converter layer has explicit support for various .NET, Godot and Uni
 The node layer is fixed cannot be swapped. See the [node documentation document](Documentation/Nodes.md) a list of nodes and their purpose.
 
 ## Format Support
-The default serializer layer uses **[CSCD](#compact-serialized-c-data)**, a custom serialization format that can natively express the node tree layer.
+The default serializer layer uses [CSCD](#compact-serialized-c-data), a custom serialization format that can natively express the node tree layer.
 
-Other supported formats include **[CSV](Documentation/Formats/CSV.md)**, **[JSON](Documentation/Formats/JSON.md)** and **[XML](Documentation/Formats/XML.md)**. Each format requires specific non-standard formatting in order to be parsed, as node tree metadata is needed to reconstruct the original object graph. This leads to some verbosity, particularly with JSON.
+Other supported formats include [CSV](Documentation/Formats/CSV.md), [JSON](Documentation/Formats/JSON.md) and [XML](Documentation/Formats/XML.md). Each format requires specific non-standard formatting in order to be parsed, as node tree metadata is needed to reconstruct the original object graph. This leads to some verbosity, particularly with JSON.
 
 ## Compact Serialized C# Data
 The module uses a custom, human-readable serialization format called Compact Serialized C# Data (CSCD). It is designed to represent complex object graphs with minimal structural overhead, preserving types, references, and supporting a variety of literal types. These literals allow common .NET and game engine types (such as date/time, color and array-like collections) to be encoded concisely while keeping the data readable and easy to maintain.

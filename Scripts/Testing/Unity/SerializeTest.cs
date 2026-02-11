@@ -32,6 +32,7 @@ namespace Rusty.Serialization.Testing
         public UCS cscd = new UCS(UCS.DefaultConverters, Format.Cscd);
         public UCS json = new UCS(UCS.DefaultConverters, Format.Json);
         public UCS xml = new UCS(UCS.DefaultConverters, Format.Xml);
+        public UCS csv = new UCS(UCS.DefaultConverters, Format.Csv);
 
         /* Unity events. */
         public override void OnInspectorGUI()
@@ -43,6 +44,8 @@ namespace Rusty.Serialization.Testing
                 ucs = json;
             if (t.Format == Format.Xml)
                 ucs = xml;
+            if (t.Format == Format.Csv)
+                ucs = csv;
 
             // Draw buttons.
             if (GUILayout.Button("Serialize"))
