@@ -284,7 +284,7 @@ namespace Rusty.Serialization.JSON
                 ExpectSymbol(text, lexer, '{', "Expected object member value to start with a left curly-brace.");
                 INode value = ParseNode(text, lexer);
 
-                obj.AddMember(ParseString(key), value);
+                obj.AddMember(null/*ParseString(key)*/, value); // TODO: fix.
             }
 
             return obj;

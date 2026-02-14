@@ -231,7 +231,7 @@ namespace Rusty.Serialization.XML
                     foreach (var member in o.Members)
                     {
                         writer.WriteStartElement("field");
-                        writer.WriteAttributeString("name", member.Key);
+                        writer.WriteAttributeString("name", member.Key.ToString()); // TODO: fix
                         WriteNode(writer, member.Value);
                         writer.WriteEndElement();
                     }
@@ -314,7 +314,7 @@ namespace Rusty.Serialization.XML
                 string fieldName = (string)field.Attribute("name");
                 XElement valueNode = field.Elements().FirstOrDefault();
                 if (valueNode == null) throw new ArgumentException($"Field {fieldName} has no value element.");
-                obj.AddMember(fieldName, ReadNode(valueNode));
+                obj.AddMember(/*fieldName*/null, ReadNode(valueNode)); // TODO: fix.
             }
             return obj;
         }

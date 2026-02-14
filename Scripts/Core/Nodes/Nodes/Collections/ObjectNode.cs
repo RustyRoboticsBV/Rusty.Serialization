@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
 {
-    using Member = KeyValuePair<string, INode>;
+    using Member = KeyValuePair<IMemberNameNode, INode>;
 
     /// <summary>
     /// An object serializer node.
@@ -76,7 +76,7 @@ namespace Rusty.Serialization.Core.Nodes
         /// <summary>
         /// Get the identifier at some index.
         /// </summary>
-        public string GetNameAt(int index)
+        public IMemberNameNode GetNameAt(int index)
         {
             return Members[index].Key;
         }
@@ -84,9 +84,10 @@ namespace Rusty.Serialization.Core.Nodes
         /// <summary>
         /// Add a new member.
         /// </summary>
-        public void AddMember(string name, INode value)
+        public void AddMember(IMemberNameNode node, INode value)
         {
-            Members.Add(new Member(name, value));
+            if (node is SymbolNode || node is ScopeNode)
+                Members.Add(new Member(node, value));
         }
 
         public INode GetValueAt(int index)

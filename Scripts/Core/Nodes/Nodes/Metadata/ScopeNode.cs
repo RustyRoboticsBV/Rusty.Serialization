@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// An ID serializer node.
+    /// A scope serializer node.
     /// </summary>
-    public class IdNode : IMetadataNode
+    public class ScopeNode : IMetadataNode, IMemberNameNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
@@ -13,9 +13,9 @@ namespace Rusty.Serialization.Core.Nodes
         public INode Value { get; set; }
 
         /* Constructors. */
-        public IdNode(string name, INode value)
+        public ScopeNode(string name, INode value)
         {
-            Name = name ?? "";
+            Name = name;
             Value = value;
 
             if (Value != null)
@@ -25,7 +25,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            return "ID: " + Name + "\n" + PrintUtility.PrintChild(Value);
+            return "scope: " + Name + "\n" + PrintUtility.PrintChild(Value);
         }
 
         public void Clear()

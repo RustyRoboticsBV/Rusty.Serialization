@@ -130,7 +130,7 @@ namespace Rusty.Serialization.CSV
                 for (int i = 0; i < obj.Count; i++)
                 {
                     sb.Append("name,");
-                    sb.Append(Pack(obj.GetNameAt(i)));
+                    sb.Append(Pack(obj.GetNameAt(i).ToString()));
                     sb.Append("\nval\n");
                     Serialize(obj.GetValueAt(i), sb);
                     sb.Append("\n");

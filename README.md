@@ -122,7 +122,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
         'A': "ABC",
         [1, 2, 3] : false
     },
-    `my_id` my_object: <
+    my_object: `my_id` <
         a: 0,
         b: '\1F4A9;',
         c: @14:2:10.005@,

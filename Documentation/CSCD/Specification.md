@@ -27,7 +27,7 @@ A valid string of CSCD MUST consist only of characters whose Unicode code points
 |`0xA1`-`0xAC`|`¡` to `¬`|
 |`0xAE`-`0xFF`|`®` to `ÿ`|
 
-For clarity: this table excludes the characters `0x00`-`0x08`, `0x0B`-`0x1F`, `0x0E`-`0x0F` (most C0 control codes), `0x7F` (end), `0xAD` (soft hyphen), `0x80`-`0x9F` (C1 control codes) and `0xA0` (non-breaking space).
+For clarity: this table excludes the characters `0x00`-`0x08`, `0x0B`-`0x0C`, `0x0E`-`0x1F` (most C0 control codes), `0x7F` (delete), `0xAD` (soft hyphen), `0x80`-`0x9F` (C1 control codes) and `0xA0` (non-breaking space).
 
 Characters outside these ranges MUST not appear directly in serialized text. They MUST be represented using [escape sequences](#unicode-escape-sequences) instead.
 

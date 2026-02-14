@@ -23,7 +23,9 @@ namespace Rusty.Serialization.CSCD
         public override NodeTree Parse(string serialized)
         {
             lexer.ResetCursor();
-            return parser.Parse(serialized, lexer);
+            NodeTree tree = parser.Parse(serialized, lexer);
+            UnityEngine.Debug.Log(tree);
+            return tree;
         }
     }
 }

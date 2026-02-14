@@ -3,7 +3,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A reference serializer node.
     /// </summary>
-    public class SymbolNode : INode
+    public class SymbolNode : IMemberNameNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }

@@ -40,10 +40,12 @@ namespace Rusty.Serialization.CSCD
             // Delimited word tokens.
             else if (c == '~')
                 token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '~'));
-            else if (c == '(')
-                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ')'));
             else if (c == '`')
                 token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '`'));
+            else if (c == '(')
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, ')'));
+            else if (c == '?')
+                token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '?'));
             else if (c == '\'')
                 token = MakeTokenAndAdvance(text, ReadDelimitedLexeme(text, '\''));
             else if (c == '"')

@@ -118,7 +118,7 @@ namespace Rusty.Serialization.CSV
                         try
                         {
                             Expect(lexer, "name");
-                            string name = ReadCell(lexer);
+                            IMemberNameNode name = ParseNode(lexer) as IMemberNameNode;
 
                             Expect(lexer, "val");
                             INode value = ParseNode(lexer);

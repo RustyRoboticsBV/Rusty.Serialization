@@ -71,7 +71,7 @@ namespace Rusty.Serialization.Core.Conversion
                 INode memberNode = context.CreateNode(memberType, memberValue);
 
                 // Store finished identifier-node pair.
-                node.Members[i] = new(memberstring, memberNode);
+                node.Members[i] = new KeyValuePair<IMemberNameNode, INode>(new SymbolNode(memberstring), memberNode);
                 memberNode.Parent = node;
             }
         }
@@ -105,10 +105,10 @@ namespace Rusty.Serialization.Core.Conversion
                 MemberInfo member = Members[i];
 
                 // Match INode with member.
-                string memberIdentifier = node.Members[i].Key;
+                SymbolNode memberIdentifier = (SymbolNode)node.Members[i].Key; // TODO: account for scopes.
 
                 INode memberNode = node.Members[i].Value;
-                if (memberIdentifier != member.Name)
+                if (memberIdentifier.Name != member.Name)
                     throw new Exception($"Mismatch between members {i}: '{member.Name}' and '{memberIdentifier}'.");
 
                 // Deconvert field/property.

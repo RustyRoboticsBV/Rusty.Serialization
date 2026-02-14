@@ -169,7 +169,7 @@ namespace Rusty.Serialization.JSON
                     StringBuilder members = new StringBuilder();
                     for (int i = 0; i < obj.Count; i++)
                     {
-                        AddName(members, obj.Members[i].Key);
+                        AddName(members, obj.Members[i].Key.ToString()); // TODO: fix.
                         AddColon(members, prettyPrint);
                         members.Append(Serialize(obj.Members[i].Value, settings));
 

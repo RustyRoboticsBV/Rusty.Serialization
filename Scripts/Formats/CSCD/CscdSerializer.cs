@@ -16,6 +16,8 @@ namespace Rusty.Serialization.CSCD
             new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
         private readonly static HashSet<UnicodePair> typeEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
+        private readonly static HashSet<UnicodePair> scopeEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '?', '\\' };
         private readonly static HashSet<UnicodePair> charEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r' };
         private readonly static HashSet<UnicodePair> strEscapes =
@@ -35,6 +37,7 @@ namespace Rusty.Serialization.CSCD
             { '\'', '\'' },
             { '(', '(' },
             { ')', ')' },
+            { '?', '?' },
             { '*', '*' },
             { '\\', '\\' },
             { '`', '`' }
@@ -60,6 +63,8 @@ namespace Rusty.Serialization.CSCD
                 return $"`{FormatText(id.Name, idEscapes)}`{Serialize(id.Value, prettyPrinting)}";
             if (node is TypeNode type)
                 return $"({FormatText(type.Name, typeEscapes)}){Serialize(type.Value, prettyPrinting)}";
+            if (node is ScopeNode scope)
+                return $"({FormatText(scope.Name, scopeEscapes)}){Serialize(scope.Value, prettyPrinting)}";
             if (node is NullNode)
                 return "null";
             if (node is BoolNode b)
@@ -337,7 +342,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Name.
-                sb.Append(Serialize(new SymbolNode(node.GetNameAt(i)), true)); // TODO: this is a little awkward
+                sb.Append(Serialize(node.GetNameAt(i), true));
 
                 // Colon.
                 if (prettyPrinting)

@@ -16,6 +16,8 @@ namespace Rusty.Serialization.CSCD
             new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
         private readonly static HashSet<UnicodePair> typeEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
+        private readonly static HashSet<UnicodePair> scopeEscapes =
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '?', '\\' };
         private readonly static HashSet<UnicodePair> charEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r' };
         private readonly static HashSet<UnicodePair> strEscapes =
@@ -35,6 +37,7 @@ namespace Rusty.Serialization.CSCD
             { '\'', '\'' },
             { '(', '(' },
             { ')', ')' },
+            { '?', '?' },
             { '*', '*' },
             { '\\', '\\' },
             { '`', '`' }
@@ -81,6 +84,19 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.Equals("~CSCD~"))
                 TokenError(token, "Format marker may not appear after first token.");
 
+            // ID.
+            if (token.Text.StartsWith('`') && token.Text.EndsWith('`'))
+            {
+                string name = ParseText(token, idEscapes, "`", "`");
+
+                Token next = ExpectToken(text, lexer, "An ID must be followed by another token.");
+                INode value = ParseToken(text, next, lexer);
+                if (value is IdNode)
+                    TokenError(token, "IDs may not be followed by another ID.");
+
+                return new IdNode(name, value);
+            }
+
             // Type.
             if (token.Text.StartsWith('(') && token.Text.EndsWith(')'))
             {
@@ -96,18 +112,9 @@ namespace Rusty.Serialization.CSCD
                 return new TypeNode(name, value);
             }
 
-            // ID.
-            if (token.Text.StartsWith('`') && token.Text.EndsWith('`'))
-            {
-                string name = ParseText(token, idEscapes, "`", "`");
-
-                Token next = ExpectToken(text, lexer, "An ID must be followed by another token.");
-                INode value = ParseToken(text, next, lexer);
-                if (value is IdNode)
-                    TokenError(token, "IDs may not be followed by another ID.");
-
-                return new IdNode(name, value);
-            }
+            // Scope.
+            if (token.Text.StartsWith('?') && token.Text.EndsWith('?'))
+                TokenError(token, "Scopes may only appear before object member names.");
 
             // Null.
             if (token.Text.Equals("null"))
@@ -181,7 +188,7 @@ namespace Rusty.Serialization.CSCD
                 return ParseObject(text, lexer);
 
             // Symbol (bare).
-            return ParseBareSymbol(token, false);
+            return ParseBareSymbol(token);
         }
 
         /* Private methods. */
@@ -338,17 +345,6 @@ namespace Rusty.Serialization.CSCD
         }
 
         /// <summary>
-        /// Parse a symbol literal.
-        /// </summary>
-        private static SymbolNode ParseSymbol(Token token, bool allowReservedKeywords)
-        {
-            if (token.Text.StartsWith('*') && token.Text.EndsWith('*'))
-                return new SymbolNode(ParseText(token, symbolEscapes, "*", "*"));
-            else
-                return ParseBareSymbol(token, allowReservedKeywords);
-        }
-
-        /// <summary>
         /// Parse a sequence of tokens as a list node.
         /// </summary>
         private static ListNode ParseList(TextSpan text, CscdLexer lexer)
@@ -464,7 +460,21 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Parse member name & value.
-                SymbolNode name = ParseSymbol(next, true);
+                string scopeName = null;
+                if (next.Text.StartsWith('?') && next.Text.EndsWith('?'))
+                {
+                    scopeName = ParseText(next, scopeEscapes, "?", "?");
+                    next = ExpectToken(text, lexer, "Scope should be followed by another token.");
+                }
+
+                IMemberNameNode name;
+                if (next.Text.StartsWith('*') && next.Text.EndsWith('*'))
+                    name = new SymbolNode(ParseText(next, symbolEscapes, "*", "*"));
+                else
+                    name = ParseBareSymbol(next);
+
+                if (scopeName != null)
+                    name = new ScopeNode(scopeName, name);
 
                 ExpectSymbol(text, lexer, ':', "Object member names must be followed by a colon.");
 
@@ -474,7 +484,7 @@ namespace Rusty.Serialization.CSCD
                 DisallowEqual(next, '>', "Objects may not contain trailing colons.");
                 INode valueNode = ParseToken(text, next, lexer);
 
-                obj.AddMember(name.Name, valueNode);
+                obj.AddMember(name, valueNode);
 
                 // Next token: comma or object closer.
                 next = ExpectToken(text, lexer, "Unclosed object.");
@@ -488,18 +498,15 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a sequence of tokens as an object node.
         /// </summary>
-        private static SymbolNode ParseBareSymbol(Token token, bool allowReservedKeywords)
+        private static SymbolNode ParseBareSymbol(Token token)
         {
             if (token.Length == 0)
                 TokenError(token, "Bare tokens may not be empty.");
 
-            if (!allowReservedKeywords)
+            if (token.Text.Equals("null") || token.Text.Equals("true") || token.Text.Equals("false")
+                || token.Text.Equals("nan") || token.Text.Equals("inf"))
             {
-                if (token.Text.Equals("null") || token.Text.Equals("true") || token.Text.Equals("false")
-                    || token.Text.Equals("nan") || token.Text.Equals("inf"))
-                {
-                    TokenError(token, "Symbol may not be a reserved keyword.");
-                }
+                TokenError(token, "Symbol may not be a reserved keyword.");
             }
 
             char c = token.Text[0];
