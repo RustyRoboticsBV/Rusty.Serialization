@@ -127,7 +127,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
         b: '\1F4A9;',
         c: @14:2:10.005@,
         d: Red,
-        ?base? d: Blue
+        ^MyBaseClass^ d: Blue
     >,
     my_reference: &my_id&
 >

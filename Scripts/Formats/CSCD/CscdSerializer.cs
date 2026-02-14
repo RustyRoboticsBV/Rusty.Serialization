@@ -17,7 +17,7 @@ namespace Rusty.Serialization.CSCD
         private readonly static HashSet<UnicodePair> typeEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
         private readonly static HashSet<UnicodePair> scopeEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '?', '\\' };
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '^', '\\' };
         private readonly static HashSet<UnicodePair> charEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r' };
         private readonly static HashSet<UnicodePair> strEscapes =
@@ -37,9 +37,9 @@ namespace Rusty.Serialization.CSCD
             { '\'', '\'' },
             { '(', '(' },
             { ')', ')' },
-            { '?', '?' },
             { '*', '*' },
             { '\\', '\\' },
+            { '^', '^' },
             { '`', '`' }
         };
 

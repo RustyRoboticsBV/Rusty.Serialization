@@ -17,7 +17,7 @@ namespace Rusty.Serialization.CSCD
         private readonly static HashSet<UnicodePair> typeEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
         private readonly static HashSet<UnicodePair> scopeEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '?', '\\' };
+            new HashSet<UnicodePair> { '\t', '\n', '\r', '^', '\\' };
         private readonly static HashSet<UnicodePair> charEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r' };
         private readonly static HashSet<UnicodePair> strEscapes =
@@ -37,9 +37,9 @@ namespace Rusty.Serialization.CSCD
             { '\'', '\'' },
             { '(', '(' },
             { ')', ')' },
-            { '?', '?' },
             { '*', '*' },
             { '\\', '\\' },
+            { '^', '^' },
             { '`', '`' }
         };
 
@@ -113,7 +113,7 @@ namespace Rusty.Serialization.CSCD
             }
 
             // Scope.
-            if (token.Text.StartsWith('?') && token.Text.EndsWith('?'))
+            if (token.Text.EnclosedWith('^'))
                 TokenError(token, "Scopes may only appear before object member names.");
 
             // Null.
@@ -144,11 +144,11 @@ namespace Rusty.Serialization.CSCD
                 return new InfinityNode(false);
 
             // Char.
-            if (token.Text.StartsWith('\'') && token.Text.EndsWith('\''))
+            if (token.Text.EnclosedWith('\''))
                 return ParseChar(token);
 
             // String.
-            if (token.Text.StartsWith('"') && token.Text.EndsWith('"'))
+            if (token.Text.EnclosedWith('"'))
                 return new StringNode(ParseText(token, strEscapes, "\"", "\""));
 
             // Decimal.
@@ -160,7 +160,7 @@ namespace Rusty.Serialization.CSCD
                 return ParseColor(token);
 
             // Time.
-            if (token.Text.StartsWith('@') && token.Text.EndsWith('@'))
+            if (token.Text.EnclosedWith('@'))
                 return ParseTimestamp(token);
 
             // Bytes.
@@ -168,11 +168,11 @@ namespace Rusty.Serialization.CSCD
                 return ParseBytes(token);
 
             // Symbol (delimited).
-            if (token.Text.StartsWith('*') && token.Text.EndsWith('*'))
+            if (token.Text.EnclosedWith('*'))
                 return new SymbolNode(ParseText(token, symbolEscapes, "*", "*"));
 
             // Ref.
-            if (token.Text.StartsWith('&') && token.Text.EndsWith('&'))
+            if (token.Text.EnclosedWith('&'))
                 return new RefNode(ParseText(token, refEscapes, "&", "&"));
 
             // List.
@@ -461,9 +461,9 @@ namespace Rusty.Serialization.CSCD
 
                 // Parse member name & value.
                 string scopeName = null;
-                if (next.Text.StartsWith('?') && next.Text.EndsWith('?'))
+                if (next.Text.StartsWith('^') && next.Text.EndsWith('^'))
                 {
-                    scopeName = ParseText(next, scopeEscapes, "?", "?");
+                    scopeName = ParseText(next, scopeEscapes, "^", "^");
                     next = ExpectToken(text, lexer, "Scope should be followed by another token.");
                 }
 

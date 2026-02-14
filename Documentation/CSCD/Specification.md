@@ -62,9 +62,9 @@ The following escape sequences MUST be recognized by parsers if they appear in a
 |-----------|-----------|---------------|-------|-----------|-----------|---------------|
 |tab        |`0x09`     |`\t`           |       |`(`        |`0x28`     |`\(`           |
 |line feed  |`0x0A`     |`\n`           |       |`)`        |`0x29`     |`\)`           |
-|space      |`0x20`     |`\s`           |       |`?`        |`0x3F`     |`\?`           |
-|`"`        |`0x22`     |`\"`           |       |`*`        |`0x2A`     |`\*`           |
-|`&`        |`0x26`     |`\&`           |       |`\`        |`0x5C`     |`\\`           |
+|space      |`0x20`     |`\s`           |       |`*`        |`0x2A`     |`\*`           |
+|`"`        |`0x22`     |`\"`           |       |`\`        |`0x5C`     |`\\`           |
+|`&`        |`0x26`     |`\&`           |       |`^`        |`0x5E`     |`\^`           |
 |`'`        |`0x27`     |`\'`           |       |`` ` ``    |`0x60`     |`` \` ``       |
 
 Parsers MUST recognize and correctly interpret all escape sequences from this table when they appear in a literal that allows escape sequences. Invalid escape sequences MUST be rejected by a parser.
@@ -128,21 +128,21 @@ Serializers SHOULD only emit type labels when necessary to disambiguate the type
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(my_namespace.my_class<int>.my_struct<list<f64>>[])`.
 
 #### Scopes
-Scopes MAY be placed before any [object member name](#objects), and are written as a name between `?` question marks (e.g. `?my_scope?`). They act as hints for parsers to determine which base class a member exists on, in order to disambiguate shadowed variables. The format does not interpret or validate scope names; it is up to the parser to map a scope name to the corresponding runtime base class.
+Scopes MAY be placed before any [object member name](#objects), and are written as a name between `^` Carets (e.g. `^my_scope^`). They act as hints within objects to determine which base class a member belongs to, resolving ambiguities caused by shadowed variables. The format does not interpret or validate scope names; it is up to the parser to map a scope name to the corresponding runtime base class.
 
 The following characters MUST NOT appear in scope literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
 |Character      |Code point |   |Character      |Code point |
 |---------------|-----------|---|---------------|-----------|
 |Tab            |`0x09`     |   |`\`            |`0x5C`     |
-|Line feed      |`0x0A`     |   |`?`            |`0x3F`     |
+|Line feed      |`0x0A`     |   |`^`            |`0x5E`     |
 |Carriage return|`0x0D`     |   |               |           |
 
 All other characters from the character set MAY appear unescaped.
 
 Serializers SHOULD emit scopes only when an object contains multiple members with the same name.
 
-Examples: `<?my_scope?my_member_name:"my_member_value>"`, `<?scope\??a:0,a:1>`
+Examples: `<^my_scope^my_member_name:"my_member_value>"`, `<^scope\^^a:0,a:1>`
 
 ### 2.2. Primitives
 
@@ -342,4 +342,4 @@ Member values MAY be any literal type, including other collections. Member value
 
 Objects MAY be empty, which MUST be represented by the literal `<>`.
 
-Example: `<my_int:0,my_float:0.0,my_char:'A',?my_scope?*my_stríng*:"abc">`.
+Example: `<my_int:0,my_float:0.0,my_char:'A',^my_base_class^*my_stríng*:"abc">`.
