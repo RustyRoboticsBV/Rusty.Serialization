@@ -62,10 +62,10 @@ The following escape sequences MUST be recognized by parsers if they appear in a
 |-----------|-----------|---------------|-------|-----------|-----------|---------------|
 |tab        |`0x09`     |`\t`           |       |`(`        |`0x28`     |`\(`           |
 |line feed  |`0x0A`     |`\n`           |       |`)`        |`0x29`     |`\)`           |
-|space      |`0x20`     |`\s`           |       |`*`        |`0x2A`     |`\*`           |
-|`"`        |`0x22`     |`\"`           |       |`\`        |`0x5C`     |`\\`           |
-|`&`        |`0x26`     |`\&`           |       |`` ` ``    |`0x60`     |`` \` ``       |
-|`'`        |`0x27`     |`\'`           |       |           |           |               |
+|space      |`0x20`     |`\s`           |       |`?`        |`0x3F`     |`\?`           |
+|`"`        |`0x22`     |`\"`           |       |`*`        |`0x2A`     |`\*`           |
+|`&`        |`0x26`     |`\&`           |       |`\`        |`0x5C`     |`\\`           |
+|`'`        |`0x27`     |`\'`           |       |`` ` ``    |`0x60`     |`` \` ``       |
 
 Parsers MUST recognize and correctly interpret all escape sequences from this table when they appear in a literal that allows escape sequences. Invalid escape sequences MUST be rejected by a parser.
 
@@ -91,7 +91,24 @@ A valid serialized CSCD string MUST contain exactly one top-level value. This to
 
 ### 2.1. Metadata
 
-#### Type Labels
+#### IDs
+IDs MAY be placed before any concrete value or type label, and are written as a name between `` ` `` backticks. Values annotated with an ID can be referenced elsewhere using a [reference literal](#references). IDs MUST NOT be applied to reference literals. IDs MUST be globally unique and are case-sensitive.
+
+The following characters MUST NOT appear in ID literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
+
+|Character      |Code point |   |Character      |Code point |
+|---------------|-----------|---|---------------|-----------|
+|Tab            |`0x09`     |   |`\`            |`0x5C`     |
+|Line feed      |`0x0A`     |   |`` ` ``        |`0x60`     |
+|Carriage return|`0x0D`     |   |               |           |
+
+All other characters from the character set MAY appear unescaped.
+
+Serializers SHOULD emit IDs only when a single object is referenced multiple times or when a cyclic reference exists.
+
+Examples: `` `my_referenced_int`5``, `` `my_referenced_object`<a:0,b:"abc">``, `` `my_referenced_typed_value`  (MyStringType)"abcdefg"``
+
+#### Types
 Type labels MAY be placed before any value, and are written as a name between `()` parentheses. Type labels act as hints for parsers, indicating what kind of object was originally serialized. The format does not interpret or validate type names; it is up to the parser to map a type name to the corresponding runtime type.
 
 The following characters MUST NOT appear in type literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
@@ -110,22 +127,22 @@ Serializers SHOULD only emit type labels when necessary to disambiguate the type
 
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(my_namespace.my_class<int>.my_struct<list<f64>>[])`.
 
-#### IDs
-IDs MAY be placed before any concrete value or type label, and are written as a name between `` ` `` backticks. Values annotated with an ID can be referenced elsewhere using a [reference literal](#references). IDs MUST NOT be applied to reference literals. IDs MUST be globally unique and are case-sensitive.
+#### Scopes
+Scopes MAY be placed before any [object member name](#objects), and are written as a name between `?` question marks (e.g. `?my_scope?`). They act as hints for parsers to determine which base class a member exists on, in order to disambiguate shadowed variables. The format does not interpret or validate scope names; it is up to the parser to map a scope name to the corresponding runtime base class.
 
-The following characters MUST NOT appear in ID literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
+The following characters MUST NOT appear in scope literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
 |Character      |Code point |   |Character      |Code point |
 |---------------|-----------|---|---------------|-----------|
 |Tab            |`0x09`     |   |`\`            |`0x5C`     |
-|Line feed      |`0x0A`     |   |`` ` ``        |`0x60`     |
+|Line feed      |`0x0A`     |   |`?`            |`0x3F`     |
 |Carriage return|`0x0D`     |   |               |           |
 
 All other characters from the character set MAY appear unescaped.
 
-Serializers SHOULD emit IDs only when a single object is referenced multiple times or when a cyclic reference exists.
+Serializers SHOULD emit scopes only when an object contains multiple members with the same name.
 
-Examples: `` `my_referenced_int`5``, `` `my_referenced_object`<a:0,b:"abc">``, `` `my_referenced_typed_value`  (MyStringType)"abcdefg"``
+Examples: `<?my_scope?my_member_name:"my_member_value>"`, `<?scope\??a:0,a:1>`
 
 ### 2.2. Primitives
 
@@ -202,7 +219,7 @@ Decimal literals represent numeric values with significant fractional digits. Th
 
 Decimal literals MUST start with `$` for positive values or `-$` for negative values, followed by an OPTIONAL integer value, an OPTIONAL `.` decimal point and an OPTIONAL fractional value. The integer and fractional values MUST consist of zero or more decimal digits (`0`-`9`). Leading zeros SHOULD be discarded by a parser.
 
-The integer part and/or fractional part MAY be omitted if equal to zero. The decimal point MAY be omitted if both the integer and fractional part are equal to zero. Consequently, `$0`, `$0.`, `$.0`, `$.` and `$` MUST all be interpreted as `$0.0`, and `-$0`, `-$0.`, `-$.0`, `-$.` and `-$` MUST all be interpreted as `-$0.0`.
+The integer part MAY be omitted if equal to zero. So `$` must be interpreted as `$0`. The fractional part may be omitted if equal to `.0`. Consequently, `$0.`, `$.0` and `$.` MUST all be interpreted as `$0.0`, and `-$0.`, `-$.0`, `-$.` MUST all be interpreted as `-$0.0`. The decimal point MUST be omitted if the decimal value has no fractional digits.
 
 Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
 
@@ -255,7 +272,7 @@ Two symbol syntaxes MUST be recognized by parsers: delimited and bare.
 
 A delimited symbol literal MUST start and end with `*` asterisk characters, with the symbol name in-between. They are case-sensitive. Delimited symbols MAY be empty, which MUST be represented using the literal `**`.
 
-If a symbol starts with an ASCII letter (`A`-`Z`, `a`-`z`) or an `_` underscore, and contains only ASCII letters (`A`-`Z`, `a`-`z`), digits (`0`-`9`) and underscores (`_`), then the enclosing `*` asterisks may be omitted. For example, `_abc123` is equivalent to `*_abc123*`. The symbols `null`, `true`, `false`, `nan` and `inf` cannot be used as bare symbol names and MUST be enclosed in `*` asterisks, as these are already reserved by other literals.
+If a symbol starts with an ASCII letter (`A`-`Z`, `a`-`z`) or an `_` underscore, and contains only ASCII letters (`A`-`Z`, `a`-`z`), digits (`0`-`9`) and underscores (`_`), then the enclosing `*` asterisks may be omitted. For example, `_abc123` is equivalent to `*_abc123*`. The names `null`, `true`, `false`, `nan` and `inf` are reserved keywords and cannot be used as bare symbol names - they MUST be enclosed in `*` asterisks.
 
 Symbol literals MAY be annotated with an ID and type label.
 
@@ -315,12 +332,14 @@ Dictionaries MAY be empty, which MUST be represented by the literal `{}`.
 Example: `{"a":"abc",'b':"def",["c"]:"hij"}`.
 
 #### Objects
-Object literals represent a collection of name-value pairs. Objects function similarly to dictionaries but provide a more compact and stricter syntax intended for serializing struct-like data. They exist to force a name-value syntax.
+Object literals represent a collection of name-value pairs, meant to model structured records.
 
 An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by `,` commas, and names and values MUST be separated by a `:` colon. Trailing commas are MUST NOT appear in an object (e.g., `<id:0,>` is invalid).
 
-Member names MUST be symbols (delimited or bare). Unlike regular symbol literals, bare member name symbols MAY be any of the reserved keywords (`null`, `true`, `false`, `nan`, `inf`) without needing to be `*` asterisk-delimited. Member values MAY be any literal type, including other collections. Member values MAY be annotated with a type labels and/or ID. Member names MUST NOT be annotated with a type label and/or ID.
+Member names MUST be symbols (delimited or bare). To maximize generality, member names are NOT required to be unique by the format. Member names MUST NOT be annotated with a type label and/or ID, but they MAY be annotated with a scope.
+
+Member values MAY be any literal type, including other collections. Member values MAY be annotated with a type labels and/or ID, but MUST NOT be annotated with a scope.
 
 Objects MAY be empty, which MUST be represented by the literal `<>`.
 
-Example: `<my_int:0,my_float:0.0,my_char:'A',*my_stríng*:"abc">`.
+Example: `<my_int:0,my_float:0.0,my_char:'A',?my_scope?*my_stríng*:"abc">`.

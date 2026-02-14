@@ -4,6 +4,12 @@ A node tree data structure represent a C# object graph. A node tree should never
 
 The node layer recognizes the following nodes listed below. Each node corresponds to a CSCD format literal, and vice-versa.
 
+### Metadata
+
+- **ID**: a reference ID, used to mark shared or cyclic reference objects.
+- **Type**: a type label, used to disambiguify polymorphic types.
+- **Scope**: a class/struct member scope, used to disambiguify shadowed fields and properties.
+
 ### Primitives
 
 - **Null**: encodes a null value in an object graph.
@@ -26,8 +32,3 @@ The node layer recognizes the following nodes listed below. Each node correspond
 - **List**: a collection node that contains a list of element nodes. Used to encode arrays-like or set-like types.
 - **Dict**: a collection node that contains pairs of key/value nodes. Used to encode dictionary-like types.
 - **Object**: a collection node that contains pairs of member name strings and member value nodes. Used to encode arbitrary object instances.
-
-### Metadata
-
-- **ID**: a reference ID, used to mark shared or cyclic reference objects.
-- **Type**: a type label, used to disambiguify polymorphic types.

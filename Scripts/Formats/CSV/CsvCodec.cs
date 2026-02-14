@@ -19,7 +19,7 @@ namespace Rusty.Serialization.CSV
 
         public override NodeTree Parse(string serialized)
         {
-            return null;
+            return CsvParser.Parse(serialized);
         }
     }
 }

@@ -23,119 +23,119 @@ namespace Rusty.Serialization.CSV
         {
             if (node is IdNode id)
             {
-                sb.Append("ID,");
+                sb.Append("id,");
                 sb.Append(Pack(id.Name));
                 sb.Append("\n");
                 Serialize(id.Value, sb);
-                sb.Append("\nEND");
+                sb.Append("\nend");
             }
             else if (node is TypeNode type)
             {
-                sb.Append("TYPE,");
+                sb.Append("type,");
                 sb.Append(Pack(type.Name));
                 sb.Append("\n");
                 Serialize(type.Value, sb);
-                sb.Append("\nEND");
+                sb.Append("\nend");
             }
             else if (node is NullNode)
-                sb.Append("NULL");
+                sb.Append("null");
             else if (node is BoolNode b)
             {
-                sb.Append("BOOL,");
+                sb.Append("bool,");
                 sb.Append(b.Value ? "true" : "false");
             }
             else if (node is IntNode @int)
             {
-                sb.Append("INT,");
+                sb.Append("int,");
                 sb.Append(@int.Value.ToString());
             }
             else if (node is FloatNode @float)
             {
-                sb.Append("FLOAT,");
+                sb.Append("float,");
                 sb.Append(@float.Value.ToString());
             }
             else if (node is InfinityNode inf)
             {
-                sb.Append("INF,");
+                sb.Append("inf,");
                 sb.Append(inf.Positive ? '+' : '-');
             }
             else if (node is NanNode)
-                sb.Append("NAN");
+                sb.Append("nan");
             else if (node is CharNode chr)
             {
-                sb.Append("CHAR,");
+                sb.Append("char,");
                 sb.Append(Pack(chr.Value.ToString()));
             }
             else if (node is StringNode str)
             {
-                sb.Append("STR,");
+                sb.Append("str,");
                 sb.Append(Pack(str.Value));
             }
             else if (node is DecimalNode dec)
             {
-                sb.Append("DEC,");
+                sb.Append("dec,");
                 sb.Append(dec.Value.ToString());
             }
             else if (node is ColorNode col)
             {
-                sb.Append("COL,");
+                sb.Append("col,");
                 sb.Append(col.Value.ToString());
             }
             else if (node is TimeNode time)
             {
-                sb.Append("TIME,");
+                sb.Append("time,");
                 sb.Append(Pack(time.Value.ToString()));
             }
             else if (node is BytesNode bytes)
             {
-                sb.Append("BYTES,");
+                sb.Append("bytes,");
                 sb.Append(bytes.Value.ToString());
             }
             else if (node is SymbolNode symbol)
             {
-                sb.Append("SYM,");
+                sb.Append("sym,");
                 sb.Append(Pack(symbol.Name));
             }
             else if (node is RefNode @ref)
             {
-                sb.Append("REF,");
+                sb.Append("ref,");
                 sb.Append(Pack(@ref.ID));
             }
             else if (node is ListNode list)
             {
-                sb.Append("LIST\n");
+                sb.Append("list\n");
                 for (int i = 0; i < list.Count; i++)
                 {
                     Serialize(list.GetValueAt(i), sb);
                     sb.Append("\n");
                 }
-                sb.Append("END");
+                sb.Append("end");
             }
             else if (node is DictNode dict)
             {
-                sb.Append("DICT\n");
+                sb.Append("dict\n");
                 for (int i = 0; i < dict.Count; i++)
                 {
-                    sb.Append("KEY\n");
+                    sb.Append("key\n");
                     Serialize(dict.GetKeyAt(i), sb);
-                    sb.Append("\nVAL\n");
+                    sb.Append("\nval\n");
                     Serialize(dict.GetValueAt(i), sb);
                     sb.Append("\n");
                 }
-                sb.Append("END");
+                sb.Append("end");
             }
             else if (node is ObjectNode obj)
             {
-                sb.Append("OBJ\n");
+                sb.Append("obj\n");
                 for (int i = 0; i < obj.Count; i++)
                 {
-                    sb.Append("NAME\n");
+                    sb.Append("name,");
                     sb.Append(Pack(obj.GetNameAt(i)));
-                    sb.Append("\nVAL\n");
+                    sb.Append("\nval\n");
                     Serialize(obj.GetValueAt(i), sb);
                     sb.Append("\n");
                 }
-                sb.Append("END");
+                sb.Append("end");
             }
             else
                 throw new ArgumentException($"Unexpected node of type {node.GetType()}.");

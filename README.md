@@ -35,7 +35,7 @@ Simply add the project folder to your C# project and add `using Rusty.Serializat
 using Rusty.Serialization;
 
 MyClass obj = new();
-UCS cscd = new(Format.Cscd);                  // Create CSCD serializer.
+UCS cscd = new(Format.Cscd);                  // Creates a CSCD serializer context.
 string serialized = cscd.Serialize(obj);      // Serializes MyClass object graph.
 ```
 
@@ -49,14 +49,14 @@ obj = cscd.Parse<MyClass>(serialized);        // Deserializes back to MyClass.
 UCS xml = new(Format.Xml);
 UCS json = new(Format.Json);
 string xmlStr = "...";
-string jsonStr = xml.Reformat(xmlStr, json);  // Convert XML to JSON.
+string jsonStr = xml.Reformat(xmlStr, json);  // Converts XML to JSON.
 ```
 
 #### Freeing Up Memory
 The module makes use of object reusing and pooling to avoid unnecessary GC pressure. Heap memory can be freed up for garbage collection manually by calling the following method.
 
 ```
-cscd.Clear();                                 // Release allocated resources.
+cscd.Clear();                                 // Releases allocated resources.
 ```
 
 #### Notes
@@ -126,7 +126,8 @@ Below is an example of a custom serialized object with pretty printing. See the 
         a: 0,
         b: '\1F4A9;',
         c: @14:2:10.005@,
-        d: Red
+        d: Red,
+        ?base? d: Blue
     >,
     my_reference: &my_id&
 >

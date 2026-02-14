@@ -25,61 +25,27 @@ namespace Rusty.Serialization.CSV
                 return false;
 
             int start = cursor;
-            /*bool quoted = false;
 
+            // Delimited cell.
             if (text[cursor] == '"')
             {
-                quoted = true;
-                start = ++cursor;
-
-                while (cursor < text.Length)
-                {
-                    if (text[cursor] == '"')
-                    {
-                        if (cursor + 1 < text.Length && text[cursor + 1] == '"')
-                        {
-                            cursor += 2;
-                            continue;
-                        }
-
-                        break;
-                    }
-
-                    cursor++;
-                }
-
-                cell = text.Slice(start, cursor - start);
+                int quoteStart = cursor;
                 cursor++;
-            }
-            else
-            {
-                while (cursor < text.Length &&
-                       text[cursor] != ',' &&
-                       text[cursor] != '\r' &&
-                       text[cursor] != '\n')
-                {
-                    cursor++;
-                }
-
-                cell = text.Slice(start, cursor - start);
-            }*/
-            if (text[cursor] == '"')
-            {
-                int quoteStart = cursor; // include opening quote
-                cursor++;                // move past opening quote
 
                 while (cursor < text.Length)
                 {
                     if (text[cursor] == '"')
                     {
+                        // Skip escaped double-quote.
                         if (cursor + 1 < text.Length && text[cursor + 1] == '"')
-                        {
                             cursor += 2;
-                            continue;
-                        }
 
-                        cursor++;
-                        break;
+                        // Detect end of quoted cell.
+                        else
+                        {
+                            cursor++;
+                            break;
+                        }
                     }
 
                     cursor++;
@@ -87,12 +53,11 @@ namespace Rusty.Serialization.CSV
 
                 cell = text.Slice(quoteStart, cursor - quoteStart);
             }
+
+            // Bare cell.
             else
             {
-                while (cursor < text.Length &&
-                       text[cursor] != ',' &&
-                       text[cursor] != '\r' &&
-                       text[cursor] != '\n')
+                while (cursor < text.Length && text[cursor] != ',' && text[cursor] != '\r' && text[cursor] != '\n')
                 {
                     cursor++;
                 }
@@ -100,12 +65,14 @@ namespace Rusty.Serialization.CSV
                 cell = text.Slice(start, cursor - start);
             }
 
+            // Skip comma.
             if (cursor < text.Length && text[cursor] == ',')
             {
                 cursor++;
                 return true;
             }
 
+            // Skip line-breaks.
             if (cursor < text.Length)
             {
                 if (text[cursor] == '\r')
