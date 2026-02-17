@@ -3,11 +3,11 @@
 ## Introduction
 This formal specification document describes the syntax of an object graph serialization format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary object graphs.
 
-The format is self-describing and does not require an external schema for parsing or round-trip serialization. Values may be annotated with optional type labels and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference links.
+The format is syntactically self-describing and does not require an external schema for structural parsing. While it is *syntactically* structured like a tree, it *semantically* represents a graph. Values may be annotated with optional type and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference/pointer links.
 
-Note that many of the CSCD literals are more abstract than a C# type. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common data structures, such as timestamps and colors, have dedicated compact literal forms in order to reduce verbosity.
+CSCD literals are more general than C# types. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common composite data types, such as timestamps and colors, have dedicated compact literal forms in order to reduce verbosity.
 
-The main design goals are generality, compactness and unambiguousness. While usable in any programming language, it was designed to be used in a C# context where object graphs may contain polymorphic types or shared / cyclic references.
+The main design goals are generality, compactness and unambiguous parsing. While usable in any programming language, it was designed with the .NET framework in mind, where object graphs may contain polymorphic types, shared or cyclic references, and shadowed members.
 
 This document will first describe some format-wide syntax rules. After that, it will describe each literal type and their syntaxes, starting with metadata, followed by primitives and finally collections.
 
@@ -39,9 +39,13 @@ Parsers MUST reject input strings containing code points outside of the allowed 
 A serialized CSCD string MUST contain exactly one top-level value, which forms the root of the serialized representation. Parsers MUST interpret this top-level value as the entry point for deserialization. The top-level value MAY be annotated with metadata. Values that support nested content MAY contain nested values.
 
 ### 1.3 Format Marker
-Strings of CSCD MAY be marked as such by adding the header text `~CSCD~` at the beginning of the string. It MUST NOT appear anywhere else in the string. Parsers that handle multiple formats MUST use this to recognize an input string as CSCD. Parsers that only handle CSCD SHOULD NOT require the marker, but MUST recognize strings that start with one as correct input.
+Strings of CSCD MAY be marked as such by adding the OPTIONAL header text `~CSCD~` before the root value and its metadata.
 
-Serializers SHOULD always emit it regardless.
+If present, the format marker MUST appear before the top-level value and MAY be preceded only by whitespace and/or comments. It MUST NOT appear more than once.
+
+Parsers that handle multiple formats MUST use this marker to recognize an input as CSCD. Parsers that only handle CSCD SHOULD NOT require the marker; serializers SHOULD always emit it regardless.
+
+The sequence `~CSCD~` has special meaning only when it appears before the top-level value. If the same sequence appears elsewhere (including inside of delimited literals) it MUST be treated as ordinary literal content.
 
 ### 1.4 Whitespace
 Whitespace MAY appear between literals and punctuation (`, : [ ] { } < >`) for formatting purposes. Whitespace MAY also appear before and after the top-level value. Unless otherwise stated, whitespace MUST NOT break up literals that are multiple characters long.
@@ -92,7 +96,7 @@ A valid serialized CSCD string MUST contain exactly one top-level value. This to
 ### 2.1. Metadata
 
 #### IDs
-IDs MAY be placed before any concrete value or type label, and are written as a name between `` ` `` backticks. Values annotated with an ID can be referenced elsewhere using a [reference literal](#references). IDs MUST NOT be applied to reference literals. IDs MUST be globally unique and are case-sensitive.
+IDs MAY be placed before any concrete value or type literal, and are written as a name between `` ` `` backticks. Values annotated with an ID can be referenced elsewhere using a [reference literal](#references). IDs MUST NOT be applied to reference literals. IDs MUST be globally unique and are case-sensitive.
 
 The following characters MUST NOT appear in ID literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
@@ -121,7 +125,7 @@ The following characters MUST NOT appear in type literals and MUST instead be re
 
 All other characters from the character set MAY appear unescaped.
 
-Type labels MUST be immediately followed by a value. They MUST NOT be followed by an ID or another type label. Type labels MAY appear inside collections.
+Type labels MUST be immediately followed by a value. They MUST NOT be followed by an ID or another type. Type labels MAY appear inside collections.
 
 Serializers SHOULD only emit type labels when necessary to disambiguate the type of a value.
 
@@ -250,7 +254,7 @@ Each component has range and/or syntax rules that MUST be followed by a parser. 
 - Day components MUST be valid integer values in the range `1`-`31`.
 - Hour components MUST be valid integer values in the range `0`-`24`. The hour `24` is MUST NOT be allowed unless the minute and second both equal `0`. A parser SHOULD maintain the distinction between `0` and `24` if possible.
 - Minute components MUST be valid integer values in the range `0`-`59`.
-- Second components MUST either be valid integer numbers or follow the format `[integer].[fractional]`. The integer part MUST be a valid between `0`-`60`. The value `60` is included to account for leap seconds; a parser SHOULD maintain the distinction between `0` and `60` if possible. Trailing zeros SHOULD be discarded by a parser.
+- Second components MUST either be valid [integer](#integers) or [float](#floats). If an integer, it must be in the range `0`-`60`; if a float, the integral part must be in the range `0`-`60`. The value `60` is included to account for leap seconds; a parser SHOULD maintain the distinction between `0` and `60` if possible. Trailing zeros SHOULD be discarded by a parser.
 
 A parser SHOULD validate calendar correctness (i.e. rejecting `@1994/2/31@`), but this is not strictly enforced by the format.
 
@@ -304,6 +308,8 @@ The following characters MUST NOT appear in reference literals and MUST instead 
 |Carriage return|`0x0D`     |   |               |           |
 
 All other characters from the character set MAY appear unescaped.
+
+It is up to parsers to decide whether a reference should be deserialized as a pointer, reference, copy, etc.
 
 ### 2.3. Collections
 

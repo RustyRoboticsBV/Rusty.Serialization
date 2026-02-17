@@ -10,10 +10,11 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public properties. */
         public ITreeElement Parent { get; set; }
         public string Name { get; set; }
-        public INode Value { get; set; }
+        public SymbolNode Value { get; set; }
+        INode IMetadataNode.Value => Value;
 
         /* Constructors. */
-        public ScopeNode(string name, INode value)
+        public ScopeNode(string name, SymbolNode value)
         {
             Name = name;
             Value = value;
@@ -36,7 +37,9 @@ namespace Rusty.Serialization.Core.Nodes
             Value = null;
         }
 
-        public void ReplaceChild(INode oldChild, INode newChild)
+        void IContainerNode.ReplaceChild(INode oldChild, INode newChild)
+            => ReplaceChild(oldChild as SymbolNode, newChild as SymbolNode);
+        public void ReplaceChild(SymbolNode oldChild, SymbolNode newChild)
         {
             if (Value == oldChild)
             {

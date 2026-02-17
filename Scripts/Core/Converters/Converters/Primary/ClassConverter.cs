@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Serialization;
 using Rusty.Serialization.Core.Nodes;
 
 
@@ -11,6 +10,8 @@ using UnityEngine;
 #if GODOT
 using Godot;
 #endif
+
+using Lookup = System.Collections.Generic.Dictionary<(string, string), System.Reflection.MemberInfo>;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -27,24 +28,25 @@ namespace Rusty.Serialization.Core.Conversion
 
         /* Private properties. */
         private MemberInfo[] Members { get; set; }
+        private Lookup MemberLookup { get; set; } = new Lookup();
 
         /* Protected methods. */
         protected override ObjectNode CreateNode(T obj, CreateNodeContext context)
         {
             // Collect members.
-            Members = CollectMembers(obj.GetType());
+            CollectMembers();
 
             // Create new node.
-            return new(Members.Length);
+            return new ObjectNode(Members.Length);
         }
 
         protected override void AssignNode(ObjectNode node, T obj, AssignNodeContext context)
         {
             // Collect members.
-            if (Members == null)
-                Members = CollectMembers(obj.GetType());
+            CollectMembers();
 
             // Convert identifiers and convert values to member nodes.
+            Type type = typeof(T);
             for (int i = 0; i < Members.Length; i++)
             {
                 MemberInfo member = Members[i];
@@ -65,13 +67,19 @@ namespace Rusty.Serialization.Core.Conversion
                 }
 
                 // Get member identifier.
-                string memberstring = member.Name;
+                SymbolNode symbol = new SymbolNode(member.Name);
+
+                ScopeNode scope = null;
+                if (member.DeclaringType != type)
+                    scope = new ScopeNode(member.DeclaringType.FullName, symbol);
+
+                IMemberNameNode memberName = scope != null ? scope : symbol;
 
                 // Create member node.
                 INode memberNode = context.CreateNode(memberType, memberValue);
 
                 // Store finished identifier-node pair.
-                node.Members[i] = new KeyValuePair<IMemberNameNode, INode>(new SymbolNode(memberstring), memberNode);
+                node.Members[i] = new KeyValuePair<IMemberNameNode, INode>(memberName, memberNode);
                 memberNode.Parent = node;
             }
         }
@@ -79,7 +87,7 @@ namespace Rusty.Serialization.Core.Conversion
         protected override void CollectTypes(ObjectNode node, CollectTypesContext context)
         {
             // Collect members.
-            Members = CollectMembers(typeof(T));
+            CollectMembers();
 
             // Collect member types.
             for (int i = 0; i < Members.Length; i++)
@@ -92,24 +100,40 @@ namespace Rusty.Serialization.Core.Conversion
             }
         }
 
-        protected override T CreateObject(ObjectNode node, CreateObjectContext context) => (T)Activator.CreateInstance(typeof(T));
+        protected override T CreateObject(ObjectNode node, CreateObjectContext context)
+            => (T)Activator.CreateInstance(typeof(T));
 
         protected override T AssignObject(T obj, ObjectNode node, AssignObjectContext context)
         {
             // Collect members.
-            Members = CollectMembers(typeof(T));
+            CollectMembers();
 
             // Assign non-ref.
             for (int i = 0; i < Members.Length; i++)
             {
-                MemberInfo member = Members[i];
+                // Find member name and scope.
+                IMemberNameNode memberScopeNameNode = node.Members[i].Key;
+                string memberScope = "";
+                string memberName = "";
+                if (memberScopeNameNode is ScopeNode scopeNode)
+                {
+                    memberScope = scopeNode.Name;
+                    memberName = scopeNode.Value.Name;
+                }
+                else if (memberScopeNameNode is SymbolNode symbolNode)
+                    memberName = symbolNode.Name;
 
-                // Match INode with member.
-                SymbolNode memberIdentifier = (SymbolNode)node.Members[i].Key; // TODO: account for scopes.
+                // Find member info.
+                if (!MemberLookup.TryGetValue((memberScope, memberName), out MemberInfo member))
+                {
+                    string memberFullName = memberName;
+                    if (memberScope != "")
+                        memberFullName = memberScope + "." + memberFullName;
+                    throw new MemberAccessException($"The type {typeof(T)} has no member named '{memberFullName}'.");
+                }
 
+                // Get member node.
                 INode memberNode = node.Members[i].Value;
-                if (memberIdentifier.Name != member.Name)
-                    throw new Exception($"Mismatch between members {i}: '{member.Name}' and '{memberIdentifier}'.");
 
                 // Deconvert field/property.
                 if (member is FieldInfo field)
@@ -131,13 +155,15 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Get all serializable members.
         /// </summary>
-        private MemberInfo[] CollectMembers(Type type)
+        private void CollectMembers()
         {
             // Do nothing if we already got the members.
             if (Members != null)
-                return Members;
+                return;
 
             // Collect fields.
+            Type type = typeof(T);
+
             List<FieldInfo> fields = new List<FieldInfo>();
             CollectFields(type, fields, IgnoredMembers);
 
@@ -158,7 +184,16 @@ namespace Rusty.Serialization.Core.Conversion
                 members.Add(properties[i]);
             }
 
-            return members.ToArray();
+            Members = members.ToArray();
+
+            // Create lookup dictionary.
+            MemberLookup.Clear();
+            for (int i = 0; i < members.Count; i++)
+            {
+                string scope = members[i].DeclaringType != type ? members[i].DeclaringType.FullName : "";
+                string name = members[i].Name;
+                MemberLookup.Add((scope, name), members[i]);
+            }
         }
 
         /// <summary>
@@ -247,7 +282,9 @@ namespace Rusty.Serialization.Core.Conversion
                 // Skip static properties.
                 if ((getter != null && getter.IsStatic) ||
                     (setter != null && setter.IsStatic))
+                {
                     continue;
+                }
 
                 // Check if this property is serializable.
                 bool isSerializable = false;
@@ -271,10 +308,12 @@ namespace Rusty.Serialization.Core.Conversion
                 for (int j = 0; j < collectedFields.Count; j++)
                 {
                     if (collectedFields[j].Name == $"<{property.Name}>k__BackingField")
-                        continue;
+                        goto Skip;
                 }
 
                 members.Add(property);
+
+                Skip: { }
             }
 
             // Examine base type

@@ -64,7 +64,7 @@ namespace Rusty.Serialization.CSCD
             if (node is TypeNode type)
                 return $"({FormatText(type.Name, typeEscapes)}){Serialize(type.Value, prettyPrinting)}";
             if (node is ScopeNode scope)
-                return $"({FormatText(scope.Name, scopeEscapes)}){Serialize(scope.Value, prettyPrinting)}";
+                return $"^{FormatText(scope.Name, scopeEscapes)}^{Serialize(scope.Value, prettyPrinting)}";
             if (node is NullNode)
                 return "null";
             if (node is BoolNode b)

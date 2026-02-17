@@ -467,14 +467,17 @@ namespace Rusty.Serialization.CSCD
                     next = ExpectToken(text, lexer, "Scope should be followed by another token.");
                 }
 
-                IMemberNameNode name;
+                SymbolNode symbol;
                 if (next.Text.StartsWith('*') && next.Text.EndsWith('*'))
-                    name = new SymbolNode(ParseText(next, symbolEscapes, "*", "*"));
+                    symbol = new SymbolNode(ParseText(next, symbolEscapes, "*", "*"));
                 else
-                    name = ParseBareSymbol(next);
+                    symbol = ParseBareSymbol(next);
 
+                ScopeNode scope = null;
                 if (scopeName != null)
-                    name = new ScopeNode(scopeName, name);
+                    scope = new ScopeNode(scopeName, symbol);
+
+                IMemberNameNode name = scope != null ? scope : symbol;
 
                 ExpectSymbol(text, lexer, ':', "Object member names must be followed by a colon.");
 

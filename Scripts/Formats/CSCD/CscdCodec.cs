@@ -1,5 +1,4 @@
-﻿using System;
-using Rusty.Serialization.Core.Codecs;
+﻿using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.CSCD
@@ -24,7 +23,9 @@ namespace Rusty.Serialization.CSCD
         {
             lexer.ResetCursor();
             NodeTree tree = parser.Parse(serialized, lexer);
+#if UNITY_5_3_OR_NEWER
             UnityEngine.Debug.Log(tree);
+#endif
             return tree;
         }
     }
