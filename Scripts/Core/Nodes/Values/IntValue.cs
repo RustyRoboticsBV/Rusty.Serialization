@@ -14,6 +14,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public properties. */
         public bool IsZero => value == 0;
         public bool IsOne => value == 1;
+        public bool IsNegative => value < 0;
 
         /* Constructors */
         public IntValue(BigInteger value)

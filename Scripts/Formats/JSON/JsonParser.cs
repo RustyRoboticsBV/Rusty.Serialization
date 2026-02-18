@@ -112,7 +112,7 @@ namespace Rusty.Serialization.JSON
             else if (tag.Equals("$time"))
             {
                 Token value = GetStringValue(text, lexer);
-                node = new TimeNode(TimeValue.Parse(ParseString(value)));
+                node = new TimestampNode(TimestampValue.Parse(ParseString(value)));
             }
             else if (tag.Equals("$bytes"))
             {

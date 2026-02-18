@@ -151,7 +151,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteEndElement();
                     break;
 
-                case TimeNode t:
+                case TimestampNode t:
                     writer.WriteStartElement("time");
                     WriteMetadata(writer, idAttr, typeAttr);
 
@@ -343,7 +343,7 @@ namespace Rusty.Serialization.XML
             return dict;
         }
 
-        private static TimeNode ReadTime(XElement element)
+        private static TimestampNode ReadTime(XElement element)
         {
             IntValue year = 1;
             byte month = 1, day = 1, hour = 0, minute = 0;
@@ -364,7 +364,7 @@ namespace Rusty.Serialization.XML
                 }
             }
 
-            return new TimeNode(year, month, day, hour, minute, second);
+            return new TimestampNode(year, month, day, hour, minute, second);
         }
     }
 }

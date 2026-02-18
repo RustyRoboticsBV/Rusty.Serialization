@@ -77,6 +77,7 @@ namespace Rusty.Serialization.Testing
         public Colors color = new();
 
         public DateTime time = new DateTime(1994, 2, 13, 10, 5, 3, 77) + TimeSpan.FromTicks(1);
+        public TimeSpan duration = new TimeSpan(200, 23, 59, 30);
 
         public List<object> list = new() { false, 1, 2.3f, 'c', "DEF", 0.45m, new Color(0.33f, 0.5f, 0.8f, 0.5f) };
         public Dictionary<string, object> dict = new()

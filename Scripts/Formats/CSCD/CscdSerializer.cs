@@ -85,8 +85,10 @@ namespace Rusty.Serialization.CSCD
                 return Serialize(dec);
             if (node is ColorNode col)
                 return Serialize(col);
-            if (node is TimeNode t)
+            if (node is TimestampNode t)
                 return Serialize(t);
+            if (node is DurationNode d)
+                return d.Value.ToString();
             if (node is BytesNode byt)
                 return Serialize(byt);
             if (node is SymbolNode sb)
@@ -186,7 +188,7 @@ namespace Rusty.Serialization.CSCD
             return new string(result);
         }
 
-        private string Serialize(TimeNode node)
+        private string Serialize(TimestampNode node)
         {
             bool noDate = node.Value.year == 1 && node.Value.month == 1 && node.Value.day == 1;
             bool noTime = node.Value.hour == 0 && node.Value.minute == 0 && node.Value.second == 0;

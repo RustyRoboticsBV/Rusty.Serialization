@@ -111,9 +111,10 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_nan: nan,
     my_character: 'A',
     my_string: "abc",
+    my_decimal: $1.00,
     my_color: #F08080,
     my_timestamp: @1990/2/13,18:30:05.001@,
-    my_decimal: $1.00,
+    my_duration: 7d23h30m10s,
     my_bytes: !SGVsbG8sIHdvcmxkIQ,
     my_symbol: Wednesday,
     my_list: [1, 2., "def"],
@@ -127,7 +128,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
         b: '\1F4A9;',
         c: @14:2:10.005@,
         d: Red,
-        ^MyBaseClass^ d: Blue
+        ^MyBaseClass^ d: 0s
     >,
     my_reference: &my_id&
 >

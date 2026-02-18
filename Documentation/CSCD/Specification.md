@@ -240,7 +240,7 @@ Colors literals MUST start with a `#` number sign, followed by the hexadecimal r
 Color literals MUST use uppercase hexadecimal digits (`0`-`9`, `A`-`F`). Parsers MUST interpret the values according to the rules above.
 
 #### Timestamps
-Timestamp literals represent absolute moments in time. They are intended to express date and/or time values, but do not represent durations or timespans. The timestamp literal exists primarily to provide a dedicated, canonical form for date/time types and discourage ad-hoc solutions using strings or object literals.
+Timestamp literals represent absolute moments in time. They are intended to express date and/or time values. The timestamp literal exists primarily to provide a dedicated, canonical form for date/time types and discourage ad-hoc solutions using strings or object literals.
 
 Timestamp literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
 - `@{year}/{month}/{day},{hour}:{minute}:{second}@`.
@@ -259,6 +259,23 @@ Each component has range and/or syntax rules that MUST be followed by a parser. 
 A parser SHOULD validate calendar correctness (i.e. rejecting `@1994/2/31@`), but this is not strictly enforced by the format.
 
 Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00@`.
+
+#### Durations
+Duration literals represent relative time durations. They provide a canonical form of expressing a timespan.
+
+Duration literals MUST consist of 1-4 terms:
+- `{days}d`: the number of days, which MUST be a valid integer larger than or equal to `0`.
+- `{hours}h`: the number of hours, which MUST be a valid integer in the range `0`-`23`.
+- `{minutes}m`: the number of minutes, which MUST be a valid integer in the range `0`-`59`.
+- `{seconds}s`: the number of seconds, which MUST be a valid [integer](#integers) or [float](#floats). If an integer, it must be in the range `0`-`59`; if a float, the integral part must be in the range `0`-`59`. Trailing zeros SHOULD be discarded by a parser.
+
+Additionally, the first character may be a minus sign for negative durations (e.g. `-30s`).
+
+Terms that equal 0 MAY be omitted, though at least 1 term MUST remain. For durations of zero seconds, minutes, hours and days, any of the following MAY be used: `0d`, `0h`, `0m` or `0s`.
+
+The order MUST be days, hours, minutes and seconds (i.e. `5s10m` is invalid).
+
+Examples: `5d1s`, `23h`, `-.s`, `100d10h59m0s`.
 
 #### Bytes
 Bytes literals represent arbitrary data that cannot be efficiently expressed using another literal.

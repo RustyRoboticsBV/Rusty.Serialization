@@ -159,9 +159,16 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.StartsWith('#'))
                 return ParseColor(token);
 
-            // Time.
+            // Timestamp.
             if (token.Text.EnclosedWith('@'))
                 return ParseTimestamp(token);
+
+            // Duration.
+            if ((token.Text.StartsWith('-') || token.Text.EndsWith('.') || token.Text[0] >= '0' && token.Text[0] <= '9')
+                && (token.Text.EndsWith('d') || token.Text.EndsWith('h') || token.Text.EndsWith('m') || token.Text.EndsWith('s')))
+            {
+                return ParseDuration(token);
+            }
 
             // Bytes.
             if (token.Text.StartsWith('!'))
@@ -260,9 +267,9 @@ namespace Rusty.Serialization.CSCD
         }
 
         /// <summary>
-        /// Parse a date/time literal.
+        /// Parse a timestamp literal.
         /// </summary>
-        private static TimeNode ParseTimestamp(Token token)
+        private static TimestampNode ParseTimestamp(Token token)
         {
             TextSpan contents = token.Unpack(1, 1);
 
@@ -277,7 +284,7 @@ namespace Rusty.Serialization.CSCD
             {
                 // Empty literal.
                 if (contents.Length == 0)
-                    return new TimeNode(year, month, day, hour, minute, second);
+                    return new TimestampNode(year, month, day, hour, minute, second);
 
                 // Date and time.
                 int underscore = contents.FirstIndexOf(',');
@@ -317,7 +324,111 @@ namespace Rusty.Serialization.CSCD
             TokenError(token, "Malformed time literal.");
             return null;
 
-            Return: return new TimeNode(year, month, day, hour, minute, second);
+            Return: return new TimestampNode(year, month, day, hour, minute, second);
+        }
+
+        /// <summary>
+        /// Parse a duration literal.
+        /// </summary>
+        private static DurationNode ParseDuration(Token token)
+        {
+            IntValue days = 0, hours = 0, minutes = 0;
+            FloatValue seconds = 0.0;
+
+            // Handle negative sign.
+            bool negative = token.Text.StartsWith('-');
+
+            // Parse units.
+            int digitStart = negative ? 1 : 0;
+            int currentUnit = 0;
+            bool fractional = false;
+            for (int i = digitStart; i < token.Text.Length; i++)
+            {
+                if (currentUnit == 4)
+                    TokenError(token, "Duration continued after seconds term.");
+
+                char c = token.Text[i];
+
+                if (c >= '0' && c <= '9')
+                {
+                    if (i == token.Text.Length - 1)
+                        TokenError(token, $"Unclosed duration term.");
+                    continue;
+                }
+
+                else if (c == '.')
+                {
+                    if (currentUnit < 3)
+                        TokenError(token, $"Duration unit '{"dhm"[currentUnit]}' must be an integer.");
+                    if (fractional)
+                        TokenError(token, "Second decimal point in duration seconds.");
+                    fractional = true;
+                }
+
+                else if (digitStart == i)
+                    TokenError(token, $"Empty duration term at unit '{c}'.");
+
+                else if (c == 'd')
+                {
+                    if (currentUnit == 0)
+                    {
+                        days = IntValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        if (days < 0)
+                            TokenError(token, "Duration days may not be negative.");
+                        currentUnit = 1;
+                        digitStart = i + 1;
+                    }
+                    else
+                        TokenError(token, $"Invalid duration unit order at 'd'.");
+                }
+
+                else if (c == 'h')
+                {
+                    if (currentUnit <= 1)
+                    {
+                        hours = IntValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        if (hours < 0)
+                            TokenError(token, "Duration hours may not be negative.");
+                        currentUnit = 2;
+                        digitStart = i + 1;
+                    }
+                    else
+                        TokenError(token, $"Invalid duration unit order at 'h'.");
+                }
+
+                else if (c == 'm')
+                {
+                    if (currentUnit <= 2)
+                    {
+                        minutes = IntValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        if (minutes < 0)
+                            TokenError(token, "Duration minutes may not be negative.");
+                        currentUnit = 3;
+                        digitStart = i + 1;
+                    }
+                    else
+                        TokenError(token, $"Invalid duration unit order at 'm'.");
+                }
+
+                else if (c == 's')
+                {
+                    if (currentUnit <= 3)
+                    {
+                        seconds = FloatValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        if (seconds.negative)
+                            TokenError(token, "Duration seconds may not be negative.");
+                        currentUnit = 4;
+                        digitStart = i + 1;
+                    }
+                    else
+                        TokenError(token, $"Invalid duration unit order at 's'.");
+                }
+
+                else
+                    TokenError(token, $"Unknown duration unit '{c}'.");
+            }
+
+            return new DurationNode(negative, days, hours, minutes, seconds);
         }
 
         /// <summary>

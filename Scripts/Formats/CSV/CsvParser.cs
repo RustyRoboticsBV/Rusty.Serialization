@@ -58,7 +58,7 @@ namespace Rusty.Serialization.CSV
                     return new DecimalNode(DecimalValue.Parse(ReadCell(lexer)));
 
                 case "time":
-                    return new TimeNode(TimeValue.Parse(ReadCell(lexer)));
+                    return new TimestampNode(TimestampValue.Parse(ReadCell(lexer)));
 
                 case "bytes":
                     return new BytesNode(BytesValue.Parse(ReadCell(lexer)));

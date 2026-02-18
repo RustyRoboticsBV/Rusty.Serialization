@@ -3,9 +3,9 @@ using System;
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// A time node value.
+    /// A timestamp node value.
     /// </summary>
-    public readonly struct TimeValue : IEquatable<TimeValue>
+    public readonly struct TimestampValue : IEquatable<TimestampValue>
     {
         /* Fields */
         public readonly IntValue year;
@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Core.Nodes
         public readonly FloatValue second;
 
         /* Constructors */
-        public TimeValue(IntValue year, IntValue month, IntValue day, IntValue hour, IntValue minute, FloatValue second)
+        public TimestampValue(IntValue year, IntValue month, IntValue day, IntValue hour, IntValue minute, FloatValue second)
         {
             if (second.negative)
                 throw new ArgumentException("Second may not be negative.");
@@ -32,12 +32,12 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods */
         public override string ToString() => $"{year}/{month}/{day},{hour}:{minute}:{second}";
         public override int GetHashCode() => HashCode.Combine(year, month, day, hour, minute, second);
-        public override bool Equals(object obj) => obj is TimeValue other && Equals(other);
-        public bool Equals(TimeValue other)
+        public override bool Equals(object obj) => obj is TimestampValue other && Equals(other);
+        public bool Equals(TimestampValue other)
             => year == other.year && month == other.month && day == other.day
             && hour == other.hour && minute == other.minute && second == other.second;
 
-        public static TimeValue Parse(string str)
+        public static TimestampValue Parse(string str)
         {
             ReadOnlySpan<char> span = str.AsSpan();
 
@@ -60,7 +60,7 @@ namespace Rusty.Serialization.Core.Nodes
             IntValue minute = IntValue.Parse(span.Slice(endOfHour + 1, endOfMinute - endOfHour - 1));
             FloatValue second = FloatValue.Parse(span.Slice(endOfMinute + 1));
 
-            return new TimeValue(year, month, day, hour, minute, second);
+            return new TimestampValue(year, month, day, hour, minute, second);
         }
     }
 }

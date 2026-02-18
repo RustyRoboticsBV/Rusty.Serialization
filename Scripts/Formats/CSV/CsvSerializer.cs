@@ -81,7 +81,7 @@ namespace Rusty.Serialization.CSV
                 sb.Append("col,");
                 sb.Append(col.Value.ToString());
             }
-            else if (node is TimeNode time)
+            else if (node is TimestampNode time)
             {
                 sb.Append("time,");
                 sb.Append(Pack(time.Value.ToString()));

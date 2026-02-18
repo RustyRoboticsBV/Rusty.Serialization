@@ -101,7 +101,7 @@ namespace Rusty.Serialization.JSON
                     AddName(sb, color.Value.ToString());
                     break;
 
-                case TimeNode time:
+                case TimestampNode time:
                     AddName(sb, "$time");
                     AddColon(sb, prettyPrint);
                     AddName(sb, time.Value.ToString());
