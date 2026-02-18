@@ -14,7 +14,7 @@ Key features:
 - **Easy to use**: simple, one-line serialization and deserialization.
 - **Engine-agnostic**: compatible with plain C#, Godot or Unity.
 - **Broad type support**: supports a wide variety of types from the .NET, Godot and Unity APIs.
-- **Multiple formats**: includes support for CSV, JSON, XML and CSCD, a custom, compact data format.
+- **Multiple formats**: includes support for JSON, XML, CSV and CSCD, a custom, compact data format.
 - **Flexible type handling**: handles arbitrary types that lack explicit support.
 - **Reference preservation**: shared and cyclic references are preserved during serialization and deserialization.
 - **Extendible design**: can be extended to provide support for additional types or data formats.
@@ -94,7 +94,7 @@ The default serializer layer uses [CSCD](#compact-serialized-c-data), a custom s
 Other supported formats include [CSV](Documentation/Formats/CSV.md), [JSON](Documentation/Formats/JSON.md) and [XML](Documentation/Formats/XML.md). Each format requires specific non-standard formatting in order to be parsed, as node tree metadata is needed to reconstruct the original object graph. This leads to some verbosity, particularly with JSON.
 
 ## Compact Serialized C# Data
-The module uses a custom, human-readable serialization format called Compact Serialized C# Data (CSCD). It is designed to represent complex object graphs with minimal structural overhead, preserving types, references, and supporting a variety of literal types. These literals allow common .NET and game engine types (such as date/time, color and array-like collections) to be encoded concisely while keeping the data readable and easy to maintain.
+The module uses a custom, human-readable serialization format called Compact Serialized C# Data (CSCD). It is designed to represent complex object graphs with minimal structural overhead, preserving types, references, shadowed variables and supporting a variety of literal types. These literals allow common .NET and game engine types (such as timestamps, colors and collections) to be encoded concisely while keeping the data readable and easy to maintain.
 
 Below is an example of a custom serialized object with pretty printing. See the [CSCD user manual](Documentation/CSCD/Manual.md) for more information, and the [specification document](Documentation/CSCD/Specification.md) for a formal syntax description.
 

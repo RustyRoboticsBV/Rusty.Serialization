@@ -7,7 +7,7 @@ The format is syntactically self-describing and does not require an external sch
 
 CSCD literals are more general than C# types. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common composite data types, such as timestamps and colors, have dedicated compact literal forms in order to reduce verbosity.
 
-The main design goals are generality, compactness and unambiguous parsing. While usable in any programming language, it was designed with the .NET framework in mind, where object graphs may contain polymorphic types, shared or cyclic references, and shadowed members.
+The main design goals are generality, compactness and unambiguous parsing. While usable in any programming language, it was designed with the .NET framework in mind, where object graphs may contain polymorphic types, shared or cyclic references, and shadowed members. CSCD is primarily intended to be machine-generated, but human-inspectable. Though it can be authored by hand, this requires intimate knowledge of the target runtime and is generally not recommended.
 
 This document will first describe some format-wide syntax rules. After that, it will describe each literal type and their syntaxes, starting with metadata, followed by primitives and finally collections.
 

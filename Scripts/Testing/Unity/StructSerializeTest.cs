@@ -9,10 +9,15 @@ using UnityEditor;
 
 namespace Rusty.Serialization.Testing
 {
-    [Serializable]
-    public class StructTest
+    public class ParentTest
     {
-        public bool @bool;
+        public bool @bool { get; set; } = true;
+    }
+
+    [Serializable]
+    public class StructTest : ParentTest
+    {
+        public new bool @bool;
 
         public char chr = ' ';
         public string str = "";
@@ -73,12 +78,19 @@ namespace Rusty.Serialization.Testing
 
         public DateTime time = new DateTime(1994, 2, 13, 10, 5, 3, 77) + TimeSpan.FromTicks(1);
 
-        public List<int> intList = new();
+        public List<object> list = new() { false, 1, 2.3f, 'c', "DEF", 0.45m, new Color(0.33f, 0.5f, 0.8f, 0.5f) };
         public Dictionary<string, object> dict = new()
         {
-            { "a", 0 },
-            { "b", new DateTime(2000, 1, 2, 0, 0, 0) },
-            { "c", Color.cyan }
+            { "a", true },
+            { "b", 10 },
+            { "c", 123.4 },
+            { "d", 'C' },
+            { "e", "ABCDEF" },
+            { "f", 567.89m },
+            { "g", Color.cyan },
+            { "h", new DateTime(2000, 1, 2, 0, 0, 0) },
+            { "i", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89 } },
+            { "j", null }
         };
     }
 
