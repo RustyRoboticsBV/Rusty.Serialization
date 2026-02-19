@@ -140,6 +140,5 @@ namespace Rusty.Serialization.Core.Nodes
 
             return new FloatValue(negative, integral, fractional, exponent);
         }
-
     }
 }
