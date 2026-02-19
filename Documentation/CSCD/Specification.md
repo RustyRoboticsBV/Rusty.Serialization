@@ -185,11 +185,20 @@ Examples:
 #### Floats
 Float literals represent real numeric values.
 
-The following format MUST be followed: `[-][integer].[fractional][e[-]exponent]`. Only the decimal point MUST be present to form a valid float literal. The integer and fractional parts MUST consist of zero or more decimal digits (`0`-`9`). The exponent MUST start with an `e`, followed by an OPTIONAL `-` minus sign, followed by one or more decimal digits (`0`-`9`). Float literals MAY start with a leading `-` minus sign to indicate a negative value.
+Several notations MAY be used:
+- `[-]{integer}.{fractional}e[-]{exponent}`. Full notation: an OPTIONAL sign, followed by a REQUIRED integer part, followed by a REQUIRED `.` decimal point, followed by a REQUIRED fractional part, followed by a REQUIRED `e`, followed by an OPTIONAL `-` minus sign, followed by a REQUIRED exponent part.
+- `[-].{fractional}e[-]{exponent}`: Omitted integer notation. The integer part MUST be interpreted as `0`.
+- `[-]{integer}[.]e[-]{exponent}`: Omitted fractional notation. The fractional part MUST be interpreted as `0`. The `.` decimal point is OPTIONAL.
+- `[-]{integer}.{fractional}`. Omitted exponent notation. The exponent part MUST be interpreted as `0`.
+- `[-].{fractional}`. Omitted integer and exponent notation. The integer and exponent parts MUST be interpreted as `0`.
+- `[-]{integer}.`. Omitted fractional and exponent notation. The fractional and exponent parts MUST be interpreted as `0`.
+- `[-].`. Omitted integer, fractional and exponent notation. The integer, fractional and exponent parts MUST be interpreted as `0`.
 
-The integer part, fractional and exponent part MAY be omitted if equal to zero and MUST be interpreted as such by parsers. Consequently, the literal `.` MUST be interpreted as `0.0`, and `-.` MUST be interpreted as `-0.0.` Leading and trailing zeros SHOULD be discarded by a parser.
+The integer, fractional and exponent parts (when included) MUST consist of one or more decimal digits (`0`-`9`). Leading zeros MAY appear in the integer and exponent parts, but SHOULD be discarded by a parser. Trailing zeros MAY appear in the fractional part, but SHOULD be discarded by a parser.
 
-Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction. Serializers SHOULD generally avoid emitting the exponent notation except for numbers with a large number of zeros (e.g. `1.e10` instead of `10000000000.0`).
+Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
+
+Serializers SHOULD generally avoid emitting the exponent notation except for numbers with a large number of zeros (e.g. `1.e10` instead of `10000000000.0`).
 
 Examples:
 - `0.0`, `000.000`, `0.`, `.0`, `.`, `0.0e0` are all valid representations of the number `0.0`.
@@ -274,7 +283,7 @@ A parser SHOULD validate calendar correctness (i.e. rejecting `@1994/2/31@`), bu
 Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00@`.
 
 #### Durations
-Duration literals represent relative time durations. They provide a canonical form of expressing a timespan.
+Duration literals represent relative time durations and timezone offsets. They provide a canonical form of expressing a timespan.
 
 Duration literals MUST consist of 1-4 terms:
 - `{days}d`: the number of days, which MUST be a valid integer larger than or equal to `0`.
@@ -288,7 +297,7 @@ Terms that equal 0 MAY be omitted, though at least 1 term MUST remain. For durat
 
 The term order MUST be days, hours, minutes and seconds (i.e. `5s10m` is invalid).
 
-Examples: `5d1s`, `23h`, `-.s`, `100d10h59m0s`.
+Examples: `5d1s`, `23h`, `-.s`, `100d10h59m0s`, `50m1e-5s`.
 
 #### Bytes
 Bytes literals represent arbitrary data that cannot be efficiently expressed using another literal.
