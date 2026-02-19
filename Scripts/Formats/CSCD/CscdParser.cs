@@ -653,7 +653,7 @@ namespace Rusty.Serialization.CSCD
             }
 
             char c = token.Text[0];
-            if (!(c == '_' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' ))
+            if (!(c == '_' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'))
                 TokenError(token, "Bare tokens must starts with an ASCII letter or underscore.");
 
             for (int i = 1; i < token.Length; i++)

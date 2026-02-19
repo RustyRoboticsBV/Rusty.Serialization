@@ -256,9 +256,9 @@ Color literals MUST use uppercase hexadecimal digits (`0`-`9`, `A`-`F`). Parsers
 Timestamp literals represent absolute moments in time. They are intended to express date and/or time values. The timestamp literal exists primarily to provide a dedicated, canonical form for date/time types and discourage ad-hoc solutions using strings or object literals.
 
 Timestamp literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
-- `@{year}/{month}/{day},{hour}:{minute}:{second}[timezone]@`.
-- `@{year}/{month}/{day}[timezone]@`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
-- `@{hour}:{minute}:{second}[timezone]@`. The date component MUST be assumed by a parser to be `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
+- `@{year}/{month}/{day},{hour}:{minute}:{second}@`.
+- `@{year}/{month}/{day}@`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
+- `@{hour}:{minute}:{second}@`. The date component MUST be assumed by a parser to be `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
 - `@@`. MUST be interpreted as the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
 
 Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
@@ -269,11 +269,9 @@ Each component has range and/or syntax rules that MUST be followed by a parser. 
 - Minute components MUST be valid integer values in the range `0`-`59`.
 - Second components MUST either be valid [integer](#integers) or [float](#floats). If an integer, it must be in the range `0`-`60`; if a float, the integral part must be in the range `0`-`60`. The value `60` is included to account for leap seconds; a parser SHOULD maintain the distinction between `0` and `60` if possible. Trailing zeros SHOULD be discarded by a parser.
 
-The timezone is OPTIONAL. It MUST start with a `+` plus or `-` minus sign, followed by an hour value between `0` and `23`, followed by a `:` colon, followed by a minute value between `0` and `59`. If omitted, it MUST be assumed to be equal to `+0:0`.
-
 A parser SHOULD validate calendar correctness (i.e. rejecting `@1994/2/31@`), but this is not strictly enforced by the format.
 
-Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00+05:00@`.
+Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00@`.
 
 #### Durations
 Duration literals represent relative time durations. They provide a canonical form of expressing a timespan.

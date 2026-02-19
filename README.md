@@ -113,7 +113,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_string: "abc",
     my_decimal: $1.00,
     my_color: #F08080,
-    my_timestamp: @1990/2/13,18:30:05.001+10:30@,
+    my_timestamp: @1990/2/13,18:30:05.001@,
     my_duration: 7d23h30m10s,
     my_bytes: !SGVsbG8sIHdvcmxkIQ,
     my_symbol: Wednesday,
