@@ -92,7 +92,7 @@ namespace Rusty.Serialization.CSCD
             if (node is TimestampNode t)
                 return Serialize(t);
             if (node is DurationNode d)
-                return d.Value.ToString();
+                return Serialize(d);
             if (node is BytesNode byt)
                 return Serialize(byt);
             if (node is SymbolNode sb)
@@ -111,32 +111,7 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(FloatNode node)
         {
-            string value = node.Value.ToString();
-
-            bool negative = value.StartsWith("-");
-            if (negative)
-                value = value.Substring(1);
-
-            int dotIndex = value.IndexOf('.');
-            if (dotIndex == -1)
-            {
-                dotIndex = value.Length;
-                value = value + '.';
-            }
-
-            string integer = value.Substring(0, dotIndex);
-            string fractional = value.Substring(dotIndex + 1);
-
-            integer = integer.TrimStart('0');
-
-            fractional = fractional.TrimEnd('0');
-
-            string result = integer + "." + fractional;
-
-            if (negative)
-                result = "-" + result;
-
-            return result;
+            return FormatFloat(node.Value);
         }
 
         private string Serialize(CharNode node)
@@ -197,14 +172,52 @@ namespace Rusty.Serialization.CSCD
             bool noDate = node.Value.year == 1 && node.Value.month == 1 && node.Value.day == 1;
             bool noTime = node.Value.hour == 0 && node.Value.minute == 0 && node.Value.second == 0;
 
+            string second = FormatFloat(node.Value.second).TrimEnd('.');
+            if (second == ".")
+                second = "0";
+
             if (noDate && noTime)
                 return "@@";
             else if (noTime)
                 return $"@{node.Value.year}/{node.Value.month}/{node.Value.day}@";
             else if (noDate)
-                return $"@{node.Value.hour}:{node.Value.minute}:{node.Value.second}@";
+                return $"@{node.Value.hour}:{node.Value.minute}:{second}@";
             else
-                return $"@{node.Value.year}/{node.Value.month}/{node.Value.day},{node.Value.hour}:{node.Value.minute}:{node.Value.second}@";
+                return $"@{node.Value.year}/{node.Value.month}/{node.Value.day},{node.Value.hour}:{node.Value.minute}:{second}@";
+        }
+
+        private string Serialize(DurationNode node)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (node.Value.days > 0)
+            {
+                sb.Append(node.Value.days.ToString());
+                sb.Append('d');
+            }
+
+            if (node.Value.hours > 0)
+            {
+                sb.Append(node.Value.hours.ToString());
+                sb.Append('h');
+            }
+
+            if (node.Value.minutes > 0)
+            {
+                sb.Append(node.Value.minutes.ToString());
+                sb.Append('m');
+            }
+
+            if (!node.Value.seconds.IsZero)
+            {
+                sb.Append(FormatFloat(node.Value.seconds).TrimEnd('.'));
+                sb.Append('s');
+            }
+
+            if (sb.Length == 0)
+                return "0s";
+
+            return sb.ToString();
         }
 
         private string Serialize(BytesNode node)
@@ -416,6 +429,29 @@ namespace Rusty.Serialization.CSCD
             if (value > 15)
                 throw new ArgumentOutOfRangeException(nameof(value));
             return (char)(value < 10 ? '0' + value : 'A' + (value - 10));
+        }
+
+        private static string FormatFloat(FloatValue value)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (value.negative)
+            sb.Append('-');
+
+            if (value.integral > 0)
+                sb.Append(value.integral.ToString());
+
+            sb.Append('.');
+
+            sb.Append(value.fractional.TrimEnd('0'));
+
+            if (value.exponent != 0)
+            {
+                sb.Append('e');
+                sb.Append(value.exponent);
+            }
+
+            return sb.ToString();
         }
     }
 }

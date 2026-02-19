@@ -11,9 +11,12 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Fields */
         public readonly bool negative;
-        public readonly BigInteger integral;
+        public readonly IntValue integral;
         public readonly string fractional;
-        public readonly BigInteger exponent;
+        public readonly IntValue exponent;
+
+        /* Public properties. */
+        public bool IsZero => integral == 0 && fractional.Trim('0') == "";
 
         /* Constructors */
         public FloatValue(float value)
@@ -34,7 +37,7 @@ namespace Rusty.Serialization.Core.Nodes
             exponent = val.exponent;
         }
 
-        public FloatValue(bool negative, BigInteger integral, string fractional, BigInteger exponent)
+        public FloatValue(bool negative, IntValue integral, string fractional, IntValue exponent)
         {
             this.negative = negative;
             this.integral = integral;
@@ -134,8 +137,8 @@ namespace Rusty.Serialization.Core.Nodes
                 fractionalPart = "0";
 
             // Parse components.
-            BigInteger integral = BigInteger.Parse(integralPart);
-            BigInteger exponent = BigInteger.Parse(exponentPart);
+            IntValue integral = IntValue.Parse(integralPart);
+            IntValue exponent = IntValue.Parse(exponentPart);
             string fractional = fractionalPart.ToString();
 
             return new FloatValue(negative, integral, fractional, exponent);
