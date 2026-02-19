@@ -45,6 +45,24 @@ namespace Rusty.Serialization.Core.Nodes
                     return $"-{hours}:{minutes}";
             }
             public override int GetHashCode() => HashCode.Combine(sign, hours, minutes);
+
+            public static TimeZone Parse(ReadOnlySpan<char> span)
+            {
+                span = span.Trim();
+
+                if (span.Length == 0 || (span[0] != '+' && span[0] != '-'))
+                    throw new FormatException("Timezone substrings must start with '+' or '-'.");
+
+                int endOfHours = span.IndexOf(':');
+                if (endOfHours == -1)
+                    throw new FormatException("Missing : in timezone substring.");
+
+                bool sign = span[0] == '+';
+                IntValue hours = IntValue.Parse(span.Slice(1, endOfHours));
+                IntValue minutes = IntValue.Parse(span.Slice(endOfHours + 1));
+
+                return new TimeZone(sign, hours, minutes);
+            }
         }
 
         /* Constructors */
@@ -101,11 +119,20 @@ namespace Rusty.Serialization.Core.Nodes
             int endOfHour = str.IndexOf(':', endOfDay + 1);
             int endOfMinute = str.IndexOf(':', endOfHour + 1);
 
-            if (str.IndexOf('-', 1) != -1)
-                throw new FormatException($"Bad timestamp \"{str}\": only the first character may be a minus sign.");
-
             if (endOfYear < 0 || endOfMonth < 0 || endOfDay < 0 || endOfHour < 0 || endOfMinute < 0)
                 throw new FormatException($"Bad timestamp \"{str}\": invalid separators.");
+
+            TimeZone timezone = TimeZone.UTC0;
+            for (int i = endOfMinute + 1; i < span.Length; i++)
+            {
+                bool notAnExponent = !(i > 0 && (span[i - 1] == 'e' || span[i - 1] == 'E'));
+                if ((span[i] == '+' || span[i] == '-') && notAnExponent)
+                {
+                    timezone = TimeZone.Parse(span.Slice(i));
+                    span = span.Slice(0, i);
+                    break;
+                }
+            }
 
             IntValue year = IntValue.Parse(span.Slice(0, endOfYear));
             IntValue month = IntValue.Parse(span.Slice(endOfYear + 1, endOfMonth - endOfYear - 1));
@@ -114,7 +141,7 @@ namespace Rusty.Serialization.Core.Nodes
             IntValue minute = IntValue.Parse(span.Slice(endOfHour + 1, endOfMinute - endOfHour - 1));
             FloatValue second = FloatValue.Parse(span.Slice(endOfMinute + 1));
 
-            return new TimestampValue(year, month, day, hour, minute, second);
+            return new TimestampValue(year, month, day, hour, minute, second, timezone);
         }
     }
 }
