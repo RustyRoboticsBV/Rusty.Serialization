@@ -40,22 +40,33 @@ CSCD enforces this restricted character set to ensure that serialized files rema
 ### 1.2  Top-Level Value
 A serialized CSCD string MUST contain exactly one top-level value, which forms the root of the serialized representation. Parsers MUST interpret this top-level value as the entry point for deserialization. The top-level value MAY be annotated with metadata. Values that support nested content MAY contain nested values.
 
-### 1.3 Format Marker
-Strings of CSCD MAY be marked as such by adding the OPTIONAL header text `~CSCD~` before the root value and its metadata.
+### 1.3 Format Markers
 
-If present, the format marker MUST appear before the top-level value and MAY be preceded only by whitespace and/or comments. It MUST NOT appear more than once.
+#### Header
+Strings of CSCD MAY be marked as such by adding the OPTIONAL header text `~CSCD~` before the top-level value,  its metadata and any leading comments.
+
+If present, the header MUST appear before the top-level value and MAY be preceded only by whitespace. It MUST NOT appear more than once and MUST NOT be preceded by comments or any literal.
 
 Parsers that handle multiple formats MUST use this marker to recognize an input as CSCD. Parsers that only handle CSCD SHOULD NOT require the marker; serializers SHOULD always emit it regardless.
 
 The sequence `~CSCD~` has special meaning only when it appears before the top-level value. If the same sequence appears elsewhere (including inside of delimited literals) it MUST be treated as ordinary literal content.
 
+#### Footer
+The OPTIONAL footer text `~/CSCD~` MAY be used to denote the end of a string of CSCD after the top-level value and any trailing comments.
+
+If present, the footer MUST appear after the top-level value and MAY be followed only be whitespace. It MUST NOT appear more than once and MUST NOT be preceded by comments or any literal.
+
+Parsers MAY use it to detect the end of an embedded string of CSCD. Parsers that handle non-embedded CSCD SHOULD NOT require the marker; serializers SHOULD emit it regardless.
+
+The sequence `~/CSCD~` has special meaning only when it appears after the top-level value. If the same sequence appears elsewhere (including inside of delimited literals) it MUST be treated as ordinary literal content.
+
 ### 1.4 Whitespace
-Whitespace MAY appear between literals and punctuation (`, : [ ] { } < >`) for formatting purposes. Whitespace MAY also appear before and after the top-level value. Unless otherwise stated, whitespace MUST NOT break up literals that are multiple characters long.
+Whitespace MAY appear between literals and punctuation (`, : [ ] { } < >`) for formatting purposes. Whitespace MAY also appear before and after the top-level value, and even before the header format marker and after the footer format marker. Unless otherwise stated, whitespace MUST NOT break up literals that are multiple characters long.
 
 Serializers SHOULD NOT emit whitespace in situations where readability is not important.
 
 ### 1.5 Comments
-Comments MUST start and end with `;;` two semicolons (e.g. `;; Comment text ;;`). They MAY appear anywhere where whitespace may appear; parsers MUST treat them as whitespace and strip them - they SHOULD not preserve comments on reserialization. Comments MUST NOT be nested, but MAY consist of multiple lines.
+Comments MUST start and end with `;;` two semicolons (e.g. `;; Comment text ;;`). They MAY appear between literals and punctuation (`, : [ ] { } < >`), as well as before and after the top-level value. Serializers SHOULD NOT preserve comments on reserialization. Comments MUST NOT be nested, but MAY consist of multiple lines.
 
 Comments MUST NOT be recognized inside delimited literals. Within such literals, substrings that match the comment syntax MUST be treated as literal content.
 
