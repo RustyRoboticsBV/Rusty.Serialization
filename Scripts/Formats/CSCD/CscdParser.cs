@@ -48,18 +48,45 @@ namespace Rusty.Serialization.CSCD
         {
             INode root = null;
 
-            // Skip format marker (if present).
-            lexer.GetNextToken(text, out Token marker);
-            if (!marker.Text.Equals("~CSCD~"))
+            // Skip header format marker (if present).
+            lexer.GetNextToken(text, out Token first);
+            if (!first.Text.Equals("~CSCD~"))
                 lexer.ResetCursor();
 
             // Root.
+            bool footered = false;
             while (lexer.GetNextToken(text, out Token token))
             {
-                if (root != null)
-                    throw new FormatException($"Token found after root value: {token.ToString()}.");
+                // Illegal header.
+                if (token.Text.Equals("~CSCD~"))
+                    TokenError(token, "Encountered header marker after start of content.");
 
-                root = ParseToken(text, token, lexer);
+                // Footer.
+                else if (token.Text.Equals("~/CSCD~"))
+                {
+                    if (root != null)
+                    {
+                        if (!footered)
+                            footered = true;
+                        else
+                            TokenError(token, "Duplicate footer marker.");
+                    }
+                    else
+                        TokenError(token, "No top-level value before footer marker.");
+                }
+
+                else if (footered)
+                    TokenError(token, "Encountered token after footer marker.");
+
+                // Comments (skip).
+                else if (token.Text.EnclosedWith(";;"))
+                    continue;
+
+                // Top-level value.
+                else if (root != null)
+                    TokenError(token, "Only one top-level value is allowed.");
+                else
+                    root = ParseToken(text, token, lexer);
             }
 
             // Ensure legal root value.
@@ -80,9 +107,11 @@ namespace Rusty.Serialization.CSCD
         /* Protected methods. */
         protected static INode ParseToken(TextSpan text, Token token, CscdLexer lexer)
         {
-            // Format marker.
+            // Format markers.
             if (token.Text.Equals("~CSCD~"))
-                TokenError(token, "Format marker may not appear after first token.");
+                TokenError(token, "Format header marker may not appear after first token.");
+            if (token.Text.Equals("~/CSCD~"))
+                TokenError(token, "Format footer marker may not appear inside of the top-level value.");
 
             // ID.
             if (token.Text.StartsWith('`') && token.Text.EndsWith('`'))

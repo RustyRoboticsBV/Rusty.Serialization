@@ -33,8 +33,12 @@ namespace Rusty.Serialization.CSCD
             // Start parsing next token.
             char c = Current(text);
 
+            // Comments.
+            if (c == ';' && Next(text) == ';')
+                token = MakeTokenAndAdvance(text, ReadComment(text));
+
             // Interpunction.
-            if (c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>')
+            else if (c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>')
                 token = MakeTokenAndAdvance(text, 1);
 
             // Delimited word tokens.
@@ -81,43 +85,46 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Check if the a substring starts with a whitespace or comment at some index.
         /// </summary>
-        private static bool StartsWithWhitespaceOrComment(TextSpan text, int index)
+        private static bool StartsWithWhitespace(TextSpan text, int index)
         {
             if (index >= text.Length)
                 return false;
 
             char c = text[index];
-            return c == ' ' || c == '\t' || c == '\n' || c == '\r' || text.StartsWith(index, CommentStart);
+            return c == ' ' || c == '\t' || c == '\n' || c == '\r';
         }
 
         /// <summary>
-        /// Skip whitespace. Comments are considered to be whitespace.
+        /// Skip whitespace.
         /// </summary>
         private void SkipWhitespace(TextSpan text)
         {
             if (IsAtEnd(text))
                 return;
 
-            while (StartsWithWhitespaceOrComment(text, Cursor))
+            while (StartsWithWhitespace(text, Cursor))
             {
-                // Comment.
-                if (text.StartsWith(Cursor, CommentStart))
-                {
-                    int end = text.FirstIndexOf(Cursor + CommentStart.Length, CommentEnd);
-                    if (end == -1)
-                        throw new FormatException($"Unclosed comment at {Cursor}: {new string(text.Slice(Cursor))}.");
-
-                    Advance(end - Cursor + CommentEnd.Length);
-                }
-
-                // Whitespace.
-                else
-                    Advance();
+                Advance();
 
                 // Stop on end.
                 if (IsAtEnd(text))
                     return;
             }
+        }
+
+        /// <summary>
+        /// Read a delimited lexeme and return the length. The cursor is NOT advanced.
+        /// </summary>
+        private int ReadComment(TextSpan text)
+        {
+            for (int i = Cursor + 2; i < text.Length - 1; i++)
+            {
+                // Closing delimiter.
+                if (text[i] == ';' && text[i + 1] == ';')
+                    return i - Cursor + 2;
+            }
+
+            throw new FormatException($"Unclosed comment at {Cursor}: {new string(text.Slice(Cursor))}.");
         }
 
         /// <summary>
@@ -149,7 +156,7 @@ namespace Rusty.Serialization.CSCD
             for (int i = Cursor; i < text.Length; i++)
             {
                 // Check for trailing whitespace.
-                if (StartsWithWhitespaceOrComment(text, i))
+                if (StartsWithWhitespace(text, i))
                     return i - Cursor;
 
                 // Check for interpunction.

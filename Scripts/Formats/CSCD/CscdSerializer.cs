@@ -51,7 +51,11 @@ namespace Rusty.Serialization.CSCD
             string str = Serialize(tree.Root, settings.PrettyPrint);
 
             if (settings.IncludeFormatHeader)
-                str = "~CSCD~" + (settings.PrettyPrint ? "\n" : "") + str;
+            {
+                str = "~CSCD~" + (settings.PrettyPrint ? "\n" : "")
+                    + str
+                    + (settings.PrettyPrint ? "\n" : "") + "~/CSCD~";
+            }
 
             return str;
         }
