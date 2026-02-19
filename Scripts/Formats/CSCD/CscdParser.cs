@@ -31,7 +31,7 @@ namespace Rusty.Serialization.CSCD
         {
             { 't', '\t' },
             { 'n', '\n' },
-            { 's', ' ' },
+            { 'r', '\r' },
             { '"', '"' },
             { '&', '&' },
             { '\'', '\'' },

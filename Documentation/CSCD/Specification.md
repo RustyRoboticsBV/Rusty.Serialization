@@ -75,14 +75,14 @@ Escape sequences MAY appear in literals that support them. Literals MUST NOT all
 
 The following escape sequences MUST be recognized by parsers if they appear in a literal that allows escape sequences:
 
-|Character  |Code point |Escape sequence|       |Character  |Code point |Escape sequence|
-|-----------|-----------|---------------|-------|-----------|-----------|---------------|
-|tab        |`0x09`     |`\t`           |       |`(`        |`0x28`     |`\(`           |
-|line feed  |`0x0A`     |`\n`           |       |`)`        |`0x29`     |`\)`           |
-|space      |`0x20`     |`\s`           |       |`*`        |`0x2A`     |`\*`           |
-|`"`        |`0x22`     |`\"`           |       |`\`        |`0x5C`     |`\\`           |
-|`&`        |`0x26`     |`\&`           |       |`^`        |`0x5E`     |`\^`           |
-|`'`        |`0x27`     |`\'`           |       |`` ` ``    |`0x60`     |`` \` ``       |
+|Character      |Code point |Escape sequence|   |Character      |Code point |Escape sequence|
+|---------------|-----------|---------------|---|---------------|-----------|---------------|
+|Tab            |`0x09`     |`\t`           |   |`(`            |`0x28`     |`\(`           |
+|Line Feed      |`0x0A`     |`\n`           |   |`)`            |`0x29`     |`\)`           |
+|Carriage Return|`0x0D`     |`\r`           |   |`*`            |`0x2A`     |`\*`           |
+|`"`            |`0x22`     |`\"`           |   |`\`            |`0x5C`     |`\\`           |
+|`&`            |`0x26`     |`\&`           |   |`^`            |`0x5E`     |`\^`           |
+|`'`            |`0x27`     |`\'`           |   |`` ` ``        |`0x60`     |`` \` ``       |
 
 Parsers MUST recognize and correctly interpret all escape sequences from this table when they appear in a literal that allows escape sequences. Invalid escape sequences MUST be rejected by a parser.
 
@@ -203,7 +203,7 @@ Infinity values MUST be encoded using one of two literals: `inf` for positive in
 NaN values MUST be encoded using the literal nan. NaN literals MUST be lowercase.
 
 #### Characters
-Character literals MUST be enclosed in `'` single-quotes. A character literal MUST contain zero or one character (escape sequences count as one character). The empty character literal `''` MUST be interpreted as the character `0x00` (ASCII null).
+Character literals MUST be enclosed in `'` single-quotes. A character literal MUST contain zero or one character (escape sequences count as one character). The empty character literal `''` MUST be interpreted as the character `0x00` (ASCII null, also represented as `'\0;'`).
 
 The following characters MUST NOT appear in character literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
