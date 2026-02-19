@@ -113,22 +113,24 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_string: "abc",
     my_decimal: $1.00,
     my_color: #F08080,
-    my_timestamp: @1990/2/13,18:30:05.001@,
+    my_timestamp: @1990/2/13,18:30:05.001+10:30@,
     my_duration: 7d23h30m10s,
     my_bytes: !SGVsbG8sIHdvcmxkIQ,
     my_symbol: Wednesday,
-    my_list: [1, 2., "def"],
+    my_list: [1, 2.e-5, "def"],
     my_dictionary: {
         10: 1.,
         'A': "ABC",
         [1, 2, 3] : false
     },
     my_object: `my_id` <
-        a: 0,
+        a: 1.0e15,
         b: '\1F4A9;',
         c: @14:2:10.005@,
-        d: Red,
-        ^MyBaseClass^ d: 0s
+        d: #0F0,
+        e: Red,
+        ^MyBaseClass^ e: 0s,
+        f: @1990/1/5@
     >,
     my_reference: &my_id&
 >

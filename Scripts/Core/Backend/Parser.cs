@@ -117,9 +117,13 @@ namespace Rusty.Serialization.Core.Codecs
         /// </summary>
         protected static NumericType GetNumericType(TextSpan span, NumericParseMode mode = NumericParseMode.AllowTrailingPointOnly)
         {
+            if (span.EndsWith('e'))
+                return NumericType.NaN;
+
             // First classify according to the most permissive mode (AllowLonePoint).
             int i = 0;
             bool fractional = false;
+            bool scientific = false;
 
             if (span.Length == 0)
                 return NumericType.NaN;
@@ -136,11 +140,29 @@ namespace Rusty.Serialization.Core.Codecs
             // Check remaining characters.
             for (; i < span.Length; i++)
             {
+                // Negative exponent.
+                if (span[i] == '-')
+                {
+                    if (i > 0 && span[i - 1] == 'e')
+                        continue;
+                    else
+                        return NumericType.NaN;
+                }
+
                 // Decimal point.
                 if (span[i] == '.')
                 {
-                    if (!fractional)
+                    if (!fractional && !scientific)
                         fractional = true;
+                    else
+                        return NumericType.NaN;
+                }
+
+                // Scientific exponent.
+                else if (span[i] == 'e')
+                {
+                    if (!scientific)
+                        scientific = true;
                     else
                         return NumericType.NaN;
                 }
@@ -150,7 +172,7 @@ namespace Rusty.Serialization.Core.Codecs
                     return NumericType.NaN;
             }
 
-            NumericType type = fractional ? NumericType.Real : NumericType.Int;
+            NumericType type = fractional || scientific ? NumericType.Real : NumericType.Int;
             if (type == NumericType.Int)
                 return type;
 

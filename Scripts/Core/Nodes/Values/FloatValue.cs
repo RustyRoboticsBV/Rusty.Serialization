@@ -98,20 +98,28 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
+            string sign = negative ? "-" : "";
+
             // Integers.
             if (exponent == 0)
-                return (negative ? "-" : "") + mantissa.ToString(CultureInfo.InvariantCulture) + ".0";
+                return sign + mantissa.ToString(CultureInfo.InvariantCulture) + ".0";
             
             // Fractionals.
             string digits = mantissa.ToString(CultureInfo.InvariantCulture);
+
+            int sciExp = digits.Length - exponent - 1;
+
+            if (sciExp <= -4 || sciExp >= digits.Length)
+            {
+                string sciMantissa = digits.Length == 1 ? digits : digits[0] + "." + digits.Substring(1);
+                return sign + sciMantissa + "e" + sciExp.ToString(CultureInfo.InvariantCulture);
+            }
 
             if (digits.Length <= exponent)
                 digits = digits.PadLeft(exponent + 1, '0');
 
             int point = digits.Length - exponent;
-            string result = digits.Substring(0, point) + "." + digits.Substring(point);
-
-            return negative ? "-" + result : result;
+            return sign + digits.Substring(0, point) + "." + digits.Substring(point);
         }
 
         public override int GetHashCode() => HashCode.Combine(mantissa, exponent);
@@ -128,23 +136,48 @@ namespace Rusty.Serialization.Core.Nodes
         {
             span = span.Trim();
 
+            // Figure out format.
             int pointIndex = span.IndexOf('.');
+            int exponentIndex = span.IndexOf('e');
+            if (pointIndex >= 0 && exponentIndex >= 0 && exponentIndex < pointIndex)
+                throw new FormatException($"Encountered e before decimal point in float value '{new string(span)}'.");
 
-            if (pointIndex == -1)
-            {
-                bool neg = span.StartsWith("-");
-                BigInteger m = BigInteger.Parse(span);
-                return new FloatValue(neg, BigInteger.Abs(m), 0);
-            }
+            // Split integer part.
+            ReadOnlySpan<char> integer;
+            if (pointIndex == 0)
+                integer = "0";
+            else if (pointIndex >= 0)
+                integer = span.Slice(0, pointIndex);
+            else if (exponentIndex >= 0)
+                integer = span.Slice(0, exponentIndex);
+            else
+                integer = span;
 
-            ReadOnlySpan<char> integer = span.Slice(0, pointIndex);
-            ReadOnlySpan<char> fractional = span.Slice(pointIndex + 1);
+            // Split fractional part.
+            ReadOnlySpan<char> fractional;
+            if (pointIndex >= 0 && (pointIndex == span.Length - 1 || pointIndex == exponentIndex - 1))
+                fractional = "0";
+            else if (exponentIndex >= 0)
+                fractional = span.Slice(pointIndex + 1, exponentIndex - (pointIndex + 1));
+            else if (pointIndex >= 0)
+                fractional = span.Slice(pointIndex + 1);
+            else
+                fractional = "0";
 
+            // Split scientific exponent part.
+            ReadOnlySpan<char> exponent;
+            if (exponentIndex >= 0)
+                exponent = span.Slice(exponentIndex + 1);
+            else
+                exponent = "0";
+
+            // Figure out sign.
             bool negative = integer.StartsWith("-");
             if (negative)
                 integer = integer.Slice(1);
 
-            int scale = fractional.Length;
+            // Parse.
+            int scale = fractional.Length - int.Parse(exponent);
 
             if (scale == 0)
                 return new FloatValue(negative, BigInteger.Parse(integer), 0);
@@ -189,6 +222,16 @@ namespace Rusty.Serialization.Core.Nodes
             normNegative = negative;
             normMantissa = mantissa;
             normExponent = exponent;
+        }
+
+        private static double RoundToSignificantDigits(double value, int significantDigits)
+        {
+            if (value == 0)
+                return 0;
+
+            // Find the scale to round to
+            double scale = Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(value))) + 1);
+            return Math.Round(value / scale, significantDigits) * scale;
         }
     }
 }
