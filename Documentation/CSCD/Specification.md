@@ -33,6 +33,8 @@ Characters outside these ranges MUST not appear directly in serialized text. The
 
 Parsers MUST reject input strings containing code points outside of the allowed character set before processing escape sequences. After escape processing, parsers MUST accept any valid Unicode code point allowed by the target platform.
 
+CSCD enforces this restricted character set to ensure that serialized files remain editor-safe and diffable across all platforms and environments.
+
 **Note**: The specification places no restrictions on how the text is stored or transmitted. Implementations may use any encoding (UTF-8, UTF-16, ISO-8859-1, etc.) as long as the serialized text, when interpreted as code points, obeys the rules above.
 
 ### 1.2  Top-Level Value
@@ -172,16 +174,16 @@ Examples:
 #### Floats
 Float literals represent real numeric values.
 
-The following format MUST be followed: `[-][integer].[fractional]`. Only the decimal point MUST be present to form a valid float literal. The integer and fractional part MUST consist of zero or more decimal digits (`0`-`9`). An optional leading `-` minus sign MAY be used to indicate a negative value.
+The following format MUST be followed: `[-][integer].[fractional][e[-]exponent]`. Only the decimal point MUST be present to form a valid float literal. The integer and fractional parts MUST consist of zero or more decimal digits (`0`-`9`). The exponent MUST start with an `e`, followed by an OPTIONAL `-` minus sign, followed by one or more decimal digits (`0`-`9`). Float literals MAY start with a leading `-` minus sign to indicate a negative value.
 
-The integer part and/or fractional part MAY be omitted if equal to zero and MUST be interpreted as such by parsers. Consequently, the literal `.` MUST be interpreted as `0.0`, and `-.` MUST be interpreted as `-0.0.` Leading and trailing zeros SHOULD be discarded by a parser.
+The integer part, fractional and exponent part MAY be omitted if equal to zero and MUST be interpreted as such by parsers. Consequently, the literal `.` MUST be interpreted as `0.0`, and `-.` MUST be interpreted as `-0.0.` Leading and trailing zeros SHOULD be discarded by a parser.
 
-Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
+Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction. Serializers SHOULD generally avoid emitting the exponent notation except for numbers with a large number of zeros (e.g. `1.e10` instead of `10000000000.0`).
 
 Examples:
-- `0.0`, `000.000`, `0.`, `.0` and `.` are all valid representations of the number `0.0`.
-- `-0.0`, `-000.000`, `-0.`, `-.0` and `-.` are all valid representations of the number `-0.0`.
-- `-0.5`, `-.5` and `-00.50` are all valid representations of the number `-0.5`.
+- `0.0`, `000.000`, `0.`, `.0`, `.`, `0.0e0` are all valid representations of the number `0.0`.
+- `-0.0`, `-000.000`, `-0.`, `-.0`, `-.` and `-.e0` are all valid representations of the number `-0.0`.
+- `-0.5`, `-.5`, `-00.50` and `-5.0e-1` are all valid representations of the number `-0.5`.
 
 #### Infinities
 Infinity values MUST be encoded using one of two literals: `inf` for positive infinity and `-inf` for negative infinity. Infinity literals MUST be lowercase.
@@ -243,10 +245,10 @@ Color literals MUST use uppercase hexadecimal digits (`0`-`9`, `A`-`F`). Parsers
 Timestamp literals represent absolute moments in time. They are intended to express date and/or time values. The timestamp literal exists primarily to provide a dedicated, canonical form for date/time types and discourage ad-hoc solutions using strings or object literals.
 
 Timestamp literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
-- `@{year}/{month}/{day},{hour}:{minute}:{second}@`.
-- `@{year}/{month}/{day}@`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
-- `@{hour}:{minute}:{second}@`. The date component MUST be assumed by a parser to be `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
-- `@@`. MUST be interpreted as a the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
+- `@{year}/{month}/{day},{hour}:{minute}:{second}[timezone]@`.
+- `@{year}/{month}/{day}[timezone]@`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
+- `@{hour}:{minute}:{second}[timezone]@`. The date component MUST be assumed by a parser to be `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
+- `@@`. MUST be interpreted as the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
 
 Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
 - Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 1 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value. The year `0` MUST NOT be used.
@@ -256,9 +258,11 @@ Each component has range and/or syntax rules that MUST be followed by a parser. 
 - Minute components MUST be valid integer values in the range `0`-`59`.
 - Second components MUST either be valid [integer](#integers) or [float](#floats). If an integer, it must be in the range `0`-`60`; if a float, the integral part must be in the range `0`-`60`. The value `60` is included to account for leap seconds; a parser SHOULD maintain the distinction between `0` and `60` if possible. Trailing zeros SHOULD be discarded by a parser.
 
+The timezone is OPTIONAL. It MUST start with a `+` plus or `-` minus sign, followed by an hour value between `0` and `23`, followed by a `:` colon, followed by a minute value between `0` and `59`. If omitted, it MUST be assumed to be equal to `+0:0`.
+
 A parser SHOULD validate calendar correctness (i.e. rejecting `@1994/2/31@`), but this is not strictly enforced by the format.
 
-Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00@`.
+Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00+05:00@`.
 
 #### Durations
 Duration literals represent relative time durations. They provide a canonical form of expressing a timespan.
@@ -273,7 +277,7 @@ Additionally, the first character may be a minus sign for negative durations (e.
 
 Terms that equal 0 MAY be omitted, though at least 1 term MUST remain. For durations of zero seconds, minutes, hours and days, any of the following MAY be used: `0d`, `0h`, `0m` or `0s`.
 
-The order MUST be days, hours, minutes and seconds (i.e. `5s10m` is invalid).
+The term order MUST be days, hours, minutes and seconds (i.e. `5s10m` is invalid).
 
 Examples: `5d1s`, `23h`, `-.s`, `100d10h59m0s`.
 
@@ -326,7 +330,7 @@ The following characters MUST NOT appear in reference literals and MUST instead 
 
 All other characters from the character set MAY appear unescaped.
 
-It is up to parsers to decide whether a reference should be deserialized as a pointer, reference, copy, etc.
+It is up to parsers to decide whether a reference should be deserialized as a pointer, a reference, a copy, etc.
 
 ### 2.3. Collections
 
@@ -357,7 +361,7 @@ Example: `{"a":"abc",'b':"def",["c"]:"hij"}`.
 #### Objects
 Object literals represent a collection of name-value pairs, meant to model structured records.
 
-An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by `,` commas, and names and values MUST be separated by a `:` colon. Trailing commas are MUST NOT appear in an object (e.g., `<id:0,>` is invalid).
+An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by `,` commas, and names and values MUST be separated by a `:` colon. Trailing commas MUST NOT appear in an object (e.g., `<id:0,>` is invalid).
 
 Member names MUST be symbols (delimited or bare). To maximize generality, member names are NOT required to be unique by the format. Member names MUST NOT be annotated with a type label and/or ID, but they MAY be annotated with a scope.
 
