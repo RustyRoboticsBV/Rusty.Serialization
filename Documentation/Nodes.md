@@ -8,6 +8,7 @@ The node layer recognizes the following nodes listed below. Each node correspond
 
 - **ID**: a reference ID, used to mark shared or cyclic reference objects.
 - **Type**: a type label, used to disambiguify polymorphic types.
+- **Offset**: a UTC time offset, used to add timezone information to a timestamp node.
 - **Scope**: a class/struct member scope, used to disambiguify shadowed fields and properties.
 
 ### Primitives

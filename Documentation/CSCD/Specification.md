@@ -109,7 +109,7 @@ A valid serialized CSCD string MUST contain exactly one top-level value. This to
 ### 2.1. Metadata
 
 #### IDs
-IDs MAY be placed before any concrete value or type literal, and are written as a name between `` ` `` backticks. Values annotated with an ID can be referenced elsewhere using a [reference literal](#references). IDs MUST NOT be applied to reference literals. IDs MUST be globally unique and are case-sensitive.
+IDs MAY be placed before any concrete value, type or offset literal, and are written as a name between `` ` `` backticks. Values annotated with an ID can be referenced elsewhere using a [reference literal](#references). IDs MUST NOT be applied to reference literals. IDs MUST be globally unique and are case-sensitive.
 
 The following characters MUST NOT appear in ID literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
@@ -126,7 +126,7 @@ Serializers SHOULD emit IDs only when a single object is referenced multiple tim
 Examples: `` `my_referenced_int`5``, `` `my_referenced_object`<a:0,b:"abc">``, `` `my_referenced_typed_value`  (MyStringType)"abcdefg"``
 
 #### Types
-Type labels MAY be placed before any value, and are written as a name between `()` parentheses. Type labels act as hints for parsers, indicating what kind of object was originally serialized. The format does not interpret or validate type names; it is up to the parser to map a type name to the corresponding runtime type.
+Type labels MAY be placed before any concrete value or offset literal, and are written as a name between `()` parentheses. Type labels act as hints for parsers, indicating what kind of object was originally serialized. The format does not interpret or validate type names; it is up to the parser to map a type name to the corresponding runtime type.
 
 The following characters MUST NOT appear in type literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
@@ -138,7 +138,7 @@ The following characters MUST NOT appear in type literals and MUST instead be re
 
 All other characters from the character set MAY appear unescaped.
 
-Type labels MUST be immediately followed by a value. They MUST NOT be followed by an ID or another type. Type labels MAY appear inside collections.
+Type labels MUST be immediately followed by a concrete value or offset literal. They MUST NOT be followed by an ID or another type. Type labels MAY appear inside collections.
 
 Serializers SHOULD only emit type labels when necessary to disambiguate the type of a value.
 
@@ -160,6 +160,20 @@ All other characters from the character set MAY appear unescaped.
 Serializers SHOULD emit scopes only when an object contains multiple members with the same name.
 
 Examples: `<^my_scope^my_member_name:"my_member_value>"`, `<^scope\^^a:0,a:1>`
+
+#### Offsets
+Offsets MAY be placed before any [timestamp](#timestamps) literal, and represent a time offset relative to UTC+0 (Greenwich Mean Time). Offsets MUST NOT appear before any other literal type, and MUST be followed by a timestamp. When attached to a timestamp, they mark that timestamp as being associated with that offset.
+
+Three notations are supported:
+- `|+{hours}[:{minutes}]|` or `|-{hours}[:{minutes}]|`: full notation.
+- `|+{hours}|` or `|-{hours}|`: omitted minutes. The minutes MUST be interpreted as `0`.
+- `|Z|`: shorthand of `|+00:00|`.
+
+When present, the hours and minutes MUST be comprised of one or more digits (`0`-`9`). The hours MUST be in the range `0`-`23`, the minutes MUST be in the range `0`-`59`. 
+
+Parsers MUST preserve offset information if the runtime type allows for it.
+
+Examples: `|-2:30| @2000/5/1,13:00:00@`, `|+5| @1830/11/10@`, `|Z| @09:45:10@`.
 
 ### 2.2. Primitives
 
@@ -289,7 +303,7 @@ A parser SHOULD validate calendar correctness (i.e. rejecting `@1994/2/31@`), bu
 Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00@`.
 
 #### Durations
-Duration literals represent relative time durations and timezone offsets. They provide a canonical form of expressing a timespan.
+Duration literals represent relative time durations. They provide a canonical form of expressing a timespan.
 
 Duration literals MUST consist of 1-4 terms:
 - `{days}d`: the number of days, which MUST be a valid integer larger than or equal to `0`.

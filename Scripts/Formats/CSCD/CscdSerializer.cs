@@ -67,6 +67,8 @@ namespace Rusty.Serialization.CSCD
                 return $"`{FormatText(id.Name, idEscapes)}`{Serialize(id.Value, prettyPrinting)}";
             if (node is TypeNode type)
                 return $"({FormatText(type.Name, typeEscapes)}){Serialize(type.Value, prettyPrinting)}";
+            if (node is OffsetNode offset)
+                return Serialize(offset);
             if (node is ScopeNode scope)
                 return $"^{FormatText(scope.Name, scopeEscapes)}^{Serialize(scope.Value, prettyPrinting)}";
             if (node is NullNode)
@@ -107,6 +109,23 @@ namespace Rusty.Serialization.CSCD
                 return Serialize(obj, prettyPrinting);
 
             throw new ArgumentException($"Unexpected node of type {node.GetType()}.");
+        }
+
+        private string Serialize(OffsetNode node)
+        {
+            string sign = node.Offset.sign ? "+" : "-";
+
+            // UTC-0.
+            if (node.Offset.hours == 0 && node.Offset.minutes == 0)
+                return "|Z|" + Serialize(node.Time);
+
+            // Hours only.
+            if (node.Offset.minutes == 0)
+                return $"|{sign}{node.Offset.hours}|" + Serialize(node.Time);
+
+            // Hours and minutes.
+            else
+                return $"|{sign}{node.Offset.hours}:{node.Offset.minutes}|" + Serialize(node.Time);
         }
 
         private string Serialize(FloatNode node)

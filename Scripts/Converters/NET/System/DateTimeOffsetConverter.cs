@@ -7,20 +7,20 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET date/time + offset converter.
     /// </summary>
-    public class DateTimeOffsetConverter : Core.Conversion.Converter<DateTimeOffset, ListNode>
+    public class DateTimeOffsetConverter : Core.Conversion.Converter<DateTimeOffset, OffsetNode>
     {
         /* Protected method. */
-        protected override ListNode CreateNode(DateTimeOffset obj, CreateNodeContext context)
+        protected override OffsetNode CreateNode(DateTimeOffset obj, CreateNodeContext context)
         {
-            INode dateTime = context.CreateNode(obj.DateTime);
-            INode offset = context.CreateNode(obj.Offset);
-            return new ListNode(dateTime, offset);
+            TimestampNode timestamp = (TimestampNode)context.CreateNode(obj.DateTime);
+            OffsetValue offset = new OffsetValue(obj.Offset.Ticks < 0, obj.Offset.Hours, obj.Offset.Minutes);
+            return new OffsetNode(offset, timestamp);
         }
 
-        protected override DateTimeOffset CreateObject(ListNode node, CreateObjectContext context)
+        protected override DateTimeOffset CreateObject(OffsetNode node, CreateObjectContext context)
         {
-            DateTime dateTime = context.CreateObject<DateTime>(node.Elements[0]);
-            TimeSpan timeSpan = context.CreateObject<TimeSpan>(node.Elements[1]);
+            DateTime dateTime = context.CreateObject<DateTime>(node.Time);
+            TimeSpan timeSpan = new TimeSpan((int)node.Offset.hours, (int)node.Offset.minutes, 0);
             return new DateTimeOffset(dateTime, timeSpan);
         }
     }
