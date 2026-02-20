@@ -145,6 +145,23 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.EnclosedWith('^'))
                 TokenError(token, "Scopes may only appear before object member names.");
 
+            // Offset.
+            if (token.Text.EnclosedWith('|'))
+            {
+                OffsetNode offset = ParseOffset(token);
+
+                // Get attached timestamp.
+                if (!lexer.GetNextToken(text, out Token next))
+                    TokenError(next, "An offset must be followed by another token.");
+
+                if (!next.Text.EnclosedWith('@'))
+                    TokenError(next, "Offsets must be followed by a timestamp.");
+
+                offset.Time = ParseTimestamp(next);
+
+                return offset;
+            }
+
             // Null.
             if (token.Text.Equals("null"))
                 return new NullNode();
@@ -228,6 +245,26 @@ namespace Rusty.Serialization.CSCD
         }
 
         /* Private methods. */
+        private static OffsetNode ParseOffset(Token token)
+        {
+            TextSpan contents = token.Text.Slice(1, token.Text.Length - 2);
+
+            if (contents.Length == 0)
+                TokenError(token, "Empty offset literal.");
+
+            OffsetValue value = new OffsetValue();
+            try
+            {
+                value = OffsetValue.Parse(contents);
+            }
+            catch (Exception ex)
+            {
+                TokenError(token, ex.Message);
+            }
+
+            return new OffsetNode(value, null);
+        }
+
         /// <summary>
         /// Parse a char literal.
         /// </summary>

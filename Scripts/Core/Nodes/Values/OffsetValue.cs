@@ -34,20 +34,16 @@ namespace Rusty.Serialization.Core.Nodes
         public override bool Equals(object obj) => obj is OffsetValue other && Equals(other);
         public bool Equals(OffsetValue other) => sign == other.sign && hours == other.hours && minutes == other.minutes;
 
-        public static OffsetValue Parse(string str)
+        public static OffsetValue Parse(string str) => Parse(str.AsSpan());
+        public static OffsetValue Parse(ReadOnlySpan<char> span)
         {
-            if (string.IsNullOrEmpty(str))
-                throw new FormatException("String cannot be empty.");
-
-            ReadOnlySpan<char> span = str.AsSpan();
-
             // UTC-0.
-            if (span == "Z")
+            if (span == "" || span == "Z")
                 return new OffsetValue(true, 0, 0);
 
             // Sign.
             if (span[0] != '+' && span[0] != '-')
-                throw new FormatException("Must start with sign.");
+                throw new FormatException("Must start with + or - sign.");
             bool sign = span[0] == '+';
             span = span.Slice(1);
 

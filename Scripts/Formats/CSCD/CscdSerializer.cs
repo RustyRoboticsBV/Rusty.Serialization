@@ -67,10 +67,10 @@ namespace Rusty.Serialization.CSCD
                 return $"`{FormatText(id.Name, idEscapes)}`{Serialize(id.Value, prettyPrinting)}";
             if (node is TypeNode type)
                 return $"({FormatText(type.Name, typeEscapes)}){Serialize(type.Value, prettyPrinting)}";
-            if (node is OffsetNode offset)
-                return Serialize(offset);
             if (node is ScopeNode scope)
                 return $"^{FormatText(scope.Name, scopeEscapes)}^{Serialize(scope.Value, prettyPrinting)}";
+            if (node is OffsetNode offset)
+                return Serialize(offset, prettyPrinting);
             if (node is NullNode)
                 return "null";
             if (node is BoolNode b)
@@ -111,21 +111,22 @@ namespace Rusty.Serialization.CSCD
             throw new ArgumentException($"Unexpected node of type {node.GetType()}.");
         }
 
-        private string Serialize(OffsetNode node)
+        private string Serialize(OffsetNode node, bool prettyPrinting)
         {
             string sign = node.Offset.sign ? "+" : "-";
+            string space = prettyPrinting ? " " : "";
 
             // UTC-0.
             if (node.Offset.hours == 0 && node.Offset.minutes == 0)
-                return "|Z|" + Serialize(node.Time);
+                return "|Z|" + space + Serialize(node.Time);
 
             // Hours only.
             if (node.Offset.minutes == 0)
-                return $"|{sign}{node.Offset.hours}|" + Serialize(node.Time);
+                return $"|{sign}{node.Offset.hours}|" + space + Serialize(node.Time);
 
             // Hours and minutes.
             else
-                return $"|{sign}{node.Offset.hours}:{node.Offset.minutes}|" + Serialize(node.Time);
+                return $"|{sign}{node.Offset.hours}:{node.Offset.minutes}|" + space + Serialize(node.Time);
         }
 
         private string Serialize(FloatNode node)
