@@ -2,6 +2,31 @@
 
 This document describes the CSCD syntax and its different literals in an informal way.
 
+## Format Markers
+
+### Header
+An optional marker that can be used to mark a string as being CSCD. It must be the first token in the document.
+
+```
+~CSCD~
+```
+
+### Footer
+An optional marker that can be used to mark the end of a string of CSCD. It must be the last token in the document.
+
+```
+~/CSCD~
+```
+
+## Comments
+Comments may appear anywhere in the CSCD string (except before the header and after the footer, if present). Comments are discarded when parsed.
+
+```
+;; Comment text. ;;
+```
+
+## Whitespace
+Whitespace may appear between format markers, comments, interpunction and literals. ASCII spaces, horizontal tabs, line feeds and carriage returns may be used.
 
 ## Metadata
 
