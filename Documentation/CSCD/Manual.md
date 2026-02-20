@@ -146,17 +146,13 @@ A timestamp value, representing a date and a time.
 ```
 
 ### Duration
-A duration value, representing a timespan in days, hours, minutes and seconds.
+A duration value, representing a timespan expressed in several units. The order must be days, hours, minutes and seconds. Units may be omitted; omitted units are assumed to equal `0`.
 
 ```
 10d5h1m10s              -10d5h1m10s         Full notation with all units.
-1d30s                   -1d30s              Days & seconds only.
-23h5s                   -23h5s              Hours & seconds only.
-18m11s                  -18m11s             Minutes & seconds only.
-1000d                   -1000d              Days only.
-13h                     -13h                Hours only.
-49m                     -49s                Minutes only.
-1s                      -1s                 Seconds only.
+1h15m30s                -1h15m30s           One unit omitted.
+23h5s                   -23h5s              Two units omitted.
+1000d                   -1000d              Three units omitted.
 ```
 
 ### Bytes
