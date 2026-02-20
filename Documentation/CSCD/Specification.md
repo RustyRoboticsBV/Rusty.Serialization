@@ -186,22 +186,22 @@ Examples:
 Float literals represent real numeric values.
 
 Several notations MAY be used:
-- `[-]{integer}.{fractional}e[-]{exponent}`. Full notation: an OPTIONAL sign, followed by a REQUIRED integer part, followed by a REQUIRED `.` decimal point, followed by a REQUIRED fractional part, followed by a REQUIRED `e`, followed by an OPTIONAL `-` minus sign, followed by a REQUIRED exponent part.
-- `[-].{fractional}e[-]{exponent}`: Omitted integer notation. The integer part MUST be interpreted as `0`.
-- `[-]{integer}[.]e[-]{exponent}`: Omitted fractional notation. The fractional part MUST be interpreted as `0`. The `.` decimal point is OPTIONAL.
-- `[-]{integer}.{fractional}`. Omitted exponent notation. The exponent part MUST be interpreted as `0`.
-- `[-].{fractional}`. Omitted integer and exponent notation. The integer and exponent parts MUST be interpreted as `0`.
-- `[-]{integer}.`. Omitted fractional and exponent notation. The fractional and exponent parts MUST be interpreted as `0`.
-- `[-].`. Omitted integer, fractional and exponent notation. The integer, fractional and exponent parts MUST be interpreted as `0`.
+- `[-]{integer}.{fractional}e[-]{exponent}`: full notation; an OPTIONAL sign, followed by a REQUIRED integer part, followed by a REQUIRED `.` decimal point, followed by a REQUIRED fractional part, followed by a REQUIRED `e`, followed by an OPTIONAL `-` minus sign, followed by a REQUIRED exponent part.
+- `[-].{fractional}e[-]{exponent}`: omitted integer notation. The integer part MUST be interpreted as `0`.
+- `[-]{integer}[.]e[-]{exponent}`: omitted fractional notation. The fractional part MUST be interpreted as `0`. The `.` decimal point is OPTIONAL.
+- `[-]{integer}.{fractional}`: omitted exponent notation. The exponent part MUST be interpreted as `0`.
+- `[-].{fractional}`: omitted integer and exponent notation. The integer and exponent parts MUST be interpreted as `0`.
+- `[-]{integer}.`: omitted fractional and exponent notation. The fractional and exponent parts MUST be interpreted as `0`.
+- `[-].`: omitted integer, fractional and exponent notation. The integer, fractional and exponent parts MUST be interpreted as `0`.
 
-The integer, fractional and exponent parts (when included) MUST consist of one or more decimal digits (`0`-`9`). Leading zeros MAY appear in the integer and exponent parts, but SHOULD be discarded by a parser. Trailing zeros MAY appear in the fractional part, but SHOULD be discarded by a parser.
+The integer, fractional and exponent parts (when included) MUST consist of one or more decimal digits (`0`-`9`). Leading zeros MAY appear in the integer and exponent parts, but MUST be discarded by a parser. Trailing zeros MAY appear in the fractional part, but MUST be discarded by a parser.
 
 Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
 
 Serializers SHOULD generally avoid emitting the exponent notation except for numbers with a large number of zeros (e.g. `1.e10` instead of `10000000000.0`).
 
 Examples:
-- `0.0`, `000.000`, `0.`, `.0`, `.`, `0.0e0` are all valid representations of the number `0.0`.
+- `0.0`, `000.000`, `0.`, `.0`, `.`, `0.0e0` and `.e000` are all valid representations of the number `0.0`.
 - `-0.0`, `-000.000`, `-0.`, `-.0`, `-.` and `-.e0` are all valid representations of the number `-0.0`.
 - `-0.5`, `-.5`, `-00.50` and `-5.0e-1` are all valid representations of the number `-0.5`.
 
@@ -243,20 +243,26 @@ Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF;\tarrow"`
 #### Decimals
 Decimal literals represent numeric values with significant fractional digits. They are intended for any use-case where preserving the exact decimal representation is important, such as when expressing monetary values. Parsers MUST preserve all fractional digits, including trailing zeros.
 
-Decimal literals MUST start with `$` for positive values or `-$` for negative values, followed by an OPTIONAL integer value, an OPTIONAL `.` decimal point and an OPTIONAL fractional value. The integer and fractional values MUST consist of zero or more decimal digits (`0`-`9`). Leading zeros SHOULD be discarded by a parser.
+Five notations are supported:
+- `[-]${integer}.{fractional}`: Full notation.
+- `[-]$.{fractional}`: omitted integer part. The integer part MUST be interpreted as `0`.
+- `[-]${integer}.`: omitted fractional part. The fractional part MUST be interpreted as `0` (one zero).
+- `[-]$.`: omitted integer and fractional part. The integer and fractional parts MUST be interpreted as `0` (one zero).
+- `[-]${integer}`: integral decimal with zero fractional digits.
+- `[-]$`: integer decimal with zero fractional digits. The integer part MUST be interpreted as `0` (one zero).
 
-The integer part MAY be omitted if equal to zero. So `$` must be interpreted as `$0`. The fractional part may be omitted if equal to `.0`. Consequently, `$0.`, `$.0` and `$.` MUST all be interpreted as `$0.0`, and `-$0.`, `-$.0`, `-$.` MUST all be interpreted as `-$0.0`. The decimal point MUST be omitted if the decimal value has no fractional digits.
+The integer and fractional parts MUST consist of zero or more decimal digits (`0`-`9`). Leading zeros MAY appear in the integer part, but MUST be discarded by a parser.
 
 Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
 
-Examples: `$123`, `$4.567`, `$.05`, `-$2`.
+Examples: `$123`, `$4.567`, `$.05`, `-$2`, `-$.`, `$`.
 
 #### Colors
 Colors literals MUST start with a `#` number sign, followed by the hexadecimal representation of the color. Five notations are supported:
-- `#RGB`: short notation. When parsed, each digit MUST be duplicated to form the equivalent `#RRGGBB`. Example: `#800` MUST be interpreted as `#880000`.
-- `#RGBA`: short notation with alpha. When parsed, each digit MUST be duplicated to form the equivalent `#RRGGBBAA`. Example: `#800F` MUST be interpreted as `#880000FF`.
-- `#RRGGBB`: full notation without alpha. The alpha channel MUST be assumed to be `FF`.
 - `#RRGGBBAA`: full notation with alpha.
+- `#RRGGBB`: full notation without alpha. The alpha channel MUST be assumed to be `FF`.
+- `#RGBA`: short notation with alpha. When parsed, each digit MUST be duplicated to form the equivalent `#RRGGBBAA`. Example: `#800F` MUST be interpreted as `#880000FF`.
+- `#RGB`: short notation. When parsed, each digit MUST be duplicated to form the equivalent `#RRGGBB`. Example: `#800` MUST be interpreted as `#880000`.
 - `#`: MUST be interpreted as `#00000000`.
 
 Color literals MUST use uppercase hexadecimal digits (`0`-`9`, `A`-`F`). Parsers MUST interpret the values according to the rules above.
@@ -265,10 +271,10 @@ Color literals MUST use uppercase hexadecimal digits (`0`-`9`, `A`-`F`). Parsers
 Timestamp literals represent absolute moments in time. They are intended to express date and/or time values. The timestamp literal exists primarily to provide a dedicated, canonical form for date/time types and discourage ad-hoc solutions using strings or object literals.
 
 Timestamp literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
-- `@{year}/{month}/{day},{hour}:{minute}:{second}@`.
-- `@{year}/{month}/{day}@`. The time component MUST be assumed by a parser to be `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
-- `@{hour}:{minute}:{second}@`. The date component MUST be assumed by a parser to be `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
-- `@@`. MUST be interpreted as the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
+- `@{year}/{month}/{day},{hour}:{minute}:{second}@`: full notation.
+- `@{year}/{month}/{day}@`: date-only notation. The time MUST be interpreted as `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
+- `@{hour}:{minute}:{second}@`: time-only notation. The date MUST be interpreted as `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
+- `@@`: omitted date and time parts. It MUST be interpreted as the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
 
 Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
 - Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 1 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value. The year `0` MUST NOT be used.
@@ -291,7 +297,7 @@ Duration literals MUST consist of 1-4 terms:
 - `{minutes}m`: the number of minutes, which MUST be a valid integer in the range `0`-`59`.
 - `{seconds}s`: the number of seconds, which MUST be a valid [integer](#integers) or [float](#floats). If an integer, it must be in the range `0`-`59`; if a float, the integral part must be in the range `0`-`59`. Trailing zeros SHOULD be discarded by a parser.
 
-Additionally, the first character may be a minus sign for negative durations (e.g. `-30s`).
+Additionally, the first character may be a `-` minus sign for negative durations (e.g. `-30s`).
 
 Terms that equal 0 MAY be omitted, though at least 1 term MUST remain. For durations of zero seconds, minutes, hours and days, any of the following MAY be used: `0d`, `0h`, `0m` or `0s`.
 
