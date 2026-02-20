@@ -43,12 +43,14 @@ Offsets may be attached to timestamp literals, and represent timezones (as UTC o
 ## Primitives
 
 ### Null
+A null value.
 
 ```
 null
 ```
 
 ### Bool
+A boolean. Must be either true or false.
 
 ```
 true
@@ -56,12 +58,14 @@ false
 ```
 
 ### Int
+An integer number of unspecified precision.
 
 ```
 12345			      -12345
 ```
 
 ### Float
+A floating-point number of unspecified precision. May consist of an integer, fractional and exponent part.
 
 ```
 1.3e-5			      -1.3e-5
@@ -75,18 +79,21 @@ false
 ```
 
 ### Infinity
+An infinity value. May be either positive or negative infinity.
 
 ```
 inf			          -inf
 ```
 
 ### NaN
+A not-a-number value.
 
 ```
 nan
 ```
 
 ### Char
+A character value.
 
 ```
 'A'
@@ -96,6 +103,7 @@ nan
 ```
 
 ### String
+A string value.
 
 ```
 "ABC"
@@ -105,6 +113,7 @@ nan
 ```
 
 ### Decimal
+A decimal value. Unlike with floats, trailing zeros have explicit meaning.
 
 ```
 $1.00			      -$1.00
@@ -114,6 +123,7 @@ $40.			      -$40.
 ```
 
 ### Color
+A color value. Alpha is optional. A CSS shorthand notation is also suppoted.
 
 ```
 #FF0000FF
@@ -124,6 +134,7 @@ $40.			      -$40.
 ```
 
 ### Timestamp
+A timestamp value, representing a date and a time.
 
 ```
 @2000/1/1,13:0:0@     @-2000/1/1,13:0:0@
@@ -133,6 +144,7 @@ $40.			      -$40.
 ```
 
 ### Duration
+A duration value, representing a timespan in days, hours, minutes and seconds.
 
 ```
 10d5h1m10s
@@ -144,6 +156,7 @@ $40.			      -$40.
 ```
 
 ### Bytes
+A bytestring in Base64, representing arbitrary byte arrays.
 
 ```
 !SGVsbG8sIHdvcmxkIQ
@@ -151,6 +164,7 @@ $40.			      -$40.
 ```
 
 ### Symbol
+A symbol, meant for enums and named constants.
 
 ```
 mySymbol
@@ -159,6 +173,7 @@ mySymbol
 ```
 
 ### Reference
+A reference that points to an object annotated with an ID.
 
 ```
 &my_id&
