@@ -35,9 +35,9 @@ Scopes may be attached to object member names, in order to disambiguate shadowed
 Offsets may be attached to timestamp literals, and represent timezones (as UTC offsets).
 
 ```
-|+5:30|			      |-5:30|
-|+5|			      |-5|
-|Z|
+|+5:30|			        |-5:30|             Hour and minute offset.
+|+5|			        |-5|                Hour-only. Minute is assumed to be 00.
+|Z|                                         Shorthand for +00:00 (Greenwich Mean Time).
 ```
 
 ## Primitives
@@ -61,28 +61,28 @@ false
 An integer number of unspecified precision.
 
 ```
-12345			      -12345
+12345			        -12345
 ```
 
 ### Float
-A floating-point number of unspecified precision. May consist of an integer, fractional and exponent part.
+A floating-point number of unspecified precision. May consist of an integer, fractional and exponent part. Each part may be omitted; omitted parts are assumed to be `0`.
 
 ```
-1.3e-5			      -1.3e-5
-.3e-5			      -.3e-5
-1e-5			      -1e-5
-1.e-5			      -1.e-5
-1.3			          -1.3
-1.			          -1.
-.3			          -.3
-.			          -.
+1.3e-5			        -1.3e-5             Full notation.
+.3e-5			        -.3e-5              Omitted integer.
+1e-5			        -1e-5               Omitted fractional.
+1.e-5			        -1.e-5              Omitted fractional.
+1.3			            -1.3                Omitted exponent.
+1.			            -1.                 Omitted fractional and exponent.
+.3			            -.3                 Omitted integer and exponent.
+.			            -.                  Omitted integer, fractional and exponent.
 ```
 
 ### Infinity
 An infinity value. May be either positive or negative infinity.
 
 ```
-inf			          -inf
+inf			            -inf
 ```
 
 ### NaN
@@ -113,46 +113,50 @@ A string value.
 ```
 
 ### Decimal
-A decimal value. Unlike with floats, trailing zeros have explicit meaning.
+A decimal value. Unlike with floats, trailing zeros have explicit meaning and should be maintained by a parser.
 
 ```
-$1.00			      -$1.00
-$1			          -$1
-$.01			      -$.01
-$40.			      -$40.
+$1.00			        -$1.00              Integer with two fractional digits.
+$1			            -$1                 No fractional digits.
+$.01			        -$.01               Shorthand for '0.01'.
+$40.			        -$40.               Shorthand for '40.0'.
+$.                      -$.                 Shorthand for '0.0".
+$                       -$                  Shorthand for '0'.
 ```
 
 ### Color
-A color value. Alpha is optional. A CSS shorthand notation is also suppoted.
+A color value, written as a hexcode. Alpha is optional, and is assumed to be `FF` when omitted. A CSS shorthand notation is also supported.
 
 ```
-#FF0000FF
-#F00F
-#FF0000
-#F00
-#
+#FF0000FF                                   Red (full notation)
+#0F0F                                       Green (short notation)
+#0000FF                                     Blue (no alpha)
+#FF0                                        Yellow (no alpha, short notation)
+#                                           Transparent black
 ```
 
 ### Timestamp
 A timestamp value, representing a date and a time.
 
 ```
-@2000/1/1,13:0:0@     @-2000/1/1,13:0:0@
-@200/11/5@            @-200/11/5@
-@24:0:0@
-@@
+@2000/1/1,13:0:0@       @-2000/1/1,13:0:0@  Date and time.
+@200/11/5@              @-200/11/5@         Date only. Time is assumed to be 00:00:00.
+@24:0:0@                                    Time only. Date is assumed to be 01/01/01.
+@@                                          Shorthand for 01/01/01, 00:00:00.
 ```
 
 ### Duration
 A duration value, representing a timespan in days, hours, minutes and seconds.
 
 ```
-10d5h1m10s
--10d5h1m10s
-23h5s
--23h5s
-1s
--1s
+10d5h1m10s              -10d5h1m10s         Full notation with all units.
+1d30s                   -1d30s              Days & seconds only.
+23h5s                   -23h5s              Hours & seconds only.
+18m11s                  -18m11s             Minutes & seconds only.
+1000d                   -1000d              Days only.
+13h                     -13h                Hours only.
+49m                     -49s                Minutes only.
+1s                      -1s                 Seconds only.
 ```
 
 ### Bytes
