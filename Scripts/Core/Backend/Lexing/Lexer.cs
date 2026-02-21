@@ -36,6 +36,8 @@ namespace Rusty.Serialization.Core.Codecs
         /// Get the character at the position after the cursor.
         /// </summary>
         protected char Next(TextSpan text) => text[Cursor + 1];
+        /// </summary>
+        protected char NextNext(TextSpan text) => text[Cursor + 2];
         /// <summary>
         /// Advance the cursor.
         /// </summary>

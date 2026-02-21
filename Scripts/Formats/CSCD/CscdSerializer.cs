@@ -91,6 +91,8 @@ namespace Rusty.Serialization.CSCD
                 return Serialize(dec);
             if (node is ColorNode col)
                 return Serialize(col);
+            if (node is UidNode uid)
+                return Serialize(uid);
             if (node is TimestampNode t)
                 return Serialize(t);
             if (node is DurationNode d)
@@ -185,6 +187,19 @@ namespace Rusty.Serialization.CSCD
                 span.Slice(0, hasAlpha ? 8 : 6).CopyTo(result.Slice(1));
 
             return new string(result);
+        }
+
+        private string Serialize(UidNode node)
+        {
+            string str = node.Value.ToString();
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (str[i] != '0' && str[i] != '-')
+                {
+                    return '%' + str.Substring(i);
+                }
+            }
+            return "%";
         }
 
         private string Serialize(TimestampNode node)

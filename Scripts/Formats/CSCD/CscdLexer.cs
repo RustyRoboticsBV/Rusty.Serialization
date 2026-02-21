@@ -34,12 +34,16 @@ namespace Rusty.Serialization.CSCD
             char c = Current(text);
 
             // Comments.
-            if (c == ';' && Next(text) == ';')
+            if (c == ';' && Cursor + 1 < text.Length && Next(text) == ';')
                 token = MakeTokenAndAdvance(text, ReadComment(text));
 
             // Interpunction.
             else if (c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>')
                 token = MakeTokenAndAdvance(text, 1);
+
+            // Shorthand quote character.
+            else if (c == '\'' && Cursor + 2 < text.Length && Next(text) == '\'' && NextNext(text) == '\'')
+                token = MakeTokenAndAdvance(text, 3);
 
             // Delimited word tokens.
             else if (c == '~')

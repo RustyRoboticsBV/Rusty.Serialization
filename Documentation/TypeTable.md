@@ -22,13 +22,13 @@ If an object of a type is serialized that is not in the table below, then the sy
 |ushort|System.UInt16|int||
 |uint|System.UInt32|int||
 |ulong|System.UInt64|int||
-|float|System.Single|real||
-|double|System.Double|real||
+|float|System.Single|float/infinity/nan||
+|double|System.Double|float/infinity/nan||
 |decimal|System.Decimal|decimal||
 |char|System.Char|char||
 |string|System.String|string/null||
 |T[]|System.Array|list/null||
-|byte[]|System.Byte[]|binary/null||
+|byte[]|System.Byte[]|bytes/null||
 |(...)|System.ValueTuple<...>|list||
 |T?|System.Nullable&lt;T&gt;|*varies* or null|Depends on the underlying type|
 |enum|System.Enum|symbol|list if annotated with `[Flags]`|
@@ -41,23 +41,23 @@ If an object of a type is serialized that is not in the table below, then the sy
 |-|-|-|
 |Type|string||
 |DBNull|null||
-|Half|real|.NET 5 or higher|
+|Half|float/infinity/nan|.NET 5 or higher|
 |Index|int||
 |Range|list||
 |Version|string||
 |Uri|string||
-|Guid|binary||
-|TimeSpan|int||
-|DateTime|time||
-|DateTimeOffset|list|
-|DateOnly|time|.NET 6 or higher|
-|TimeOnly|time|.NET 6 or higher|
+|Guid|uid||
+|TimeSpan|duration||
+|DateTime|timestamp||
+|DateTimeOffset|offset + timestamp||
+|DateOnly|timestamp|.NET 6 or higher|
+|TimeOnly|timestamp|.NET 6 or higher|
 |Tuple|list/null||
 
 ### System.Collections
 |C#|Serialized|
 |-|-|
-|BitArray|binary/null|
+|BitArray|bytes/null|
 
 ### System.Collections.Generic
 |C#|Serialized|Notes|
@@ -111,7 +111,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 |C#|Serialized|Notes|
 |-|-|-|
 |Variant|*varies*|Depends on the stored value|
-|Resource|object/null|Built-in resources serialize using their resource path instead|
+|Resource|object/uid/null|Built-in resources serialize as a uid, user-defined resources as an object|
 |Array|list/null||
 |Array&lt;T&gt;|list/null||
 |Dictionary|dictionary/null||
@@ -140,7 +140,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 
 |C#|Serialized|
 |-|-|
-|LayerMask|bool|
+|LayerMask|int|
 |RangeInt|list|
 |Vector2|list|
 |Vector2Int|list|

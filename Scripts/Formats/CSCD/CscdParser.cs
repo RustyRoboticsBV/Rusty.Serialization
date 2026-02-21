@@ -205,6 +205,10 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.StartsWith('#'))
                 return ParseColor(token);
 
+            // Uid.
+            if (token.Text.StartsWith('%'))
+                return ParseUid(token);
+
             // Timestamp.
             if (token.Text.EnclosedWith('@'))
                 return ParseTimestamp(token);
@@ -267,8 +271,10 @@ namespace Rusty.Serialization.CSCD
         /// </summary>
         private static CharNode ParseChar(Token token)
         {
+            if (token.Text.Equals("''"))
+                return new CharNode('\0');
             string str = ParseText(token, charEscapes, "'", "'");
-            if (str.Length < 1 || str.Length > 2 || (str.Length == 2 && !char.IsHighSurrogate(str[0])))
+            if (str.Length > 2 || (str.Length == 2 && !char.IsHighSurrogate(str[0])))
                 TokenError(token, "Char token may not represent multiple characters.");
             return new CharNode(str);
         }
@@ -327,6 +333,56 @@ namespace Rusty.Serialization.CSCD
                 TokenError(token, ex.Message);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Parse a uit literal.
+        /// </summary>
+        private static UidNode ParseUid(Token token)
+        {
+            if (!token.Text.StartsWith('%'))
+                TokenError(token, "Missing % prefix.");
+
+            TextSpan span = token.Text.Slice(1);
+
+            if (span.Length > 36)
+                TokenError(token, "Uid is too long.");
+
+            // Collect digits.
+            int digitCount = 0;
+            bool foundDash = false;
+            Span<char> digits = stackalloc char[32];
+            for (int i = span.Length - 1; i >= 0; i--)
+            {
+                char c = span[i];
+                if (c == '-')
+                {
+                    if (!(digitCount == 12 || digitCount == 16 || digitCount == 20 || digitCount == 24))
+                        TokenError(token, "Misplaced dash in uid.");
+                    else if (!foundDash)
+                        foundDash = true;
+                    else
+                        TokenError(token, $"Duplicate dash in uid.");
+                }
+
+                else if (c >= '0' && c <= '9' || c >= 'a' && c <= 'f')
+                {
+                    digits[31 - digitCount] = c;
+                    digitCount++;
+                    foundDash = false;
+                }
+
+                else
+                    TokenError(token, $"Invalid character '{c}' in uid.");
+            }
+
+            // Set untouched characters to 0.
+            for (int i = 31 - digitCount; i >= 0; i--)
+            {
+                digits[i] = '0';
+            }
+
+            return new UidNode(Guid.Parse(digits));
         }
 
         /// <summary>
@@ -404,7 +460,6 @@ namespace Rusty.Serialization.CSCD
             // Parse units.
             int digitStart = negative ? 1 : 0;
             int currentUnit = 0;
-            bool fractional = false;
             for (int i = digitStart; i < token.Text.Length; i++)
             {
                 if (currentUnit == 4)
@@ -412,20 +467,11 @@ namespace Rusty.Serialization.CSCD
 
                 char c = token.Text[i];
 
-                if (c >= '0' && c <= '9')
+                if (c >= '0' && c <= '9' || c == '.' || c == 'e' || c == '-')
                 {
                     if (i == token.Text.Length - 1)
                         TokenError(token, $"Unclosed duration term.");
                     continue;
-                }
-
-                else if (c == '.')
-                {
-                    if (currentUnit < 3)
-                        TokenError(token, $"Duration unit '{"dhm"[currentUnit]}' must be an integer.");
-                    if (fractional)
-                        TokenError(token, "Second decimal point in duration seconds.");
-                    fractional = true;
                 }
 
                 else if (digitStart == i)
@@ -435,9 +481,16 @@ namespace Rusty.Serialization.CSCD
                 {
                     if (currentUnit == 0)
                     {
-                        days = IntValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        try
+                        {
+                            days = IntValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        }
+                        catch
+                        {
+                            TokenError(token, "Duration days term is not a valid integer.");
+                        }
                         if (days < 0)
-                            TokenError(token, "Duration days may not be negative.");
+                            TokenError(token, "Duration days term may not be negative.");
                         currentUnit = 1;
                         digitStart = i + 1;
                     }
@@ -449,9 +502,16 @@ namespace Rusty.Serialization.CSCD
                 {
                     if (currentUnit <= 1)
                     {
-                        hours = IntValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        try
+                        {
+                            hours = IntValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        }
+                        catch
+                        {
+                            TokenError(token, "Duration hours term is not a valid integer.");
+                        }
                         if (hours < 0)
-                            TokenError(token, "Duration hours may not be negative.");
+                            TokenError(token, "Duration hours term may not be negative.");
                         currentUnit = 2;
                         digitStart = i + 1;
                     }
@@ -463,9 +523,16 @@ namespace Rusty.Serialization.CSCD
                 {
                     if (currentUnit <= 2)
                     {
-                        minutes = IntValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        try
+                        {
+                            minutes = IntValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        }
+                        catch
+                        {
+                            TokenError(token, "Duration minutes term is not a valid integer.");
+                        }
                         if (minutes < 0)
-                            TokenError(token, "Duration minutes may not be negative.");
+                            TokenError(token, "Duration minutes term may not be negative.");
                         currentUnit = 3;
                         digitStart = i + 1;
                     }
@@ -477,7 +544,14 @@ namespace Rusty.Serialization.CSCD
                 {
                     if (currentUnit <= 3)
                     {
-                        seconds = FloatValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        try
+                        {
+                            seconds = FloatValue.Parse(token.Text.Slice(digitStart, i - digitStart));
+                        }
+                        catch
+                        {
+                            TokenError(token, "Duration seconds term is not a valid float.");
+                        }
                         if (seconds.negative)
                             TokenError(token, "Duration seconds may not be negative.");
                         currentUnit = 4;

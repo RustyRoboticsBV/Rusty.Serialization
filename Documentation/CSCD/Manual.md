@@ -30,8 +30,8 @@ Whitespace may appear between format markers, comments, interpunction and litera
 
 ## Metadata
 
-### ID
-IDs may be attached to any value literal, after which they can be targeted by a reference literal.
+### Address
+Addresses may be attached to any value literal, after which they can be targeted by a reference literal.
 
 ```
 `my_id`
@@ -48,7 +48,7 @@ Type hints may be attached to any value literal, which can help the runtime disa
 ```
 
 ### Scope
-Scopes may be attached to object member names, in order to disambiguate shadowed variables in objects with a complex inheritance chain.
+Scopes hints may be attached to object member names, in order to disambiguate shadowed variables in objects with a complex inheritance chain.
 
 ```
 ^my_base^
@@ -56,13 +56,13 @@ Scopes may be attached to object member names, in order to disambiguate shadowed
 ^^
 ```
 
-### Offsets
+### Offset
 Offsets may be attached to timestamp literals, and represent timezones (as UTC offsets).
 
 ```
 |+5:30|			        |-5:30|             Hour and minute offset.
 |+5|			        |-5|                Hour-only. Minute is assumed to be 00.
-|Z|                                         Shorthand for +00:00 (Greenwich Mean Time).
+|Z|                                         Shorthand for '+00:00' (Greenwich Mean Time).
 ```
 
 ## Primitives
@@ -160,6 +160,16 @@ A color value, written as a hexcode. Alpha is optional, and is assumed to be `FF
 #                                           Transparent black
 ```
 
+### UID
+A unique identifier value, written as a 128-bit hexadecimal number in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX (8-4-4-4-12). The dashes and leading zeros may be omitted.
+
+```
+%3f4e1a9c-8d3b-24e4-c8f7-b3a8d5c1e9f2       Full notation.
+%3f4e1a9c8d3b24e4c8f7b3a8d5c1e9f2           Omitted dashes.
+%1-23456789abcd                             Shorthand for '00000000-0000-0000-0001-23456789abcd'.
+%123456789abcd                              Shorthand with omitted dashes.
+```
+
 ### Timestamp
 A timestamp value, representing a date and a time.
 
@@ -192,9 +202,9 @@ A bytestring in Base64, representing arbitrary byte arrays.
 A symbol, meant for enums and named constants.
 
 ```
-mySymbol
-*my symbol*
-**
+mySymbol                                    Bare notation.
+*my symbol*                                 Delimited notation.
+**                                          Empty symbol.
 ```
 
 ### Reference
@@ -207,23 +217,25 @@ A reference that points to an object annotated with an ID.
 
 ## Collections
 
-### Lists
+### List
 A collection of elements. Elements may be any type of literal.
 
 ```
-[1, 2.0, 'C']
-[]
+[1, 2, 3, 4, 5]                             List of integers.
+[1, 2.0, 'C']                               List of mixed content.
+[]                                          Empty list.
 ```
 
-### Dictionaries
+### Dictionary
 A collection of key-value pairs. Keys and values may by any type of literal, and duplicate keys are allowed.
 
 ```
-{false: 1, 2.0: nan, 'C': "abc"}
-{}
+{"a": 0, "b": 1, "c": 2}                    Dictionary with string keys and integer values.
+{false: 1, 2.0: nan, 'C': "abc"}            Dictionary with mixed keys and values.edDSF{}
+{}                                          Empty dictionary.
 ```
 
-### Objects
+### Object
 A collection of name-value pairs. Names must be symbol literals, and may be annotated with a scope. Values may be any type of literal. Duplicate names are allowed.
 
 ```

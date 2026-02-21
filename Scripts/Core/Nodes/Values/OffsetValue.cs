@@ -38,7 +38,7 @@ namespace Rusty.Serialization.Core.Nodes
         public static OffsetValue Parse(ReadOnlySpan<char> span)
         {
             // UTC-0.
-            if (span == "" || span == "Z")
+            if (span.Length == 0 || span.SequenceEqual("Z"))
                 return new OffsetValue(true, 0, 0);
 
             // Sign.

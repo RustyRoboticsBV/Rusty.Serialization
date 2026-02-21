@@ -327,7 +327,7 @@ Color literals MUST use uppercase hexadecimal digits (`0`-`9`, `A`-`F`). Parsers
 #### UIDs
 UID literals represent a 128-bit unique identifier. They provide a canonical form of expressing UIDs.
 
-They MUST start with the prefix `%`, followed by the format `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (8-4-4-4-12), where each `X` MUST be a lowercase hex digit (`0`-`9`, `a`-`f`). The `-` dashes MAY be omitted. Leading zeros MAY also be omitted (e.g. `%1-23456789` is equivalent to `%00000000-0000-0000-0001-23456789`) - parsers MUST interpret missing hex digits as `0`. The literal `%` MUST be interpreted as a UID with 32 zeros (i.e. `%00000000-0000-0000-0000-000000000000`).
+They MUST start with the prefix `%`, followed by the format `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (8-4-4-4-12), where each `X` MUST be a lowercase hex digit (`0`-`9`, `a`-`f`). The `-` dashes MAY be omitted. Leading zeros MAY also be omitted (e.g. `%1-23456789abcd` is equivalent to `%00000000-0000-0000-0001-23456789abcd`) - parsers MUST interpret missing hex digits as `0`. The literal `%` MUST be interpreted as a UID with 32 zeros (i.e. `%00000000-0000-0000-0000-000000000000`).
 
 UID literals are NOT REQUIRED to be valid according to [RFC 4122](https://www.rfc-editor.org/rfc/rfc4122) - unless the runtime type enforces UUID validity.
 
