@@ -249,9 +249,6 @@ namespace Rusty.Serialization.CSCD
         {
             TextSpan contents = token.Text.Slice(1, token.Text.Length - 2);
 
-            if (contents.Length == 0)
-                TokenError(token, "Empty offset literal.");
-
             OffsetValue value = new OffsetValue();
             try
             {

@@ -13,6 +13,44 @@ This document will first describe some format-wide syntax rules. After that, it 
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) and [RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174).
 
+## Table Of Contents
+- [1. General Formatting](#1-general-formatting)
+  - [1.1 Character Set](#11-character-set)
+  - [1.2 Top-Level Value](#12--top-level-value)
+  - [1.3 Format Markers](#13-format-markers)
+  - [1.4 Whitespace](#14-whitespace)
+  - [1.5 Comments](#15-comments)
+  - [1.6 Escape Sequences](#16-escape-sequences)
+    - [Unicode Escape Sequences](#unicode-escape-sequences)
+  - [1.7 Invalid Input](#17-invalid-input)
+- [2. Literals](#2-literals)
+  - [2.1 Metadata](#21-metadata)
+    - [IDs](#ids)
+    - [Types](#types)
+    - [Scopes](#scopes)
+    - [Offsets](#offsets)
+  - [2.2 Primitives](#22-primitives)
+    - [Null](#null)
+    - [Booleans](#booleans)
+    - [Integers](#integers)
+    - [Floats](#floats)
+    - [Infinities](#infinities)
+    - [Not-A-Number](#not-a-number)
+    - [Characters](#characters)
+    - [Strings](#strings)
+    - [Decimals](#decimals)
+    - [Colors](#colors)
+    - [Timestamps](#timestamps)
+    - [Durations](#durations)
+    - [Bytes](#bytes)
+    - [UIDs](#uids)
+    - [Symbols](#symbols)
+    - [References](#references)
+  - [2.3 Collections](#23-collections)
+    - [Lists](#lists)
+    - [Dictionaries](#dictionaries)
+    - [Objects](#objects)
+
 ## 1. General Formatting
 ### 1.1 Character Set
 A valid string of CSCD MUST consist only of characters whose Unicode code points are in one of the following ranges:
@@ -165,9 +203,9 @@ Examples: `<^my_scope^my_member_name:"my_member_value>"`, `<^scope\^^a:0,a:1>`
 Offsets MAY be placed before any [timestamp](#timestamps) literal, and represent a time offset relative to UTC+0 (Greenwich Mean Time). Offsets MUST NOT appear before any other literal type, and MUST be followed by a timestamp. When attached to a timestamp, they mark that timestamp as being associated with that offset.
 
 Three notations are supported:
-- `|+{hours}[:{minutes}]|` or `|-{hours}[:{minutes}]|`: full notation.
+- `|+{hours}:{minutes}|` or `|-{hours}:{minutes}|`: full notation.
 - `|+{hours}|` or `|-{hours}|`: omitted minutes. The minutes MUST be interpreted as `0`.
-- `|Z|`: shorthand of `|+00:00|`.
+- `|Z|` or `||`: shorthand of `|+00:00|`.
 
 When present, the hours and minutes MUST be comprised of one or more digits (`0`-`9`). The hours MUST be in the range `0`-`23`, the minutes MUST be in the range `0`-`59`. 
 
@@ -327,6 +365,15 @@ They MUST start with the prefix `!`, followed by the data encoded in [RFC 4648 B
 Padding using `=` MAY be used, but this is not enforced; parsers MUST handle bytes literals without padding by assuming trailing `=` padding characters. For example, the bytestring `00 02 04 07 09 0E 03` can be represented by the bytes literals `!AAIEBwkPAw` and `!AAIEBwkPAw==`.
 
 An empty byte literal (representing zero bytes) MUST be written as `!`.
+
+#### UIDs
+UID literals represent a 128-bit identifier.
+
+They MUST start with the prefix `%`, followed by the format `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (8-4-4-4-12), where each `X` MUST be a lowercase hex digit (`0`-`9`, `a`-`f`). The `-` dashes MAY be omitted. Leading zeros MAY also be omitted (e.g. `%1-23456789` is equivalent to `00000000-0000-0000-0001-23456789`); the literal `%` MUST be interpreted a hash with 32 zeros.
+
+UID literals are NOT REQUIRED to be valid according to [RFC 4122](https://www.rfc-editor.org/rfc/rfc4122) - unless the runtime type enforces UUID validity.
+
+Examples: `%69988773-1484-832f-9fe1-a711cf10115f`, `%6998bd06ed3083338d8f142c0f7e52f5`, `%111`, `%`.
 
 #### Symbols
 Symbol literals represent named constants, identifiers, or enum values. They provide a semantic, human-readable alternative to when representing values whose internal numeric representations may vary or whose meaning is best captured by a stable name. Symbols are primarily intended for use with enumerations or well-known static constants. The format has no knowledge about the meaning of a symbol; it is up to the parser to properly resolve a symbol into a runtime value. 

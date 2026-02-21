@@ -116,6 +116,7 @@ Below is an example of a custom serialized object with pretty printing. See the 
     my_timestamp: |Z| @1990/2/13,18:30:05.001@,
     my_duration: 7d23h30m10s,
     my_bytes: !SGVsbG8sIHdvcmxkIQ,
+    my_uid: %3f4e1a9c-8d3b-24e4-c8f7-b3a8d5c1e9f2
     my_symbol: Wednesday,
     my_list: [1, 2.e-5, "def"],
     my_dictionary: {
