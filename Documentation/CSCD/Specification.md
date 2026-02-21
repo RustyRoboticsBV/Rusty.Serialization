@@ -13,7 +13,9 @@ This document will first describe some format-wide syntax rules. After that, it 
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) and [RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174).
 
-## Table Of Contents
+<details>
+  <summary><strong style="font-size: 1.2em;">Table Of Contents</strong></summary>
+  
 - [1. General Formatting](#1-general-formatting)
   - [1.1 Character Set](#11-character-set)
   - [1.2 Top-Level Value](#12--top-level-value)
@@ -50,6 +52,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
     - [Lists](#lists)
     - [Dictionaries](#dictionaries)
     - [Objects](#objects)
+</details>
 
 ## 1. General Formatting
 ### 1.1 Character Set
@@ -139,8 +142,8 @@ A parser MUST detect and handle invalid input. Upon encountering invalid input, 
 
 The exact mechanism for rejection (e.g., exception, error code, logging) is implementation-defined and not legislated by this document, however parsers MUST NOT continue deserialization in a way that could produce an undefined or inconsistent object graph.
 
-## 2. Data Types
-CSCD supports two categories of value literals: primitives and collections. Additionally, values MAY be annotated with metadata.
+## 2. Literals
+CSCD supports two categories of literals: metadata and values. Values are further divided into primitives and collections.
 
 A valid serialized CSCD string MUST contain exactly one top-level value. This top-level value MAY be any type of literal except reference literals, as parsers cannot resolve a reference without an accompanying ID. The top-level value MAY be annotated with metadata.
 
