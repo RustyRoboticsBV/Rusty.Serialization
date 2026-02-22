@@ -144,7 +144,7 @@ namespace Rusty.Serialization.JSON
                 node = new TypeNode(type, node);
 
             if (id != null)
-                node = new IdNode(id, node);
+                node = new AddressNode(id, node);
             return node;
         }
 

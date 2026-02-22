@@ -151,10 +151,10 @@ namespace Rusty.Serialization.Core.Conversion
         /// </summary>
         public object Deconvert(NodeTree tree)
         {
-            // ID-type root.
-            if (tree.Root is IdNode idNode && idNode.Value is TypeNode idTypeNode)
+            // Address-type root.
+            if (tree.Root is AddressNode addressNode && addressNode.Value is TypeNode addressTypeNode)
             {
-                Type type = new TypeName(idTypeNode.Name).ToType();
+                Type type = new TypeName(addressTypeNode.Name).ToType();
                 return Deconvert(type, tree);
             }
 

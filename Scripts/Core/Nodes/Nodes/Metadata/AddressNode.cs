@@ -3,9 +3,9 @@ using System;
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// An ID serializer node.
+    /// An address serializer node.
     /// </summary>
-    public class IdNode : IMetadataNode
+    public class AddressNode : IMetadataNode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Core.Nodes
         public INode Value { get; set; }
 
         /* Constructors. */
-        public IdNode(string name, INode value)
+        public AddressNode(string name, INode value)
         {
             Name = name ?? "";
             Value = value;
@@ -25,7 +25,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            return "ID: " + Name + "\n" + PrintUtility.PrintChild(Value);
+            return "Address: " + Name + "\n" + PrintUtility.PrintChild(Value);
         }
 
         public void Clear()

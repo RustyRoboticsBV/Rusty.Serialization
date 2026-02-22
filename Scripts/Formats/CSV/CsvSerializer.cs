@@ -21,12 +21,12 @@ namespace Rusty.Serialization.CSV
         /* Private methods. */
         private void Serialize(INode node, StringBuilder sb)
         {
-            if (node is IdNode id)
+            if (node is AddressNode address)
             {
                 sb.Append("id,");
-                sb.Append(Pack(id.Name));
+                sb.Append(Pack(address.Name));
                 sb.Append("\n");
-                Serialize(id.Value, sb);
+                Serialize(address.Value, sb);
                 sb.Append("\nend");
             }
             else if (node is TypeNode type)
@@ -99,7 +99,7 @@ namespace Rusty.Serialization.CSV
             else if (node is RefNode @ref)
             {
                 sb.Append("ref,");
-                sb.Append(Pack(@ref.ID));
+                sb.Append(Pack(@ref.Address));
             }
             else if (node is ListNode list)
             {

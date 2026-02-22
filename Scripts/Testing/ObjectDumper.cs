@@ -43,21 +43,21 @@ namespace Rusty.Serialization.Testing
                 return;
             }
 
-            // Assign reference ID.
-            int id = visited.Count + 1;
-            visited[obj] = id;
+            // Assign reference address.
+            int address = visited.Count + 1;
+            visited[obj] = address;
 
             // Strings.
             if (obj is string)
             {
-                Console.WriteLine($"{indentStr}{name}: ({type.Name}) {obj} [ID #{id}]");
+                Console.WriteLine($"{indentStr}{name}: ({type.Name}) {obj} [Address #{address}]");
                 return;
             }
 
             // Key-value pairs.
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
             {
-                Console.WriteLine($"{indentStr}{name}: ({type.Name}) [ID #{id}]");
+                Console.WriteLine($"{indentStr}{name}: ({type.Name}) [Address #{address}]");
                 PrintObject(type.GetProperty("Key").GetValue(obj), "key", indent + 1, visited);
                 PrintObject(type.GetProperty("Value").GetValue(obj), "value", indent + 1, visited);
                 return;
@@ -66,7 +66,7 @@ namespace Rusty.Serialization.Testing
             // Class or struct header.
             else
             {
-                Console.WriteLine($"{indentStr}{name}: ({type.Name}) [ID #{id}]");
+                Console.WriteLine($"{indentStr}{name}: ({type.Name}) [Address #{address}]");
 
                 // Collections (IEnumerable).
                 if (obj is IEnumerable enumerable && !(obj is string))

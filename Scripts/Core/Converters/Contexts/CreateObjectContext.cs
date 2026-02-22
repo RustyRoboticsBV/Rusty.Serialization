@@ -39,18 +39,18 @@ namespace Rusty.Serialization.Core.Conversion
             // Handle ref node.
             if (node is RefNode refNode)
             {
-                IdNode refIdNode = NodeTypeTable.GetId(refNode);
-                obj = CreateObject(NodeTypeTable.GetType(refIdNode), refIdNode);
+                AddressNode refAddressNode = NodeTypeTable.GetAddress(refNode);
+                obj = CreateObject(NodeTypeTable.GetType(refAddressNode), refAddressNode);
             }
 
-            // Handle ID node.
-            else if (node is IdNode idNode)
+            // Handle address node.
+            else if (node is AddressNode addressNode)
             {
-                if (ParsingTable.HasParsed(idNode.Name))
-                    obj = ParsingTable.GetParsed(idNode.Name);
+                if (ParsingTable.HasParsed(addressNode.Name))
+                    obj = ParsingTable.GetParsed(addressNode.Name);
                 else
                 {
-                    INode valueNode = idNode.Value;
+                    INode valueNode = addressNode.Value;
 
                     IConverter converter;
                     if (valueNode is TypeNode valueTypeNode)
@@ -63,8 +63,8 @@ namespace Rusty.Serialization.Core.Conversion
 
                     obj = converter.CreateObject(valueNode, this);
 
-                    ParsingTable.Add(idNode);
-                    ParsingTable.SetParsed(idNode.Name, obj);
+                    ParsingTable.Add(addressNode);
+                    ParsingTable.SetParsed(addressNode.Name, obj);
 
                     if (converter is ICompositeConverter composite)
                         obj = composite.AssignObject(obj, valueNode, Context.AssignObjectContext);

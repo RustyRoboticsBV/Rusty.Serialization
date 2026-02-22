@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Core.Conversion
     {
         /* Private properties. */
         private Dictionary<INode, Type> NodeTypes { get; } = new();
-        private Dictionary<string, IdNode> Ids { get; } = new();
+        private Dictionary<string, AddressNode> Addresses { get; } = new();
         private List<RefNode> Refs { get; } = new();
 
         /* Indexers. */
@@ -40,9 +40,9 @@ namespace Rusty.Serialization.Core.Conversion
         {
             if (node is RefNode @ref)
                 DeferRef(@ref);
-            else if (node is IdNode id)
+            else if (node is AddressNode address)
             {
-                Ids.Add(id.Name, id);
+                Addresses.Add(address.Name, address);
                 NodeTypes[node] = type;
             }
             else
@@ -82,19 +82,19 @@ namespace Rusty.Serialization.Core.Conversion
         {
             foreach (RefNode @ref in Refs)
             {
-                IdNode id = Ids[@ref.ID];
-                Type type = NodeTypes[id];
+                AddressNode address = Addresses[@ref.Address];
+                Type type = NodeTypes[address];
                 NodeTypes[@ref] = type;
             }
             Refs.Clear();
         }
 
         /// <summary>
-        /// Get an ID node.
+        /// Get an address node.
         /// </summary>
-        public IdNode GetId(RefNode @ref)
+        public AddressNode GetAddress(RefNode @ref)
         {
-            return Ids[@ref.ID];
+            return Addresses[@ref.Address];
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Rusty.Serialization.Core.Conversion
         public void Clear()
         {
             NodeTypes.Clear();
-            Ids.Clear();
+            Addresses.Clear();
             Refs.Clear();
         }
 

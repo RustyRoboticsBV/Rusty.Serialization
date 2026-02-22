@@ -7,24 +7,24 @@ namespace Rusty.Serialization.Core.Nodes
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
-        public string ID { get; set; }
+        public string Address { get; set; }
 
         /* Constructors. */
-        public RefNode(string id)
+        public RefNode(string address)
         {
-            ID = id.ToString() ?? "";
+            Address = address.ToString() ?? "";
         }
 
         /* Public methods. */
         public override string ToString()
         {
-            return "ref: " + ID;
+            return "ref: " + Address;
         }
 
         public void Clear()
         {
             Parent = null;
-            ID = "";
+            Address = "";
         }
     }
 }

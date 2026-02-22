@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Core.Nodes
         public INode Root { get; private set; }
 
         /* Private properties. */
-        private Dictionary<string, IdNode> IdLookup { get; set; }
+        private Dictionary<string, AddressNode> AddressLookup { get; set; }
 
         /* Constructors. */
         public NodeTree() { }

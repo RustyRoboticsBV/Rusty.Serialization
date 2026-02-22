@@ -70,14 +70,14 @@ namespace Rusty.Serialization.CSV
                     return new RefNode(ReadCell(lexer));
 
                 case "id":
-                    string id = ReadCell(lexer);
-                    INode idValue = ParseNode(lexer);
-                    return new IdNode(id, idValue);
+                    string address = ReadCell(lexer);
+                    INode addressedValue = ParseNode(lexer);
+                    return new AddressNode(address, addressedValue);
 
                 case "type":
                     string type = ReadCell(lexer);
-                    INode typeValue = ParseNode(lexer);
-                    return new IdNode(type, typeValue);
+                    INode typedValue = ParseNode(lexer);
+                    return new AddressNode(type, typedValue);
 
                 case "list":
                     ListNode list = new ListNode();

@@ -10,57 +10,57 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class ParsingTable
     {
         /* Private properties. */
-        private Dictionary<string, IdNode> Ids { get; } = new();
+        private Dictionary<string, AddressNode> Addresses { get; } = new();
         private Dictionary<string, object> Objects { get; } = new();
 
         /* Public methods. */
         /// <summary>
-        /// Add an ID node to the parsing table.
+        /// Add an address node to the parsing table.
         /// </summary>
-        public void Add(IdNode node)
+        public void Add(AddressNode node)
         {
-            if (Ids.ContainsKey(node.Name))
-                throw new ArgumentException($"Duplicate ID '{node.Name}'.");
+            if (Addresses.ContainsKey(node.Name))
+                throw new ArgumentException($"Duplicate address '{node.Name}'.");
 
-            Ids[node.Name] = node;
+            Addresses[node.Name] = node;
         }
 
         /// <summary>
-        /// Check whether or not a node with some ID has already been parsed.
+        /// Check whether or not a node with some address has already been parsed.
         /// </summary>
-        public bool HasParsed(string id) => Objects.ContainsKey(id);
+        public bool HasParsed(string address) => Objects.ContainsKey(address);
 
         /// <summary>
-        /// Get the parsed object corresponding to some ID.
+        /// Get the parsed object corresponding to some address.
         /// </summary>
-        public object GetParsed(string id)
+        public object GetParsed(string address)
         {
-            if (Objects.TryGetValue(id, out object node))
+            if (Objects.TryGetValue(address, out object node))
                 return node;
             else
-                throw new ArgumentException($"The id '{id}' did not exist.");
+                throw new ArgumentException($"The address '{address}' did not exist.");
         }
 
         /// <summary>
         /// Set the parsed value of a node.
         /// </summary>
-        public void SetParsed(string id, object obj)
+        public void SetParsed(string address, object obj)
         {
-            if (!HasParsed(id))
-                Objects[id] = obj;
+            if (!HasParsed(address))
+                Objects[address] = obj;
             else
-                throw new ArgumentException($"The id '{id}' has already been parsed.");
+                throw new ArgumentException($"The address '{address}' has already been parsed.");
         }
 
         /// <summary>
-        /// Get the ID node correspondind to some ID.
+        /// Get the address node correspondind to some address.
         /// </summary>
-        public IdNode GetNode(string id)
+        public AddressNode GetNode(string address)
         {
-            if (Ids.TryGetValue(id, out IdNode node))
+            if (Addresses.TryGetValue(address, out AddressNode node))
                 return node;
             else
-                throw new ArgumentException($"The id '{id}' did not exist.");
+                throw new ArgumentException($"The address '{address}' did not exist.");
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// </summary>
         public void Clear()
         {
-            Ids.Clear();
+            Addresses.Clear();
             Objects.Clear();
         }
     }

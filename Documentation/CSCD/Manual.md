@@ -34,7 +34,7 @@ Whitespace may appear between format markers, comments, interpunction and litera
 Addresses may be attached to any value literal, after which they can be targeted by a reference literal.
 
 ```
-`my_id`
+`my_address`
 ``
 ```
 
@@ -208,10 +208,10 @@ mySymbol                                    Bare notation.
 ```
 
 ### Reference
-A reference that points to an object annotated with an ID.
+A reference that points to an object annotated with an address.
 
 ```
-&my_id&
+&my_address&
 &&
 ```
 
@@ -231,7 +231,7 @@ A collection of key-value pairs. Keys and values may by any type of literal, and
 
 ```
 {"a": 0, "b": 1, "c": 2}                    Dictionary with string keys and integer values.
-{false: 1, 2.0: nan, 'C': "abc"}            Dictionary with mixed keys and values.edDSF{}
+{false: 1, 2.0: nan, 'C': "abc"}            Dictionary with mixed keys and values.
 {}                                          Empty dictionary.
 ```
 

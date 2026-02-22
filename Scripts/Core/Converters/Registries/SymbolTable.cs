@@ -11,19 +11,19 @@ namespace Rusty.Serialization.Core.Conversion
     {
         /* Private properties. */
         private Dictionary<object, INode> Nodes { get; } = new();
-        private Dictionary<object, ulong> Ids { get; } = new();
+        private Dictionary<object, ulong> Addresses { get; } = new();
 
-        private ulong NextId { get; set; }
+        private ulong NextAddress { get; set; }
 
         /* Public methods. */
         public override string ToString()
         {
             string str = "";
-            foreach (var id in Ids)
+            foreach (var address in Addresses)
             {
                 if (str.Length > 0)
                     str += '\n';
-                str += "- " + id.Value + ": " + id.Key;
+                str += "- " + address.Value + ": " + address.Key;
             }
             return str;
         }
@@ -51,39 +51,39 @@ namespace Rusty.Serialization.Core.Conversion
         }
 
         /// <summary>
-        /// Return if an object has had an ID generated for it.
+        /// Return if an object has had an address generated for it.
         /// </summary>
-        public bool HasIdFor(object obj)
+        public bool HasAddressFor(object obj)
         {
             if (obj == null)
                 return false;
-            return Ids.ContainsKey(obj);
+            return Addresses.ContainsKey(obj);
         }
 
         /// <summary>
-        /// Create an ID for an object. The object must be a reference type.
+        /// Create an address for an object. The object must be a reference type.
         /// </summary>
-        public ulong CreateIdFor(object obj)
+        public ulong CreateAddressFor(object obj)
         {
             if (obj.GetType().IsValueType)
                 throw new ArgumentException($"Cannot add objects of value type '{obj.GetType()} to the symbol table!'");
 
-            // Create ID.
-            ulong newId = NextId;
-            Ids[obj] = newId;
-            NextId++;
-            return newId;
+            // Create address.
+            ulong newAddress = NextAddress;
+            Addresses[obj] = newAddress;
+            NextAddress++;
+            return newAddress;
         }
 
         /// <summary>
-        /// Get the ID of an object.
+        /// Get the address of an object.
         /// </summary>
-        public ulong GetIdFor(object obj)
+        public ulong GetAddressFor(object obj)
         {
-            if (Ids.TryGetValue(obj, out ulong id))
-                return id;
+            if (Addresses.TryGetValue(obj, out ulong address))
+                return address;
 
-            throw new ArgumentException($"No ID available for object '{obj}'.");
+            throw new ArgumentException($"No address available for object '{obj}'.");
         }
 
         /// <summary>
@@ -108,8 +108,8 @@ namespace Rusty.Serialization.Core.Conversion
         public void Clear()
         {
             Nodes.Clear();
-            Ids.Clear();
-            NextId = 0;
+            Addresses.Clear();
+            NextAddress = 0;
         }
     }
 }

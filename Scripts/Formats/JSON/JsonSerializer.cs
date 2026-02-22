@@ -23,7 +23,7 @@ namespace Rusty.Serialization.JSON
             bool prettyPrint = settings.PrettyPrint;
 
             string idStr = null;
-            if (node is IdNode id)
+            if (node is AddressNode id)
             {
                 idStr = id.Name;
                 node = id.Value;

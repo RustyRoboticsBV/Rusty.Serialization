@@ -36,19 +36,19 @@ namespace Rusty.Serialization.Core.Conversion
             bool isReferenceType = !actualType.IsValueType;
             if (isReferenceType && SymbolTable.HasObject(obj))
             {
-                // Create ID if it didn't exist yet.
-                if (!SymbolTable.HasIdFor(obj))
+                // Create address if it didn't exist yet.
+                if (!SymbolTable.HasAddressFor(obj))
                 {
-                    string id = SymbolTable.CreateIdFor(obj).ToString();
+                    string address = SymbolTable.CreateAddressFor(obj).ToString();
                     targetNode = SymbolTable.GetNode(obj);
                     ITreeElement targetParent = targetNode.Parent;
-                    IdNode idNode = new(id, targetNode);
+                    AddressNode addressNode = new(address, targetNode);
                     if (targetParent is IContainerNode container)
-                        container.ReplaceChild(targetNode, idNode);
+                        container.ReplaceChild(targetNode, addressNode);
                 }
 
                 // Create reference.
-                return new RefNode(SymbolTable.GetIdFor(obj).ToString());
+                return new RefNode(SymbolTable.GetAddressFor(obj).ToString());
             }
 
             // Convert.

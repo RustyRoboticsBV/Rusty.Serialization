@@ -12,7 +12,7 @@ namespace Rusty.Serialization.CSCD
     public class CscdParser : Parser<CscdLexer>
     {
         /* Fields. */
-        private readonly static HashSet<UnicodePair> idEscapes =
+        private readonly static HashSet<UnicodePair> addressEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
         private readonly static HashSet<UnicodePair> typeEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
@@ -91,8 +91,8 @@ namespace Rusty.Serialization.CSCD
 
             // Ensure legal root value.
             INode check = root;
-            if (check is IdNode id)
-                check = id.Value;
+            if (check is AddressNode address)
+                check = address.Value;
             if (check is TypeNode type)
                 check = type.Value;
             if (check is RefNode)
@@ -113,17 +113,17 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.Equals("~/CSCD~"))
                 TokenError(token, "Format footer marker may not appear inside of the top-level value.");
 
-            // ID.
+            // Address.
             if (token.Text.StartsWith('`') && token.Text.EndsWith('`'))
             {
-                string name = ParseText(token, idEscapes, "`", "`");
+                string name = ParseText(token, addressEscapes, "`", "`");
 
-                Token next = ExpectToken(text, lexer, "An ID must be followed by another token.");
+                Token next = ExpectToken(text, lexer, "An address must be followed by another token.");
                 INode value = ParseToken(text, next, lexer);
-                if (value is IdNode)
-                    TokenError(token, "IDs may not be followed by another ID.");
+                if (value is AddressNode)
+                    TokenError(token, "Addresses may not be followed by another address.");
 
-                return new IdNode(name, value);
+                return new AddressNode(name, value);
             }
 
             // Type.
@@ -133,8 +133,8 @@ namespace Rusty.Serialization.CSCD
 
                 Token next = ExpectToken(text, lexer, "A type must be followed by another token.");
                 INode value = ParseToken(text, next, lexer);
-                if (value is IdNode)
-                    TokenError(token, "Types may not be followed by an ID.");
+                if (value is AddressNode)
+                    TokenError(token, "Types may not be followed by an address.");
                 if (value is TypeNode)
                     TokenError(token, "Types may not be followed by a type.");
 

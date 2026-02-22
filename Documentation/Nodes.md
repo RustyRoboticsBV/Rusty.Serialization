@@ -6,10 +6,10 @@ The node layer recognizes the following nodes listed below. Each node correspond
 
 ### Metadata
 
-- **ID**: a reference ID, used to mark shared or cyclic reference objects.
+- **Address**: a reference address, used to mark shared or cyclic reference objects.
 - **Type**: a type label, used to disambiguify polymorphic types.
-- **Offset**: a UTC time offset, used to add timezone information to a timestamp node.
 - **Scope**: a class/struct member scope, used to disambiguify shadowed fields and properties.
+- **Offset**: a UTC time offset, used to add timezone information to a timestamp node.
 
 ### Primitives
 
@@ -23,11 +23,12 @@ The node layer recognizes the following nodes listed below. Each node correspond
 - **String**: encodes a string value.
 - **Decimal**: encodes a decimal value of arbitrary precision, composed of a sign, mantissa and range. Unlike float nodes, it preserves trailing zeros after the decimal point.
 - **Color**: encodes a color value, composed of a red, green, blue and alpha byte.
+- **UID**: encodes a unique identifier as a 128-bit number.
 - **Timestamp**: encodes a timestamp value, composed of a year, month, day, hour, minute and second. The year may be negative, the other terms must be positive.
-- **Duration**: encodes a duration value, composed of a number of days, hours, minutes, seconds and a sign. All terms may not be negative.
-- **Bytes**: encodes a byte array value.
+- **Duration**: encodes a duration value, composed of a number of days, hours, minutes, seconds and a sign. All terms must be positive.
+- **Bytes**: encodes a byte array value; used to store arbitrary binary data.
 - **Symbol**: encodes enums and special constants (such as the mathematical constants `pi` and `e`).
-- **Ref**: a reference to an ID node. Used to avoid duplication of shared references, and cycles in cyclic references.
+- **Ref**: a reference to an address node. Used to avoid duplication of shared references, and cycles in cyclic references.
 
 ### Collections
 

@@ -3,7 +3,7 @@
 ## Introduction
 This formal specification document describes the syntax of an object graph serialization format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary object graphs.
 
-The format is syntactically self-describing and does not require an external schema for structural parsing. While it is *syntactically* structured like a tree, it *semantically* represents a graph. Values may be annotated with optional type and ID metadata, enabling parsers to reconstruct objects with their original types and preserve reference/pointer links.
+The format is syntactically self-describing and does not require an external schema for structural parsing. While it is *syntactically* structured like a tree, it *semantically* represents a graph. Values may be annotated with optional type and reference metadata, enabling parsers to reconstruct objects with their original types and preserve reference/pointer links.
 
 CSCD literals are more general than C# types. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common composite data types, such as timestamps and colors, have dedicated compact literal forms in order to reduce verbosity.
 
@@ -29,7 +29,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
   - [1.7 Invalid Input](#17-invalid-input)
 - [2. Literals](#2-literals)
   - [2.1 Metadata](#21-metadata)
-    - [IDs](#ids)
+    - [Addresses](#addresses)
     - [Types](#types)
     - [Scopes](#scopes)
     - [Offsets](#offsets)
@@ -147,14 +147,14 @@ The exact mechanism for rejection (e.g., exception, error code, logging) is impl
 ## 2. Literals
 CSCD supports two categories of literals: metadata and values. Values are further divided into primitives and collections.
 
-A valid serialized CSCD string MUST contain exactly one top-level value. This top-level value MAY be any type of literal except reference literals, as parsers cannot resolve a reference without an accompanying ID. The top-level value MAY be annotated with metadata.
+A valid serialized CSCD string MUST contain exactly one top-level value. This top-level value MAY be any type of literal except reference literals, as parsers cannot resolve a reference without an accompanying address. The top-level value MAY be annotated with metadata.
 
 ### 2.1. Metadata
 
-#### IDs
-IDs MAY be placed before any concrete value, type or offset literal, and are written as a name between `` ` `` backticks. Values annotated with an ID can be referenced elsewhere using a [reference literal](#references). IDs MUST NOT be applied to reference literals. IDs MUST be globally unique and are case-sensitive.
+#### Addresses
+Addresses MAY be placed before any concrete value, type or offset literal, and are written as a name between `` ` `` backticks. Values annotated with an address can be referenced elsewhere using a [reference literal](#references). Addresses MUST NOT be applied to reference literals. addresses MUST be globally unique and are case-sensitive.
 
-The following characters MUST NOT appear in ID literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
+The following characters MUST NOT appear in address literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
 |Character      |Code point |   |Character      |Code point |
 |---------------|-----------|---|---------------|-----------|
@@ -164,7 +164,7 @@ The following characters MUST NOT appear in ID literals and MUST instead be repr
 
 All other characters from the character set MAY appear unescaped.
 
-Serializers SHOULD emit IDs only when a single object is referenced multiple times or when a cyclic reference exists.
+Serializers SHOULD emit addresses only when a single object is referenced multiple times or when a cyclic reference exists.
 
 Examples: `` `my_referenced_int`5``, `` `my_referenced_object`<a:0,b:"abc">``, `` `my_referenced_typed_value`  (MyStringType)"abcdefg"``
 
@@ -181,7 +181,7 @@ The following characters MUST NOT appear in type literals and MUST instead be re
 
 All other characters from the character set MAY appear unescaped.
 
-Type labels MUST be immediately followed by a concrete value or offset literal. They MUST NOT be followed by an ID or another type. Type labels MAY appear inside collections.
+Type labels MUST be immediately followed by a concrete value or offset literal. They MUST NOT be followed by an address or another type. Type labels MAY appear inside collections.
 
 Serializers SHOULD only emit type labels when necessary to disambiguate the type of a value.
 
@@ -389,7 +389,7 @@ A delimited symbol literal MUST start and end with `*` asterisk characters, with
 
 If a symbol starts with an ASCII letter (`A`-`Z`, `a`-`z`) or an `_` underscore, and contains only ASCII letters (`A`-`Z`, `a`-`z`), digits (`0`-`9`) and underscores (`_`), then the enclosing `*` asterisks may be omitted. For example, `_abc123` is equivalent to `*_abc123*`. The names `null`, `true`, `false`, `nan` and `inf` are reserved keywords and cannot be used as bare symbol names - they MUST be enclosed in `*` asterisks.
 
-Symbol literals MAY be annotated with an ID and type label.
+Symbol literals MAY be annotated with an address and type label.
 
 The following characters MUST NOT appear in `*` asterisk-delimited symbol literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
@@ -404,11 +404,11 @@ All other characters from the character set MAY appear unescaped. Bare symbol li
 Serializers SHOULD emit the bare symbol form if the name is an allowed bare symbol name.
 
 #### References
-Reference values are used to link to values that have been marked with an ID. They MUST start and end with an `&` ampersand, with the name of an ID between them (example: `&my_id&`). This ID MUST exist elsewhere in the data.
+Reference values are used to link to values that have been marked with an address. They MUST start and end with an `&` ampersand, with the name of an address between them (example: `&my_id&`). This address MUST exist elsewhere in the data.
 
-Reference literals MUST NOT be used as the top-level value. Otherwise, they MAY appear anywhere inside collection literals. Cyclic references are allowed. References can appear before or after the definition of the ID they refer to, and may cross nested collections.
+Reference literals MUST NOT be used as the top-level value. Otherwise, they MAY appear anywhere inside collection literals. Cyclic references are allowed. References can appear before or after the definition of the address they refer to, and may cross nested collections.
 
-Reference literals MAY be annotated with type labels, but MUST NOT be annotated with IDs.
+Reference literals MAY be annotated with type labels, but MUST NOT be annotated with addresses.
 
 The following characters MUST NOT appear in reference literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
@@ -453,9 +453,9 @@ Object literals represent a collection of name-value pairs, meant to model struc
 
 An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by `,` commas, and names and values MUST be separated by a `:` colon. Trailing commas MUST NOT appear in an object (e.g., `<id:0,>` is invalid).
 
-Member names MUST be symbols (delimited or bare). To maximize generality, member names are NOT required to be unique by the format. Member names MUST NOT be annotated with a type label and/or ID, but they MAY be annotated with a scope.
+Member names MUST be symbols (delimited or bare). To maximize generality, member names are NOT required to be unique by the format. Member names MUST NOT be annotated with a type label and/or address, but they MAY be annotated with a scope.
 
-Member values MAY be any literal type, including other collections. Member values MAY be annotated with a type labels and/or ID, but MUST NOT be annotated with a scope.
+Member values MAY be any literal type, including other collections. Member values MAY be annotated with a type labels and/or address, but MUST NOT be annotated with a scope.
 
 Objects MAY be empty, which MUST be represented by the literal `<>`.
 

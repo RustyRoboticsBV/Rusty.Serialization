@@ -12,7 +12,7 @@ namespace Rusty.Serialization.CSCD
     public class CscdSerializer : Serializer
     {
         /* Private constants. */
-        private readonly static HashSet<UnicodePair> idEscapes =
+        private readonly static HashSet<UnicodePair> addressEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
         private readonly static HashSet<UnicodePair> typeEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
@@ -63,8 +63,8 @@ namespace Rusty.Serialization.CSCD
         /* Private methods. */
         private string Serialize(INode node, bool prettyPrinting)
         {
-            if (node is IdNode id)
-                return $"`{FormatText(id.Name, idEscapes)}`{Serialize(id.Value, prettyPrinting)}";
+            if (node is AddressNode address)
+                return $"`{FormatText(address.Name, addressEscapes)}`{Serialize(address.Value, prettyPrinting)}";
             if (node is TypeNode type)
                 return $"({FormatText(type.Name, typeEscapes)}){Serialize(type.Value, prettyPrinting)}";
             if (node is ScopeNode scope)
@@ -102,7 +102,7 @@ namespace Rusty.Serialization.CSCD
             if (node is SymbolNode sb)
                 return Serialize(sb, false);
             if (node is RefNode rf)
-                return $"&{FormatText(rf.ID, refEscapes)}&";
+                return $"&{FormatText(rf.Address, refEscapes)}&";
             if (node is ListNode lst)
                 return Serialize(lst, prettyPrinting);
             if (node is DictNode dic)
