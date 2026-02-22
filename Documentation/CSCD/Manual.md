@@ -59,16 +59,26 @@ Type hints may be attached to any value literal, which can help the runtime disa
 ()
 ```
 
-## Primitives
+## Basic Values
 
-### Null
+<details>
+  <summary><b>Null</b></summary>
+<br/>
+
 A null value.
 
 ```
 null
 ```
 
-### Boolean
+</details>
+
+
+
+<details>
+  <summary><b>Booleans</b></summary>
+<br/>
+
 A boolean. Must be either true or false.
 
 ```
@@ -76,16 +86,30 @@ true
 false
 ```
 
-## Numerics
+</details>
 
-#### Integer
+
+
+## Numeric
+
+<details>
+  <summary><b>Integers</b></summary>
+<br/>
+
 An integer number of unspecified precision.
 
 ```
 12345			        -12345
 ```
 
-#### Float
+</details>
+
+
+
+<details>
+  <summary><b>Floats</b></summary>
+<br/>
+
 A floating-point number of unspecified precision. May consist of an integer, fractional and exponent part. Each part may be omitted; omitted parts are assumed to be `0`.
 
 ```
@@ -99,7 +123,14 @@ A floating-point number of unspecified precision. May consist of an integer, fra
 .			            -.                  Omitted integer, fractional and exponent.
 ```
 
-#### Decimal
+</details>
+
+
+
+<details>
+  <summary><b>Decimals</b></summary>
+<br/>
+
 A decimal value. Unlike with floats, trailing zeros have explicit meaning and should be maintained by a parser.
 
 ```
@@ -111,23 +142,44 @@ $.                      -$.                 Shorthand for '0.0".
 $                       -$                  Shorthand for '0'.
 ```
 
-#### Infinity
+</details>
+
+
+
+<details>
+  <summary><b>Infinity</b></summary>
+<br/>
+
 An infinity value. May be either positive or negative infinity.
 
 ```
 inf			            -inf
 ```
 
-#### NaN
+</details>
+
+
+
+<details>
+  <summary><b>NaN</b></summary>
+<br/>
+
 A not-a-number value.
 
 ```
 nan
 ```
 
-## Text
+</details>
 
-### Character
+
+
+## Textual
+
+<details>
+  <summary><b>Characters</b></summary>
+<br/>
+  
 A character value.
 
 ```
@@ -137,7 +189,14 @@ A character value.
 ''
 ```
 
-### String
+</details>
+
+
+
+<details>
+  <summary><b>Strings</b></summary>
+<br/>
+
 A string value.
 
 ```
@@ -147,7 +206,11 @@ A string value.
 ""
 ```
 
-## Time
+</details>
+
+
+
+## Temporal
 Several literal exist to express various types of temporal data: timestamps, UTC offsets and durations.
 
 <details>
@@ -228,11 +291,12 @@ The entire duration may be negated with a leading `-`.
 
 
 ## Other Composites
-These literals include canonical forms for common composite data types, such as colors, uids and arbitrary byte arrays.
+These literals include canonical forms for miscellanious, but relatively common composite data types: colors, uids and arbitrary byte arrays.
 
 <details>
   <summary><b>Colors</b></summary>
 <br/>
+
 A color value, written as a hexcode. Alpha is optional, and is assumed to be `FF` when omitted. A CSS shorthand notation is also supported.
 
 ```
@@ -276,7 +340,13 @@ A bytestring in Base64, representing arbitrary byte arrays.
 
 </details>
 
-### Symbol
+
+
+## Symbolic
+
+<details>
+  <summary><b>Symbols</b></summary>
+<br/>
 A symbol, meant for enums and named constants.
 
 ```
@@ -284,6 +354,10 @@ mySymbol                                    Bare notation.
 *my symbol*                                 Delimited notation.
 **                                          Empty symbol.
 ```
+
+</details>
+
+
 
 ## Collections
 
