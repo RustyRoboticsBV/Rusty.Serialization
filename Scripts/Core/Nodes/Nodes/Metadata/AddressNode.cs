@@ -25,7 +25,7 @@ namespace Rusty.Serialization.Core.Nodes
         /* Public methods. */
         public override string ToString()
         {
-            return "Address: " + Name + "\n" + PrintUtility.PrintChild(Value);
+            return "address: " + Name + "\n" + PrintUtility.PrintChild(Value);
         }
 
         public void Clear()

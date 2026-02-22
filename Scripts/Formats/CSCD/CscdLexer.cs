@@ -10,9 +10,8 @@ namespace Rusty.Serialization.CSCD
     /// </summary>
     public class CscdLexer : Lexer
     {
-        /* Constants. */
-        private const string CommentStart = ";;";
-        private const string CommentEnd = ";;";
+        /* Private properties. */
+        private int State { get; set; }
 
         /* Public methods. */
         public override bool GetNextToken(TextSpan text, out Token token)
@@ -35,7 +34,13 @@ namespace Rusty.Serialization.CSCD
 
             // Comments.
             if (c == ';' && Cursor + 1 < text.Length && Next(text) == ';')
+            {
                 token = MakeTokenAndAdvance(text, ReadComment(text));
+
+                // Skip comments inside of the main block.
+                if (State == 1)
+                    GetNextToken(text, out token);
+            }
 
             // Interpunction.
             else if (c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>')
@@ -71,6 +76,10 @@ namespace Rusty.Serialization.CSCD
             else
                 token = MakeTokenAndAdvance(text, ReadBareLexeme(text));
 
+            if (token.Text.Equals("~/CSCD~"))
+                State = 2;
+            else if (State == 0)
+                State = 1;
             return true;
         }
 

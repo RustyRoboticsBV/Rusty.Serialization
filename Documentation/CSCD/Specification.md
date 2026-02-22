@@ -147,7 +147,7 @@ The exact mechanism for rejection (e.g., exception, error code, logging) is impl
 ## 2. Literals
 CSCD supports two categories of literals: metadata and values. Values are further divided into primitives and collections.
 
-A valid serialized CSCD string MUST contain exactly one top-level value. This top-level value MAY be any type of literal except reference literals, as parsers cannot resolve a reference without an accompanying address. The top-level value MAY be annotated with metadata.
+A valid serialized CSCD string MUST contain exactly one top-level value. This top-level value MAY be any type of value except for a reference. The top-level value MAY be annotated with metadata.
 
 ### 2.1. Metadata
 
@@ -404,7 +404,7 @@ All other characters from the character set MAY appear unescaped. Bare symbol li
 Serializers SHOULD emit the bare symbol form if the name is an allowed bare symbol name.
 
 #### References
-Reference values are used to link to values that have been marked with an address. They MUST start and end with an `&` ampersand, with the name of an address between them (example: `&my_id&`). This address MUST exist elsewhere in the data.
+Reference values are used to link to values that have been marked with an address. They MUST start and end with an `&` ampersand, with the name of an address between them (example: `&my_address&`). This address MUST exist elsewhere in the data.
 
 Reference literals MUST NOT be used as the top-level value. Otherwise, they MAY appear anywhere inside collection literals. Cyclic references are allowed. References can appear before or after the definition of the address they refer to, and may cross nested collections.
 

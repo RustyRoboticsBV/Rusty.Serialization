@@ -45,7 +45,7 @@ namespace Rusty.Serialization.Core.Nodes
             string str = "object:";
             for (int i = 0; i < Members.Count; i++)
             {
-                str += '\n' + PrintUtility.PrintPair(Members[i].Key, Members[i].Value, i == Members.Count - 1);
+                str += '\n' + PrintUtility.PrintMember(Members[i].Key, Members[i].Value, i == Members.Count - 1);
             }
             return str;
         }
