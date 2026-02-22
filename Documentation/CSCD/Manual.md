@@ -74,7 +74,7 @@ A null value.
 null
 ```
 
-### Bool
+### Boolean
 A boolean. Must be either true or false.
 
 ```
@@ -82,7 +82,7 @@ true
 false
 ```
 
-### Int
+### Integer
 An integer number of unspecified precision.
 
 ```
@@ -117,7 +117,7 @@ A not-a-number value.
 nan
 ```
 
-### Char
+### Character
 A character value.
 
 ```
@@ -161,7 +161,7 @@ A color value, written as a hexcode. Alpha is optional, and is assumed to be `FF
 ```
 
 ### UID
-A unique identifier value, written as a 128-bit hexadecimal number in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX (8-4-4-4-12). The dashes and leading zeros may be omitted.
+A unique identifier value, written as a 128-bit hexadecimal number in the format `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (8-4-4-4-12). The dashes and leading zeros may be omitted.
 
 ```
 %3f4e1a9c-8d3b-24e4-c8f7-b3a8d5c1e9f2       Full notation.
@@ -171,17 +171,39 @@ A unique identifier value, written as a 128-bit hexadecimal number in the format
 ```
 
 ### Timestamp
-A timestamp value, representing a date and a time.
+Timestamp literals represent an absolute point in time. They are intended to represent calendar dates and/or clock times.
+
+Timestamps are delimited by `@` symbols and may contain a date part, a time part, both or neither. Missing components are assumed to take their default forms (`01/01/01` for dates, `00:00:00` for times.
+
+The year, month, day, hour and minute must be integers. The second may be an integer or float. The year may be negative for dates before 1 AD; all other numbers must be positive.
+
+Ranges:
+- Month: `1`-`12`.
+- Day: `1`-`31`.
+- Hour: `0`-`24`. `24` allowed only with `0:0` minutes/seconds.
+- Minute: `0`-`59`.
+- Second: `0`-`60`. The value `60` is used for leap seconds.
 
 ```
 @2000/1/1,13:0:0@       @-2000/1/1,13:0:0@  Date and time.
 @200/11/5@              @-200/11/5@         Date only. Time is assumed to be 00:00:00.
 @24:0:0@                                    Time only. Date is assumed to be 01/01/01.
+@17:59:60e7-5@                              Leap second with fractional part.
 @@                                          Shorthand for 01/01/01, 00:00:00.
 ```
 
+Timestamps may be annotated with an [offset](#offset), to create timezone-aware timestamps.
+
 ### Duration
-A duration value, representing a timespan expressed in several units. The order must be days, hours, minutes and seconds. Units may be omitted; omitted units are assumed to equal `0`.
+Duration literals represent a relative length of time (i.e. timespan), expressed as a combination of days, hours, minutes and seconds.
+
+A duration consists of one to four ordered unit terms:
+- `d`: days.
+- `h`: hours.
+- `m`: minutes.
+- `s`: seconds.
+
+The entire duration may be negated with a leading `-`.
 
 ```
 10d5h1m10s              -10d5h1m10s         Full notation with all units.
@@ -194,8 +216,8 @@ A duration value, representing a timespan expressed in several units. The order 
 A bytestring in Base64, representing arbitrary byte arrays.
 
 ```
-!SGVsbG8sIHdvcmxkIQ
-!
+!SGVsbG8sIHdvcmxkIQ                         "Hello, world!"
+!                                           Empty bytestring.
 ```
 
 ### Symbol
