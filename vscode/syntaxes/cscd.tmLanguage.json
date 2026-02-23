@@ -38,7 +38,7 @@
     "metadata": {
       "patterns": [
         {
-          "name": "entity.name.address.cscd",
+          "name": "variable.other.address.cscd",
           "begin": "`",
           "end": "`"
         },
@@ -48,12 +48,12 @@
           "end": "\\)"
         },
         {
-          "name": "entity.name.scope.cscd",
+          "name": "variable.other.scope.cscd",
           "begin": "\\^",
           "end": "\\^"
         },
         {
-          "name": "keyword.other.offset.cscd",
+          "name": "constant.numeric.offset.cscd",
           "begin": "\\|",
           "end": "\\|"
         }
@@ -70,11 +70,7 @@
             { "include": "#format_markers" },
             { "include": "#comments" },
             { "include": "#metadata" },
-            { "include": "#strings" },
-            { "include": "#numbers" },
-            { "include": "#constants" },
-            { "include": "#symbols" },
-            { "include": "#references" },
+            { "include": "#primitives" },
             { "include": "#collections" },
             { "include": "#delimiters" }
           ]
@@ -87,11 +83,7 @@
             { "include": "#format_markers" },
             { "include": "#comments" },
             { "include": "#metadata" },
-            { "include": "#strings" },
-            { "include": "#numbers" },
-            { "include": "#constants" },
-            { "include": "#symbols" },
-            { "include": "#references" },
+            { "include": "#primitives" },
             { "include": "#collections" },
             { "include": "#delimiters" }
           ]
@@ -104,13 +96,7 @@
             { "include": "#format_markers" },
             { "include": "#comments" },
             { "include": "#metadata" },
-            { "include": "#strings" },
-            { "include": "#numbers" },
-            { "include": "#constants" },
-            { "include": "#colors" },
-            { "include": "#uids" },
-            { "include": "#symbols" },
-            { "include": "#references" },
+            { "include": "#primitives" },
             { "include": "#collections" },
             { "include": "#delimiters" }
           ]
@@ -119,21 +105,6 @@
     },
 
     "primitives": {
-      "patterns": [
-        { "include": "#strings" },
-        { "include": "#chars" },
-        { "include": "#numbers" },
-        { "include": "#constants" },
-        { "include": "#timestamps" },
-        { "include": "#durations" },
-        { "include": "#colors" },
-        { "include": "#uids" },
-        { "include": "#bytes" },
-        { "include": "#references" }
-      ]
-    },
-
-    "strings": {
       "patterns": [
         {
           "name": "string.quoted.double.cscd",
@@ -160,12 +131,8 @@
               "match": "\\\\(t|n|r|'|\\\\|[0-9A-F]+;)"
             }
           ]
-        }
-      ]
-    },
-
-    "numbers": {
-      "patterns": [
+        },
+        
         {
           "name": "constant.numeric.decimal.cscd",
           "match": "-?\\$\\d*(\\.\\d*)?"
@@ -177,12 +144,8 @@
         {
           "name": "constant.numeric.integer.cscd",
           "match": "-?\\b\\d+\\b"
-        }
-      ]
-    },
-
-    "constants": {
-      "patterns": [
+        },
+        
         {
           "name": "constant.language.null.cscd",
           "match": "\\bnull\\b"
@@ -198,79 +161,56 @@
         {
           "name": "constant.language.infinity.cscd",
           "match": "-?\\binf\\b"
-        }
-      ]
-    },
-
-    "colors": {
-      "patterns": [
+        },
+        
         {
-          "name": "constant.language.color.cscd",
+          "name": "constant.numeric.color.cscd",
           "match": "#[0-9A-F]{0,8}"
-        }
-      ]
-    },
+        },
 
-    "uids": {
-      "patterns": [
         {
-          "name": "constant.language.uid.cscd",
+          "name": "constant.numeric.uid.cscd",
           "match": "%[0-9a-fA-F-]*"
-        }
-      ]
-    },
+        },
 
-    "timestamps": {
-      "patterns": [
+
         {
-          "name": "constant.language.timestamp.cscd",
+          "name": "constant.numeric.timestamp.cscd",
           "begin": "@",
           "end": "@"
-        }
-      ]
-    },
+        },
 
-    "durations": {
-      "patterns": [
         {
-          "name": "constant.language.duration.cscd",
-          "match": "-?\\d*d?\\d*h?\\d*m?\\d*(\\.\\d+)?s?"
-        }
-      ]
-    },
+          "name": "constant.numeric.duration.cscd",
+          "match": "-?(?:\\d+d|\\d+h|\\d+m|\\d+(?:\\.\\d+)?s)"
+        },
 
-    "bytes": {
-      "patterns": [
         {
-          "name": "constant.language.bytes.cscd",
+          "name": "constant.numeric.bytes.cscd",
           "match": "![A-Za-z0-9+/=]*"
-        }
-      ]
-    },
+        },
 
-    "references": {
-      "patterns": [
+
         {
-          "name": "variable.other.reference.cscd",
+          "name": "constant.character.reference.cscd",
           "begin": "&",
           "end": "&"
-        }
-      ]
-    },
+        },
 
-    "symbols": {
-      "patterns": [
+
         {
-          "name": "entity.name.symbol.delimited.cscd",
+          "name": "string.quoted.symbol.delimited.cscd",
           "begin": "\\*",
           "end": "\\*"
         },
         {
-          "name": "entity.name.symbol.bare.cscd",
+          "name": "variable.other.symbol.bare.cscd",
           "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
         }
       ]
     },
+
+
 
     "delimiters": {
       "patterns": [

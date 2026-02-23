@@ -20,6 +20,13 @@
       "language": "cscd",
       "scopeName": "source.cscd",
       "path": "./syntaxes/cscd.tmLanguage.json"
-    }]
+    }],
+    "themes": [
+      {
+        "label": "CSCD Default Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/cscd-default-color-theme.json"
+      }
+    ]
   }
 }
