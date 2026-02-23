@@ -6,6 +6,11 @@
   "engines": {
     "vscode": "^1.109.0"
   },
+  "publisher": "rusty-robotics-bv",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RustyRoboticsBV/Rusty.Serialization"
+  },
   "categories": [
     "Programming Languages"
   ],
