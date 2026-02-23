@@ -142,7 +142,7 @@
 
     {
       "scope": "cscd.primitives.uid",
-      "settings": { "foreground": "#A000D1", "fontStyle": "bold" }
+      "settings": { "foreground": "#CD64CD", "fontStyle": "bold" }
     },
 
     {
@@ -171,7 +171,7 @@
     },
     {
       "scope": "cscd.primitives.symbol",
-      "settings": { "foreground": "#8e478e", "fontStyle": "bold" }
+      "settings": { "foreground": "#F4AFE6", "fontStyle": "bold" }
     },
 
     // =============================
@@ -197,7 +197,7 @@
     // =============================
     {
       "scope": "cscd.punctuation",
-      "settings": { "foreground": "#BFBFBF" }
+      "settings": { "foreground": "#BFBFBF", "fontStyle": "bold" }
     }
   ]
 }

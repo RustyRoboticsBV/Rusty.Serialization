@@ -303,7 +303,7 @@
         },
         {
           "name": "cscd.primitives.membername",
-          "match": "\\b[A-Za-z_][A-Za-z0-9_]*:"
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b(?=\\s*:)"
         }
       ]
     },
