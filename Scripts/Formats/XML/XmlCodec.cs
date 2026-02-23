@@ -59,7 +59,7 @@ namespace Rusty.Serialization.XML
                 node = address.Value;
             }
 
-            // Unwrap TypeNode
+            // Unwrap type node.
             string typeName = null;
             if (node is TypeNode type)
             {
@@ -67,50 +67,58 @@ namespace Rusty.Serialization.XML
                 node = type.Value;
             }
 
+            // Unwrap offset node.
+            string offsetValue = null;
+            if (node is OffsetNode offset)
+            {
+                offsetValue = offset.Offset.ToString();
+                node = offset.Time;
+            }
+
             // Write node.
             switch (node)
             {
                 case NullNode:
                     writer.WriteStartElement("null");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
                     writer.WriteEndElement();
                     break;
 
-                case BoolNode b:
+                case BoolNode @bool:
                     writer.WriteStartElement("bool");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(b.Value.ToString().ToLowerInvariant());
+                    writer.WriteString(@bool.Value.ToString().ToLowerInvariant());
                     writer.WriteEndElement();
                     break;
 
-                case IntNode i:
+                case IntNode @int:
                     writer.WriteStartElement("int");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(i.Value.ToString());
+                    writer.WriteString(@int.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
-                case FloatNode f:
+                case FloatNode @float:
                     writer.WriteStartElement("float");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(f.Value.ToString());
+                    writer.WriteString(@float.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
                 case NanNode:
                     writer.WriteStartElement("nan");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
                     writer.WriteEndElement();
                     break;
 
                 case InfinityNode inf:
                     writer.WriteStartElement("inf");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
                     if (inf.Positive)
                         writer.WriteString("+");
                     else
@@ -121,96 +129,112 @@ namespace Rusty.Serialization.XML
 
                 case CharNode chr:
                     writer.WriteStartElement("char");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
                     writer.WriteString(chr.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
-                case StringNode s:
+                case StringNode str:
                     writer.WriteStartElement("str");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(s.Value);
+                    writer.WriteString(str.Value);
                     writer.WriteEndElement();
                     break;
 
-                case DecimalNode d:
+                case DecimalNode @decimal:
                     writer.WriteStartElement("dec");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(d.Value.ToString());
+                    writer.WriteString(@decimal.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
-                case ColorNode col:
+                case ColorNode color:
                     writer.WriteStartElement("col");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(col.Value.ToString());
+                    writer.WriteString(color.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
-                case TimestampNode t:
+                case UidNode uid:
+                    writer.WriteStartElement("uid");
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
+
+                    writer.WriteString(uid.Value.ToString());
+                    writer.WriteEndElement();
+                    break;
+
+                case TimestampNode timestamp:
                     writer.WriteStartElement("time");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    if (t.Value.year != 1)
-                        writer.WriteElementString("year", t.Value.year.ToString());
-                    if (t.Value.month != 1)
-                        writer.WriteElementString("month", t.Value.month.ToString());
-                    if (t.Value.day != 1)
-                        writer.WriteElementString("day", t.Value.day.ToString());
-                    if (t.Value.hour != 0)
-                        writer.WriteElementString("hour", t.Value.hour.ToString());
-                    if (t.Value.minute != 0)
-                        writer.WriteElementString("minute", t.Value.minute.ToString());
-                    if (t.Value.second != 0)
-                        writer.WriteElementString("second", t.Value.second.ToString());
+                    if (timestamp.Value.year != 1)
+                        writer.WriteElementString("year", timestamp.Value.year.ToString());
+                    if (timestamp.Value.month != 1)
+                        writer.WriteElementString("month", timestamp.Value.month.ToString());
+                    if (timestamp.Value.day != 1)
+                        writer.WriteElementString("day", timestamp.Value.day.ToString());
+                    if (timestamp.Value.hour != 0)
+                        writer.WriteElementString("hour", timestamp.Value.hour.ToString());
+                    if (timestamp.Value.minute != 0)
+                        writer.WriteElementString("minute", timestamp.Value.minute.ToString());
+                    if (timestamp.Value.second != 0)
+                        writer.WriteElementString("second", timestamp.Value.second.ToString());
 
                     writer.WriteEndElement();
                     break;
 
-                case BytesNode by:
+                case DurationNode duration:
+                    writer.WriteStartElement("dur");
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
+
+                    writer.WriteString(duration.Value.ToString());
+                    writer.WriteEndElement();
+                    break;
+
+                case BytesNode bytes:
                     writer.WriteStartElement("bytes");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(by.Value.ToString());
+                    writer.WriteString(bytes.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
-                case SymbolNode smb:
+                case SymbolNode symbol:
                     writer.WriteStartElement("symbol");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(smb.Name);
+                    writer.WriteString(symbol.Name);
                     writer.WriteEndElement();
                     break;
 
-                case RefNode r:
+                case RefNode @ref:
                     writer.WriteStartElement("ref");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(r.Address);
+                    writer.WriteString(@ref.Address);
                     writer.WriteEndElement();
                     break;
 
-                case ListNode l:
+                case ListNode list:
                     writer.WriteStartElement("list");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    foreach (var element in l.Elements)
+                    foreach (var element in list.Elements)
                     {
                         WriteNode(writer, element);
                     }
                     writer.WriteEndElement();
                     break;
 
-                case DictNode d:
+                case DictNode dict:
                     writer.WriteStartElement("dict");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    foreach (var pair in d.Pairs)
+                    foreach (var pair in dict.Pairs)
                     {
                         writer.WriteStartElement("entry");
                         writer.WriteStartElement("key");
@@ -224,11 +248,11 @@ namespace Rusty.Serialization.XML
                     writer.WriteEndElement();
                     break;
 
-                case ObjectNode o:
+                case ObjectNode obj:
                     writer.WriteStartElement("obj");
-                    WriteMetadata(writer, addressName, typeName);
+                    WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    foreach (var member in o.Members)
+                    foreach (var member in obj.Members)
                     {
                         writer.WriteStartElement("field");
                         writer.WriteAttributeString("name", member.Key.ToString()); // TODO: fix
@@ -243,19 +267,29 @@ namespace Rusty.Serialization.XML
             }
         }
 
-        private static void WriteMetadata(XmlWriter writer, string address, string type)
+        private static void WriteMetadata(XmlWriter writer, string address, string type, string offset)
+            => WriteMetadata(writer, address, type, null, offset);
+
+        private static void WriteMetadata(XmlWriter writer, string scope)
+            => WriteMetadata(writer, null, null, scope, null);
+
+        private static void WriteMetadata(XmlWriter writer, string address, string type, string scope, string offset)
         {
             if (address != null)
                 writer.WriteAttributeString("id", address);
             if (type != null)
                 writer.WriteAttributeString("type", type);
+            if (scope != null)
+                writer.WriteAttributeString("scope", scope);
+            if (offset != null)
+                writer.WriteAttributeString("offset", offset);
         }
 
 
         // Parsing.
 
         private static bool IsPrimitive(string tag) => tag is "null" or "bool" or "int" or "float" or "inf" or "nan" or "char"
-            or "str" or "dec" or "col" or "bytes" or "symbol" or "ref";
+            or "str" or "dec" or "col" or "uid" or "bytes" or "symbol" or "ref";
 
         private static INode ParsePrimitive(string tag, string value) => tag switch
         {

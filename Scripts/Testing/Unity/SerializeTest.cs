@@ -35,6 +35,14 @@ namespace Rusty.Serialization.Testing
         public UCS csv = new UCS(UCS.DefaultConverters, Format.Csv);
 
         /* Unity events. */
+        private void Update()
+        {
+            if (Input.GetKey(KeyCode.P))
+            {
+                Debug.Log("Pressed.");
+            }
+        }
+
         public override void OnInspectorGUI()
         {
             T t = (T)target;

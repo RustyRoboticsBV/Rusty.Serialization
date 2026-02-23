@@ -365,7 +365,7 @@ Duration literals MUST consist of 1-4 terms:
 
 Additionally, the first character may be a `-` minus sign for negative durations (e.g. `-30s`).
 
-Terms that equal 0 MAY be omitted, though at least 1 term MUST remain. For durations of zero seconds, minutes, hours and days, any of the following MAY be used: `0d`, `0h`, `0m` or `0s`.
+Terms that equal `0` MAY be omitted, though at least 1 term MUST remain. For durations of zero seconds, minutes, hours and days, any of the following MAY be used: `0d`, `0h`, `0m` or `0s`.
 
 The term order MUST be days, hours, minutes and seconds (i.e. `5s10m` is invalid).
 

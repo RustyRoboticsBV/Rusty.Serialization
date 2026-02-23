@@ -1,0 +1,25 @@
+{
+  "name": "cscd",
+  "displayName": "CSCD Syntax Highlighting",
+  "description": "Syntax highlighting for Compact Serialized C# Data (CSCD).",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.109.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "cscd",
+      "aliases": ["CSCD", "cscd"],
+      "extensions": [".cscd"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "cscd",
+      "scopeName": "source.cscd",
+      "path": "./syntaxes/cscd.tmLanguage.json"
+    }]
+  }
+}
