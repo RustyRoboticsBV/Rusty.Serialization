@@ -44,22 +44,39 @@
         {
           "name": "cscd.metadata.address",
           "begin": "`",
-          "end": "`"
+          "end": "`",
+          "patterns": [
+            {
+              "name": "cscd.escapes.address",
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+            }
+          ]
         },
         {
           "name": "cscd.metadata.type",
           "begin": "\\(",
-          "end": "\\)"
+          "end": "\\)",
+          "patterns": [
+            {
+              "name": "cscd.escapes.type",
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+            }
+          ]
         },
         {
           "name": "cscd.metadata.scope",
           "begin": "\\^",
-          "end": "\\^"
+          "end": "\\^",
+          "patterns": [
+            {
+              "name": "cscd.escapes.scope",
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+            }
+          ]
         },
         {
           "name": "cscd.metadata.offset",
-          "begin": "\\|",
-          "end": "\\|"
+          "match": "\\|Z\\||\\|[+-]\\d+(:\\d+)?\\|"
         }
       ]
     },
@@ -230,14 +247,26 @@
         {
           "name": "cscd.primitives.reference",
           "begin": "&",
-          "end": "&"
+          "end": "&",
+          "patterns": [
+            {
+              "name": "cscd.escapes.reference",
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+            }
+          ]
         },
 
 
         {
           "name": "cscd.primitives.symbol",
           "begin": "\\*",
-          "end": "\\*"
+          "end": "\\*",
+          "patterns": [
+            {
+              "name": "cscd.escapes.symbol",
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+            }
+          ]
         },
         {
           "name": "cscd.primitives.symbol",

@@ -43,12 +43,28 @@
     // ESCAPE SEQUENCES
     // =============================
     {
-      "scope": "cscd.escapes.string",
-      "settings": { "foreground": "#CFBC78", "fontStyle": "bold" }
+      "scope": "cscd.escapes.address",
+      "settings": { "foreground": "#A1A1CB", "fontStyle": "bold" }
+    },
+    {
+      "scope": "cscd.escapes.type",
+      "settings": { "foreground": "#EAEAB5", "fontStyle": "bold" }
+    },
+    {
+      "scope": "cscd.escapes.scope",
+      "settings": { "foreground": "#F8D5DB", "fontStyle": "bold" }
     },
     {
       "scope": "cscd.escapes.character",
       "settings": { "foreground": "#D7BA7D", "fontStyle": "bold" }
+    },
+    {
+      "scope": "cscd.escapes.string",
+      "settings": { "foreground": "#CFBC78", "fontStyle": "bold" }
+    },
+    {
+      "scope": "cscd.escapes.reference",
+      "settings": { "foreground": "#F8F8A1", "fontStyle": "bold" }
     },
 
     // =============================
@@ -56,7 +72,7 @@
     // =============================
     {
       "scope": "cscd.metadata.address",
-      "settings": { "foreground": "#7c7cd9", "fontStyle": "bold" }
+      "settings": { "foreground": "#5757E8", "fontStyle": "bold" }
     },
     {
       "scope": "cscd.metadata.type",
@@ -64,7 +80,7 @@
     },
     {
       "scope": "cscd.metadata.scope",
-      "settings": { "foreground": "#dcaab2", "fontStyle": "bold" }
+      "settings": { "foreground": "#DCAAB2", "fontStyle": "bold" }
     },
     {
       "scope": "cscd.metadata.offset",
@@ -81,12 +97,12 @@
     
     {
       "scope": "cscd.primitives.boolean",
-      "settings": { "foreground": "#00CED1", "fontStyle": "bold" }
+      "settings": { "foreground": "#00E3E7", "fontStyle": "bold" }
     },
     
     {
       "scope": "cscd.primitives.integer",
-      "settings": { "foreground": "#569CD6", "fontStyle": "bold" }
+      "settings": { "foreground": "#4D9DDF", "fontStyle": "bold" }
     },
 
     {
@@ -116,7 +132,7 @@
     
     {
       "scope": "cscd.primitives.decimal",
-      "settings": { "foreground": "#4EC9B0", "fontStyle": "bold" }
+      "settings": { "foreground": "#57DEA4", "fontStyle": "bold" }
     },
     
     {
@@ -126,7 +142,7 @@
 
     {
       "scope": "cscd.primitives.uid",
-      "settings": { "foreground": "#a000d1", "fontStyle": "bold" }
+      "settings": { "foreground": "#A000D1", "fontStyle": "bold" }
     },
 
     {
@@ -141,7 +157,7 @@
 
     {
       "scope": "cscd.primitives.bytes",
-      "settings": { "foreground": "#7720F0", "fontStyle": "bold" }
+      "settings": { "foreground": "#AD77F9", "fontStyle": "bold" }
     },
 
     {
