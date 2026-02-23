@@ -15,55 +15,61 @@
     "format_markers": {
       "patterns": [
         {
-          "name": "keyword.other.header.cscd",
+          "name": "cscd.markers.header",
           "match": "~CSCD~"
         },
         {
-          "name": "keyword.other.footer.cscd",
+          "name": "cscd.markers.footer",
           "match": "~/CSCD~"
         }
       ]
     },
 
+
+
     "comments": {
       "patterns": [
         {
-          "name": "comment.block.cscd",
+          "name": "cscd.comment",
           "begin": ";;",
           "end": ";;"
         }
       ]
     },
 
+
+
     "metadata": {
       "patterns": [
         {
-          "name": "variable.other.address.cscd",
+          "name": "cscd.metadata.address",
           "begin": "`",
           "end": "`"
         },
         {
-          "name": "storage.type.annotation.cscd",
+          "name": "cscd.metadata.type",
           "begin": "\\(",
           "end": "\\)"
         },
         {
-          "name": "variable.other.scope.cscd",
+          "name": "cscd.metadata.scope",
           "begin": "\\^",
           "end": "\\^"
         },
         {
-          "name": "constant.numeric.offset.cscd",
+          "name": "cscd.metadata.offset",
           "begin": "\\|",
           "end": "\\|"
         }
       ]
     },
 
+
+
     "collections": {
       "patterns": [
         {
-          "name": "meta.list.cscd",
+          "name": "cscd.collections.list",
           "begin": "\\[",
           "end": "\\]",
           "patterns": [
@@ -76,7 +82,7 @@
           ]
         },
         {
-          "name": "meta.dictionary.cscd",
+          "name": "cscd.collections.dictionary",
           "begin": "\\{",
           "end": "\\}",
           "patterns": [
@@ -89,7 +95,7 @@
           ]
         },
         {
-          "name": "meta.object.cscd",
+          "name": "cscd.collections.object",
           "begin": "\\<",
           "end": "\\>",
           "patterns": [
@@ -104,107 +110,109 @@
       ]
     },
 
+
+
     "primitives": {
       "patterns": [
         {
-          "name": "string.quoted.double.cscd",
+          "name": "cscd.primitives.string",
           "begin": "\"",
           "end": "\"",
           "patterns": [
             {
-              "name": "constant.character.escape.cscd",
+              "name": "cscd.escapes.string",
               "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
             }
           ]
         },
         {
-          "name": "string.quoted.single.cscd",
+          "name": "cscd.primitives.character",
           "match": "'''"
         },
         {
-          "name": "string.quoted.single.cscd",
+          "name": "cscd.primitives.character",
           "begin": "'",
           "end": "'",
           "patterns": [
             {
-              "name": "constant.character.escape.cscd",
+              "name": "cscd.escapes.character",
               "match": "\\\\(t|n|r|'|\\\\|[0-9A-F]+;)"
             }
           ]
         },
         
         {
-          "name": "constant.numeric.decimal.cscd",
+          "name": "cscd.primitives.decimal",
           "match": "-?\\$\\d*(\\.\\d*)?"
         },
         {
-          "name": "constant.numeric.float.cscd",
-          "match": "-?(\\d+\\.\\d*|\\.\\d+|\\d+\\.?)(e-?\\d+)?"
+          "name": "cscd.primitives.float",
+          "match": "-?(?:\\d+(?:\\.\\d*)?[eE]-?\\d+|\\.\\d+|\\d+\\.\\d*|\\.|-\\.)"
         },
         {
-          "name": "constant.numeric.integer.cscd",
+          "name": "cscd.primitives.integer",
           "match": "-?\\b\\d+\\b"
         },
         
         {
-          "name": "constant.language.null.cscd",
+          "name": "cscd.primitives.null",
           "match": "\\bnull\\b"
         },
         {
-          "name": "constant.language.boolean.cscd",
+          "name": "cscd.primitives.boolean",
           "match": "\\b(true|false)\\b"
         },
         {
-          "name": "constant.language.nan.cscd",
+          "name": "cscd.primitives.nan",
           "match": "\\bnan\\b"
         },
         {
-          "name": "constant.language.infinity.cscd",
+          "name": "cscd.primitives.infinity",
           "match": "-?\\binf\\b"
         },
         
         {
-          "name": "constant.numeric.color.cscd",
+          "name": "cscd.primitives.color",
           "match": "#[0-9A-F]{0,8}"
         },
 
         {
-          "name": "constant.numeric.uid.cscd",
+          "name": "cscd.primitives.uid",
           "match": "%[0-9a-fA-F-]*"
         },
 
 
         {
-          "name": "constant.numeric.timestamp.cscd",
+          "name": "cscd.primitives.timestamp",
           "begin": "@",
           "end": "@"
         },
 
         {
-          "name": "constant.numeric.duration.cscd",
+          "name": "cscd.primitives.duration",
           "match": "-?(?:\\d+d|\\d+h|\\d+m|\\d+(?:\\.\\d+)?s)"
         },
 
         {
-          "name": "constant.numeric.bytes.cscd",
+          "name": "cscd.primitives.bytes",
           "match": "![A-Za-z0-9+/=]*"
         },
 
 
         {
-          "name": "constant.character.reference.cscd",
+          "name": "cscd.primitives.reference",
           "begin": "&",
           "end": "&"
         },
 
 
         {
-          "name": "string.quoted.symbol.delimited.cscd",
+          "name": "cscd.primitives.symbol",
           "begin": "\\*",
           "end": "\\*"
         },
         {
-          "name": "variable.other.symbol.bare.cscd",
+          "name": "cscd.primitives.symbol",
           "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
         }
       ]
@@ -215,11 +223,35 @@
     "delimiters": {
       "patterns": [
         {
-          "name": "punctuation.separator.comma.cscd",
+          "name": "cscd.punctuation",
+          "match": "\\["
+        },
+        {
+          "name": "cscd.punctuation",
+          "match": "\\]"
+        },
+        {
+          "name": "cscd.punctuation",
+          "match": "\\{"
+        },
+        {
+          "name": "cscd.punctuation",
+          "match": "\\}"
+        },
+        {
+          "name": "cscd.punctuation",
+          "match": "\\<"
+        },
+        {
+          "name": "cscd.punctuation",
+          "match": "\\>"
+        },
+        {
+          "name": "cscd.punctuation",
           "match": ","
         },
         {
-          "name": "punctuation.separator.colon.cscd",
+          "name": "cscd.punctuation",
           "match": ":"
         }
       ]
