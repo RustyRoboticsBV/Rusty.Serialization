@@ -63,11 +63,11 @@
       "settings": { "foreground": "#BDBD82", "fontStyle": "bold" }
     },
     {
-      "scope": "variable.other.scope.cscd",
+      "scope": "cscd.metadata.scope",
       "settings": { "foreground": "#DCDCAA", "fontStyle": "bold" }
     },
     {
-      "scope": "constant.numeric.offset.cscd",
+      "scope": "cscd.metadata.offset",
       "settings": { "foreground": "#F44747", "fontStyle": "bold" }
     },
 
@@ -88,14 +88,17 @@
       "scope": "cscd.primitives.integer",
       "settings": { "foreground": "#00CED1", "fontStyle": "bold" }
     },
+
     {
       "scope": "cscd.primitives.float",
       "settings": { "foreground": "#F44747", "fontStyle": "bold" }
     },
+
     {
       "scope": "cscd.primitives.infinity",
       "settings": { "foreground": "#FF00FF", "fontStyle": "bold" }
     },
+
     {
       "scope": "cscd.primitives.nan",
       "settings": { "foreground": "#FF8C00", "fontStyle": "bold" }
@@ -120,37 +123,35 @@
       "scope": "cscd.primitives.color",
       "settings": { "foreground": "#FF4081", "fontStyle": "bold" }
     },
+
     {
       "scope": "cscd.primitives.uid",
       "settings": { "foreground": "#a000d1", "fontStyle": "bold" }
     },
+
     {
       "scope": "cscd.primitives.timestamp",
       "settings": { "foreground": "#FFA500", "fontStyle": "bold" }
     },
+
     {
       "scope": "ccscd.primitives.duration",
       "settings": { "foreground": "#7FFFD4", "fontStyle": "bold" }
     },
+
     {
       "scope": "cscd.primitives.bytes",
       "settings": { "foreground": "#A020F0", "fontStyle": "bold" }
     },
+
     {
       "scope": "cscd.primitives.reference",
       "settings": { "foreground": "#FFD700", "fontStyle": "bold" }
     },
 
-    // =============================
-    // SYMBOLS
-    // =============================
     {
-      "scope": "string.quoted.symbol.delimited.cscd",
-      "settings": { "foreground": "#FF1493" }
-    },
-    {
-      "scope": "variable.other.symbol.bare.cscd",
-      "settings": { "foreground": "#9CDCFE" }
+      "scope": "cscd.primitives.symbol",
+      "settings": { "foreground": "#FFFFFF" }
     },
 
     // =============================
@@ -160,10 +161,12 @@
       "scope": "cscd.collections.list",
       "settings": { "foreground": "#D4D4D4" }
     },
+
     {
       "scope": "cscd.collections.dictionary",
       "settings": { "foreground": "#D4D4D4" }
     },
+
     {
       "scope": "cscd.collections.object",
       "settings": { "foreground": "#D4D4D4" }
