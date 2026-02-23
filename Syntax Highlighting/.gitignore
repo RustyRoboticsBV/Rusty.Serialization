@@ -1,0 +1,5 @@
+.vscode/*
+
+*.meta
+.vscodeignore
+language-configuration.json
