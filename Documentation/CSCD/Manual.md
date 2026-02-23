@@ -28,15 +28,27 @@ Comments may appear anywhere in the CSCD string (except before the header and af
 ## Whitespace
 Whitespace may appear between format markers, comments, interpunction and literals. ASCII spaces, horizontal tabs, line feeds and carriage returns may be used.
 
-## Metadata
+## Identity
+Two literals exist to model reference or pointer links in an object graph.
 
-### Address
+#### Address
 Addresses may be attached to any value literal, after which they can be targeted by a reference literal.
 
 ```
 `my_address`
 ``
 ```
+
+
+#### Reference
+A reference that points to an object annotated with an address.
+
+```
+&my_address&
+&&
+```
+
+## Types
 
 ### Type
 Type hints may be attached to any value literal, which can help the runtime disambiguate polymorphic types.
@@ -47,34 +59,26 @@ Type hints may be attached to any value literal, which can help the runtime disa
 ()
 ```
 
-### Scope
-Scopes hints may be attached to object member names, in order to disambiguate shadowed variables in objects with a complex inheritance chain.
+## Basic Values
 
-```
-^my_base^
-^my_namespace.my_base^
-^^
-```
+<details>
+  <summary><b>Null</b></summary>
+<br/>
 
-### Offset
-Offsets may be attached to timestamp literals, and represent timezones (as UTC offsets).
-
-```
-|+5:30|			        |-5:30|             Hour and minute offset.
-|+5|			        |-5|                Hour-only. Minute is assumed to be 00.
-|Z|                                         Shorthand for '+00:00' (Greenwich Mean Time).
-```
-
-## Primitives
-
-### Null
 A null value.
 
 ```
 null
 ```
 
-### Boolean
+</details>
+
+
+
+<details>
+  <summary><b>Booleans</b></summary>
+<br/>
+
 A boolean. Must be either true or false.
 
 ```
@@ -82,14 +86,30 @@ true
 false
 ```
 
-### Integer
+</details>
+
+
+
+## Numeric
+
+<details>
+  <summary><b>Integers</b></summary>
+<br/>
+
 An integer number of unspecified precision.
 
 ```
 12345			        -12345
 ```
 
-### Float
+</details>
+
+
+
+<details>
+  <summary><b>Floats</b></summary>
+<br/>
+
 A floating-point number of unspecified precision. May consist of an integer, fractional and exponent part. Each part may be omitted; omitted parts are assumed to be `0`.
 
 ```
@@ -103,41 +123,14 @@ A floating-point number of unspecified precision. May consist of an integer, fra
 .			            -.                  Omitted integer, fractional and exponent.
 ```
 
-### Infinity
-An infinity value. May be either positive or negative infinity.
+</details>
 
-```
-inf			            -inf
-```
 
-### NaN
-A not-a-number value.
 
-```
-nan
-```
+<details>
+  <summary><b>Decimals</b></summary>
+<br/>
 
-### Character
-A character value.
-
-```
-'A'
-'\1F4a9;'
-'''
-''
-```
-
-### String
-A string value.
-
-```
-"ABC"
-"Smile: \1F60A;"
-"\""
-""
-```
-
-### Decimal
 A decimal value. Unlike with floats, trailing zeros have explicit meaning and should be maintained by a parser.
 
 ```
@@ -149,28 +142,81 @@ $.                      -$.                 Shorthand for '0.0".
 $                       -$                  Shorthand for '0'.
 ```
 
-### Color
-A color value, written as a hexcode. Alpha is optional, and is assumed to be `FF` when omitted. A CSS shorthand notation is also supported.
+</details>
+
+
+
+<details>
+  <summary><b>Infinity</b></summary>
+<br/>
+
+An infinity value. May be either positive or negative infinity.
 
 ```
-#FF0000FF                                   Red (full notation)
-#0F0F                                       Green (short notation)
-#0000FF                                     Blue (no alpha)
-#FF0                                        Yellow (no alpha, short notation)
-#                                           Transparent black
+inf			            -inf
 ```
 
-### UID
-A unique identifier value, written as a 128-bit hexadecimal number in the format `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (8-4-4-4-12). The dashes and leading zeros may be omitted.
+</details>
+
+
+
+<details>
+  <summary><b>NaN</b></summary>
+<br/>
+
+A not-a-number value.
 
 ```
-%3f4e1a9c-8d3b-24e4-c8f7-b3a8d5c1e9f2       Full notation.
-%3f4e1a9c8d3b24e4c8f7b3a8d5c1e9f2           Omitted dashes.
-%1-23456789abcd                             Shorthand for '00000000-0000-0000-0001-23456789abcd'.
-%123456789abcd                              Shorthand with omitted dashes.
+nan
 ```
 
-### Timestamp
+</details>
+
+
+
+## Textual
+
+<details>
+  <summary><b>Characters</b></summary>
+<br/>
+  
+A character value.
+
+```
+'A'
+'\1F4a9;'
+'''
+''
+```
+
+</details>
+
+
+
+<details>
+  <summary><b>Strings</b></summary>
+<br/>
+
+A string value.
+
+```
+"ABC"
+"Smile: \1F60A;"
+"\""
+""
+```
+
+</details>
+
+
+
+## Temporal
+Several literal exist to express various types of temporal data: timestamps, UTC offsets and durations.
+
+<details>
+  <summary><b>Timestamps</b></summary>
+<br/>
+
 Timestamp literals represent an absolute point in time. They are intended to represent calendar dates and/or clock times.
 
 Timestamps are delimited by `@` symbols and may contain a date part, a time part, both or neither. Missing components are assumed to take their default forms (`01/01/01` for dates, `00:00:00` for times.
@@ -192,9 +238,37 @@ Ranges:
 @@                                          Shorthand for 01/01/01, 00:00:00.
 ```
 
-Timestamps may be annotated with an [offset](#offset), to create timezone-aware timestamps.
+</details>
 
-### Duration
+
+
+<details>
+  <summary><b>Offsets</b></summary>
+<br/>
+
+Offset literals represent an UTC offset or timezone. Timestamps may be annotated with them to create timezone-aware timestamps.
+
+Offsets are delimited by `|` symbols and contain a sign, hour and minute. The minute may be omitted if equal to `0`. If both the hour and minute equal `0`, the shorthand `Z` may be used. 
+
+```
+|+5:30|			        |-5:30|             Hour and minute offset.
+|+5|			        |-5|                Hour-only. Minute is assumed to be 00.
+|Z|                                         Shorthand for '+00:00' (Greenwich Mean Time).
+||                                          Even shorter notation for `+00:00`.
+```
+
+```
+|Z| @18:00:00@                              18:00 PM at Greenwich Mean Time.
+```
+
+</details>
+
+
+
+<details>
+  <summary><b>Durations</b></summary>
+<br/>
+
 Duration literals represent a relative length of time (i.e. timespan), expressed as a combination of days, hours, minutes and seconds.
 
 A duration consists of one to four ordered unit terms:
@@ -212,7 +286,51 @@ The entire duration may be negated with a leading `-`.
 1000d                   -1000d              Three units omitted.
 ```
 
-### Bytes
+</details>
+
+
+
+## Other Composites
+These literals include canonical forms for miscellanious, but relatively common composite data types: colors, uids and arbitrary byte arrays.
+
+<details>
+  <summary><b>Colors</b></summary>
+<br/>
+
+A color value, written as a hexcode. Alpha is optional, and is assumed to be `FF` when omitted. A CSS shorthand notation is also supported.
+
+```
+#FF0000FF                                   Red (full notation)
+#0F0F                                       Green (short notation)
+#0000FF                                     Blue (no alpha)
+#FF0                                        Yellow (no alpha, short notation)
+#                                           Transparent black
+```
+
+</details>
+
+
+
+<details>
+  <summary><b>UIDs</b></summary>
+<br/>
+  
+A unique identifier value, written as a 128-bit hexadecimal number in the format `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (8-4-4-4-12). The dashes and leading zeros may be omitted.
+
+```
+%3f4e1a9c-8d3b-24e4-c8f7-b3a8d5c1e9f2       Full notation.
+%3f4e1a9c8d3b24e4c8f7b3a8d5c1e9f2           Omitted dashes.
+%1-23456789abcd                             Shorthand for '00000000-0000-0000-0001-23456789abcd'.
+%123456789abcd                              Shorthand with omitted dashes.
+```
+
+</details>
+
+
+<details>
+  <summary><b>Bytes</b></summary>
+<br/>
+
 A bytestring in Base64, representing arbitrary byte arrays.
 
 ```
@@ -220,7 +338,15 @@ A bytestring in Base64, representing arbitrary byte arrays.
 !                                           Empty bytestring.
 ```
 
-### Symbol
+</details>
+
+
+
+## Symbolic
+
+<details>
+  <summary><b>Symbols</b></summary>
+<br/>
 A symbol, meant for enums and named constants.
 
 ```
@@ -229,13 +355,9 @@ mySymbol                                    Bare notation.
 **                                          Empty symbol.
 ```
 
-### Reference
-A reference that points to an object annotated with an address.
+</details>
 
-```
-&my_address&
-&&
-```
+
 
 ## Collections
 
@@ -264,4 +386,13 @@ A collection of name-value pairs. Names must be symbol literals, and may be anno
 <a:0, b: 2.0, c: 'C'>
 <^base^a:0, a:1>
 <>
+```
+
+### Scope
+Scopes hints may be attached to object member names, in order to disambiguate shadowed variables in objects with a complex inheritance chain.
+
+```
+^my_base^
+^my_namespace.my_base^
+^^
 ```
