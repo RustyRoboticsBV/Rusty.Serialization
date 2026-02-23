@@ -98,7 +98,7 @@ The module uses a custom, human-readable serialization format called Compact Ser
 
 Below is an example of a custom serialized object with pretty printing. See the [CSCD user manual](Documentation/CSCD/Manual.md) for more information, and the [specification document](Documentation/CSCD/Specification.md) for a formal syntax description.
 
-A simple [syntax highlighting plugin](https://github.com/RustyRoboticsBV/Rusty.Serialization/tree/master/Syntax%20Highlighting) for Visual Studio Code is also provided.
+A simple [syntax highlighting plugin](./VSCode) for Visual Studio Code is also provided.
 
 ```
 ~CSCD~
