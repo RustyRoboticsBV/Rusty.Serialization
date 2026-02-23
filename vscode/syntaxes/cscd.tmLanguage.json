@@ -69,6 +69,7 @@
           "patterns": [
             { "include": "#format_markers" },
             { "include": "#comments" },
+            { "include": "#metadata" },
             { "include": "#strings" },
             { "include": "#numbers" },
             { "include": "#constants" },
@@ -85,6 +86,7 @@
           "patterns": [
             { "include": "#format_markers" },
             { "include": "#comments" },
+            { "include": "#metadata" },
             { "include": "#strings" },
             { "include": "#numbers" },
             { "include": "#constants" },
@@ -101,9 +103,12 @@
           "patterns": [
             { "include": "#format_markers" },
             { "include": "#comments" },
+            { "include": "#metadata" },
             { "include": "#strings" },
             { "include": "#numbers" },
             { "include": "#constants" },
+            { "include": "#colors" },
+            { "include": "#uids" },
             { "include": "#symbols" },
             { "include": "#references" },
             { "include": "#collections" },
@@ -140,12 +145,11 @@
               "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
             }
           ]
-        }
-      ]
-    },
-
-    "chars": {
-      "patterns": [
+        },
+        {
+          "name": "string.quoted.single.cscd",
+          "match": "'''"
+        },
         {
           "name": "string.quoted.single.cscd",
           "begin": "'",
@@ -154,10 +158,6 @@
             {
               "name": "constant.character.escape.cscd",
               "match": "\\\\(t|n|r|'|\\\\|[0-9A-F]+;)"
-            },
-            {
-              "name": "constant.character.quote.cscd",
-              "match": "'''"
             }
           ]
         }
@@ -205,7 +205,7 @@
     "colors": {
       "patterns": [
         {
-          "name": "constant.other.color.cscd",
+          "name": "constant.language.color.cscd",
           "match": "#[0-9A-F]{0,8}"
         }
       ]
@@ -214,7 +214,7 @@
     "uids": {
       "patterns": [
         {
-          "name": "constant.other.uid.cscd",
+          "name": "constant.language.uid.cscd",
           "match": "%[0-9a-fA-F-]*"
         }
       ]
@@ -223,7 +223,7 @@
     "timestamps": {
       "patterns": [
         {
-          "name": "constant.other.timestamp.cscd",
+          "name": "constant.language.timestamp.cscd",
           "begin": "@",
           "end": "@"
         }
@@ -233,7 +233,7 @@
     "durations": {
       "patterns": [
         {
-          "name": "constant.other.duration.cscd",
+          "name": "constant.language.duration.cscd",
           "match": "-?\\d*d?\\d*h?\\d*m?\\d*(\\.\\d+)?s?"
         }
       ]
@@ -242,7 +242,7 @@
     "bytes": {
       "patterns": [
         {
-          "name": "constant.other.bytes.cscd",
+          "name": "constant.language.bytes.cscd",
           "match": "![A-Za-z0-9+/=]*"
         }
       ]
