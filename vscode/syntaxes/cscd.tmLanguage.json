@@ -2,16 +2,17 @@
   "scopeName": "source.cscd",
   "name": "CSCD",
   "patterns": [
-    { "include": "#headerFooter" },
+    { "include": "#format_markers" },
     { "include": "#comments" },
     { "include": "#metadata" },
     { "include": "#collections" },
     { "include": "#primitives" },
-    { "include": "#symbols" }
+    { "include": "#symbols" },
+    { "include": "#delimiters"}
   ],
   "repository": {
 
-    "headerFooter": {
+    "format_markers": {
       "patterns": [
         {
           "name": "keyword.other.header.cscd",
@@ -64,17 +65,50 @@
         {
           "name": "meta.list.cscd",
           "begin": "\\[",
-          "end": "\\]"
+          "end": "\\]",
+          "patterns": [
+            { "include": "#format_markers" },
+            { "include": "#comments" },
+            { "include": "#strings" },
+            { "include": "#numbers" },
+            { "include": "#constants" },
+            { "include": "#symbols" },
+            { "include": "#references" },
+            { "include": "#collections" },
+            { "include": "#delimiters" }
+          ]
         },
         {
           "name": "meta.dictionary.cscd",
           "begin": "\\{",
-          "end": "\\}"
+          "end": "\\}",
+          "patterns": [
+            { "include": "#format_markers" },
+            { "include": "#comments" },
+            { "include": "#strings" },
+            { "include": "#numbers" },
+            { "include": "#constants" },
+            { "include": "#symbols" },
+            { "include": "#references" },
+            { "include": "#collections" },
+            { "include": "#delimiters" }
+          ]
         },
         {
           "name": "meta.object.cscd",
-          "begin": "<",
-          "end": ">"
+          "begin": "\\<",
+          "end": "\\>",
+          "patterns": [
+            { "include": "#format_markers" },
+            { "include": "#comments" },
+            { "include": "#strings" },
+            { "include": "#numbers" },
+            { "include": "#constants" },
+            { "include": "#symbols" },
+            { "include": "#references" },
+            { "include": "#collections" },
+            { "include": "#delimiters" }
+          ]
         }
       ]
     },
@@ -120,6 +154,10 @@
             {
               "name": "constant.character.escape.cscd",
               "match": "\\\\(t|n|r|'|\\\\|[0-9A-F]+;)"
+            },
+            {
+              "name": "constant.character.quote.cscd",
+              "match": "'''"
             }
           ]
         }
@@ -230,6 +268,19 @@
         {
           "name": "entity.name.symbol.bare.cscd",
           "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+        }
+      ]
+    },
+
+    "delimiters": {
+      "patterns": [
+        {
+          "name": "punctuation.separator.comma.cscd",
+          "match": ","
+        },
+        {
+          "name": "punctuation.separator.colon.cscd",
+          "match": ":"
         }
       ]
     }
