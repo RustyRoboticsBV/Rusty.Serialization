@@ -166,8 +166,12 @@
     },
 
     {
+      "scope": "cscd.primitives.membername",
+      "settings": { "foreground": "#FFFFFF" }
+    },
+    {
       "scope": "cscd.primitives.symbol",
-      "settings": { "foreground": "#FFFFFF", "fontStyle": "bold" }
+      "settings": { "foreground": "#8e478e", "fontStyle": "bold" }
     },
 
     // =============================

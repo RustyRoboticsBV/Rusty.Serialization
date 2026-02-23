@@ -134,6 +134,7 @@
             "0": { "name": "cscd.punctuation" }
           },
           "patterns": [
+            { "include": "#membernames" },
             { "include": "#format_markers" },
             { "include": "#comments" },
             { "include": "#metadata" },
@@ -294,6 +295,18 @@
     },
 
 
+    "membernames": {
+      "patterns": [
+        {
+          "name": "cscd.primitives.membername",
+          "match": "\\*[A-Za-z_][A-Za-z0-9_]*\\*(?=\\s*:)"
+        },
+        {
+          "name": "cscd.primitives.membername",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*:"
+        }
+      ]
+    },
 
     "delimiters": {
       "patterns": [
