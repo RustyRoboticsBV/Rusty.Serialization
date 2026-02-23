@@ -136,9 +136,26 @@
           "patterns": [
             {
               "name": "cscd.escapes.character",
-              "match": "\\\\(t|n|r|'|\\\\|[0-9A-F]+;)"
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
             }
           ]
+        },
+
+        {
+          "name": "cscd.primitives.duration",
+          "match": "-?\\d+d"
+        },
+        {
+          "name": "cscd.primitives.duration",
+          "match": "-?\\d+h"
+        },
+        {
+          "name": "cscd.primitives.duration",
+          "match": "-?\\d+m"
+        },
+        {
+          "name": "cscd.primitives.duration",
+          "match": "-?(\\d+|(?:\\d*\\.\\d+|\\d+\\.|\\.|\\d+[e][+-]?\\d+)(?:[e][+-]?\\d+)?)s"
         },
         
         {
@@ -147,7 +164,7 @@
         },
         {
           "name": "cscd.primitives.float",
-          "match": "-?(?:\\d+(?:\\.\\d*)?[eE]-?\\d+|\\.\\d+|\\d+\\.\\d*|\\.|-\\.)"
+          "match": "-?(?:\\d*\\.\\d+|\\d+\\.|\\.|\\d+[e][+-]?\\d+)(?:[e][+-]?\\d+)?"
         },
         {
           "name": "cscd.primitives.integer",
@@ -178,7 +195,23 @@
 
         {
           "name": "cscd.primitives.uid",
-          "match": "%[0-9a-fA-F-]*"
+          "match": "%[0-9a-fA-F]{0,8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+        },
+        {
+          "name": "cscd.primitives.uid",
+          "match": "%[0-9a-fA-F]{0,4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+        },
+        {
+          "name": "cscd.primitives.uid",
+          "match": "%[0-9a-fA-F]{0,4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+        },
+        {
+          "name": "cscd.primitives.uid",
+          "match": "%[0-9a-fA-F]{0,4}-[0-9a-fA-F]{12}"
+        },
+        {
+          "name": "cscd.primitives.uid",
+          "match": "%[0-9a-f]{0,32}"
         },
 
 
@@ -186,11 +219,6 @@
           "name": "cscd.primitives.timestamp",
           "begin": "@",
           "end": "@"
-        },
-
-        {
-          "name": "cscd.primitives.duration",
-          "match": "-?(?:\\d+d|\\d+h|\\d+m|\\d+(?:\\.\\d+)?s)"
         },
 
         {
