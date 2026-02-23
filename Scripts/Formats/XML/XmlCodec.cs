@@ -255,7 +255,13 @@ namespace Rusty.Serialization.XML
                     foreach (var member in obj.Members)
                     {
                         writer.WriteStartElement("field");
-                        writer.WriteAttributeString("name", member.Key.ToString()); // TODO: fix
+                        if (member.Key is ScopeNode scope)
+                        {
+                            writer.WriteAttributeString("scope", scope.Name);
+                            writer.WriteAttributeString("name", scope.Value.Name);
+                        }
+                        else if (member.Key is SymbolNode symbol)
+                            writer.WriteAttributeString("name", symbol.Name);
                         WriteNode(writer, member.Value);
                         writer.WriteEndElement();
                     }

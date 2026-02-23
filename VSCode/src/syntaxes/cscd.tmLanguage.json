@@ -89,6 +89,12 @@
           "name": "cscd.collections.list",
           "begin": "\\[",
           "end": "\\]",
+          "beginCaptures": {
+            "0": { "name": "cscd.punctuation" }
+          },
+          "endCaptures": {
+            "0": { "name": "cscd.punctuation" }
+          },
           "patterns": [
             { "include": "#format_markers" },
             { "include": "#comments" },
@@ -102,6 +108,12 @@
           "name": "cscd.collections.dictionary",
           "begin": "\\{",
           "end": "\\}",
+          "beginCaptures": {
+            "0": { "name": "cscd.punctuation" }
+          },
+          "endCaptures": {
+            "0": { "name": "cscd.punctuation" }
+          },
           "patterns": [
             { "include": "#format_markers" },
             { "include": "#comments" },
@@ -115,6 +127,12 @@
           "name": "cscd.collections.object",
           "begin": "\\<",
           "end": "\\>",
+          "beginCaptures": {
+            "0": { "name": "cscd.punctuation" }
+          },
+          "endCaptures": {
+            "0": { "name": "cscd.punctuation" }
+          },
           "patterns": [
             { "include": "#format_markers" },
             { "include": "#comments" },

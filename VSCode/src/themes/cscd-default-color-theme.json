@@ -167,7 +167,7 @@
 
     {
       "scope": "cscd.primitives.symbol",
-      "settings": { "foreground": "#FFFFFF" }
+      "settings": { "foreground": "#FFFFFF", "fontStyle": "bold" }
     },
 
     // =============================
@@ -192,11 +192,8 @@
     // DELIMITERS
     // =============================
     {
-      "scope": [
-        "punctuation.separator.comma.cscd",
-        "punctuation.separator.colon.cscd"
-      ],
-      "settings": { "foreground": "#808080" }
+      "scope": "cscd.punctuation",
+      "settings": { "foreground": "#BFBFBF" }
     }
   ]
 }
