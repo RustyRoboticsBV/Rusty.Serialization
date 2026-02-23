@@ -727,12 +727,12 @@ namespace Rusty.Serialization.CSCD
 
                 IMemberNameNode name = scope != null ? scope : symbol;
 
-                ExpectSymbol(text, lexer, ':', "Object member names must be followed by a colon.");
+                ExpectSymbol(text, lexer, '=', "Object member names must be followed by an equals sign.");
 
                 next = ExpectToken(text, lexer, "Unclosed object.");
-                DisallowEqual(next, ',', "Object members must contain a value after the colon.");
-                DisallowEqual(next, ':', "Objects may not contain consecutive colons.");
-                DisallowEqual(next, '>', "Objects may not contain trailing colons.");
+                DisallowEqual(next, ',', "Object members must contain a value after the equals sign.");
+                DisallowEqual(next, '=', "Objects may not contain consecutive equal signs.");
+                DisallowEqual(next, '>', "Objects may not contain trailing equal signs.");
                 INode valueNode = ParseToken(text, next, lexer);
 
                 obj.AddMember(name, valueNode);

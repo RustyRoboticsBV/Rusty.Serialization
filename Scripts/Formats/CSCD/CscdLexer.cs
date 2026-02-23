@@ -43,7 +43,7 @@ namespace Rusty.Serialization.CSCD
             }
 
             // Interpunction.
-            else if (c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>')
+            else if (c == ',' || c == ':' || c == '=' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>')
                 token = MakeTokenAndAdvance(text, 1);
 
             // Shorthand quote character.
@@ -179,6 +179,7 @@ namespace Rusty.Serialization.CSCD
                 {
                     case ',':
                     case ':':
+                    case '=':
                     case '[':
                     case ']':
                     case '{':

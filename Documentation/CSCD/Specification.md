@@ -451,7 +451,7 @@ Example: `{"a":"abc",'b':"def",["c"]:"hij"}`.
 #### Objects
 Object literals represent a collection of name-value pairs, meant to model structured records.
 
-An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by `,` commas, and names and values MUST be separated by a `:` colon. Trailing commas MUST NOT appear in an object (e.g., `<id:0,>` is invalid).
+An object MUST be enclosed in `<>` angular brackets. Member pairs MUST be separated by `,` commas, and names and values MUST be separated by a `=` equals sign. Trailing commas MUST NOT appear in an object (e.g., `<id=0,>` is invalid).
 
 Member names MUST be symbols (delimited or bare). To maximize generality, member names are NOT required to be unique by the format. Member names MUST NOT be annotated with a type label and/or address, but they MAY be annotated with a scope.
 
@@ -459,4 +459,4 @@ Member values MAY be any literal type, including other collections. Member value
 
 Objects MAY be empty, which MUST be represented by the literal `<>`.
 
-Example: `<my_int:0,my_float:0.0,my_char:'A',^my_base_class^*my_stríng*:"abc">`.
+Example: `<my_int=0,my_float=0.0,my_char='A',^my_base_class^*my_stríng*="abc">`.
