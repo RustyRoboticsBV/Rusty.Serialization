@@ -400,9 +400,9 @@ namespace Rusty.Serialization.CSCD
 
                 // Colon.
                 if (prettyPrinting)
-                    sb.Append(" = ");
+                    sb.Append(" : ");
                 else
-                    sb.Append('=');
+                    sb.Append(':');
 
                 // Value.
                 string value = Serialize(node.GetValueAt(i), prettyPrinting);

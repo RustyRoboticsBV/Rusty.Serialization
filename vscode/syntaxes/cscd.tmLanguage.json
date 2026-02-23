@@ -38,16 +38,7 @@
     },
 
 
-    
-    "object_member": {
-      "patterns": [
-        {
-          "name": "cscd.object.member",
-          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b(?=\\s*:)"
-        }
-      ]
-    },
-    
+
     "metadata": {
       "patterns": [
         {

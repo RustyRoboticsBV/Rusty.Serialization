@@ -63,12 +63,12 @@
       "settings": { "foreground": "#BDBD82", "fontStyle": "bold" }
     },
     {
-      "scope": "cscd.metadata.scope",
-      "settings": { "foreground": "#656558", "fontStyle": "bold" }
+      "scope": "variable.other.scope.cscd",
+      "settings": { "foreground": "#DCDCAA", "fontStyle": "bold" }
     },
     {
-      "scope": "cscd.metadata.offset",
-      "settings": { "foreground": "#acf084", "fontStyle": "bold" }
+      "scope": "constant.numeric.offset.cscd",
+      "settings": { "foreground": "#F44747", "fontStyle": "bold" }
     },
 
     // =============================
@@ -81,12 +81,12 @@
     
     {
       "scope": "cscd.primitives.boolean",
-      "settings": { "foreground": "#00CED1", "fontStyle": "bold" }
+      "settings": { "foreground": "#569CD6", "fontStyle": "bold" }
     },
     
     {
       "scope": "cscd.primitives.integer",
-      "settings": { "foreground": "#569CD6", "fontStyle": "bold" }
+      "settings": { "foreground": "#00CED1", "fontStyle": "bold" }
     },
     {
       "scope": "cscd.primitives.float",
@@ -140,10 +140,17 @@
       "scope": "cscd.primitives.reference",
       "settings": { "foreground": "#FFD700", "fontStyle": "bold" }
     },
-    
+
+    // =============================
+    // SYMBOLS
+    // =============================
     {
-      "scope": "cscd.primitives.symbol",
-      "settings": { "foreground": "#d7d1d6", "fontStyle": "bold" }
+      "scope": "string.quoted.symbol.delimited.cscd",
+      "settings": { "foreground": "#FF1493" }
+    },
+    {
+      "scope": "variable.other.symbol.bare.cscd",
+      "settings": { "foreground": "#9CDCFE" }
     },
 
     // =============================
