@@ -130,10 +130,10 @@ The following escape sequences MUST be recognized by parsers if they appear in a
 Parsers MUST recognize and correctly interpret all escape sequences from this table when they appear in a literal that allows escape sequences. Invalid escape sequences MUST be rejected by a parser.
 
 #### Unicode Escape Sequences
-In addition to the table above, literals that allow for escape sequences MAY contain Unicode escape sequences of the form `\...;`.
+In addition to the table above, literals that allow for escape sequences MAY contain Unicode escape sequences of the form `\{hex};`.
 - Unicode escape sequences MUST start with a `\` backslash and end with a `;` semicolon.
-- `...` MUST consist of one or more hexadecimal digits (`0`-`9`, `A`-`F`, `a`-`f`).
-- The numeric value represented by `...` MUST be in the range `0x0` to `0x10FFFF`.
+- `{hex}` MUST consist of one or more hexadecimal digits (`0`-`9`, `A`-`F`, `a`-`f`).
+- The numeric value represented by `{hex}` MUST be in the range `0x0` to `0x10FFFF`.
 - Leading zeroes SHOULD be discarded.
 - Parsers MUST replace each Unicode escape sequence with the corresponding Unicode code point when interpreting the literal content.
 
@@ -300,19 +300,17 @@ Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF;\tarrow"`
 #### Decimals
 Decimal literals represent numeric values with significant fractional digits. They are intended for any use-case where preserving the exact decimal representation is important, such as when expressing monetary values. Parsers MUST preserve all fractional digits, including trailing zeros.
 
-Five notations are supported:
+Four notations are supported:
 - `[-]${integer}.{fractional}`: Full notation.
-- `[-]$.{fractional}`: omitted integer part. The integer part MUST be interpreted as `0`.
-- `[-]${integer}.`: omitted fractional part. The fractional part MUST be interpreted as `0` (one zero).
-- `[-]$.`: omitted integer and fractional part. The integer and fractional parts MUST be interpreted as `0` (one zero).
-- `[-]${integer}`: integral decimal with zero fractional digits.
-- `[-]$`: integer decimal with zero fractional digits. The integer part MUST be interpreted as `0` (one zero).
+- `[-]$.{fractional}`: Omitted integer part. The integer part MUST be interpreted as `0`.
+- `[-]${integer}`: Integral decimal with zero fractional digits.
+- `[-]$`: Integral decimal with zero fractional digits. The integer part MUST be interpreted as `0`.
 
 The integer and fractional parts MUST consist of zero or more decimal digits (`0`-`9`). Leading zeros MAY appear in the integer part, but MUST be discarded by a parser.
 
 Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
 
-Examples: `$123`, `$4.567`, `$.05`, `-$2`, `-$.`, `$`.
+Examples: `$123`, `$4.567`, `$.05`, `-$2`, `$`.
 
 #### Colors
 Colors literals MUST start with a `#` number sign, followed by the hexadecimal representation of the color (`0`-`9`, `A`-`F`, `a`-`f`). Five notations are supported:
