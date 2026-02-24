@@ -72,7 +72,7 @@
     // =============================
     {
       "scope": "cscd.metadata.address",
-      "settings": { "foreground": "#5757E8", "fontStyle": "bold" }
+      "settings": { "foreground": "#7676FF", "fontStyle": "bold" }
     },
     {
       "scope": "cscd.metadata.type",
@@ -92,22 +92,22 @@
     // =============================
     {
       "scope": "cscd.primitives.null",
-      "settings": { "foreground": "#888888", "fontStyle": "bold" }
+      "settings": { "foreground": "#AAAAAA", "fontStyle": "bold" }
     },
     
     {
       "scope": "cscd.primitives.boolean",
-      "settings": { "foreground": "#00E3E7", "fontStyle": "bold" }
+      "settings": { "foreground": "#1EFBFF", "fontStyle": "bold" }
     },
     
     {
       "scope": "cscd.primitives.integer",
-      "settings": { "foreground": "#4D9DDF", "fontStyle": "bold" }
+      "settings": { "foreground": "#90CDFF", "fontStyle": "bold" }
     },
 
     {
       "scope": "cscd.primitives.float",
-      "settings": { "foreground": "#F44747", "fontStyle": "bold" }
+      "settings": { "foreground": "#FD5454", "fontStyle": "bold" }
     },
 
     {
@@ -122,7 +122,7 @@
     
     {
       "scope": "cscd.primitives.character",
-      "settings": { "foreground": "#D7BA7D", "fontStyle": "bold" }
+      "settings": { "foreground": "#D6B266", "fontStyle": "bold" }
     },
 
     {
