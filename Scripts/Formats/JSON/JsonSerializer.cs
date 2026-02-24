@@ -36,93 +36,98 @@ namespace Rusty.Serialization.JSON
                 node = type.Value;
             }
 
+            string offsetStr = null;
+            if (node is OffsetNode offset)
+            {
+                offsetStr = offset.Offset.ToString();
+                node = offset.Time;
+            }
+
+            string scopeStr = null;
+            if (node is ScopeNode scope)
+            {
+                scopeStr = scope.Name;
+                node = scope.Value;
+            }
+
             switch (node)
             {
                 case NullNode:
-                    AddName(sb, "$null");
-                    AddColon(sb, prettyPrint);
                     sb.Append("null");
                     break;
 
                 case BoolNode @bool:
-                    AddName(sb, "$bool");
-                    AddColon(sb, prettyPrint);
-                    sb.Append(@bool.Value ? "true" : "false");
+                    sb.Append(@bool.Value.ToString());
                     break;
 
                 case IntNode @int:
-                    AddName(sb, "$int");
-                    AddColon(sb, prettyPrint);
                     sb.Append(@int.Value.ToString());
                     break;
 
                 case FloatNode @float:
-                    AddName(sb, "$float");
-                    AddColon(sb, prettyPrint);
                     sb.Append(@float.Value.ToString());
                     break;
 
                 case InfinityNode inf:
-                    AddName(sb, "$inf");
-                    AddColon(sb, prettyPrint);
                     if (inf.Positive)
-                        AddName(sb, "+");
+                        AddName(sb, "inf");
                     else
-                        AddName(sb, "-");
+                        AddName(sb, "-inf");
                     break;
 
                 case NanNode nan:
-                    AddName(sb, "$nan");
-                    AddColon(sb, prettyPrint);
                     AddName(sb, "nan");
                     break;
 
                 case CharNode @char:
-                    AddName(sb, "$char");
-                    AddColon(sb, prettyPrint);
                     AddName(sb, @char.Value.ToString());
                     break;
 
                 case StringNode str:
-                    AddName(sb, "$str");
-                    AddColon(sb, prettyPrint);
                     AddName(sb, str.Value);
                     break;
 
                 case DecimalNode dec:
-                    AddName(sb, "$dec");
-                    AddColon(sb, prettyPrint);
-                    sb.Append(dec.Value.ToString());
+                    AddName(sb, dec.Value.ToString());
                     break;
 
                 case ColorNode color:
-                    AddName(sb, "$col");
-                    AddColon(sb, prettyPrint);
                     AddName(sb, color.Value.ToString());
                     break;
 
+                case UidNode uid:
+                    AddName(sb, uid.Value.ToString());
+                    break;
+
                 case TimestampNode time:
-                    AddName(sb, "$time");
-                    AddColon(sb, prettyPrint);
                     AddName(sb, time.Value.ToString());
                     break;
 
+                case DurationNode duration:
+                    AddName(sb, duration.Value.ToString());
+                    break;
+
                 case BytesNode bytes:
-                    AddName(sb, "$bytes");
-                    AddColon(sb, prettyPrint);
                     AddName(sb, bytes.Value.ToString());
                     break;
 
                 case SymbolNode symbol:
-                    AddName(sb, "$symbol");
-                    AddColon(sb, prettyPrint);
                     AddName(sb, symbol.Name);
                     break;
 
-                case ListNode list:
-                    AddName(sb, "$list");
+                case RefNode @ref:
+                    sb.Append("{");
+                    if (prettyPrint)
+                        sb.Append(' ');
+                    AddName(sb, "$ref");
                     AddColon(sb, prettyPrint);
+                    AddName(sb, @ref.Address);
+                    if (prettyPrint)
+                        sb.Append(' ');
+                    sb.Append("}");
+                    break;
 
+                case ListNode list:
                     StringBuilder items = new StringBuilder();
                     for (int i = 0; i < list.Count; i++)
                     {
@@ -137,9 +142,6 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case DictNode dict:
-                    AddName(sb, "$dict");
-                    AddColon(sb, prettyPrint);
-
                     StringBuilder entries = new StringBuilder();
 
                     for (int i = 0; i < dict.Count; i++)
@@ -163,9 +165,6 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case ObjectNode obj:
-                    AddName(sb, "$obj");
-                    AddColon(sb, prettyPrint);
-
                     StringBuilder members = new StringBuilder();
                     for (int i = 0; i < obj.Count; i++)
                     {
@@ -185,7 +184,6 @@ namespace Rusty.Serialization.JSON
                     throw new ArgumentException($"Invalid node type '{node.GetType()}'.");
             }
 
-            Wrap(sb, "{", "}", prettyPrint, idStr, typeStr);
             return sb.ToString();
         }
 

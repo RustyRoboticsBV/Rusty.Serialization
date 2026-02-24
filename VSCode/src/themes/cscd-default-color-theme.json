@@ -6,10 +6,10 @@
     "editor.foreground": "#E6E6E6",
     "editorBracketHighlight.foreground1": "#BDBD82",
     "editorBracketHighlight.foreground2": "#BDBD82",
-    "editorBracketHighlight.foreground3": "#e8eee5",
-    "editorBracketHighlight.foreground4": "#e8eee5",
-    "editorBracketHighlight.foreground5": "#e8eee5",
-    "editorBracketHighlight.foreground6": "#e8eee5",
+    "editorBracketHighlight.foreground3": "#E8EEE5",
+    "editorBracketHighlight.foreground4": "#E8EEE5",
+    "editorBracketHighlight.foreground5": "#E8EEE5",
+    "editorBracketHighlight.foreground6": "#E8EEE5",
     "editorBracketHighlight.unexpectedBracket.foreground": "#F44747"
   },
   "editor.bracketPairColorization.enabled": false,
@@ -36,7 +36,7 @@
     // =============================
     {
       "scope": "cscd.punctuation",
-      "settings": { "foreground": "#e8eee5", "fontStyle": "bold" }
+      "settings": { "foreground": "#E8EEE5", "fontStyle": "bold" }
     },
 
     // =============================

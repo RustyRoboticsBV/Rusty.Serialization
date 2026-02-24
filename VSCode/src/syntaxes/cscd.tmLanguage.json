@@ -48,7 +48,7 @@
           "patterns": [
             {
               "name": "cscd.escapes.address",
-              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9a-fA-F]+;)"
             }
           ]
         },
@@ -59,7 +59,7 @@
           "patterns": [
             {
               "name": "cscd.escapes.type",
-              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9a-fA-F]+;)"
             }
           ]
         },
@@ -70,7 +70,7 @@
           "patterns": [
             {
               "name": "cscd.escapes.scope",
-              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9a-fA-F]+;)"
             }
           ]
         },
@@ -157,7 +157,7 @@
           "patterns": [
             {
               "name": "cscd.escapes.string",
-              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9a-fA-F]+;)"
             }
           ]
         },
@@ -172,7 +172,7 @@
           "patterns": [
             {
               "name": "cscd.escapes.character",
-              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9a-fA-F]+;)"
             }
           ]
         },
@@ -226,7 +226,19 @@
         
         {
           "name": "cscd.primitives.color",
-          "match": "#[0-9A-F]{0,8}"
+          "match": "#[0-9a-fA-F]{8}"
+        },
+        {
+          "name": "cscd.primitives.color",
+          "match": "#[0-9a-fA-F]{6}"
+        },
+        {
+          "name": "cscd.primitives.color",
+          "match": "#[0-9a-fA-F]{4}"
+        },
+        {
+          "name": "cscd.primitives.color",
+          "match": "#[0-9a-fA-F]{3}"
         },
 
         {
@@ -247,14 +259,25 @@
         },
         {
           "name": "cscd.primitives.uid",
-          "match": "%[0-9a-f]{0,32}"
+          "match": "%[0-9a-fA-F]{0,32}"
         },
 
 
         {
           "name": "cscd.primitives.timestamp",
-          "begin": "@",
-          "end": "@"
+          "match": "@-?[0-9]+/[0-9]+/[0-9]+,[0-9]+:[0-9]+:(\\d+|(?:\\d*\\.\\d+|\\d+\\.|\\.|\\d+[e][+-]?\\d+)(?:[e][+-]?\\d+)?)@"
+        },
+        {
+          "name": "cscd.primitives.timestamp",
+          "match": "@-?[0-9]+/[0-9]+/[0-9]+@"
+        },
+        {
+          "name": "cscd.primitives.timestamp",
+          "match": "@[0-9]+:[0-9]+:(\\d+|(?:\\d*\\.\\d+|\\d+\\.|\\.|\\d+[e][+-]?\\d+)(?:[e][+-]?\\d+)?)@"
+        },
+        {
+          "name": "cscd.primitives.timestamp",
+          "match": "@@"
         },
 
         {
@@ -270,7 +293,7 @@
           "patterns": [
             {
               "name": "cscd.escapes.reference",
-              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9a-fA-F]+;)"
             }
           ]
         },
@@ -283,7 +306,7 @@
           "patterns": [
             {
               "name": "cscd.escapes.symbol",
-              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9A-F]+;)"
+              "match": "\\\\(t|n|r|\"|'|\\\\|\\(|\\)|\\*|\\^|&|`|[0-9a-fA-F]+;)"
             }
           ]
         },

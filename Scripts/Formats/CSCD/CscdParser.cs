@@ -365,7 +365,7 @@ namespace Rusty.Serialization.CSCD
                         TokenError(token, $"Duplicate dash in uid.");
                 }
 
-                else if (c >= '0' && c <= '9' || c >= 'a' && c <= 'f')
+                else if (c >= '0' && c <= '9' || c >= 'A' && c <= 'F' || c >= 'a' && c <= 'f')
                 {
                     digits[31 - digitCount] = c;
                     digitCount++;
@@ -854,7 +854,7 @@ namespace Rusty.Serialization.CSCD
                 TextSpan unicodeHex = span.Slice(index + 1, hexLength);
                 try
                 {
-                    chr = ParseHex(unicodeHex, HexParseMode.Uppercase);
+                    chr = ParseHex(unicodeHex);
                     sequenceLength = hexLength + 2;
                 }
                 catch
