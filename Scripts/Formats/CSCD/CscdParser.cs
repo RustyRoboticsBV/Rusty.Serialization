@@ -54,12 +54,24 @@ namespace Rusty.Serialization.CSCD
                 lexer.ResetCursor();
 
             // Root.
+            bool directived = false;
             bool footered = false;
             while (lexer.GetNextToken(text, out Token token))
             {
                 // Illegal header.
                 if (token.Text.Equals("~CSCD~"))
                     TokenError(token, "Encountered header marker after start of content.");
+
+                // Skip directives.
+                else if (token.Text.EnclosedWith('?'))
+                {
+                    if (root != null)
+                        TokenError(token, "Flags may not be used after the root value.");
+                    else if (directived)
+                        TokenError(token, "Multiple flags blocks encountered.");
+                    else
+                        directived = true;
+                }
 
                 // Footer.
                 else if (token.Text.Equals("~/CSCD~"))
