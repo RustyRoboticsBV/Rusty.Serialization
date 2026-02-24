@@ -303,7 +303,7 @@ namespace Rusty.Serialization.CSCD
                 TokenError(token, "Non-numeric decimal.");
 
             // Create proper decimal form (i.e. .5 to 0.5).
-            string processed = ProcessReal(contents);
+            string processed = new string(contents);
 
             // Prepend - sign if negative.
             if (negative)

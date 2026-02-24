@@ -196,7 +196,7 @@
         
         {
           "name": "cscd.primitives.decimal",
-          "match": "-?\\$\\d*(\\.\\d*)?"
+          "match": "-?\\$\\d*(\\.\\d+)?"
         },
         {
           "name": "cscd.primitives.float",
@@ -239,6 +239,10 @@
         {
           "name": "cscd.primitives.color",
           "match": "#[0-9a-fA-F]{3}"
+        },
+        {
+          "name": "cscd.primitives.color",
+          "match": "#"
         },
 
         {

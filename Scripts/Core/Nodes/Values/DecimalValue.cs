@@ -133,16 +133,26 @@ namespace Rusty.Serialization.Core.Nodes
                 return new DecimalValue(span.StartsWith("-"), BigInteger.Parse(span), 0);
 
             // Handle fractionals.
+            bool negative = span.StartsWith("-");
+            if (negative)
+            {
+                span = span.Slice(1);
+                pointIndex--;
+            }
+
             ReadOnlySpan<char> integer = span.Slice(0, pointIndex);
+            if (integer.Length == 0)
+                integer = "0";
+
             ReadOnlySpan<char> fractional = span.Slice(pointIndex + 1);
 
-            bool negative = integer.StartsWith("-");
+
             int scale = fractional.Length;
+
             if (scale == 0)
-            {
-                scale = 1;
-                fractional = "0";
-            }
+                throw new FormatException("Fractional part may not be empty.");
+            else
+                UnityEngine.Debug.Log(scale);
 
             int length = integer.Length + fractional.Length;
             BigInteger mantissa;
