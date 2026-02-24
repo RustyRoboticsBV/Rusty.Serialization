@@ -132,7 +132,7 @@ Parsers MUST recognize and correctly interpret all escape sequences from this ta
 #### Unicode Escape Sequences
 In addition to the table above, literals that allow for escape sequences MAY contain Unicode escape sequences of the form `\...;`.
 - Unicode escape sequences MUST start with a `\` backslash and end with a `;` semicolon.
-- `...` MUST consist of one or more uppercase hexadecimal digits (`0`-`9`, `A`-`F`).
+- `...` MUST consist of one or more hexadecimal digits (`0`-`9`, `A`-`F`, `a`-`f`).
 - The numeric value represented by `...` MUST be in the range `0x0` to `0x10FFFF`.
 - Leading zeroes SHOULD be discarded.
 - Parsers MUST replace each Unicode escape sequence with the corresponding Unicode code point when interpreting the literal content.
@@ -315,19 +315,17 @@ Parsers SHOULD distinguish positive and negative zero if the runtime type permit
 Examples: `$123`, `$4.567`, `$.05`, `-$2`, `-$.`, `$`.
 
 #### Colors
-Colors literals MUST start with a `#` number sign, followed by the hexadecimal representation of the color. Five notations are supported:
+Colors literals MUST start with a `#` number sign, followed by the hexadecimal representation of the color (`0`-`9`, `A`-`F`, `a`-`f`). Five notations are supported:
 - `#RRGGBBAA`: full notation with alpha.
 - `#RRGGBB`: full notation without alpha. The alpha channel MUST be assumed to be `FF`.
 - `#RGBA`: short notation with alpha. When parsed, each digit MUST be duplicated to form the equivalent `#RRGGBBAA`. Example: `#800F` MUST be interpreted as `#880000FF`.
 - `#RGB`: short notation. When parsed, each digit MUST be duplicated to form the equivalent `#RRGGBB`. Example: `#800` MUST be interpreted as `#880000`.
 - `#`: MUST be interpreted as `#00000000`.
 
-Color literals MUST use uppercase hexadecimal digits (`0`-`9`, `A`-`F`). Parsers MUST interpret the values according to the rules above.
-
 #### UIDs
 UID literals represent a 128-bit unique identifier. They provide a canonical form of expressing UIDs.
 
-They MUST start with the prefix `%`, followed by the format `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (8-4-4-4-12), where each `X` MUST be a lowercase hex digit (`0`-`9`, `a`-`f`). The `-` dashes MAY be omitted. Leading zeros MAY also be omitted (e.g. `%1-23456789abcd` is equivalent to `%00000000-0000-0000-0001-23456789abcd`) - parsers MUST interpret missing hex digits as `0`. The literal `%` MUST be interpreted as a UID with 32 zeros (i.e. `%00000000-0000-0000-0000-000000000000`).
+They MUST start with the prefix `%`, followed by the format `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (8-4-4-4-12), where each `X` MUST be a hexadecimal digit (`0`-`9`, `A`-`F`, `a`-`f`). The `-` dashes MAY be omitted. Leading zeros MAY also be omitted (e.g. `%1-23456789abcd` is equivalent to `%00000000-0000-0000-0001-23456789abcd`) - parsers MUST interpret missing hexadecimal digits as `0`. The literal `%` MUST be interpreted as a UID with 32 zeros (i.e. `%00000000-0000-0000-0000-000000000000`).
 
 UID literals are NOT REQUIRED to be valid according to [RFC 4122](https://www.rfc-editor.org/rfc/rfc4122) - unless the runtime type enforces UUID validity.
 
