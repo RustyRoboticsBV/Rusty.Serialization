@@ -90,6 +90,7 @@ namespace Rusty.Serialization.Core.Conversion
             CollectMembers();
 
             // Collect member types.
+            // TODO: this will break on missing members (or wrongly ordered members).
             for (int i = 0; i < Members.Length; i++)
             {
                 MemberInfo member = Members[i];

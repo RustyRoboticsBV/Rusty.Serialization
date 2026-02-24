@@ -42,7 +42,11 @@ namespace Rusty.Serialization.XML
             if (rootElement == null)
                 throw new ArgumentException("XML does not contain a root element.");
             INode rootNode = ReadNode(rootElement);
-            return new NodeTree(rootNode);
+            NodeTree tree = new NodeTree(rootNode);
+#if UNITY_5_3_OR_NEWER
+            UnityEngine.Debug.Log(tree);
+#endif
+            return tree;
         }
 
         /* Private methods. */
@@ -89,7 +93,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("bool");
                     WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(@bool.Value.ToString().ToLowerInvariant());
+                    writer.WriteString(@bool.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
@@ -191,7 +195,17 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("dur");
                     WriteMetadata(writer, addressName, typeName, offsetValue);
 
-                    writer.WriteString(duration.Value.ToString());
+                    if (duration.Value.negative)
+                        writer.WriteElementString("negative", duration.Value.negative.ToString());
+                    if (duration.Value.days != 0)
+                        writer.WriteElementString("days", duration.Value.days.ToString());
+                    if (duration.Value.hours != 0)
+                        writer.WriteElementString("hours", duration.Value.hours.ToString());
+                    if (duration.Value.minutes != 0)
+                        writer.WriteElementString("minutes", duration.Value.minutes.ToString());
+                    if (duration.Value.seconds != 0)
+                        writer.WriteElementString("seconds", duration.Value.seconds.ToString());
+
                     writer.WriteEndElement();
                     break;
 
@@ -300,7 +314,7 @@ namespace Rusty.Serialization.XML
         private static INode ParsePrimitive(string tag, string value) => tag switch
         {
             "null" => new NullNode(),
-            "bool" => new BoolNode(bool.Parse(value)),
+            "bool" => new BoolNode(BoolValue.Parse(value)),
             "int" => new IntNode(IntValue.Parse(value)),
             "float" => new FloatNode(FloatValue.Parse(value)),
             "inf" => value == "+" ? new InfinityNode(true) : new InfinityNode(false),
@@ -308,6 +322,7 @@ namespace Rusty.Serialization.XML
             "char" => new CharNode(new UnicodePair(value)),
             "str" => new StringNode(value),
             "dec" => new DecimalNode(DecimalValue.Parse(value)),
+            "uid" => new UidNode(Guid.Parse(value)),
             "col" => new ColorNode(ColorValue.Parse(value)),
             "bytes" => new BytesNode(BytesValue.Parse(value)),
             "symbol" => new SymbolNode(value),
@@ -333,6 +348,7 @@ namespace Rusty.Serialization.XML
                 node = tag switch
                 {
                     "time" => ReadTime(element),
+                    "dur" => ReadDuration(element),
                     "list" => ReadList(element),
                     "dict" => ReadDict(element),
                     "obj" => ReadObject(element),
@@ -352,9 +368,17 @@ namespace Rusty.Serialization.XML
             foreach (XElement field in element.Elements("field"))
             {
                 string fieldName = (string)field.Attribute("name");
+                string scopeName = (string)field.Attribute("scope");
+                IMemberNameNode memberName = null;
+                if (!string.IsNullOrEmpty(scopeName))
+                    memberName = new ScopeNode(scopeName, new SymbolNode(fieldName));
+                else
+                    memberName = new SymbolNode(fieldName);
+
                 XElement valueNode = field.Elements().FirstOrDefault();
-                if (valueNode == null) throw new ArgumentException($"Field {fieldName} has no value element.");
-                obj.AddMember(/*fieldName*/null, ReadNode(valueNode)); // TODO: fix.
+                if (valueNode == null)
+                    throw new ArgumentException($"Field '{fieldName}' has no value element.");
+                obj.AddMember(memberName, ReadNode(valueNode));
             }
             return obj;
         }
@@ -383,10 +407,9 @@ namespace Rusty.Serialization.XML
             return dict;
         }
 
-        private static TimestampNode ReadTime(XElement element)
+        private static INode ReadTime(XElement element)
         {
-            IntValue year = 1;
-            byte month = 1, day = 1, hour = 0, minute = 0;
+            IntValue year = 1, month = 1, day = 1, hour = 0, minute = 0;
             FloatValue second = 0;
 
             foreach (XElement child in element.Elements())
@@ -395,16 +418,44 @@ namespace Rusty.Serialization.XML
                 switch (child.Name.LocalName)
                 {
                     case "year": year = IntValue.Parse(value); break;
-                    case "month": month = byte.Parse(value); break;
-                    case "day": day = byte.Parse(value); break;
-                    case "hour": hour = byte.Parse(value); break;
-                    case "minute": minute = byte.Parse(value); break;
+                    case "month": month = IntValue.Parse(value); break;
+                    case "day": day = IntValue.Parse(value); break;
+                    case "hour": hour = IntValue.Parse(value); break;
+                    case "minute": minute = IntValue.Parse(value); break;
                     case "second": second = FloatValue.Parse(value); break;
                     default: throw new ArgumentException($"Invalid <time> field <{child.Name}>.");
                 }
             }
 
-            return new TimestampNode(year, month, day, hour, minute, second);
+            TimestampNode timestamp = new TimestampNode(year, month, day, hour, minute, second);
+
+            string offset = (string)element.Attribute("offset");
+            if (!string.IsNullOrEmpty(offset))
+                return new OffsetNode(OffsetValue.Parse(offset), timestamp);
+            return timestamp;
+        }
+
+        private static DurationNode ReadDuration(XElement element)
+        {
+            BoolValue negative = false;
+            IntValue days = 0, hours = 0, minutes = 0;
+            FloatValue seconds = 0;
+
+            foreach (XElement child in element.Elements())
+            {
+                string value = child.Value;
+                switch (child.Name.LocalName)
+                {
+                    case "negative": negative = true; break;
+                    case "days": days = IntValue.Parse(value); break;
+                    case "hours": hours = IntValue.Parse(value); break;
+                    case "minutes": minutes = IntValue.Parse(value); break;
+                    case "seconds": seconds = FloatValue.Parse(value); break;
+                    default: throw new ArgumentException($"Invalid <time> field <{child.Name}>.");
+                }
+            }
+
+            return new DurationNode(negative, days, hours, minutes, seconds);
         }
     }
 }

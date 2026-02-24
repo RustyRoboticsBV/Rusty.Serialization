@@ -44,27 +44,31 @@
     // =============================
     {
       "scope": "cscd.escapes.address",
-      "settings": { "foreground": "#A1A1CB", "fontStyle": "bold" }
+      "settings": { "foreground": "#BEC1CB", "fontStyle": "bold" }
     },
     {
       "scope": "cscd.escapes.type",
-      "settings": { "foreground": "#EAEAB5", "fontStyle": "bold" }
+      "settings": { "foreground": "#D4EAB5", "fontStyle": "bold" }
     },
     {
       "scope": "cscd.escapes.scope",
-      "settings": { "foreground": "#F8D5DB", "fontStyle": "bold" }
+      "settings": { "foreground": "#F8DEE5", "fontStyle": "bold" }
     },
     {
       "scope": "cscd.escapes.character",
-      "settings": { "foreground": "#D7BA7D", "fontStyle": "bold" }
+      "settings": { "foreground": "#CED77D", "fontStyle": "bold" }
     },
     {
       "scope": "cscd.escapes.string",
       "settings": { "foreground": "#CFBC78", "fontStyle": "bold" }
     },
     {
+      "scope": "cscd.escapes.symbol",
+      "settings": { "foreground": "#E26F8E", "fontStyle": "bold" }
+    },
+    {
       "scope": "cscd.escapes.reference",
-      "settings": { "foreground": "#F8F8A1", "fontStyle": "bold" }
+      "settings": { "foreground": "#D7F8A1", "fontStyle": "bold" }
     },
 
     // =============================

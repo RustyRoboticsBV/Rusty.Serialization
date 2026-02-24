@@ -10,7 +10,7 @@
 
         public DurationNode(DurationValue value) : base(value) { }
 
-        public DurationNode(bool negative, IntValue days, IntValue hours, IntValue minutes, FloatValue seconds)
+        public DurationNode(BoolValue negative, IntValue days, IntValue hours, IntValue minutes, FloatValue seconds)
             : this(new DurationValue(negative, days, hours, minutes, seconds)) { }
             
         /* Public methods. */

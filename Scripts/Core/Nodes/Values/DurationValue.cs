@@ -8,14 +8,14 @@ namespace Rusty.Serialization.Core.Nodes
     public readonly struct DurationValue : IEquatable<DurationValue>
     {
         /* Fields */
-        public readonly bool negative;
+        public readonly BoolValue negative;
         public readonly IntValue days;
         public readonly IntValue hours;
         public readonly IntValue minutes;
         public readonly FloatValue seconds;
 
         /* Constructors */
-        public DurationValue(bool negative, IntValue days, IntValue hours, IntValue minutes, FloatValue seconds)
+        public DurationValue(BoolValue negative, IntValue days, IntValue hours, IntValue minutes, FloatValue seconds)
         {
             if (days.IsNegative)
                 throw new ArgumentException("Days may not be negative.");
