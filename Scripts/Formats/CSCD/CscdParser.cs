@@ -326,14 +326,16 @@ namespace Rusty.Serialization.CSCD
             if (!token.Text.StartsWith('$') && !token.Text.StartsWith("-$"))
                 TokenError(token, "Decimal tokens must start with a $ or -$ prefix.");
 
+            // Handle $ and -$.
+            if (token.Text.Equals('$'))
+                return new DecimalNode(new DecimalValue(false, 0, 0));
+            else if (token.Text.Equals("-$"))
+                return new DecimalNode(new DecimalValue(true, 0, 0));
+
             // Get contents.
             bool negative = token.Text.StartsWith('-');
             int offset = negative ? 2 : 1;
             TextSpan contents = token.Text.Slice(offset);
-
-            // Empty literal (integer zero).
-            if (contents.Length == 0)
-                return new DecimalNode(0m);
 
             // May not have a negative sign after $, or be non-numeric.
             if (contents.StartsWith('-'))

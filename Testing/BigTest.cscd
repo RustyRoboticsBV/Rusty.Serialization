@@ -4,8 +4,10 @@
 
 `rootObj`(my.namespace.RootType<int>)<
     
-    ;; Null and booleans ;;
-    nullValue: (nullable_type)null,
+    ;; Null ;;
+    *null*: (nullable_type)null,
+
+    ;; Booleans ;;
     boolTrue: true,
     boolFalse: false,
     
@@ -26,10 +28,12 @@
     floatJustDot: .,
     floatNegZero: -.,
     
-    ;; Infinity and NaN ;;
-    posInf: inf,
-    negInf: -inf,
-    notANumber: nan,
+    ;; Infinity ;;
+    infPos: inf,
+    infNeg: -inf,
+
+    ;; NaN ;;
+    *nan*: nan,
     
     ;; Characters ;;
     charA: 'A',
@@ -40,14 +44,14 @@
     charEmpty: '',
     
     ;; Strings ;;
-    simpleString: "Hello, World!",
-    escapedString: "Line1\r\nLine2\tTabbed \"quote\" \\backslash\\",
-    unicodeString: "Arrow: \21FF; and Euro: \20AC;",
-    emptyString: "",
+    stringSimple: "Hello, World!",
+    stringEscapes: "Line1\r\nLine2\tTabbed \"quote\" \\backslash\\",
+    stringUnicode: "Arrow: \21FF; and Euro: \20AC;",
+    stringEmpty: "",
     
     ;; Decimals ;;
     decimalFull: $123.4500,
-    decimalNoInt: $.75,
+    decimalNoInt: -$.75,
     decimalIntegral: $100,
     decimalOnlySign: -$,
     
@@ -90,10 +94,10 @@
     bytesEmpty: !,
     
     ;; Symbols ;;
-    bareSymbol: MyEnumValue,
-    delimitedSymbol: *\*Complex Symbol Name!*,
-    emptySymbol: **,
-    reservedBareAsDelimited: *null*,
+    symbolBare: MyEnumValue,
+    symbolDelimited: *\*Complex Symbol Name!*,
+    symbolEmpty: **,
+    symbolReservedLiteralBareAsDelimited: *null*,
     
     ;; Shared references ;;
     sharedList: `shared_list`[1,2,3],
@@ -109,14 +113,15 @@
     
     ;; Nested object with scopes and duplicate names ;;
     nestedObject: `nested\`1`(custom.Type)<
-        ^complicated\^base\^class^ ;; comment;; value: ;; comment2 ;; &shared_list&,
+        ^complicated\^base\^class^value: &shared_list&,
         ^base^value: 1,
         value: 2,
         listInside: [
             &shared_list&,
             (\(typedItem\))"abc",
             `innerId`42,
-            &innerId&
+            &innerId&,
+            &nested`1&
         ]
     >,
     
@@ -140,7 +145,7 @@
     torture_o1: <;;e;;>,
     torture_o2: <;;e;;a;;e;;:;;e;;0;;e;;>,
     torture_o3: <;;e;;a;;e;;:;;e;;0;;e;;,;;e;;b;;e;;:;;e;;0;;e;;>,
-    torture_o4: <;;e;;a;;e;;:;;e;;0;;e;;,;;e;;^base^;;e;;a;;e;;:;;e;;0;;e;;>,
+    torture_o4: <;;e;;a;;e;;:;;e;;0;;e;;,;;e;;^;;e;;base;;e;;^;;e;;a;;e;;:;;e;;0;;e;;>,
     torture_meta: `a`;;e;;(;;e;;b;;e;;);;e;;|Z|;;e;;@@
 >
 

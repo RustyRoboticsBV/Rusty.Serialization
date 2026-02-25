@@ -97,17 +97,16 @@ namespace Rusty.Serialization.Core.Nodes
             if (string.IsNullOrEmpty(integerPart))
                 integerPart = "0";
 
-            string result = integerPart + "." + fractionalPart;
-
-            if (mantissa < 0)
-                result = "-" + result;
-
-            return result;
+            if (negative)
+                return '-' + integerPart + "." + fractionalPart;
+            else
+                return integerPart + "." + fractionalPart;
         }
 
-        public override int GetHashCode() => HashCode.Combine(mantissa, scale);
+        public override int GetHashCode() => HashCode.Combine(negative, mantissa, scale);
         public override bool Equals(object obj) => obj is DecimalValue other && Equals(other);
-        public bool Equals(DecimalValue other) => mantissa.Equals(other.mantissa) && scale.Equals(other.scale);
+        public bool Equals(DecimalValue other)
+            => negative == other.negative && mantissa.Equals(other.mantissa) && scale.Equals(other.scale);
 
         /// <summary>
         /// Try to parse a string as a decimal number.
