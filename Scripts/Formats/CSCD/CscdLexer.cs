@@ -173,6 +173,11 @@ namespace Rusty.Serialization.CSCD
                     case '<':
                     case '>':
                         return i - Cursor;
+                    case ';':
+                        if (i + 1 < text.Length && text[i + 1] == ';')
+                            return i - Cursor;
+                        else
+                            break;
                 }
             }
             return text.Length - Cursor;
