@@ -337,8 +337,11 @@ Timestamp literals represent absolute moments in time. They are intended to expr
 
 Timestamp literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
 - `@{year}/{month}/{day},{hour}:{minute}:{second}@`: full notation.
+- `@{year}/{month}/{day},{hour}:{minute}@`: omitted second, which MUST be interpretet as `0`.
+- `@{year}/{month}/{day},{hour}@`: omitted minute and second, which MUST be interpretet as `0:0`.
 - `@{year}/{month}/{day}@`: date-only notation. The time MUST be interpreted as `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
 - `@{hour}:{minute}:{second}@`: time-only notation. The date MUST be interpreted as `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
+- `@{hour}:{minute}@`: time-only notation with omitted seconds, which MUST be interpreted as `0`. The date MUST be interpreted as `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
 - `@@`: omitted date and time parts. It MUST be interpreted as the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
 
 Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
