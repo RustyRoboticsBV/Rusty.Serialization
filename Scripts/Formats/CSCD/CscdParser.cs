@@ -1054,5 +1054,44 @@ namespace Rusty.Serialization.CSCD
 
             second = FloatValue.Parse(secondText);
         }
+
+        /// <summary>
+        /// Get the next non-comment token.
+        /// </summary>
+        private static bool GetNextToken(TextSpan text, CscdLexer lexer, out Token token)
+        {
+            while (lexer.GetNextToken(text, out token))
+            {
+                if (!token.Text.EnclosedWith(";;"))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Expect a non-comment token.
+        /// </summary>
+        private static new Token ExpectToken(TextSpan text, CscdLexer lexer, string errorMessage)
+        {
+            if (!GetNextToken(text, lexer, out Token token))
+                TokenError(Token.EOF, errorMessage);
+
+            return token;
+        }
+
+        /// <summary>
+        /// Expect a non-comment symbol.
+        /// </summary>
+        private static new Token ExpectSymbol(TextSpan text, CscdLexer lexer, char symbol, string errorMessage)
+        {
+            if (!GetNextToken(text, lexer, out Token token))
+                TokenError(Token.EOF, errorMessage);
+
+            if (!token.Text.Equals(symbol))
+                TokenError(token, errorMessage);
+
+            return token;
+        }
     }
 }

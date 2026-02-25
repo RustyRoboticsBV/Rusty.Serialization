@@ -277,11 +277,31 @@
         },
         {
           "name": "cscd.primitives.timestamp",
+          "match": "@-?[0-9]+/[0-9]+/[0-9]+,[0-9]+:[0-9]+@"
+        },
+        {
+          "name": "cscd.primitives.timestamp",
+          "match": "@-?[0-9]+/[0-9]+/[0-9]+,[0-9]+@"
+        },
+        {
+          "name": "cscd.primitives.timestamp",
           "match": "@-?[0-9]+/[0-9]+/[0-9]+@"
         },
         {
           "name": "cscd.primitives.timestamp",
+          "match": "@-?[0-9]+/[0-9]+@"
+        },
+        {
+          "name": "cscd.primitives.timestamp",
+          "match": "@-?[0-9]+@"
+        },
+        {
+          "name": "cscd.primitives.timestamp",
           "match": "@[0-9]+:[0-9]+:(\\d+|(?:\\d*\\.\\d+|\\d+\\.|\\.|\\d+[e][+-]?\\d+)(?:[e][+-]?\\d+)?)@"
+        },
+        {
+          "name": "cscd.primitives.timestamp",
+          "match": "@[0-9]+:[0-9]+@"
         },
         {
           "name": "cscd.primitives.timestamp",
