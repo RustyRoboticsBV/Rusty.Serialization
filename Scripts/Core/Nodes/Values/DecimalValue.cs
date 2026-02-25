@@ -151,8 +151,6 @@ namespace Rusty.Serialization.Core.Nodes
 
             if (scale == 0)
                 throw new FormatException("Fractional part may not be empty.");
-            else
-                UnityEngine.Debug.Log(scale);
 
             int length = integer.Length + fractional.Length;
             BigInteger mantissa;

@@ -48,29 +48,39 @@ namespace Rusty.Serialization.CSCD
         {
             INode root = null;
 
-            // Skip header format marker (if present).
-            lexer.GetNextToken(text, out Token first);
-            if (!first.Text.Equals("~CSCD~"))
-                lexer.ResetCursor();
-
             // Root.
-            bool directived = false;
+            bool headered = false;
+            bool unicode = false;
             bool footered = false;
             while (lexer.GetNextToken(text, out Token token))
             {
-                // Illegal header.
+                // Header.
                 if (token.Text.Equals("~CSCD~"))
-                    TokenError(token, "Encountered header marker after start of content.");
-
-                // Skip directives.
-                else if (token.Text.EnclosedWith('?'))
                 {
                     if (root != null)
-                        TokenError(token, "Flags may not be used after the root value.");
-                    else if (directived)
-                        TokenError(token, "Multiple flags blocks encountered.");
+                        TokenError(token, "Encountered header marker after root value.");
+                    else if (footered)
+                        TokenError(token, "Encountered header marker after footer marker.");
+                    else if (!headered)
+                        headered = true;
                     else
-                        directived = true;
+                        TokenError(token, "Encountered duplicate header marker.");
+                }
+
+                // Unicode header.
+                else if (token.Text.Equals("~CSCD?U~"))
+                {
+                    if (root != null)
+                        TokenError(token, "Encountered header marker after root value.");
+                    else if (footered)
+                        TokenError(token, "Encountered header marker after footer marker.");
+                    else if (!headered)
+                    {
+                        headered = true;
+                        unicode = true;
+                    }
+                    else
+                        TokenError(token, "Encountered duplicate header marker.");
                 }
 
                 // Footer.
@@ -87,18 +97,20 @@ namespace Rusty.Serialization.CSCD
                         TokenError(token, "No top-level value before footer marker.");
                 }
 
-                else if (footered)
-                    TokenError(token, "Encountered token after footer marker.");
-
-                // Comments (skip).
-                else if (token.Text.EnclosedWith(";;"))
-                    continue;
+                // Unknown marker.
+                else if (token.Text.EnclosedWith('~'))
+                    TokenError(token, "Unknown format marker.");
 
                 // Top-level value.
-                else if (root != null)
-                    TokenError(token, "Only one top-level value is allowed.");
                 else
-                    root = ParseToken(text, token, lexer);
+                {
+                    if (footered)
+                        TokenError(token, "Encountered token after footer marker.");
+                    else if (root != null)
+                        TokenError(token, "Only one top-level value is allowed.");
+                    else
+                        root = ParseToken(text, token, lexer);
+                }
             }
 
             // Ensure legal root value.

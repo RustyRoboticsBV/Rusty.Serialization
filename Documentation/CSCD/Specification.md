@@ -94,6 +94,9 @@ Parsers that handle multiple formats MUST use this marker to recognize an input 
 
 The sequence `~CSCD~` has special meaning only when it appears before the top-level value. If the same sequence appears elsewhere (including inside of delimited literals) it MUST be treated as ordinary literal content.
 
+#### Unicode Header
+Alternatively, the header `~CSCD?U~` may be used instead of `~CSCD~`. This header specifies that the [restricted character set](#11-character-set) MUST be ignored by a parser, and that all valid Unicode code points may be used in the string.
+
 #### Footer
 The OPTIONAL footer text `~/CSCD~` MAY be used to denote the end of a string of CSCD after the top-level value and any trailing comments.
 
@@ -103,29 +106,17 @@ Parsers MAY use it to detect the end of an embedded string of CSCD. Parsers that
 
 The sequence `~/CSCD~` has special meaning only when it appears after the top-level value. If the same sequence appears elsewhere (including inside of delimited literals) it MUST be treated as ordinary literal content.
 
-### 1.4 Parser Flags
-Parser flags MAY be written before the top-level value, but after the header (if present). The flags MUST start and end with a `?` question mark, and they MUST be separated with a `,` comma.
-
-Only one built-in flag is available:
-- `unicode`. Notifies the parser that the [character set restrictions](#11-character-set) MUST be ignored, and that all Unicode code points are permitted in the string.
-
-Serializers MAY define their own custom flags. If a parser encounters an unknown flag that it cannot handle, it MUST NOT reject the string, and instead ignore the unknown flag.
-
-The flags MAY appear in any order. Each flag MUST NOT appear more than once.
-
-Examples: `?unicode?`, `?unicode, my_custom_flag?`
-
-### 1.5 Whitespace
+### 1.4 Whitespace
 Whitespace MAY appear between literals and punctuation (`, : [ ] { } < >`) for formatting purposes. Whitespace MAY also appear before and after the top-level value, and even before the header format marker and after the footer format marker. Unless otherwise stated, whitespace MUST NOT break up literals that are multiple characters long.
 
 Serializers SHOULD NOT emit whitespace in situations where readability is not important.
 
-### 1.6 Comments
+### 1.5 Comments
 Comments MUST start and end with `;;` two semicolons (e.g. `;; Comment text ;;`). They MAY appear between literals and punctuation (`, : [ ] { } < >`), as well as before and after the top-level value. Serializers SHOULD NOT preserve comments on reserialization. Comments MUST NOT be nested, but MAY consist of multiple lines.
 
 Comments MUST NOT be recognized inside delimited literals. Within such literals, substrings that match the comment syntax MUST be treated as literal content.
 
-### 1.7 Escape Sequences
+### 1.6 Escape Sequences
 Escape sequences MAY appear in literals that support them. Literals MUST NOT allow escape sequences unless explicitly stated otherwise in their definition.
 
 The following escape sequences MUST be recognized by parsers if they appear in a literal that allows escape sequences:
@@ -151,7 +142,7 @@ In addition to the table above, literals that allow for escape sequences MAY con
 
 Serializers SHOULD emit Unicode escape sequences using the minimal number of digits necessary to represent the code point. For example, `\B;` SHOULD be used instead of `\000B;`.
 
-### 1.8 Invalid Input
+### 1.7 Invalid Input
 A parser MUST detect and handle invalid input. Upon encountering invalid input, a parser SHOULD reject the input and terminate deserialization.
 
 The exact mechanism for rejection (e.g., exception, error code, logging) is implementation-defined and not legislated by this document, however parsers MUST NOT continue deserialization in a way that could produce an undefined or inconsistent object graph.
@@ -164,7 +155,7 @@ A valid serialized CSCD string MUST contain exactly one top-level value. This to
 ### 2.1. Metadata
 
 #### Addresses
-Addresses MAY be placed before any concrete value, type or offset literal, and are written as a name between `` ` `` backticks. Values annotated with an address can be referenced elsewhere using a [reference literal](#references). Addresses MUST NOT be applied to reference literals. addresses MUST be globally unique and are case-sensitive.
+Addresses MAY be placed before any concrete value, type or offset literal, and are written as a name between `` ` `` backticks. Values annotated with an address can be referenced elsewhere using a [reference literal](#references). Addresses MUST NOT be applied to reference literals. Addresses MUST be globally unique within the entire CSCD string, and are case-sensitive.
 
 The following characters MUST NOT appear in address literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
