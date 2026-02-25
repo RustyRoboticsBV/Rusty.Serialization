@@ -1,8 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Nodes;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 
 namespace Rusty.Serialization.CSCD
 {
@@ -26,6 +27,8 @@ namespace Rusty.Serialization.CSCD
             new HashSet<UnicodePair> { '\t', '\n', '\r', '*', '\\' };
         private readonly static HashSet<UnicodePair> refEscapes =
             new HashSet<UnicodePair> { '\t', '\n', '\r', '&', '\\' };
+
+        private static StringBuilderBag bag = new StringBuilderBag();
 
         private static readonly Dictionary<char, UnicodePair> simpleEscapes = new Dictionary<char, UnicodePair>
         {
@@ -338,15 +341,17 @@ namespace Rusty.Serialization.CSCD
             if (GetNumericType(contents, NumericParseMode.AllowLonePoint) == NumericType.NaN)
                 TokenError(token, "Non-numeric decimal.");
 
-            // Create proper decimal form (i.e. .5 to 0.5).
-            string processed = new string(contents);
-
-            // Prepend - sign if negative.
+            // Parse.
             if (negative)
-                processed = '-' + processed;
-
-            // Create node.
-            return new DecimalNode(DecimalValue.Parse(processed));
+            {
+                // Use stack-allocated buffer to avoid string allocation
+                Span<char> buffer = stackalloc char[contents.Length + 1];
+                buffer[0] = '-';
+                contents.AsSpan().CopyTo(buffer.Slice(1));
+                return new DecimalNode(DecimalValue.Parse(buffer));
+            }
+            else
+                return new DecimalNode(DecimalValue.Parse(contents));
         }
 
         /// <summary>
@@ -819,7 +824,7 @@ namespace Rusty.Serialization.CSCD
             // Remove enclosing delimiters.
             TextSpan contents = token.Unpack(startDelimiter.Length, endDelimiter.Length);
 
-            StringBuilder sb = new();
+            StringBuilder sb = bag.Rent();
             for (int i = 0; i < contents.Length; i++)
             {
                 UnicodePair c = contents[i];
@@ -852,7 +857,9 @@ namespace Rusty.Serialization.CSCD
                 else
                     sb.Append(c);
             }
-            return sb.ToString();
+            string str = sb.ToString();
+            bag.Return(sb);
+            return str;
         }
 
         /// <summary>
@@ -871,7 +878,7 @@ namespace Rusty.Serialization.CSCD
 
             // Must be followed by another character.
             if (index + 1 >= span.Length)
-                throw new FormatException($"Unclosed escape sequence at {new string(span)}.");
+                throw new FormatException($"Unclosed escape sequence at {span}.");
 
             char next = span[index + 1];
 
@@ -887,7 +894,7 @@ namespace Rusty.Serialization.CSCD
             {
                 int unicodeEnd = span.FirstIndexOf(index + 1, ';');
                 if (unicodeEnd == -1)
-                    throw new FormatException($"Unclosed unicode escape sequence at {new string(span)}.");
+                    throw new FormatException($"Unclosed unicode escape sequence at {span}.");
 
                 int hexLength = unicodeEnd - (index + 1);
                 TextSpan unicodeHex = span.Slice(index + 1, hexLength);
@@ -898,7 +905,7 @@ namespace Rusty.Serialization.CSCD
                 }
                 catch
                 {
-                    throw new FormatException($"Invalid unicode escape sequence at {new string(span)}.");
+                    throw new FormatException($"Invalid unicode escape sequence at {span}.");
                 }
             }
 
