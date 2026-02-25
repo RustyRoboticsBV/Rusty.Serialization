@@ -161,7 +161,7 @@
 
     {
       "scope": "cscd.primitives.bytes",
-      "settings": { "foreground": "#AD77F9", "fontStyle": "bold" }
+      "settings": { "foreground": "#A970ff", "fontStyle": "bold" }
     },
 
     {

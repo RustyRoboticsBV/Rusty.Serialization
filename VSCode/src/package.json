@@ -33,5 +33,7 @@
         "path": "./themes/cscd-default-color-theme.json"
       }
     ]
-  }
+  },
+  "main": "./extension.js",
+  "activationEvents": ["onLanguage:cscd"]
 }
