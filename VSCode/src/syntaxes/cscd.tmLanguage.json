@@ -19,9 +19,8 @@
           "match": "~CSCD~"
         },
         {
-          "name": "cscd.markers.flags",
-          "begin": "\\?",
-          "end": "\\?"
+          "name": "cscd.markers.header.unicode",
+          "match": "~CSCD\\?U~"
         },
         {
           "name": "cscd.markers.footer",

@@ -50,14 +50,17 @@ namespace Rusty.Serialization.CSCD
 
             // Root.
             bool headered = false;
-            bool unicode = false;
+            bool allowFullUnicodeRange = false;
+            bool commented = false;
             bool footered = false;
             while (lexer.GetNextToken(text, out Token token))
             {
                 // Header.
                 if (token.Text.Equals("~CSCD~"))
                 {
-                    if (root != null)
+                    if (commented)
+                        TokenError(token, "Encountered header marker after leading comment(s).");
+                    else if (root != null)
                         TokenError(token, "Encountered header marker after root value.");
                     else if (footered)
                         TokenError(token, "Encountered header marker after footer marker.");
@@ -70,14 +73,16 @@ namespace Rusty.Serialization.CSCD
                 // Unicode header.
                 else if (token.Text.Equals("~CSCD?U~"))
                 {
-                    if (root != null)
+                    if (commented)
+                        TokenError(token, "Encountered header marker after leading comment(s).");
+                    else if (root != null)
                         TokenError(token, "Encountered header marker after root value.");
                     else if (footered)
                         TokenError(token, "Encountered header marker after footer marker.");
                     else if (!headered)
                     {
                         headered = true;
-                        unicode = true;
+                        allowFullUnicodeRange = true;
                     }
                     else
                         TokenError(token, "Encountered duplicate header marker.");
@@ -101,15 +106,24 @@ namespace Rusty.Serialization.CSCD
                 else if (token.Text.EnclosedWith('~'))
                     TokenError(token, "Unknown format marker.");
 
+                // Comment.
+                else if (token.Text.EnclosedWith(";;"))
+                {
+                    if (footered)
+                        TokenError(token, "Encountered comment after footer marker.");
+                    else
+                        commented = true;
+                }
+
                 // Top-level value.
                 else
                 {
                     if (footered)
-                        TokenError(token, "Encountered token after footer marker.");
+                        TokenError(token, "Encountered value after footer marker.");
                     else if (root != null)
                         TokenError(token, "Only one top-level value is allowed.");
                     else
-                        root = ParseToken(text, token, lexer);
+                        root = ParseToken(text, token, lexer, allowFullUnicodeRange);
                 }
             }
 
@@ -129,10 +143,10 @@ namespace Rusty.Serialization.CSCD
         }
 
         /* Protected methods. */
-        protected static INode ParseToken(TextSpan text, Token token, CscdLexer lexer)
+        protected static INode ParseToken(TextSpan text, Token token, CscdLexer lexer, bool allowFullUnicodeRange)
         {
             // Format markers.
-            if (token.Text.Equals("~CSCD~"))
+            if (token.Text.Equals("~CSCD~") || token.Text.Equals("~CSCD?U~"))
                 TokenError(token, "Format header marker may not appear after first token.");
             if (token.Text.Equals("~/CSCD~"))
                 TokenError(token, "Format footer marker may not appear inside of the top-level value.");
@@ -140,10 +154,10 @@ namespace Rusty.Serialization.CSCD
             // Address.
             if (token.Text.StartsWith('`') && token.Text.EndsWith('`'))
             {
-                string name = ParseText(token, addressEscapes, "`", "`");
+                string name = ParseText(token, addressEscapes, "`", "`", allowFullUnicodeRange);
 
                 Token next = ExpectToken(text, lexer, "An address must be followed by another token.");
-                INode value = ParseToken(text, next, lexer);
+                INode value = ParseToken(text, next, lexer, allowFullUnicodeRange);
                 if (value is AddressNode)
                     TokenError(token, "Addresses may not be followed by another address.");
 
@@ -153,10 +167,10 @@ namespace Rusty.Serialization.CSCD
             // Type.
             if (token.Text.StartsWith('(') && token.Text.EndsWith(')'))
             {
-                string name = ParseText(token, typeEscapes, "(", ")");
+                string name = ParseText(token, typeEscapes, "(", ")", allowFullUnicodeRange);
 
                 Token next = ExpectToken(text, lexer, "A type must be followed by another token.");
-                INode value = ParseToken(text, next, lexer);
+                INode value = ParseToken(text, next, lexer, allowFullUnicodeRange);
                 if (value is AddressNode)
                     TokenError(token, "Types may not be followed by an address.");
                 if (value is TypeNode)
@@ -215,11 +229,11 @@ namespace Rusty.Serialization.CSCD
 
             // Char.
             if (token.Text.EnclosedWith('\''))
-                return ParseChar(token);
+                return ParseChar(token, allowFullUnicodeRange);
 
             // String.
             if (token.Text.EnclosedWith('"'))
-                return new StringNode(ParseText(token, strEscapes, "\"", "\""));
+                return new StringNode(ParseText(token, strEscapes, "\"", "\"", allowFullUnicodeRange));
 
             // Decimal.
             if (token.Text.StartsWith('$') || token.Text.StartsWith("-$"))
@@ -250,23 +264,23 @@ namespace Rusty.Serialization.CSCD
 
             // Symbol (delimited).
             if (token.Text.EnclosedWith('*'))
-                return new SymbolNode(ParseText(token, symbolEscapes, "*", "*"));
+                return new SymbolNode(ParseText(token, symbolEscapes, "*", "*", allowFullUnicodeRange));
 
             // Ref.
             if (token.Text.EnclosedWith('&'))
-                return new RefNode(ParseText(token, refEscapes, "&", "&"));
+                return new RefNode(ParseText(token, refEscapes, "&", "&", allowFullUnicodeRange));
 
             // List.
             if (token.Text.Equals('['))
-                return ParseList(text, lexer);
+                return ParseList(text, lexer, allowFullUnicodeRange);
 
             // Dictionary.
             if (token.Text.Equals('{'))
-                return ParseDictionary(text, lexer);
+                return ParseDictionary(text, lexer, allowFullUnicodeRange);
 
             // Object.
             if (token.Text.Equals('<'))
-                return ParseObject(text, lexer);
+                return ParseObject(text, lexer, allowFullUnicodeRange);
 
             // Symbol (bare).
             return ParseBareSymbol(token);
@@ -293,11 +307,11 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a char literal.
         /// </summary>
-        private static CharNode ParseChar(Token token)
+        private static CharNode ParseChar(Token token, bool allowFullUnicodeRange)
         {
             if (token.Text.Equals("''"))
                 return new CharNode('\0');
-            string str = ParseText(token, charEscapes, "'", "'");
+            string str = ParseText(token, charEscapes, "'", "'", allowFullUnicodeRange);
             if (str.Length > 2 || (str.Length == 2 && !char.IsHighSurrogate(str[0])))
                 TokenError(token, "Char token may not represent multiple characters.");
             return new CharNode(str);
@@ -619,7 +633,7 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a sequence of tokens as a list node.
         /// </summary>
-        private static ListNode ParseList(TextSpan text, CscdLexer lexer)
+        private static ListNode ParseList(TextSpan text, CscdLexer lexer, bool allowFullUnicodeRange)
         {
 
             ListNode list = new ListNode();
@@ -644,7 +658,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Parse element.
-                list.AddValue(ParseToken(text, next, lexer));
+                list.AddValue(ParseToken(text, next, lexer, allowFullUnicodeRange));
 
                 // Next token: comma or list closer.
                 next = ExpectToken(text, lexer, "Unclosed list.");
@@ -659,7 +673,7 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a sequence of tokens as a dictionary node.
         /// </summary>
-        private static DictNode ParseDictionary(TextSpan text, CscdLexer lexer)
+        private static DictNode ParseDictionary(TextSpan text, CscdLexer lexer, bool allowFullUnicodeRange)
         {
             DictNode dict = new DictNode();
 
@@ -683,7 +697,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Parse entry key and value pair.
-                INode key = ParseToken(text, next, lexer);
+                INode key = ParseToken(text, next, lexer, allowFullUnicodeRange);
 
                 ExpectSymbol(text, lexer, ':', "Dictionary keys must be followed by a colon.");
 
@@ -691,7 +705,7 @@ namespace Rusty.Serialization.CSCD
                 DisallowEqual(next, ',', "Dictionary entries must contain a value after the colon.");
                 DisallowEqual(next, ':', "Dictionaries may not contain consecutive colons.");
                 DisallowEqual(next, '}', "Dictionaries may not contain trailing colons.");
-                INode value = ParseToken(text, next, lexer);
+                INode value = ParseToken(text, next, lexer, allowFullUnicodeRange);
 
                 dict.AddPair(key, value);
 
@@ -708,7 +722,7 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a sequence of tokens as an object node.
         /// </summary>
-        private static ObjectNode ParseObject(TextSpan text, CscdLexer lexer)
+        private static ObjectNode ParseObject(TextSpan text, CscdLexer lexer, bool allowFullUnicodeRange)
         {
             ObjectNode obj = new ObjectNode();
 
@@ -735,13 +749,13 @@ namespace Rusty.Serialization.CSCD
                 string scopeName = null;
                 if (next.Text.StartsWith('^') && next.Text.EndsWith('^'))
                 {
-                    scopeName = ParseText(next, scopeEscapes, "^", "^");
+                    scopeName = ParseText(next, scopeEscapes, "^", "^", allowFullUnicodeRange);
                     next = ExpectToken(text, lexer, "Scope should be followed by another token.");
                 }
 
                 SymbolNode symbol;
                 if (next.Text.StartsWith('*') && next.Text.EndsWith('*'))
-                    symbol = new SymbolNode(ParseText(next, symbolEscapes, "*", "*"));
+                    symbol = new SymbolNode(ParseText(next, symbolEscapes, "*", "*", allowFullUnicodeRange));
                 else
                     symbol = ParseBareSymbol(next);
 
@@ -757,7 +771,7 @@ namespace Rusty.Serialization.CSCD
                 DisallowEqual(next, ',', "Object members must contain a value after the colon.");
                 DisallowEqual(next, ':', "Objects may not contain consecutive colons.");
                 DisallowEqual(next, '>', "Objects may not contain trailing colons.");
-                INode valueNode = ParseToken(text, next, lexer);
+                INode valueNode = ParseToken(text, next, lexer, allowFullUnicodeRange);
 
                 obj.AddMember(name, valueNode);
 
@@ -803,7 +817,8 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a textual literal (without the delimiters).
         /// </summary>
-        private static string ParseText(Token token, HashSet<UnicodePair> requiredEscapes, string startDelimiter = "", string endDelimiter = "")
+        private static string ParseText(Token token, HashSet<UnicodePair> requiredEscapes, string startDelimiter,
+            string endDelimiter, bool allowFullUnicodeRange)
         {
             // Remove enclosing delimiters.
             TextSpan contents = token.Unpack(startDelimiter.Length, endDelimiter.Length);
@@ -814,12 +829,16 @@ namespace Rusty.Serialization.CSCD
                 UnicodePair c = contents[i];
 
                 // Illegal characters.
-                if (!(c == 0x09 || c == 0x0A || c == 0x0D || c == 0x20
+                if (!(allowFullUnicodeRange
+                    || c == 0x09 || c == 0x0A || c == 0x0D || c == 0x20
                     || c >= 0x21 && c <= 0x7E
                     || c >= 0xA1 && c <= 0xAC
                     || c >= 0xAE && c <= 0xFF))
                 {
-                    TokenError(token, $"Illegal character '{c}'.");
+                    if (char.IsHighSurrogate((char)c) && i + 1 < contents.Length)
+                        TokenError(token, $"Illegal character '{c}{contents[i + 1]}'.");
+                    else
+                        TokenError(token, $"Illegal character '{c}'.");
                 }
 
                 // Escaped.
