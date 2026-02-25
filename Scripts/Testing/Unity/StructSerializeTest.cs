@@ -95,12 +95,20 @@ namespace Rusty.Serialization.Testing
             { "i", new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89 } },
             { "j", null }
         };
+
+        public StructTest Reference { get; set; }
     }
 
     /// <summary>
     /// A struct serialization test monobehavior.
     /// </summary>
-    public class StructSerializeTest : SerializeTest<StructTest> { }
+    public class StructSerializeTest : SerializeTest<StructTest>
+    {
+        private void OnValidate()
+        {
+            Object.Reference = Object;
+        }
+    }
 
 #if UNITY_EDITOR
     /// <summary>

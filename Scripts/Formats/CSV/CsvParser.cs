@@ -20,7 +20,6 @@ namespace Rusty.Serialization.CSV
                 throw new FormatException("Unexpected end of CSV.");
 
             string token = Unpack(cell);
-            UnityEngine.Debug.Log(token);
 
             switch (token)
             {

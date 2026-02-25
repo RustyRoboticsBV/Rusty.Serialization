@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+#if NETFRAMEWORK || NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
+using System.Runtime.Serialization;
+#endif
 using Rusty.Serialization.Core.Nodes;
 
 

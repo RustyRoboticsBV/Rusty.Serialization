@@ -10,18 +10,18 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET time converter.
     /// </summary>
-    public class TimeOnlyConverter : Core.Conversion.Converter<TimeOnly, TimeNode>
+    public class TimeOnlyConverter : Core.Conversion.Converter<TimeOnly, TimestampNode>
     {
         /* Protected method. */
-        protected override TimeNode CreateNode(TimeOnly obj, CreateNodeContext context)
+        protected override TimestampNode CreateNode(TimeOnly obj, CreateNodeContext context)
         {
-            return new TimeNode(
+            return new TimestampNode(
                 0, 0, 0,
                 (byte)Math.Abs(obj.Hour), (byte)Math.Abs(obj.Minute), Math.Abs(obj.Second)
             );
         }
 
-        protected override TimeOnly CreateObject(TimeNode node, CreateObjectContext context)
+        protected override TimeOnly CreateObject(TimestampNode node, CreateObjectContext context)
         {
             return new TimeOnly(
                 (int)node.Value.hour, (int)node.Value.minute, (int)node.Value.second

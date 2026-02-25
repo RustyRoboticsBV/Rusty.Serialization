@@ -10,18 +10,18 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET date converter.
     /// </summary>
-    public class DateOnlyConverter : Core.Conversion.Converter<DateOnly, TimeNode>
+    public class DateOnlyConverter : Core.Conversion.Converter<DateOnly, TimestampNode>
     {
         /* Protected method. */
-        protected override TimeNode CreateNode(DateOnly obj, CreateNodeContext context)
+        protected override TimestampNode CreateNode(DateOnly obj, CreateNodeContext context)
         {
-            return new TimeNode(
+            return new TimestampNode(
                 Math.Abs(obj.Year), Math.Abs(obj.Month), Math.Abs(obj.Day),
                 0, 0, 0f
             );
         }
 
-        protected override DateOnly CreateObject(TimeNode node, CreateObjectContext context)
+        protected override DateOnly CreateObject(TimestampNode node, CreateObjectContext context)
         {
             return new DateOnly((int)node.Value.year, (int)node.Value.month, (int)node.Value.day);
         }
