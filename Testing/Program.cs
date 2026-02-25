@@ -1,7 +1,7 @@
-﻿using System;
+﻿#if UCS_DEBUG
+using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using Rusty.Serialization;
 using Rusty.Serialization.Core.Nodes;
 
@@ -59,3 +59,4 @@ averageElapsed /= number - number / 10;
 Console.WriteLine($"Best Time: {lowestElapsed}");
 Console.WriteLine($"Worst Time: {highestElapsed}");
 Console.WriteLine($"Average Time: {averageElapsed}");
+#endif
