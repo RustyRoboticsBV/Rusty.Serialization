@@ -189,9 +189,7 @@ namespace Rusty.Serialization.CSCD
                 OffsetNode offset = ParseOffset(token);
 
                 // Get attached timestamp.
-                if (!lexer.GetNextToken(text, out Token next))
-                    TokenError(next, "An offset must be followed by another token.");
-
+                Token next = ExpectToken(text, lexer, "An offset must be followed by another token.");
                 if (!next.Text.EnclosedWith('@'))
                     TokenError(next, "Offsets must be followed by a timestamp.");
 
@@ -477,7 +475,6 @@ namespace Rusty.Serialization.CSCD
                 return null;
             }
 
-            TokenError(token, "Malformed time literal.");
             return null;
 
             Return: return new TimestampNode(year, month, day, hour, minute, second);
