@@ -10,6 +10,8 @@
         public bool Positive { get; set; }
 
         /* Constructors. */
+        public InfinityNode() : this(true) { }
+
         public InfinityNode(bool positive)
         {
             Positive = positive;

@@ -13,6 +13,8 @@ namespace Rusty.Serialization.Core.Nodes
         public INode Value { get; set; }
 
         /* Constructors. */
+        public TypeNode() : this("", null) { }
+
         public TypeNode(string name, INode value)
         {
             Name = name;

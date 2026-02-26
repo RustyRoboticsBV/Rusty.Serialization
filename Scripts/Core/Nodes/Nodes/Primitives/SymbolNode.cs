@@ -10,6 +10,8 @@ namespace Rusty.Serialization.Core.Nodes
         public string Name { get; set; }
 
         /* Constructors. */
+        public SymbolNode() : this("") { }
+
         public SymbolNode(string name)
         {
             Name = name.ToString() ?? "";

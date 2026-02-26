@@ -14,6 +14,8 @@ namespace Rusty.Serialization.Core.Nodes
         INode IMetadataNode.Value => Value;
 
         /* Constructors. */
+        public ScopeNode() : this("", null) { }
+
         public ScopeNode(string name, SymbolNode value)
         {
             Name = name;

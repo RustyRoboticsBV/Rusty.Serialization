@@ -10,6 +10,8 @@ namespace Rusty.Serialization.Core.Nodes
         public string Address { get; set; }
 
         /* Constructors. */
+        public RefNode() : this("") { }
+
         public RefNode(string address)
         {
             Address = address.ToString() ?? "";
