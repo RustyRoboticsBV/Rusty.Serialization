@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Numerics;
 using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Nodes;
 
@@ -13,15 +14,16 @@ namespace Rusty.Serialization.JSON
         /* Public methods. */
         public override string Serialize(NodeTree node, Settings settings)
         {
-            return Serialize(node.Root, settings);
+            JsonNode root = ToJsonNodes(node.Root);
+            StringBuilder sb = new StringBuilder(); // TODO: use rented bag sb instead.
+            Serialize(sb, root);
+            return sb.ToString();
         }
 
         /* Private methods. */
-        private static string Serialize(INode node, Settings settings)
+        private static JsonNode ToJsonNodes(INode node)
         {
-            StringBuilder sb = new StringBuilder();
-            bool prettyPrint = settings.PrettyPrint;
-
+            // Unwrap metadata.
             string addressStr = null;
             if (node is AddressNode id)
             {
@@ -36,13 +38,6 @@ namespace Rusty.Serialization.JSON
                 node = type.Value;
             }
 
-            string offsetStr = null;
-            if (node is OffsetNode offset)
-            {
-                offsetStr = offset.Offset.ToString();
-                node = offset.Time;
-            }
-
             string scopeStr = null;
             if (node is ScopeNode scope)
             {
@@ -50,140 +45,117 @@ namespace Rusty.Serialization.JSON
                 node = scope.Value;
             }
 
+            string offsetStr = null;
+            if (node is OffsetNode offset)
+            {
+                offsetStr = offset.Offset.ToString();
+                node = offset.Time;
+            }
+
 
             bool mustWrap = addressStr != null || typeStr != null || offsetStr != null || scopeStr != null;
 
+            JsonNode result;
             switch (node)
             {
                 case NullNode:
-                    sb.Append("null");
+                    result = new JsonNull();
                     break;
 
                 case BoolNode @bool:
-                    sb.Append(@bool.Value.ToString());
+                    result = new JsonBoolean(@bool.Value);
                     break;
 
                 case IntNode @int:
-                    sb.Append(@int.Value.ToString());
+                    result = new JsonNumber((double)(BigInteger)@int.Value);
                     break;
 
                 case FloatNode @float:
-                    sb.Append(@float.Value.ToString());
+                    result = new JsonNumber((double)@float.Value);
                     break;
 
                 case InfinityNode infinity:
                     if (infinity.Positive)
-                        AddName(sb, "Infinity");
+                        result = new JsonString("Infinity");
                     else
-                        AddName(sb, "-Infinity");
+                        result = new JsonString("-Infinity");
                     break;
 
                 case NanNode:
-                    AddName(sb, "NaN");
+                    result = new JsonString("NaN");
                     break;
 
                 case CharNode @char:
-                    AddName(sb, @char.Value.ToString());
+                    result = new JsonString(@char.Value.ToString());
                     break;
 
                 case StringNode @string:
-                    AddName(sb, @string.Value);
+                    result = new JsonString(@string.Value);
                     break;
 
                 case DecimalNode @decimal:
-                    AddName(sb, @decimal.Value.ToString());
+                    result = new JsonString(@decimal.Value.ToString());
                     break;
 
                 case ColorNode color:
-                    AddName(sb, color.Value.ToString());
+                    result = new JsonString(color.Value.ToString());
                     break;
 
                 case UidNode uid:
-                    AddName(sb, uid.Value.ToString());
+                    result = new JsonString(uid.Value.ToString());
                     break;
 
                 case TimestampNode timestamp:
-                    AddName(sb, timestamp.Value.ToString());
+                    result = new JsonString(timestamp.Value.ToString());
                     break;
 
                 case DurationNode duration:
-                    AddName(sb, duration.Value.ToString());
+                    result = new JsonString(duration.Value.ToString());
                     break;
 
                 case BytesNode bytes:
-                    AddName(sb, bytes.Value.ToString());
+                    result = new JsonString(bytes.Value.ToString());
                     break;
 
                 case SymbolNode symbol:
-                    AddName(sb, symbol.Name);
+                    result = new JsonString(symbol.Name);
                     break;
 
                 case RefNode @ref:
-                    sb.Append("{");
-                    if (prettyPrint)
-                        sb.Append(' ');
-                    AddName(sb, "$ref");
-                    AddColon(sb, prettyPrint);
-                    AddName(sb, @ref.Address);
-                    if (prettyPrint)
-                        sb.Append(' ');
-                    sb.Append("}");
+                    result = new JsonString(@ref.Address);
                     break;
 
                 case ListNode list:
-                    StringBuilder items = new StringBuilder();
+                    JsonArray arrayList = new JsonArray();
                     for (int i = 0; i < list.Count; i++)
                     {
-                        items.Append(Serialize(list.GetValueAt(i), settings));
-
-                        if (i < list.Count - 1)
-                            AddComma(items, prettyPrint);
+                        arrayList.Add(ToJsonNodes(list.GetValueAt(i)));
                     }
-
-                    Wrap(items, "[", "]", prettyPrint);
-                    sb.Append(items.ToString());
+                    result = arrayList;
                     break;
 
                 case DictNode dict:
-                    StringBuilder entries = new StringBuilder();
-
+                    JsonArray arrayDict = new JsonArray();
                     for (int i = 0; i < dict.Count; i++)
                     {
-                        StringBuilder pair = new StringBuilder();
-
-                        pair.Append(Serialize(dict.Pairs[i].Key, settings));
-                        AddComma(pair, prettyPrint);
-
-                        pair.Append(Serialize(dict.Pairs[i].Value, settings));
-
-                        Wrap(pair, "[", "]", prettyPrint);
-                        entries.Append(pair.ToString());
-
-                        if (i < dict.Count - 1)
-                            AddComma(entries, prettyPrint);
+                        JsonArray member = new JsonArray();
+                        member.Add(ToJsonNodes(dict.GetKeyAt(i)));
+                        member.Add(ToJsonNodes(dict.GetValueAt(i)));
+                        arrayDict.Add(member);
                     }
-
-                    Wrap(entries, "[", "]", prettyPrint);
-                    sb.Append(entries.ToString());
+                    result = arrayDict;
                     break;
 
                 case ObjectNode obj:
-                    StringBuilder members = new StringBuilder(); // TODO: rent pooled sb instead.
+                    JsonArray arrayObj = new JsonArray();
                     for (int i = 0; i < obj.Count; i++)
                     {
-                        StringBuilder member = new StringBuilder(); // TODO: rent pooled sb instead.
-                        member.Append(Serialize(obj.Members[i].Key, settings));
-                        AddColon(member, prettyPrint);
-                        member.Append(Serialize(obj.Members[i].Value, settings));
-                        Wrap(member, "[", "]", prettyPrint);
-
-                        members.Append(member.ToString());
-                        if (i < obj.Count - 1)
-                            AddComma(members, prettyPrint);
+                        JsonArray member = new JsonArray();
+                        member.Add(ToJsonNodes(obj.GetNameAt(i)));
+                        member.Add(ToJsonNodes(obj.GetValueAt(i)));
+                        arrayObj.Add(member);
                     }
-                    Wrap(members, "[", "]", prettyPrint);
-                    sb.Append(members.ToString());
-
+                    result = arrayObj;
                     break;
 
                 default:
@@ -193,106 +165,94 @@ namespace Rusty.Serialization.JSON
             // Wrap if necessary.
             if (mustWrap)
             {
-                StringBuilder sb2 = new StringBuilder(); // TODO: rent pooled sb instead.
+                JsonObject wrapper = new JsonObject();
 
                 // Address.
                 if (addressStr != null)
-                {
-                    AddName(sb2, "$id");
-                    AddColon(sb2, prettyPrint);
-                    AddName(sb2, addressStr);
-                    AddComma(sb2, prettyPrint);
-                }
+                    wrapper.Add("$id", new JsonString(addressStr));
 
                 // Type.
                 if (typeStr != null)
-                {
-                    AddName(sb2, "$type");
-                    AddColon(sb2, prettyPrint);
-                    AddName(sb2, typeStr);
-                    AddComma(sb2, prettyPrint);
-                }
+                    wrapper.Add("$type", new JsonString(typeStr));
 
                 // Scope.
                 if (scopeStr != null)
-                {
-                    AddName(sb2, "$scope");
-                    AddColon(sb2, prettyPrint);
-                    AddName(sb2, scopeStr);
-                    AddComma(sb2, prettyPrint);
-                }
+                    wrapper.Add("$scope", new JsonString(scopeStr));
 
                 // Value.
-                AddName(sb2, "$value");
-                AddColon(sb2, prettyPrint);
-                sb2.Append(sb.ToString());
-                Wrap(sb2, "{", "}", prettyPrint);
-                return sb2.ToString();
+                wrapper.Add("$value", result);
+
+                return wrapper;
             }
 
-            return sb.ToString();
+            // Else, return as-is.
+            else
+                return result;
         }
 
-        private static void AddName(StringBuilder sb, string name)
+        private static void Serialize(StringBuilder sb, JsonNode node, int indentation = 0, bool indentStart = true)
         {
-            sb.Append('"');
-            sb.Append(name);
-            sb.Append('"');
-        }
-
-        private static void AddColon(StringBuilder sb, bool prettyPrint)
-        {
-            if (prettyPrint)
-                sb.Append(' ');
-            sb.Append(':');
-            if (prettyPrint)
-                sb.Append(' ');
-        }
-
-        private static void AddComma(StringBuilder sb, bool prettyPrint)
-        {
-            sb.Append(',');
-            if (prettyPrint)
-                sb.Append('\n');
-        }
-
-        private static void Wrap(StringBuilder sb, string start, string end, bool prettyPrint, string idStr = null, string typeStr = null)
-        {
-            string str = sb.ToString();
-
-            sb.Clear();
-
-            sb.Append(start);
-            if (prettyPrint)
-                sb.Append('\n');
-
-            if (idStr != null)
+            if (indentStart)
+                Indent(sb, indentation);
+            switch (node)
             {
-                if (prettyPrint)
-                    sb.Append("  ");
-                AddName(sb, "$id");
-                AddColon(sb, prettyPrint);
-                AddName(sb, idStr);
-                AddComma(sb, prettyPrint);
+                case JsonNull:
+                    sb.Append("null");
+                    break;
+                case JsonBoolean boolean:
+                    sb.Append(boolean.value ? "true" : "false");
+                    break;
+                case JsonNumber number:
+                    sb.Append(number.value.ToString());
+                    break;
+                case JsonString text:
+                    sb.Append('"');
+                    sb.Append(text.value);
+                    sb.Append('"');
+                    break;
+                case JsonArray array:
+                    sb.Append("[\n");
+                    for (int i = 0; i < array.values.Count; i++)
+                    {
+                        if (i > 0)
+                            sb.Append(",\n");
+                        Serialize(sb, array.values[i], indentation + 1);
+                    }
+                    sb.Append("\n");
+                    Indent(sb, indentation);
+                    sb.Append("]");
+                    break;
+                case JsonObject obj:
+                    sb.Append("{\n");
+                    for (int i = 0; i < obj.Count; i++)
+                    {
+                        if (i > 0)
+                            sb.Append(",\n");
+                        Indent(sb, indentation + 1);
+                        sb.Append('"');
+                        sb.Append(obj.keys[i]);
+                        sb.Append('"');
+                        sb.Append(": ");
+                        Serialize(sb, obj.values[i], indentation + 1, false);
+                    }
+                    sb.Append("\n");
+                    Indent(sb, indentation);
+                    sb.Append("}");
+                    break;
+                default:
+                    throw new FormatException("Unknown node type.");
             }
+        }
 
-            if (typeStr != null)
+        private static void Indent(StringBuilder sb, int indentation)
+        {
+            if (indentation == 0)
+                return;
+
+            for (int j = 0; j < indentation; j++)
             {
-                if (prettyPrint)
-                    sb.Append("  ");
-                AddName(sb, "$type");
-                AddColon(sb, prettyPrint);
-                AddName(sb, typeStr);
-                AddComma(sb, prettyPrint);
+                sb.Append("  ");
             }
-
-            if (prettyPrint)
-                str = "  " + str.Replace("\n", "\n  ");
-            sb.Append(str);
-
-            if (prettyPrint)
-                sb.Append('\n');
-            sb.Append(end);
         }
     }
 }
