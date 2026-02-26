@@ -3,7 +3,14 @@ using System.Collections.Generic;
 
 namespace Rusty.Serialization.Core.Nodes
 {
-    public sealed class NodeBag<NodeT>
+    public interface INodeBag
+    {
+        public INode Rent();
+        public void Return(INode node);
+        public void Clear();
+    }
+
+    public sealed class NodeBag<NodeT> : INodeBag
         where NodeT : INode, new()
     {
         /* Fields. */
@@ -13,6 +20,9 @@ namespace Rusty.Serialization.Core.Nodes
         private readonly object @lock = new object();
 
         /* Public methods. */
+        INode INodeBag.Rent() => Rent();
+        void INodeBag.Return(INode node) => Return((NodeT)node);
+
         /// <summary>
         /// Rent a node from the bag.
         /// </summary>
