@@ -52,13 +52,6 @@ string xmlStr = "...";
 string jsonStr = xml.Reformat(xmlStr, json);  // Converts XML to JSON.
 ```
 
-#### Freeing Up Memory
-The module makes use of object reusing and pooling to avoid unnecessary GC pressure. Heap memory can be freed up for garbage collection manually by calling the following method.
-
-```
-cscd.Clear();                                 // Releases allocated resources.
-```
-
 #### Notes
 Classes and structs without explicit support will automatically serialize using:
 - Fields that are public and non-static.

@@ -20,4 +20,8 @@
     <Compile Include="..\Scripts\**\*.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="..\Scripts\Core\Nodes\Object Pooling\**" />
+  </ItemGroup>
+
 </Project>
