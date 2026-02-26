@@ -53,7 +53,7 @@ namespace Rusty.Serialization.XML
 
         // Writing.
 
-        private static void WriteNode(XmlWriter writer, INode node)
+        private static void WriteNode(XmlWriter writer, INode node, string name = "", string scope = "")
         {
             // Unwrap address node.
             string addressName = null;
@@ -84,14 +84,14 @@ namespace Rusty.Serialization.XML
             {
                 case NullNode:
                     writer.WriteStartElement("null");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteEndElement();
                     break;
 
                 case BoolNode @bool:
                     writer.WriteStartElement("bool");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(@bool.Value.ToString());
                     writer.WriteEndElement();
@@ -99,7 +99,7 @@ namespace Rusty.Serialization.XML
 
                 case IntNode @int:
                     writer.WriteStartElement("int");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(@int.Value.ToString());
                     writer.WriteEndElement();
@@ -107,7 +107,7 @@ namespace Rusty.Serialization.XML
 
                 case FloatNode @float:
                     writer.WriteStartElement("float");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(@float.Value.ToString());
                     writer.WriteEndElement();
@@ -115,14 +115,14 @@ namespace Rusty.Serialization.XML
 
                 case NanNode:
                     writer.WriteStartElement("nan");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteEndElement();
                     break;
 
                 case InfinityNode inf:
                     writer.WriteStartElement("inf");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
                     if (inf.Positive)
                         writer.WriteString("+");
                     else
@@ -133,7 +133,7 @@ namespace Rusty.Serialization.XML
 
                 case CharNode chr:
                     writer.WriteStartElement("char");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(chr.Value.ToString());
                     writer.WriteEndElement();
@@ -141,7 +141,7 @@ namespace Rusty.Serialization.XML
 
                 case StringNode str:
                     writer.WriteStartElement("str");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(str.Value);
                     writer.WriteEndElement();
@@ -149,7 +149,7 @@ namespace Rusty.Serialization.XML
 
                 case DecimalNode @decimal:
                     writer.WriteStartElement("dec");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(@decimal.Value.ToString());
                     writer.WriteEndElement();
@@ -157,7 +157,7 @@ namespace Rusty.Serialization.XML
 
                 case ColorNode color:
                     writer.WriteStartElement("col");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(color.Value.ToString());
                     writer.WriteEndElement();
@@ -165,7 +165,7 @@ namespace Rusty.Serialization.XML
 
                 case UidNode uid:
                     writer.WriteStartElement("uid");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(uid.Value.ToString());
                     writer.WriteEndElement();
@@ -173,7 +173,7 @@ namespace Rusty.Serialization.XML
 
                 case TimestampNode timestamp:
                     writer.WriteStartElement("time");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     if (timestamp.Value.year != 1)
                         writer.WriteElementString("year", timestamp.Value.year.ToString());
@@ -193,7 +193,7 @@ namespace Rusty.Serialization.XML
 
                 case DurationNode duration:
                     writer.WriteStartElement("dur");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     if (duration.Value.negative)
                         writer.WriteElementString("negative", duration.Value.negative.ToString());
@@ -211,15 +211,15 @@ namespace Rusty.Serialization.XML
 
                 case BytesNode bytes:
                     writer.WriteStartElement("bytes");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(bytes.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
                 case SymbolNode symbol:
-                    writer.WriteStartElement("symbol");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    writer.WriteStartElement("memberSymbol");
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(symbol.Name);
                     writer.WriteEndElement();
@@ -227,7 +227,7 @@ namespace Rusty.Serialization.XML
 
                 case RefNode @ref:
                     writer.WriteStartElement("ref");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(@ref.Address);
                     writer.WriteEndElement();
@@ -235,7 +235,7 @@ namespace Rusty.Serialization.XML
 
                 case ListNode list:
                     writer.WriteStartElement("list");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     foreach (var element in list.Elements)
                     {
@@ -246,7 +246,7 @@ namespace Rusty.Serialization.XML
 
                 case DictNode dict:
                     writer.WriteStartElement("dict");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     foreach (var pair in dict.Pairs)
                     {
@@ -264,20 +264,21 @@ namespace Rusty.Serialization.XML
 
                 case ObjectNode obj:
                     writer.WriteStartElement("obj");
-                    WriteMetadata(writer, addressName, typeName, offsetValue);
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     foreach (var member in obj.Members)
                     {
-                        writer.WriteStartElement("field");
-                        if (member.Key is ScopeNode scope)
+                        string scopeName = "";
+                        string memberName = "";
+                        if (member.Key is ScopeNode memberScope)
                         {
-                            writer.WriteAttributeString("scope", scope.Name);
-                            writer.WriteAttributeString("name", scope.Value.Name);
+                            scopeName = memberScope.Name;
+                            memberName = memberScope.Value.Name;
                         }
-                        else if (member.Key is SymbolNode symbol)
-                            writer.WriteAttributeString("name", symbol.Name);
-                        WriteNode(writer, member.Value);
-                        writer.WriteEndElement();
+                        else if (member.Key is SymbolNode memberSymbol)
+                            memberName = memberSymbol.Name;
+
+                        WriteNode(writer, member.Value, memberName, scopeName);
                     }
                     writer.WriteEndElement();
                     break;
@@ -287,29 +288,25 @@ namespace Rusty.Serialization.XML
             }
         }
 
-        private static void WriteMetadata(XmlWriter writer, string address, string type, string offset)
-            => WriteMetadata(writer, address, type, null, offset);
-
-        private static void WriteMetadata(XmlWriter writer, string scope)
-            => WriteMetadata(writer, null, null, scope, null);
-
-        private static void WriteMetadata(XmlWriter writer, string address, string type, string scope, string offset)
+        private static void WriteMetadata(XmlWriter writer, string address, string type, string offset, string name, string scope)
         {
-            if (address != null)
+            if (!string.IsNullOrEmpty(address))
                 writer.WriteAttributeString("id", address);
-            if (type != null)
+            if (!string.IsNullOrEmpty(type))
                 writer.WriteAttributeString("type", type);
-            if (scope != null)
-                writer.WriteAttributeString("scope", scope);
-            if (offset != null)
+            if (!string.IsNullOrEmpty(offset))
                 writer.WriteAttributeString("offset", offset);
+            if (!string.IsNullOrEmpty(name))
+                writer.WriteAttributeString("name", name);
+            if (!string.IsNullOrEmpty(scope))
+                writer.WriteAttributeString("scope", scope);
         }
 
 
         // Parsing.
 
         private static bool IsPrimitive(string tag) => tag is "null" or "bool" or "int" or "float" or "inf" or "nan" or "char"
-            or "str" or "dec" or "col" or "uid" or "bytes" or "symbol" or "ref";
+            or "str" or "dec" or "col" or "uid" or "bytes" or "memberSymbol" or "ref";
 
         private static INode ParsePrimitive(string tag, string value) => tag switch
         {
@@ -325,7 +322,7 @@ namespace Rusty.Serialization.XML
             "uid" => new UidNode(Guid.Parse(value)),
             "col" => new ColorNode(ColorValue.Parse(value)),
             "bytes" => new BytesNode(BytesValue.Parse(value)),
-            "symbol" => new SymbolNode(value),
+            "memberSymbol" => new SymbolNode(value),
             "ref" => new RefNode(value),
             _ => throw new ArgumentException($"Invalid primitive tag <{tag}>.")
         };
@@ -365,20 +362,17 @@ namespace Rusty.Serialization.XML
         private static ObjectNode ReadObject(XElement element)
         {
             ObjectNode obj = new ObjectNode();
-            foreach (XElement field in element.Elements("field"))
+            foreach (XElement member in element.Elements())
             {
-                string fieldName = (string)field.Attribute("name");
-                string scopeName = (string)field.Attribute("scope");
+                string fieldName = (string)member.Attribute("name");
+                string scopeName = (string)member.Attribute("scope");
                 IMemberNameNode memberName = null;
                 if (!string.IsNullOrEmpty(scopeName))
                     memberName = new ScopeNode(scopeName, new SymbolNode(fieldName));
                 else
                     memberName = new SymbolNode(fieldName);
 
-                XElement valueNode = field.Elements().FirstOrDefault();
-                if (valueNode == null)
-                    throw new ArgumentException($"Field '{fieldName}' has no value element.");
-                obj.AddMember(memberName, ReadNode(valueNode));
+                obj.AddMember(memberName, ReadNode(member));
             }
             return obj;
         }
@@ -423,7 +417,7 @@ namespace Rusty.Serialization.XML
                     case "hour": hour = IntValue.Parse(value); break;
                     case "minute": minute = IntValue.Parse(value); break;
                     case "second": second = FloatValue.Parse(value); break;
-                    default: throw new ArgumentException($"Invalid <time> field <{child.Name}>.");
+                    default: throw new ArgumentException($"Invalid <time> member <{child.Name}>.");
                 }
             }
 
@@ -451,7 +445,7 @@ namespace Rusty.Serialization.XML
                     case "hours": hours = IntValue.Parse(value); break;
                     case "minutes": minutes = IntValue.Parse(value); break;
                     case "seconds": seconds = FloatValue.Parse(value); break;
-                    default: throw new ArgumentException($"Invalid <time> field <{child.Name}>.");
+                    default: throw new ArgumentException($"Invalid <time> member <{child.Name}>.");
                 }
             }
 

@@ -29,6 +29,7 @@ namespace Rusty.Serialization.Core.Codecs
         public static implicit operator TextSpan(string str) => new TextSpan(str.AsSpan());
         public static implicit operator TextSpan(ReadOnlySpan<char> span) => new TextSpan(span);
         public static implicit operator ReadOnlySpan<char>(TextSpan textSpan) => textSpan.span;
+        public static implicit operator string(TextSpan textSpan) => new string(textSpan.span);
 
         /* Public methods. */
         public override string ToString() => new string(span);

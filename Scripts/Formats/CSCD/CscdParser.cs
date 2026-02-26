@@ -482,8 +482,6 @@ namespace Rusty.Serialization.CSCD
                 return null;
             }
 
-            return null;
-
             Return: return new TimestampNode(year, month, day, hour, minute, second);
         }
 
