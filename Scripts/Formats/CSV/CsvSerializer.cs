@@ -23,11 +23,10 @@ namespace Rusty.Serialization.CSV
         {
             if (node is AddressNode address)
             {
-                sb.Append("id,");
+                sb.Append("adr,");
                 sb.Append(Pack(address.Name));
                 sb.Append("\n");
                 Serialize(address.Value, sb);
-                sb.Append("\nend");
             }
             else if (node is TypeNode type)
             {
@@ -35,7 +34,20 @@ namespace Rusty.Serialization.CSV
                 sb.Append(Pack(type.Name));
                 sb.Append("\n");
                 Serialize(type.Value, sb);
-                sb.Append("\nend");
+            }
+            else if (node is ScopeNode scope)
+            {
+                sb.Append("scope,");
+                sb.Append(Pack(scope.Name));
+                sb.Append("\n");
+                Serialize(scope.Value, sb);
+            }
+            else if (node is OffsetNode offset)
+            {
+                sb.Append("offset,");
+                sb.Append(Pack(offset.Offset.ToString()));
+                sb.Append("\n");
+                Serialize(offset.Time, sb);
             }
             else if (node is NullNode)
                 sb.Append("null");
@@ -81,10 +93,20 @@ namespace Rusty.Serialization.CSV
                 sb.Append("col,");
                 sb.Append(col.Value.ToString());
             }
+            else if (node is UidNode uid)
+            {
+                sb.Append("uid,");
+                sb.Append(uid.Value.ToString());
+            }
             else if (node is TimestampNode time)
             {
                 sb.Append("time,");
                 sb.Append(Pack(time.Value.ToString()));
+            }
+            else if (node is DurationNode duration)
+            {
+                sb.Append("dur,");
+                sb.Append(Pack(duration.Value.ToString()));
             }
             else if (node is BytesNode bytes)
             {
@@ -116,9 +138,8 @@ namespace Rusty.Serialization.CSV
                 sb.Append("dict\n");
                 for (int i = 0; i < dict.Count; i++)
                 {
-                    sb.Append("key\n");
                     Serialize(dict.GetKeyAt(i), sb);
-                    sb.Append("\nval\n");
+                    sb.Append("\n");
                     Serialize(dict.GetValueAt(i), sb);
                     sb.Append("\n");
                 }
@@ -129,9 +150,8 @@ namespace Rusty.Serialization.CSV
                 sb.Append("obj\n");
                 for (int i = 0; i < obj.Count; i++)
                 {
-                    sb.Append("name,");
-                    sb.Append(Pack(obj.GetNameAt(i).ToString()));
-                    sb.Append("\nval\n");
+                    Serialize(obj.GetNameAt(i), sb);
+                    sb.Append("\n");
                     Serialize(obj.GetValueAt(i), sb);
                     sb.Append("\n");
                 }
