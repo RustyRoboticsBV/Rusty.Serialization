@@ -7,7 +7,7 @@ namespace Rusty.Serialization.Core.Codecs
     public class StringBuilderBag
     {
         /* Fields. */
-        private List<StringBuilder> Free { get; set; } = new(1);
+        private List<StringBuilder> Free { get; } = new(1);
         private List<StringBuilder> Rented { get; } = new();
 
         private readonly object @lock = new object();
@@ -59,7 +59,7 @@ namespace Rusty.Serialization.Core.Codecs
         {
             lock (@lock)
             {
-                Free = new List<StringBuilder>();
+                Free.Clear();
             }
         }
     }

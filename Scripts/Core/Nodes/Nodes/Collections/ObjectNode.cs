@@ -53,7 +53,7 @@ namespace Rusty.Serialization.Core.Nodes
         public void Clear()
         {
             Parent = null;
-            Members.Clear();
+            Members = null;
             for (int i = 0; i < Members.Count; i++)
             {
                 Members[i].Value.Clear();

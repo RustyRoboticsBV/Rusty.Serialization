@@ -145,8 +145,8 @@
     torture_o1: <;;e;;>,
     torture_o2: <;;e;;a;;e;;:;;e;;0;;e;;>,
     torture_o3: <;;e;;a;;e;;:;;e;;0;;e;;,;;e;;b;;e;;:;;e;;0;;e;;>,
-    torture_o4: <;;e;;a;;e;;:;;e;;0;;e;;,;;e;;^;;f;;base;;f;;^;;e;;a;;e;;:;;e;;0;;e;;>,
-    torture_meta: `;;f;;address;;f;;`;;e;;(;;f;;type;;f;;);;e;;|Z|;;e;;@@
+    torture_o4: <;;e;;a;;e;;:;;e;;0;;e;;,;;e;;^;;e;;base;;e;;^;;e;;a;;e;;:;;e;;0;;e;;>,
+    torture_meta: `a`;;e;;(;;e;;b;;e;;);;e;;|Z|;;e;;@@
 >
 
 ~/CSCD~

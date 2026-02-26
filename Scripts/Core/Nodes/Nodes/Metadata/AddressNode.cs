@@ -13,8 +13,6 @@ namespace Rusty.Serialization.Core.Nodes
         public INode Value { get; set; }
 
         /* Constructors. */
-        public AddressNode() : this("", null) { }
-
         public AddressNode(string name, INode value)
         {
             Name = name ?? "";

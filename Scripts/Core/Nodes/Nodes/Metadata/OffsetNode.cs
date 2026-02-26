@@ -11,8 +11,6 @@
         public TimestampNode Time { get; set; }
 
         /* Constructors. */
-        public OffsetNode() : this(default, null) { }
-
         public OffsetNode(OffsetValue offset, TimestampNode time)
         {
             Offset = offset;

@@ -2,6 +2,7 @@ using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Nodes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Rusty.Serialization.CSCD
@@ -138,7 +139,7 @@ namespace Rusty.Serialization.CSCD
             if (check is RefNode)
                 throw new FormatException("Root values may not be references.");
             if (check == null)
-                throw new FormatException($"No root value in root node: {root}.");
+                throw new FormatException("No root value.");
 
             // Create tree.
             return new NodeTree(root);
@@ -162,10 +163,8 @@ namespace Rusty.Serialization.CSCD
                 INode value = ParseToken(text, next, lexer, allowFullUnicodeRange);
                 if (value is AddressNode)
                     TokenError(token, "Addresses may not be followed by another address.");
-                if (value == null)
-                    TokenError(token, "Types must be followed by a value.");
 
-                return NodePool.RentAddress(name, value);
+                return new AddressNode(name, value);
             }
 
             // Type.
@@ -179,10 +178,8 @@ namespace Rusty.Serialization.CSCD
                     TokenError(token, "Types may not be followed by an address.");
                 if (value is TypeNode)
                     TokenError(token, "Types may not be followed by a type.");
-                if (value == null)
-                    TokenError(token, "Types must be followed by a value.");
 
-                return NodePool.RentType(name, value);
+                return new TypeNode(name, value);
             }
 
             // Scope.
@@ -206,30 +203,30 @@ namespace Rusty.Serialization.CSCD
 
             // Null.
             if (token.Text.Equals("null"))
-                return NodePool.RentNull();
+                return new NullNode();
 
             // Bool.
             if (token.Text.Equals("true"))
-                return NodePool.RentBool(true);
+                return new BoolNode(true);
             if (token.Text.Equals("false"))
-                return NodePool.RentBool(false);
+                return new BoolNode(false);
 
             // Numerics (int and float).
             NumericType numeric = GetNumericType(token.Text, NumericParseMode.AllowLonePoint);
             if (numeric == NumericType.Int)
-                return NodePool.RentInt(IntValue.Parse(token.Text));
+                return new IntNode(IntValue.Parse(token.Text));
             if (numeric == NumericType.Real)
-                return NodePool.RentFloat(FloatValue.Parse(ProcessReal(token.Text)));
+                return new FloatNode(FloatValue.Parse(ProcessReal(token.Text)));
 
             // NaN.
             if (token.Text.Equals("nan"))
-                return NodePool.RentNan();
+                return new NanNode();
 
             // Infinity.
             if (token.Text.Equals("inf"))
-                return NodePool.RentInfinity(true);
+                return new InfinityNode(true);
             if (token.Text.Equals("-inf"))
-                return NodePool.RentInfinity(false);
+                return new InfinityNode(false);
 
             // Char.
             if (token.Text.EnclosedWith('\''))
@@ -237,7 +234,7 @@ namespace Rusty.Serialization.CSCD
 
             // String.
             if (token.Text.EnclosedWith('"'))
-                return NodePool.RentString(ParseText(token, strEscapes, "\"", "\"", allowFullUnicodeRange));
+                return new StringNode(ParseText(token, strEscapes, "\"", "\"", allowFullUnicodeRange));
 
             // Decimal.
             if (token.Text.StartsWith('$') || token.Text.StartsWith("-$"))
@@ -268,11 +265,11 @@ namespace Rusty.Serialization.CSCD
 
             // Symbol (delimited).
             if (token.Text.EnclosedWith('*'))
-                return NodePool.RentSymbol(ParseText(token, symbolEscapes, "*", "*", allowFullUnicodeRange));
+                return new SymbolNode(ParseText(token, symbolEscapes, "*", "*", allowFullUnicodeRange));
 
             // Ref.
             if (token.Text.EnclosedWith('&'))
-                return NodePool.RentRef(ParseText(token, refEscapes, "&", "&", allowFullUnicodeRange));
+                return new RefNode(ParseText(token, refEscapes, "&", "&", allowFullUnicodeRange));
 
             // List.
             if (token.Text.Equals('['))
@@ -305,7 +302,7 @@ namespace Rusty.Serialization.CSCD
                 TokenError(token, ex.Message);
             }
 
-            return NodePool.RentOffset(value, null);
+            return new OffsetNode(value, null);
         }
 
         /// <summary>
@@ -314,11 +311,11 @@ namespace Rusty.Serialization.CSCD
         private static CharNode ParseChar(Token token, bool allowFullUnicodeRange)
         {
             if (token.Text.Equals("''"))
-                return NodePool.RentChar('\0');
+                return new CharNode('\0');
             string str = ParseText(token, charEscapes, "'", "'", allowFullUnicodeRange);
             if (str.Length > 2 || (str.Length == 2 && !char.IsHighSurrogate(str[0])))
                 TokenError(token, "Char token may not represent multiple characters.");
-            return NodePool.RentChar(str);
+            return new CharNode(str);
         }
 
         /// <summary>
@@ -331,9 +328,9 @@ namespace Rusty.Serialization.CSCD
 
             // Handle $ and -$.
             if (token.Text.Equals('$'))
-                return NodePool.RentDecimal(new DecimalValue(false, 0, 0));
+                return new DecimalNode(new DecimalValue(false, 0, 0));
             else if (token.Text.Equals("-$"))
-                return NodePool.RentDecimal(new DecimalValue(true, 0, 0));
+                return new DecimalNode(new DecimalValue(true, 0, 0));
 
             // Get contents.
             bool negative = token.Text.StartsWith('-');
@@ -353,10 +350,10 @@ namespace Rusty.Serialization.CSCD
                 Span<char> buffer = stackalloc char[contents.Length + 1];
                 buffer[0] = '-';
                 contents.AsSpan().CopyTo(buffer.Slice(1));
-                return NodePool.RentDecimal(DecimalValue.Parse(buffer));
+                return new DecimalNode(DecimalValue.Parse(buffer));
             }
             else
-                return NodePool.RentDecimal(DecimalValue.Parse(contents));
+                return new DecimalNode(DecimalValue.Parse(contents));
         }
 
         /// <summary>
@@ -368,11 +365,11 @@ namespace Rusty.Serialization.CSCD
                 TokenError(token, "Missing # prefix.");
 
             if (token.Text.Equals('#'))
-                return NodePool.RentColor(new ColorValue(0, 0, 0, 0));
+                return new ColorNode(new ColorValue(0, 0, 0, 0));
 
             try
             {
-                return NodePool.RentColor(ColorValue.Parse(token.Text));
+                return new ColorNode(ColorValue.Parse(token.Text));
             }
             catch (Exception ex)
             {
@@ -428,7 +425,7 @@ namespace Rusty.Serialization.CSCD
                 digits[i] = '0';
             }
 
-            return NodePool.RentUid(Guid.Parse(digits));
+            return new UidNode(Guid.Parse(digits));
         }
 
         /// <summary>
@@ -449,7 +446,7 @@ namespace Rusty.Serialization.CSCD
             {
                 // Empty literal.
                 if (contents.Length == 0)
-                    return NodePool.RentTimestamp(new TimestampValue(year, month, day, hour, minute, second));
+                    return new TimestampNode(year, month, day, hour, minute, second);
 
                 // Date and time.
                 int underscore = contents.FirstIndexOf(',');
@@ -485,7 +482,9 @@ namespace Rusty.Serialization.CSCD
                 return null;
             }
 
-            Return: return NodePool.RentTimestamp(new TimestampValue(year, month, day, hour, minute, second));
+            return null;
+
+            Return: return new TimestampNode(year, month, day, hour, minute, second);
         }
 
         /// <summary>
@@ -607,7 +606,7 @@ namespace Rusty.Serialization.CSCD
                     TokenError(token, $"Unknown duration unit '{c}'.");
             }
 
-            return NodePool.RentDuration(new DurationValue(negative, days, hours, minutes, seconds));
+            return new DurationNode(negative, days, hours, minutes, seconds);
         }
 
         /// <summary>
@@ -631,7 +630,7 @@ namespace Rusty.Serialization.CSCD
             }
 
             // Create node.
-            return NodePool.RentBytes(BytesValue.Parse(span));
+            return new BytesNode(BytesValue.Parse(span));
         }
 
         /// <summary>
@@ -759,13 +758,13 @@ namespace Rusty.Serialization.CSCD
 
                 SymbolNode symbol;
                 if (next.Text.StartsWith('*') && next.Text.EndsWith('*'))
-                    symbol = NodePool.RentSymbol(ParseText(next, symbolEscapes, "*", "*", allowFullUnicodeRange));
+                    symbol = new SymbolNode(ParseText(next, symbolEscapes, "*", "*", allowFullUnicodeRange));
                 else
                     symbol = ParseBareSymbol(next);
 
                 ScopeNode scope = null;
                 if (scopeName != null)
-                    scope = NodePool.RentScope(scopeName, symbol);
+                    scope = new ScopeNode(scopeName, symbol);
 
                 IMemberNameNode name = scope != null ? scope : symbol;
 
@@ -813,7 +812,7 @@ namespace Rusty.Serialization.CSCD
                     TokenError(token, "Bare tokens may only consist of ASCII letters, digits or underscores.");
             }
 
-            return NodePool.RentSymbol(new string(token.Text));
+            return new SymbolNode(new string(token.Text));
         }
 
         // Helper methods.
