@@ -469,11 +469,11 @@ namespace Rusty.Serialization.CSCD
         }
 #else
         private static void FormatColorChannel(byte col, char[] span, int offset)
-#endif
         {
             span[0 + offset] = ToHex(col >> 4);
             span[1 + offset] = ToHex(col & 0xF);
         }
+#endif
 
         private static char ToHex(int value)
         {
