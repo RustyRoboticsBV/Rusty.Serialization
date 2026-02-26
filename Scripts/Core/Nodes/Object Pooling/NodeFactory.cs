@@ -91,6 +91,8 @@ namespace Rusty.Serialization.Core.Nodes
         /// </summary>
         public static TypeNode RentType(string name, INode child)
         {
+            if (child == null)
+                throw new Exception();
             TypeNode type = Rent<TypeNode>();
             type.Name = name;
             type.Value = child;

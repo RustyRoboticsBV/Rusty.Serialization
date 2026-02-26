@@ -138,7 +138,7 @@ namespace Rusty.Serialization.CSCD
             if (check is RefNode)
                 throw new FormatException("Root values may not be references.");
             if (check == null)
-                throw new FormatException("No root value.");
+                throw new FormatException($"No root value in root node: {root}.");
 
             // Create tree.
             return new NodeTree(root);
@@ -162,6 +162,8 @@ namespace Rusty.Serialization.CSCD
                 INode value = ParseToken(text, next, lexer, allowFullUnicodeRange);
                 if (value is AddressNode)
                     TokenError(token, "Addresses may not be followed by another address.");
+                if (value == null)
+                    TokenError(token, "Types must be followed by a value.");
 
                 return NodePool.RentAddress(name, value);
             }
@@ -177,6 +179,8 @@ namespace Rusty.Serialization.CSCD
                     TokenError(token, "Types may not be followed by an address.");
                 if (value is TypeNode)
                     TokenError(token, "Types may not be followed by a type.");
+                if (value == null)
+                    TokenError(token, "Types must be followed by a value.");
 
                 return NodePool.RentType(name, value);
             }

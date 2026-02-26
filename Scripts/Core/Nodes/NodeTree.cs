@@ -52,7 +52,6 @@ namespace Rusty.Serialization.Core.Nodes
         {
             if (node == null)
                 return;
-            NodePool.Return(node);
 
             if (node is IMetadataNode meta)
                 Return(meta.Value);
@@ -79,6 +78,8 @@ namespace Rusty.Serialization.Core.Nodes
                     Return(obj.GetValueAt(i));
                 }
             }
+
+            NodePool.Return(node);
         }
     }
 }

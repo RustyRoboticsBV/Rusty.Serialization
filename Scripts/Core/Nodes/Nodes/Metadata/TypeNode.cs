@@ -34,7 +34,7 @@ namespace Rusty.Serialization.Core.Nodes
         {
             Parent = null;
             Name = "";
-            Value.Clear();
+            Value?.Clear();
             Value = null;
         }
 
