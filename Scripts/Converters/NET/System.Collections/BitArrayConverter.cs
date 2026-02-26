@@ -14,7 +14,7 @@ namespace Rusty.Serialization.DotNet
         {
             byte[] bytes = new byte[obj.Length];
             obj.CopyTo(bytes, 0);
-            return new(bytes);
+            return new BytesNode(bytes);
         }
 
         protected override BitArray CreateObject(BytesNode node, CreateObjectContext context)

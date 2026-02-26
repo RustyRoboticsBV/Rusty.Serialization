@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class BoolConverter : Converter<bool, BoolNode>
     {
         /* Protected methods. */
-        protected override BoolNode CreateNode(bool obj, CreateNodeContext context) => new(obj);
+        protected override BoolNode CreateNode(bool obj, CreateNodeContext context) => new BoolNode(obj);
         protected override bool CreateObject(BoolNode node, CreateObjectContext context) => node.Value;
     }
 }

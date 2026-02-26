@@ -1,7 +1,6 @@
-﻿using Rusty.Serialization.Core.Nodes;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -14,7 +13,7 @@ namespace Rusty.Serialization.Core.Conversion
         /* Protected methods. */
         protected override ListNode CreateNode(SetT obj, CreateNodeContext context)
         {
-            return new(obj.Count);
+            return new ListNode(obj.Count);
         }
 
         protected override void AssignNode(ListNode node, SetT obj, AssignNodeContext context)

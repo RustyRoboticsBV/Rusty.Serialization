@@ -9,14 +9,14 @@ namespace Rusty.Serialization.Core.Conversion
     public class Converters
     {
         /* Public properties. */
-        public ConverterRegistry ConverterRegistry { get; private set; } = new();
+        public ConverterRegistry ConverterRegistry { get; private set; } = new ConverterRegistry();
 
-        public SymbolTable SymbolTable { get; private set; } = new();
+        public SymbolTable SymbolTable { get; private set; } = new SymbolTable();
         public CreateNodeContext CreateNodeContext { get; private set; }
         public AssignNodeContext AssignNodeContext { get; private set; }
 
-        public NodeTypeTable NodeTypeTable { get; private set; } = new();
-        public ParsingTable ParsingTable { get; private set; } = new();
+        public NodeTypeTable NodeTypeTable { get; private set; } = new NodeTypeTable();
+        public ParsingTable ParsingTable { get; private set; } = new ParsingTable();
         public CollectTypesContext CollectTypesContext { get; private set; }
         public CreateObjectContext CreateObjectContext { get; private set; }
         public AssignObjectContext AssignObjectContext { get; private set; }
@@ -25,11 +25,11 @@ namespace Rusty.Serialization.Core.Conversion
         public Converters()
         {
             // Create sub-contexts.
-            CreateNodeContext = new(this);
-            AssignNodeContext = new(this);
-            CollectTypesContext = new(this);
-            CreateObjectContext = new(this);
-            AssignObjectContext = new(this);
+            CreateNodeContext = new CreateNodeContext(this);
+            AssignNodeContext = new AssignNodeContext(this);
+            CollectTypesContext = new CollectTypesContext(this);
+            CreateObjectContext = new CreateObjectContext(this);
+            AssignObjectContext = new AssignObjectContext(this);
 
             // Register C# keyword type converters.
             ConverterRegistry.Add<bool, BoolConverter>();
@@ -82,7 +82,7 @@ namespace Rusty.Serialization.Core.Conversion
             }
 
             // Create node tree.
-            return new(root);
+            return new NodeTree(root);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Rusty.Serialization.Core.Conversion
             }
 
             // Create node tree.
-            return new(root);
+            return new NodeTree(root);
         }
 
         /// <summary>

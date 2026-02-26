@@ -7,8 +7,8 @@ namespace Rusty.Serialization.Core.Codecs
     public class StringBuilderBag
     {
         /* Fields. */
-        private List<StringBuilder> Free { get; } = new(1);
-        private List<StringBuilder> Rented { get; } = new();
+        private List<StringBuilder> Free { get; } = new List<StringBuilder>(1);
+        private List<StringBuilder> Rented { get; } = new List<StringBuilder>();
 
         private readonly object @lock = new object();
 

@@ -9,7 +9,7 @@ namespace Rusty.Serialization.Core.Conversion
     public class ConverterInstanceRegistry
     {
         /* Private properties. */
-        private Dictionary<Type, IConverter> targetToConverter = new();
+        private Dictionary<Type, IConverter> targetToConverter = new Dictionary<Type, IConverter>();
 
         /* Public methods. */
         /// <summary>

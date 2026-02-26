@@ -10,8 +10,8 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class ParsingTable
     {
         /* Private properties. */
-        private Dictionary<string, AddressNode> Addresses { get; } = new();
-        private Dictionary<string, object> Objects { get; } = new();
+        private Dictionary<string, AddressNode> Addresses { get; } = new Dictionary<string, AddressNode>();
+        private Dictionary<string, object> Objects { get; } = new Dictionary<string, object>();
 
         /* Public methods. */
         /// <summary>

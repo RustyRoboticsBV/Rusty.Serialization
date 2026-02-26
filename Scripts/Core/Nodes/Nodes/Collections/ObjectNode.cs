@@ -103,7 +103,7 @@ namespace Rusty.Serialization.Core.Nodes
                 if (oldChild.Parent == this)
                     oldChild.Parent = null;
                 newChild.Parent = this;
-                Members[index] = new(Members[index].Key, newChild);
+                Members[index] = new Member(Members[index].Key, newChild);
                 return;
             }
             throw new ArgumentException($"'{oldChild}' was not a child of '{this}'.");

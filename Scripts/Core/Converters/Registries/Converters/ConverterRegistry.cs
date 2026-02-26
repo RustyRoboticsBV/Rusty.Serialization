@@ -8,8 +8,8 @@ namespace Rusty.Serialization.Core.Conversion
     public class ConverterRegistry
     {
         /* Private properties. */
-        private ConverterTypeRegistry Types { get; } = new();
-        private ConverterInstanceRegistry Instances { get; } = new();
+        private ConverterTypeRegistry Types { get; } = new ConverterTypeRegistry();
+        private ConverterInstanceRegistry Instances { get; } = new ConverterInstanceRegistry();
 
         /* Public methods. */
         /// <summary>

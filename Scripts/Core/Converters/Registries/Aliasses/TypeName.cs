@@ -35,7 +35,7 @@ namespace Rusty.Serialization.Core.Conversion
             genericArgs = new TypeName[result.GenericArgs.Count];
             for (int i = 0; i < genericArgs.Length; i++)
             {
-                genericArgs[i] = new(result.GenericArgs[i]);
+                genericArgs[i] = new TypeName(result.GenericArgs[i]);
             }
             arraySuffix = result.ArraySuffix;
         }
@@ -47,7 +47,7 @@ namespace Rusty.Serialization.Core.Conversion
         /* Public methods. */
         public override readonly string ToString()
         {
-            StringBuilder sb = new();
+            StringBuilder sb = new StringBuilder();
 
             // Add namespace.
             if (nameSpace.Length > 0)
@@ -145,7 +145,7 @@ namespace Rusty.Serialization.Core.Conversion
             genericArgs = new TypeName[genericArgTypes.Length];
             for (int i = 0; i < genericArgTypes.Length; i++)
             {
-                genericArgs[i] = new(genericArgTypes[i]);
+                genericArgs[i] = new TypeName(genericArgTypes[i]);
             }
 
             // Main name.
@@ -178,7 +178,7 @@ namespace Rusty.Serialization.Core.Conversion
 
                 public override string ToString()
                 {
-                    StringBuilder genericArgs = new();
+                    StringBuilder genericArgs = new StringBuilder();
                     for (int i = 0; i < GenericArgs.Count; i++)
                     {
                         if (i > 0)

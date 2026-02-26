@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class ByteArrayConverter : Converter<byte[], BytesNode>
     {
         /* Protected methods. */
-        protected override BytesNode CreateNode(byte[] obj, CreateNodeContext context) => new(obj);
+        protected override BytesNode CreateNode(byte[] obj, CreateNodeContext context) => new BytesNode(obj);
         protected override byte[] CreateObject(BytesNode node, CreateObjectContext context) => node.Value;
     }
 }

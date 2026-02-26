@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Codecs
     public abstract class Serializer
     {
         /* Protected properties. */
-        protected static StringBuilderBag StringBuilders { get; } = new();
+        protected static StringBuilderBag StringBuilders { get; } = new StringBuilderBag();
 
         /* Public methods. */
         public abstract string Serialize(NodeTree node, Settings settings);

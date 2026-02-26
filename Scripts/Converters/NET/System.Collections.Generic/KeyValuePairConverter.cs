@@ -21,7 +21,7 @@ namespace Rusty.Serialization.DotNet
             INode key = context.CreateNode(obj.Key);
             INode value = context.CreateNode(obj.Value);
 
-            DictNode node = new(1);
+            DictNode node = new DictNode(1);
             node.Pairs[0] = new KeyValuePair<INode, INode>(key, value);
             return node;
         }

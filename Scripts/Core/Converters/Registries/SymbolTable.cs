@@ -10,8 +10,8 @@ namespace Rusty.Serialization.Core.Conversion
     public sealed class SymbolTable
     {
         /* Private properties. */
-        private Dictionary<object, INode> Nodes { get; } = new();
-        private Dictionary<object, ulong> Addresses { get; } = new();
+        private Dictionary<object, INode> Nodes { get; } = new Dictionary<object, INode>();
+        private Dictionary<object, ulong> Addresses { get; } = new Dictionary<object, ulong>();
 
         private ulong NextAddress { get; set; }
 

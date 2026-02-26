@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Core.Conversion
         /* Protected methods. */
         protected override ListNode CreateNode(ListT obj, CreateNodeContext context)
         {
-            return new(obj.Count);
+            return new ListNode(obj.Count);
         }
 
         protected override void AssignNode(ListNode node, ListT obj, AssignNodeContext context)

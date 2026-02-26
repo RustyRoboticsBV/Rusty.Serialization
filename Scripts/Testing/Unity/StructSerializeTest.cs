@@ -49,7 +49,7 @@ namespace Rusty.Serialization.Testing
 
             public decimal dec = 1.00m;
         }
-        public Scalars scalars = new();
+        public Scalars scalars = new Scalars();
 
         [Serializable]
         public class Vectors
@@ -66,23 +66,23 @@ namespace Rusty.Serialization.Testing
             public BoundsInt boundsInt;
             public Matrix4x4 matrix;
         }
-        public Vectors vectors = new();
+        public Vectors vectors = new Vectors();
 
         [Serializable]
         public class Colors
         {
-            public Color color = new(0, 0, 0, 1);
-            public Color32 color32 = new(0, 0, 0, 255);
+            public Color color = new Color(0, 0, 0, 1);
+            public Color32 color32 = new Color32(0, 0, 0, 255);
         }
-        public Colors color = new();
+        public Colors color = new Colors();
 
         public DateTime time = new DateTime(1994, 2, 13, 10, 5, 3, 77) + TimeSpan.FromTicks(1);
         public TimeSpan duration = new TimeSpan(200, 23, 59, 30);
         public DateTimeOffset timezone = new DateTimeOffset(new DateTime(2000, 10, 15, 13, 30, 10), new TimeSpan(3, 30, 0));
         public Guid uid = Guid.Parse("00001234-5678-9abc-def0-000000000000");
 
-        public List<object> list = new() { false, 1, 2.3f, 'c', "DEF", 0.45m, new Color(0.33f, 0.5f, 0.8f, 0.5f) };
-        public Dictionary<string, object> dict = new()
+        public List<object> list = new List<object>() { false, 1, 2.3f, 'c', "DEF", 0.45m, new Color(0.33f, 0.5f, 0.8f, 0.5f) };
+        public Dictionary<string, object> dict = new Dictionary<string, object>()
         {
             { "a", true },
             { "b", 10 },

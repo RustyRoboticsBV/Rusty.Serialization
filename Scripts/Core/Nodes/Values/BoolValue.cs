@@ -30,6 +30,13 @@ namespace Rusty.Serialization.Core.Nodes
         public override bool Equals(object obj) => obj is BoolValue other && Equals(other);
         public bool Equals(BoolValue other) => value.Equals(other.value);
 
+
+#if NET_STANDARD_2_1
+        /// <summary>
+        /// Parse a boolean string.
+        /// </summary>
+        public static BoolValue Parse(string text) => Parse(text.AsSpan());
+
         /// <summary>
         /// Parse a boolean string.
         /// </summary>
@@ -41,5 +48,18 @@ namespace Rusty.Serialization.Core.Nodes
                 return false;
             throw new FormatException($"Cannot parse '{new string(text)}' as a boolean.");
         }
+#else
+        /// <summary>
+        /// Parse a boolean string.
+        /// </summary>
+        public static BoolValue Parse(string text)
+        {
+            if (text == "true")
+                return true;
+            if (text == "false")
+                return false;
+            throw new FormatException($"Cannot parse '{text}' as a boolean.");
+        }
+#endif
     }
 }

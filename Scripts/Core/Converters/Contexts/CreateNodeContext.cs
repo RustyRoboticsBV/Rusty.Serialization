@@ -42,7 +42,7 @@ namespace Rusty.Serialization.Core.Conversion
                     string address = SymbolTable.CreateAddressFor(obj).ToString();
                     targetNode = SymbolTable.GetNode(obj);
                     ITreeElement targetParent = targetNode.Parent;
-                    AddressNode addressNode = new(address, targetNode);
+                    AddressNode addressNode = new AddressNode(address, targetNode);
                     if (targetParent is IContainerNode container)
                         container.ReplaceChild(targetNode, addressNode);
                 }

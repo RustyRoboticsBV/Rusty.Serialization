@@ -155,11 +155,19 @@ namespace Rusty.Serialization.CSCD
                 return "#";
 
             // Format color channels.
+#if NET_STANDARD_2_1
             Span<char> span = stackalloc char[8];
             FormatColorChannel(node.Value.r, span.Slice(0, 2));
             FormatColorChannel(node.Value.g, span.Slice(2, 2));
             FormatColorChannel(node.Value.b, span.Slice(4, 2));
             FormatColorChannel(node.Value.a, span.Slice(6, 2));
+#else
+            char[] span = new char[8];
+            FormatColorChannel(node.Value.r, span, 0);
+            FormatColorChannel(node.Value.g, span, 2);
+            FormatColorChannel(node.Value.b, span, 4);
+            FormatColorChannel(node.Value.a, span, 6);
+#endif
 
             // Figure out format & length.
             bool shortForm = span[0] == span[1]
@@ -453,10 +461,18 @@ namespace Rusty.Serialization.CSCD
             }
         }
 
+#if NET_STANDARD_2_1
         private static void FormatColorChannel(byte col, Span<char> span)
         {
             span[0] = ToHex(col >> 4);
             span[1] = ToHex(col & 0xF);
+        }
+#else
+        private static void FormatColorChannel(byte col, char[] span, int offset)
+#endif
+        {
+            span[0 + offset] = ToHex(col >> 4);
+            span[1 + offset] = ToHex(col & 0xF);
         }
 
         private static char ToHex(int value)

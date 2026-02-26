@@ -10,9 +10,9 @@ namespace Rusty.Serialization.Core.Conversion
     public class NodeTypeTable
     {
         /* Private properties. */
-        private Dictionary<INode, Type> NodeTypes { get; } = new();
-        private Dictionary<string, AddressNode> Addresses { get; } = new();
-        private List<RefNode> Refs { get; } = new();
+        private Dictionary<INode, Type> NodeTypes { get; } = new Dictionary<INode, Type>();
+        private Dictionary<string, AddressNode> Addresses { get; } = new Dictionary<string, AddressNode>();
+        private List<RefNode> Refs { get; } = new List<RefNode>();
 
         /* Indexers. */
         /// <summary>

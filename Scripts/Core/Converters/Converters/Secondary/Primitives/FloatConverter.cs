@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Core.Conversion
         protected override float E => (float)Math.E;
 
         /* Protected methods. */
-        protected override FloatNode CreateNode(float obj, CreateNodeContext context) => new(obj);
+        protected override FloatNode CreateNode(float obj, CreateNodeContext context) => new FloatNode(obj);
         protected override float CreateObject(FloatNode node, CreateObjectContext context) => (float)node.Value;
 
         protected override bool IsNaN(ref float value) => float.IsNaN(value);

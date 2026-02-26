@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Core.Conversion
         /* Protected methods. */
         protected override DictNode CreateNode(DictT obj, CreateNodeContext context)
         {
-            return new(obj.Count);
+            return new DictNode(obj.Count);
         }
 
         protected override void AssignNode(DictNode node, DictT obj, AssignNodeContext context)
@@ -25,7 +25,7 @@ namespace Rusty.Serialization.Core.Conversion
             {
                 INode key = context.CreateNode(keyType, pair.Key);
                 INode value = context.CreateNode(valueType, pair.Value);
-                node.Pairs[index] = new(key, value);
+                node.Pairs[index] = new KeyValuePair<INode, INode>(key, value);
                 index++;
             }
         }

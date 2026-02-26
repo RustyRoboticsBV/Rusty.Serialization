@@ -128,7 +128,7 @@ namespace Rusty.Serialization.Core.Nodes
                 if (oldChild.Parent == this)
                     oldChild.Parent = null;
                 newChild.Parent = this;
-                Pairs[index] = new(newChild, Pairs[index].Value);
+                Pairs[index] = new Pair(newChild, Pairs[index].Value);
                 return;
             }
 
@@ -138,7 +138,7 @@ namespace Rusty.Serialization.Core.Nodes
                 if (oldChild.Parent == this)
                     oldChild.Parent = null;
                 newChild.Parent = this;
-                Pairs[index] = new(Pairs[index].Key, newChild);
+                Pairs[index] = new Pair(Pairs[index].Key, newChild);
                 return;
             }
 

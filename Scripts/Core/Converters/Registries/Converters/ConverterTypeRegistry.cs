@@ -11,7 +11,7 @@ namespace Rusty.Serialization.Core.Conversion
     public class ConverterTypeRegistry
     {
         /* Private properties. */
-        private Dictionary<Type, Type> targetToConverter = new();
+        private Dictionary<Type, Type> targetToConverter = new Dictionary<Type, Type>();
 
         /* Public methods. */
         /// <summary>
