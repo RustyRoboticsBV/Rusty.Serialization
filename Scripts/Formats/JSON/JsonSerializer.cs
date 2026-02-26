@@ -22,10 +22,10 @@ namespace Rusty.Serialization.JSON
             StringBuilder sb = new StringBuilder();
             bool prettyPrint = settings.PrettyPrint;
 
-            string idStr = null;
+            string addressStr = null;
             if (node is AddressNode id)
             {
-                idStr = id.Name;
+                addressStr = id.Name;
                 node = id.Value;
             }
 
@@ -50,6 +50,9 @@ namespace Rusty.Serialization.JSON
                 node = scope.Value;
             }
 
+
+            bool mustWrap = addressStr != null || typeStr != null || offsetStr != null || scopeStr != null;
+
             switch (node)
             {
                 case NullNode:
@@ -68,27 +71,27 @@ namespace Rusty.Serialization.JSON
                     sb.Append(@float.Value.ToString());
                     break;
 
-                case InfinityNode inf:
-                    if (inf.Positive)
-                        AddName(sb, "inf");
+                case InfinityNode infinity:
+                    if (infinity.Positive)
+                        AddName(sb, "Infinity");
                     else
-                        AddName(sb, "-inf");
+                        AddName(sb, "-Infinity");
                     break;
 
-                case NanNode nan:
-                    AddName(sb, "nan");
+                case NanNode:
+                    AddName(sb, "NaN");
                     break;
 
                 case CharNode @char:
                     AddName(sb, @char.Value.ToString());
                     break;
 
-                case StringNode str:
-                    AddName(sb, str.Value);
+                case StringNode @string:
+                    AddName(sb, @string.Value);
                     break;
 
-                case DecimalNode dec:
-                    AddName(sb, dec.Value.ToString());
+                case DecimalNode @decimal:
+                    AddName(sb, @decimal.Value.ToString());
                     break;
 
                 case ColorNode color:
@@ -99,8 +102,8 @@ namespace Rusty.Serialization.JSON
                     AddName(sb, uid.Value.ToString());
                     break;
 
-                case TimestampNode time:
-                    AddName(sb, time.Value.ToString());
+                case TimestampNode timestamp:
+                    AddName(sb, timestamp.Value.ToString());
                     break;
 
                 case DurationNode duration:
@@ -165,23 +168,66 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case ObjectNode obj:
-                    StringBuilder members = new StringBuilder();
+                    StringBuilder members = new StringBuilder(); // TODO: rent pooled sb instead.
                     for (int i = 0; i < obj.Count; i++)
                     {
-                        AddName(members, obj.Members[i].Key.ToString()); // TODO: fix.
-                        AddColon(members, prettyPrint);
-                        members.Append(Serialize(obj.Members[i].Value, settings));
+                        StringBuilder member = new StringBuilder(); // TODO: rent pooled sb instead.
+                        member.Append(Serialize(obj.Members[i].Key, settings));
+                        AddColon(member, prettyPrint);
+                        member.Append(Serialize(obj.Members[i].Value, settings));
+                        Wrap(member, "[", "]", prettyPrint);
 
+                        members.Append(member.ToString());
                         if (i < obj.Count - 1)
                             AddComma(members, prettyPrint);
                     }
-                    Wrap(members, "{", "}", prettyPrint);
+                    Wrap(members, "[", "]", prettyPrint);
                     sb.Append(members.ToString());
 
                     break;
 
                 default:
                     throw new ArgumentException($"Invalid node type '{node.GetType()}'.");
+            }
+
+            // Wrap if necessary.
+            if (mustWrap)
+            {
+                StringBuilder sb2 = new StringBuilder(); // TODO: rent pooled sb instead.
+
+                // Address.
+                if (addressStr != null)
+                {
+                    AddName(sb2, "$id");
+                    AddColon(sb2, prettyPrint);
+                    AddName(sb2, addressStr);
+                    AddComma(sb2, prettyPrint);
+                }
+
+                // Type.
+                if (typeStr != null)
+                {
+                    AddName(sb2, "$type");
+                    AddColon(sb2, prettyPrint);
+                    AddName(sb2, typeStr);
+                    AddComma(sb2, prettyPrint);
+                }
+
+                // Scope.
+                if (scopeStr != null)
+                {
+                    AddName(sb2, "$scope");
+                    AddColon(sb2, prettyPrint);
+                    AddName(sb2, scopeStr);
+                    AddComma(sb2, prettyPrint);
+                }
+
+                // Value.
+                AddName(sb2, "$value");
+                AddColon(sb2, prettyPrint);
+                sb2.Append(sb.ToString());
+                Wrap(sb2, "{", "}", prettyPrint);
+                return sb2.ToString();
             }
 
             return sb.ToString();
