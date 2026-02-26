@@ -62,6 +62,12 @@ namespace Rusty.Serialization.Core.Codecs
         public bool StartsWith(int index, ReadOnlySpan<char> substr) => StartsWith(span.Slice(index), substr);
 
         /// <summary>
+        /// Check if the text starts with a digit.
+        /// </summary>
+        /// <returns></returns>
+        public bool StartsWithDigit() => Length > 0 && span[0] >= '0' && span[0] <= '9';
+
+        /// <summary>
         /// Check if the text ends with some character.
         /// </summary>
         public bool EndsWith(char chr) => Length > 0 && span[Length - 1] == chr;

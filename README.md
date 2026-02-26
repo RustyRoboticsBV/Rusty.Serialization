@@ -133,6 +133,5 @@ A simple [syntax highlighting plugin](./VSCode) for Visual Studio Code is also p
 ```
 
 ## Future Work
-- The current JSON implementation relies on heavy usage of `{ "$tag": ... }` containers to tell various node types apart from each other, resulting in very verbose JSON that is difficult to read. This should be addressed in a future release.
 - Significant performance improvements are still possible.
 - Writing more comprehensive unit tests.
