@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Conversion
     /// A composite type converter.
     /// </summary>
     public abstract class CompositeConverter<TargetT, NodeT> : Converter<TargetT, NodeT>, ICompositeConverter
-        where NodeT : INode
+        where NodeT : class, INode
     {
         /* Public methods. */
         void ICompositeConverter.AssignNode(INode node, object obj, AssignNodeContext context) => AssignNode((NodeT)node, (TargetT)obj, context);

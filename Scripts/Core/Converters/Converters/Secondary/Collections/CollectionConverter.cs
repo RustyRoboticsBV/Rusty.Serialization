@@ -9,7 +9,7 @@ namespace Rusty.Serialization.Core.Conversion
     /// </summary>
     public abstract class CollectionConverter<CollectionT, ElementT, NodeT> : EnumerableConverter<CollectionT, ElementT, NodeT>
         where CollectionT : ICollection<ElementT>
-        where NodeT : ICollectionNode
+        where NodeT : class, ICollectionNode
     {
         /* Protected methods. */
         protected override CollectionT AssignObject(CollectionT obj, NodeT node, AssignObjectContext context)

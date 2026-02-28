@@ -9,7 +9,7 @@ namespace Rusty.Serialization.Core.Conversion
     /// </summary>
     public abstract class EnumerableConverter<EnumerableT, ElementT, NodeT> : CompositeConverter<EnumerableT, NodeT>
         where EnumerableT : IEnumerable<ElementT>
-        where NodeT : ICollectionNode
+        where NodeT : class, ICollectionNode
     {
         /* Protected methods. */
         protected override NodeT CreateNode(EnumerableT obj, CreateNodeContext context)

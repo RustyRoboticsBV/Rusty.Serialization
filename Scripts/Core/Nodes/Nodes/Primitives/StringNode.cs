@@ -15,5 +15,11 @@ namespace Rusty.Serialization.Core.Nodes
         {
             return "string: " + (Value ?? "(null)");
         }
+
+        /* Casting operators. */
+        public static implicit operator TimestampNode(StringNode node)
+        {
+            return new TimestampNode(TimestampValue.Parse(node.Value));
+        }
     }
 }
