@@ -120,18 +120,63 @@ namespace Rusty.Serialization.JSON
             }
             if (node is JsonObject obj)
             {
-                ObjectNode result = new ObjectNode();
-                string address = null;
-                string type = null;
-                string scope = null;
-                string value = null;
+                // If a container, parse as such.
                 for (int i = 0; i < obj.Count; i++)
                 {
-
+                    string key = obj.keys[i];
+                    if (key.StartsWith('$') && (key == "$id" || key == "$type" || key == "$scope" || key == "$value"))
+                    {
+                        ParseContainer(obj, out INode value, out string scope);
+                        return value;
+                    }
                 }
-                return result;
+
+                // Else, parse as an object.
+                throw new NotImplementedException(); // TODO
             }
             throw new FormatException("Unknown JSON node.");
+        }
+
+        private static void ParseContainer(JsonObject json, out INode node, out string scope)
+        {
+            node = null;
+            string address = null;
+            string type = null;
+            scope = null;
+            for (int i = 0; i < json.Count; i++)
+            {
+                string key = json.keys[i];
+                if (key == "$id")
+                {
+                    if (json.values[i] is JsonString str)
+                        address = str.value;
+                    else
+                        throw new FormatException("$id keys must be followed by a string value.");
+                }
+                if (key == "$type")
+                {
+                    if (json.values[i] is JsonString str)
+                        type = str.value;
+                    else
+                        throw new FormatException("$type keys must be followed by a string value.");
+                }
+                if (key == "$scope")
+                {
+                    if (json.values[i] is JsonString str)
+                        scope = str.value;
+                    else
+                        throw new FormatException("$scope keys must be followed by a string value.");
+                }
+                if (key == "$value")
+                    node = ParseAsNode(json.values[i]);
+            }
+
+            if (node == null)
+                throw new FormatException("Missing $value key.");
+            if (type != null)
+                node = new TypeNode(type, node);
+            if (address != null)
+                node = new AddressNode(address, node);
         }
     }
 }

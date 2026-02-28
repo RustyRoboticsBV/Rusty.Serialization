@@ -108,16 +108,5 @@ namespace Rusty.Serialization.Core.Nodes
             }
             throw new ArgumentException($"'{oldChild}' was not a child of '{this}'.");
         }
-
-        /* Casting operators. */
-        public static implicit operator TimestampNode(ObjectNode node)
-        {
-            for (int i = 0; i < node.Count; i++)
-            {
-                if (node.GetNameAt(i) is SymbolNode symbol && symbol.Name == "$value")
-                    return node.GetValueAt(i) as TimestampNode;
-            }
-            throw new InvalidCastException($"Cannot cast to timestamp node:\n'{node}'");
-        }
     }
 }
