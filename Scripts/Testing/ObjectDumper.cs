@@ -42,8 +42,8 @@ namespace Rusty.Serialization.Testing
             if (obj is string)
                 return $"{indentStr}{name}: ({type.Name}) {obj} [Address #{address}]";
 
-            // Date/time.
-            if (obj is DateTime dt)
+            // Other structs.
+            if (obj is DateTime || obj is TimeSpan)
                 return $"{indentStr}{name}: ({type.Name}) {obj} [Address #{address}]";
 
             // Key-value pairs.
