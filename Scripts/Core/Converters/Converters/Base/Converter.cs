@@ -10,6 +10,9 @@ namespace Rusty.Serialization.Core.Conversion
     public abstract class Converter<TargetT, NodeT> : IConverter
         where NodeT : class, INode
     {
+        /* Public properties. */
+        public Type[] AllowedNodeTypes { get; protected set; } = new Type[1] { typeof(NodeT) };
+
         /* Public methods. */
         public void CollectTypes(INode node, CollectTypesContext context)
         {
@@ -26,13 +29,6 @@ namespace Rusty.Serialization.Core.Conversion
         }
 
         /* Protected methods. */
-        protected virtual bool CanHandleNode(INode node) => typeof(NodeT).IsAssignableFrom(node.GetType());
-
-        protected void NodeError(INode node)
-        {
-            throw new InvalidCastException($"The converter {GetType().FullName} cannot handle {node.GetType().Name} nodes\n{node}.");
-        }
-
         /// <summary>
         /// Collect the type of a node, as well as the types of members.
         /// </summary>
@@ -47,24 +43,34 @@ namespace Rusty.Serialization.Core.Conversion
         protected abstract TargetT CreateObject(NodeT node, CreateObjectContext context);
 
         /* Private methods. */
-        private NodeT ConvertNode(INode value)
+        private NodeT ConvertNode(INode node)
         {
-            if (value == null)
+            if (node == null)
                 return null;
 
-            Type from = value.GetType();
-            Type to = typeof(NodeT);
+            Type from = node.GetType();
 
-            // If no conversions needed, return the original node.
-            if (to.IsAssignableFrom(from))
-                return (NodeT)value;
+            for (int i = 0; i < AllowedNodeTypes.Length; i++)
+            {
+                Type to = AllowedNodeTypes[i];
 
-            // Else, check if there is a conversion.
-            if (HasUserDefinedCast(from, to, out MethodInfo method))
-                return (NodeT)method.Invoke(null, new object[] { value });
+                // If no conversions needed, return the original node.
+                if (to.IsAssignableFrom(from))
+                    return (NodeT)node;
+
+                // Else, check if there is a conversion.
+                if (HasUserDefinedCast(from, to, out MethodInfo method))
+                {
+                    try
+                    {
+                        return (NodeT)method.Invoke(null, new object[] { node });
+                    }
+                    catch { }
+                }
+            }
 
             // No conversion available.
-            throw new InvalidCastException($"The converter '{GetType().Name}' cannot handle {value.GetType().Name} nodes.\n{value}.");
+            throw new InvalidCastException($"The converter '{GetType().Name}' cannot handle node:\n{node}.");
         }
 
         private static bool HasUserDefinedCast(Type from, Type to, out MethodInfo method)

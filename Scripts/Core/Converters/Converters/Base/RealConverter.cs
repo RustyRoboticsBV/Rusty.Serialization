@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Conversion
     /// <summary>
     /// A real converter.
     /// </summary>
-    public abstract class RealConverter<T> : Converter<T, FloatNode>, IConverter
+    public abstract class RealConverter<T> : Converter<T, INode>
     {
         /* Protected properties. */
         protected abstract T NaN { get; }
@@ -15,10 +15,20 @@ namespace Rusty.Serialization.Core.Conversion
         protected abstract T Pi { get; }
         protected abstract T E { get; }
 
-        /* Public methods. */
-        void IConverter.CollectTypes(INode node, CollectTypesContext context) { }
+        /* Constructors. */
+        public RealConverter()
+        {
+            AllowedNodeTypes = new Type[]
+            {
+                typeof(FloatNode),
+                typeof(InfinityNode),
+                typeof(NanNode),
+                typeof(SymbolNode)
+            };
+        }
 
-        INode IConverter.CreateNode(object obj, CreateNodeContext context)
+        /* Public methods. */
+        protected override INode CreateNode(T obj, CreateNodeContext context)
         {
             T target = (T)obj;
             if (IsNaN(ref target))
@@ -32,15 +42,13 @@ namespace Rusty.Serialization.Core.Conversion
             else if (IsE(ref target))
                 return new SymbolNode("e");
             else
-                return CreateNode(target, context);
+                return CreateNode(target);
         }
 
-        object IConverter.CreateObject(INode node, CreateObjectContext context)
+        protected override T CreateObject(INode node, CreateObjectContext context)
         {
-            if (!CanHandleNode(node))
-                NodeError(node);
             if (node is FloatNode @float)
-                return CreateObject(@float, context);
+                return CreateObject(@float);
             if (node is NanNode)
                 return NaN;
             if (node is InfinityNode infinity)
@@ -57,18 +65,15 @@ namespace Rusty.Serialization.Core.Conversion
                 else if (symbol.Name == "e")
                     return E;
                 else
-                    throw new ArgumentException("Unknown symbol " + symbol.Name);
+                    throw new ArgumentException($"Unknown symbol '{symbol.Name}'");
             }
-            throw new ArgumentException("Invalid node type.");
+            throw new ArgumentException($"Invalid node type:\n'{node}");
         }
+
+        protected abstract FloatNode CreateNode(T obj);
+        protected abstract T CreateObject(FloatNode node);
 
         /* Protected methods. */
-        protected override bool CanHandleNode(INode node)
-        {
-            return base.CanHandleNode(node) || node is FloatNode || node is InfinityNode || node is NanNode
-                || node is SymbolNode;
-        }
-
         protected abstract bool IsNaN(ref T value);
         protected abstract bool IsPositiveInfinity(ref T value);
         protected abstract bool IsNegativeInfinity(ref T value);

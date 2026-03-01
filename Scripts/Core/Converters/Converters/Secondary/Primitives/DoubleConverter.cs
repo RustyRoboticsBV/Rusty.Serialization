@@ -16,8 +16,8 @@ namespace Rusty.Serialization.Core.Conversion
         protected override double E => Math.E;
 
         /* Protected methods. */
-        protected override FloatNode CreateNode(double obj, CreateNodeContext context) => new FloatNode(obj);
-        protected override double CreateObject(FloatNode node, CreateObjectContext context) => (double)node.Value;
+        protected override FloatNode CreateNode(double obj) => new FloatNode(obj);
+        protected override double CreateObject(FloatNode node) => (double)node.Value;
 
         protected override bool IsNaN(ref double value) => double.IsNaN(value);
         protected override bool IsPositiveInfinity(ref double value) => double.IsPositiveInfinity(value);

@@ -44,9 +44,9 @@ namespace Rusty.Serialization.Core.Nodes
         public static implicit operator InfinityNode(StringNode node)
         {
             string str = node.Value.ToLower();
-            if (str == "Infinity")
+            if (str == "infinity")
                 return new InfinityNode(true);
-            if (str == "-Infinity")
+            if (str == "-infinity")
                 return new InfinityNode(false);
             throw new InvalidCastException(node.ToString());
         }
@@ -61,6 +61,11 @@ namespace Rusty.Serialization.Core.Nodes
         public static implicit operator CharNode(StringNode node)
         {
             return new CharNode(new UnicodePair(node.Value));
+        }
+
+        public static implicit operator DecimalNode(StringNode node)
+        {
+            return new DecimalNode(DecimalValue.Parse(node.Value));
         }
 
         public static implicit operator ColorNode(StringNode node)

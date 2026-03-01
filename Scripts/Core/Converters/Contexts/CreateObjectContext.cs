@@ -39,7 +39,7 @@ namespace Rusty.Serialization.Core.Conversion
                 return null;
 
             // Handle ref node.
-            if (node is RefNode refNode)
+            else if (node is RefNode refNode)
             {
                 AddressNode refAddressNode = NodeTypeTable.GetAddress(refNode);
                 obj = CreateObject(NodeTypeTable.GetType(refAddressNode), refAddressNode);
