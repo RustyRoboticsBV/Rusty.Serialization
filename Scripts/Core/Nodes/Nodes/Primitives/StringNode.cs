@@ -70,7 +70,7 @@ namespace Rusty.Serialization.Core.Nodes
 
         public static implicit operator UidNode(StringNode node)
         {
-            return new UidNode(System.Guid.Parse(node.Value)); // Replace with UidValue.Parse.
+            return new UidNode(UidValue.Parse(node.Value));
         }
 
         public static implicit operator TimestampNode(StringNode node)

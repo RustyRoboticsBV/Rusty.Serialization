@@ -1,16 +1,14 @@
-﻿using System;
-
-namespace Rusty.Serialization.Core.Nodes
+﻿namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A uid serializer node.
     /// </summary>
-    public class UidNode : ValueNode<Guid>
+    public class UidNode : ValueNode<UidValue>
     {
         /* Constructors. */
-        public UidNode() : this(Guid.Empty) { }
+        public UidNode() : this(UidValue.Empty) { }
 
-        public UidNode(Guid value) : base(value) { }
+        public UidNode(UidValue value) : base(value) { }
 
         /* Public methods. */
         public override string ToString()

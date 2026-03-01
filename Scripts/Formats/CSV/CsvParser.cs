@@ -81,7 +81,7 @@ namespace Rusty.Serialization.CSV
                     return new ColorNode(ColorValue.Parse(ReadCell(ref lexer)));
 
                 case "uid":
-                    return new UidNode(Guid.Parse(ReadCell(ref lexer)));
+                    return new UidNode(UidValue.Parse(ReadCell(ref lexer)));
 
                 case "time":
                     return new TimestampNode(TimestampValue.Parse(ReadCell(ref lexer)));

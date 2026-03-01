@@ -218,7 +218,7 @@ namespace Rusty.Serialization.XML
                     break;
 
                 case SymbolNode symbol:
-                    writer.WriteStartElement("memberSymbol");
+                    writer.WriteStartElement("symbol");
                     WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
                     writer.WriteString(symbol.Name);
@@ -307,7 +307,7 @@ namespace Rusty.Serialization.XML
 
         private static bool IsPrimitive(string tag) => tag == "null" || tag == "bool" || tag == "int" || tag == "float"
             || tag == "inf" || tag == "nan" || tag == "char" || tag == "str" || tag == "dec" || tag == "col" || tag == "uid"
-            || tag == "bytes" || tag == "memberSymbol" || tag == "ref";
+            || tag == "bytes" || tag == "symbol" || tag == "ref";
 
         private static INode ParsePrimitive(string tag, string value) => tag switch
         {
@@ -320,10 +320,10 @@ namespace Rusty.Serialization.XML
             "char" => new CharNode(new UnicodePair(value)),
             "str" => new StringNode(value),
             "dec" => new DecimalNode(DecimalValue.Parse(value)),
-            "uid" => new UidNode(Guid.Parse(value)),
+            "uid" => new UidNode(UidValue.Parse(value)),
             "col" => new ColorNode(ColorValue.Parse(value)),
             "bytes" => new BytesNode(BytesValue.Parse(value)),
-            "memberSymbol" => new SymbolNode(value),
+            "symbol" => new SymbolNode(value),
             "ref" => new RefNode(value),
             _ => throw new ArgumentException($"Invalid primitive tag <{tag}>.")
         };

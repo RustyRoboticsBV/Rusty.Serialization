@@ -2,7 +2,6 @@ using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Nodes;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 
 namespace Rusty.Serialization.CSCD
@@ -425,7 +424,7 @@ namespace Rusty.Serialization.CSCD
                 digits[i] = '0';
             }
 
-            return new UidNode(Guid.Parse(digits));
+            return new UidNode(UidValue.Parse(digits));
         }
 
         /// <summary>
