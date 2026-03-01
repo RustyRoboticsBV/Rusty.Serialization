@@ -64,7 +64,7 @@ namespace Rusty.Serialization.Core.Conversion
                 return (NodeT)method.Invoke(null, new object[] { value });
 
             // No conversion available.
-            throw new InvalidCastException($"The converter {GetType().FullName} cannot handle {value.GetType().Name} nodes\n{value}.");
+            throw new InvalidCastException($"The converter '{GetType().Name}' cannot handle {value.GetType().Name} nodes.\n{value}.");
         }
 
         private static bool HasUserDefinedCast(Type from, Type to, out MethodInfo method)

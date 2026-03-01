@@ -124,7 +124,7 @@ namespace Rusty.Serialization.JSON
                 for (int i = 0; i < obj.Count; i++)
                 {
                     string key = obj.keys[i];
-                    if (key.StartsWith('$') && (key == "$id" || key == "$type" || key == "$scope" || key == "$value"))
+                    if (key == "$value")
                     {
                         ParseContainer(obj, out INode value, out string scope);
                         return value;
@@ -153,22 +153,24 @@ namespace Rusty.Serialization.JSON
                     else
                         throw new FormatException("$id keys must be followed by a string value.");
                 }
-                if (key == "$type")
+                else if (key == "$type")
                 {
                     if (json.values[i] is JsonString str)
                         type = str.value;
                     else
                         throw new FormatException("$type keys must be followed by a string value.");
                 }
-                if (key == "$scope")
+                else if (key == "$scope")
                 {
                     if (json.values[i] is JsonString str)
                         scope = str.value;
                     else
                         throw new FormatException("$scope keys must be followed by a string value.");
                 }
-                if (key == "$value")
+                else if (key == "$value")
                     node = ParseAsNode(json.values[i]);
+                else
+                    throw new FormatException($"JSON objects with a '$value' key may not have a '{key}' key.");
             }
 
             if (node == null)

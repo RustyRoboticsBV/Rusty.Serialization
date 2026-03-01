@@ -103,7 +103,7 @@ namespace Rusty.Serialization.Core.Conversion
                     return type;
             }
 
-            return null; // not found
+            throw new TypeAccessException($"Cannot find type '{typeName}'.");
         }
 
         public override readonly int GetHashCode()

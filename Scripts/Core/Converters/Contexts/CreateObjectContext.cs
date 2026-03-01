@@ -21,6 +21,8 @@ namespace Rusty.Serialization.Core.Conversion
         /// </summary>
         public object CreateObject(Type expectedType, INode node)
         {
+            if (expectedType == null)
+                throw new ArgumentNullException(nameof(expectedType));
             if (node == null)
                 throw new ArgumentException("Cannot deconvert null reference node values.");
 
