@@ -107,5 +107,21 @@ namespace Rusty.Serialization.Core.Nodes
             }
             throw new ArgumentException($"'{oldChild}' was not a child of '{this}'.");
         }
+
+        /* Conversion operators. */
+        public static explicit operator DictNode(ListNode node)
+        {
+            DictNode dict = new DictNode();
+            for (int i = 0; i < node.Count; i++)
+            {
+                INode element = node.Elements[i];
+                if (!(element is ListNode elementList))
+                    throw new FormatException("List nodes cannot convert to dictionaries unless all elements are themselves list nodes.");
+                if (elementList.Count != 2)
+                    throw new FormatException("List nodes cannot convert to dictionaries unless all elements are list nodes with 2 elements.");
+                dict.AddPair(elementList.Elements[0], elementList.Elements[1]);
+            }
+            return dict;
+        }
     }
 }

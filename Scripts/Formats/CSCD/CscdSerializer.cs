@@ -233,6 +233,9 @@ namespace Rusty.Serialization.CSCD
         {
             StringBuilder sb = new StringBuilder();
 
+            if (node.Value.negative)
+                sb.Append('-');
+
             if (node.Value.days > 0)
             {
                 sb.Append(node.Value.days.ToString());

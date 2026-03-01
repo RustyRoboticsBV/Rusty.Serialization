@@ -127,6 +127,8 @@ namespace Rusty.Serialization.JSON
 
                     if (i == 0 && key == "$ref")
                         return ParseRef(obj);
+
+                    // TODO: This should return a scope, if present.
                     else if (key == "$value")
                     {
                         ParseContainer(obj, out INode value, out string scope);
@@ -135,7 +137,13 @@ namespace Rusty.Serialization.JSON
                 }
 
                 // Else, parse as an object.
-                throw new NotImplementedException(); // TODO
+                ObjectNode objNode = new ObjectNode();
+                for (int i = 0; i < obj.Count; i++)
+                {
+                    // TODO: containers should take scopes into account and wrap the symbol in a scope node if present.
+                    objNode.AddMember(new SymbolNode(obj.keys[i]), ParseAsNode(obj.values[i]));
+                }
+                return objNode;
             }
             throw new FormatException("Unknown JSON node.");
         }
