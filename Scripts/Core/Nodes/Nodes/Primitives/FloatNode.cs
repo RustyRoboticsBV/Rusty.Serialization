@@ -15,5 +15,11 @@ namespace Rusty.Serialization.Core.Nodes
         {
             return "float: " + Value;
         }
+
+        /* Conversion oeprators. */
+        public static explicit operator IntNode(FloatNode node)
+        {
+            return new IntNode(node.Value.negative ? -node.Value.integral : node.Value.integral);
+        }
     }
 }

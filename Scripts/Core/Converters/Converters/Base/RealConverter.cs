@@ -16,14 +16,7 @@ namespace Rusty.Serialization.Core.Conversion
         protected abstract T E { get; }
 
         /* Public methods. */
-        void IConverter.CollectTypes(INode node, CollectTypesContext context)
-        {
-            if (!CanHandleNode(node))
-                NodeError(node);
-            if (node is NanNode || node is InfinityNode || node is SymbolNode)
-                return;
-            CollectTypes((FloatNode)node, context);
-        }
+        void IConverter.CollectTypes(INode node, CollectTypesContext context) { }
 
         INode IConverter.CreateNode(object obj, CreateNodeContext context)
         {

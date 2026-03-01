@@ -147,15 +147,26 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case ObjectNode obj:
-                    JsonArray arrayObj = new JsonArray();
+                    JsonObject @object = new JsonObject();
                     for (int i = 0; i < obj.Count; i++)
                     {
-                        JsonArray member = new JsonArray();
-                        member.Add(ToJsonNodes(obj.GetNameAt(i)));
-                        member.Add(ToJsonNodes(obj.GetValueAt(i)));
-                        arrayObj.Add(member);
+                        IMemberNameNode memberName = obj.GetNameAt(i);
+                        JsonNode value = ToJsonNodes(obj.GetValueAt(i));
+                        if (memberName is SymbolNode symbol)
+                        {
+                            string name = symbol.Name;
+                            @object.Add(name, value);
+                        }
+                        else if (memberName is ScopeNode nameScope)
+                        {
+                            // TODO: do something with the scope.
+
+                            string name = nameScope.Child.Name;
+                            @object.Add(name, value);
+                        }
+                        else throw new FormatException();
                     }
-                    result = arrayObj;
+                    result = @object;
                     break;
 
                 default:
