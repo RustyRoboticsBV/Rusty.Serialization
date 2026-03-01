@@ -123,7 +123,7 @@ namespace Rusty.Serialization.XML
                 case InfinityNode inf:
                     writer.WriteStartElement("inf");
                     WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
-                    if (inf.Positive)
+                    if (inf.Value.positive)
                         writer.WriteString("+");
                     else
                         writer.WriteString("-");

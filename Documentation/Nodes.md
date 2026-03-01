@@ -18,7 +18,7 @@ UCS recognizes 23 different node types, which are listed below. Each node corres
 
 Metadata nodes contain a value and a single child node. They are meant for annotating other nodes with additional data. There are four types:
 
-- 📌 **Address**: a reference address, used to mark shared or cyclic reference objects. It contains an address name and a child node.
+- 📌 **Address**: a reference address, used to mark shared or cyclic reference objects. It contains an address name and a child node, which may be of any type except for reference nodes.
 - 🏷 **Type**: a type label, used to disambiguify polymorphic types. It contains a type name and a child node.
 - 🎯 **Scope**: a class/struct member scope, used to disambiguify shadowed fields and properties. It contains a scope name and a child symbol node. They may only be used inside object nodes as member names.
 - 🌐 **Offset**: a UTC time offset, used to add timezone information to a timestamp node. It contains an offset value and a child timestamp node.
@@ -49,5 +49,5 @@ Primitive nodes are leaf nodes. They contain a value and do not have any child n
 - 🪪 **UID**: encodes a unique identifier as a 128-bit number.
 - 🗓️ **Timestamp**: encodes a timestamp value, composed of a year, month, day, hour, minute and second. The year may be negative, the other terms must be positive.
 - ⌛ **Duration**: encodes a duration value, composed of a number of days, hours, minutes, seconds and a sign. All terms must have a positive value.
-- ❓ **Symbol**: encodes enums and special constants (such as the mathematical constants `pi` and `e`). It contains a symbol name.
+- ⭐ **Symbol**: encodes enums, named constants (such as the mathematical constants `pi` and `e`) and object member names. It contains a symbol name.
 - 🔗 **Reference**: a reference to an address node. Used to avoid duplication of shared references, and cycles in cyclic references. It contains an address name.

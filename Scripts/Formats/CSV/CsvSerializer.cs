@@ -69,7 +69,7 @@ namespace Rusty.Serialization.CSV
             else if (node is InfinityNode inf)
             {
                 sb.Append("inf,");
-                sb.Append(inf.Positive ? '+' : '-');
+                sb.Append(inf.Value.positive ? '+' : '-');
             }
             else if (node is NanNode)
                 sb.Append("nan");

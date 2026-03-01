@@ -1,33 +1,16 @@
 ﻿namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// A infinity serializer node.
+    /// An infinity serializer node.
     /// </summary>
-    public class InfinityNode : INode
+    public class InfinityNode : ValueNode<InfinityValue>
     {
-        /* Public properties. */
-        public ITreeElement Parent { get; set; }
-        public bool Positive { get; set; }
-
         /* Constructors. */
-        public InfinityNode(bool positive)
-        {
-            Positive = positive;
-        }
+        public InfinityNode() : this(true) { }
+
+        public InfinityNode(InfinityValue value) : base(value) { }
 
         /* Public methods. */
-        public override string ToString()
-        {
-            if (Positive)
-                return "infinity: positive";
-            else
-                return "infinity: negative";
-        }
-
-        public void Clear()
-        {
-            Parent = null;
-            Positive = true;
-        }
+        public override string ToString() => $"infinity: {Value}";
     }
 }

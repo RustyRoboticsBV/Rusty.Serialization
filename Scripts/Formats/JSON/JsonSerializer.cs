@@ -75,7 +75,7 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case InfinityNode infinity:
-                    if (infinity.Positive)
+                    if (infinity.Value.positive)
                         result = new JsonString("Infinity");
                     else
                         result = new JsonString("-Infinity");

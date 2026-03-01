@@ -52,7 +52,7 @@ namespace Rusty.Serialization.Core.Conversion
                 return NaN;
             if (node is InfinityNode infinity)
             {
-                if (infinity.Positive)
+                if (infinity.Value.positive)
                     return PositiveInfinity;
                 else
                     return NegativeInfinity;

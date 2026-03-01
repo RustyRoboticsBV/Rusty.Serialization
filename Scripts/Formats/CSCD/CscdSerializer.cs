@@ -80,7 +80,7 @@ namespace Rusty.Serialization.CSCD
             if (node is FloatNode f)
                 return Serialize(f);
             if (node is InfinityNode inf)
-                return inf.Positive ? "inf" : "-inf";
+                return inf.Value.positive ? "inf" : "-inf";
             if (node is NanNode)
                 return "nan";
             if (node is CharNode chr)
