@@ -120,11 +120,14 @@ namespace Rusty.Serialization.JSON
             }
             if (node is JsonObject obj)
             {
-                // If a container, parse as such.
+                // If a container or reference, parse as such.
                 for (int i = 0; i < obj.Count; i++)
                 {
                     string key = obj.keys[i];
-                    if (key == "$value")
+
+                    if (i == 0 && key == "$ref")
+                        return ParseRef(obj);
+                    else if (key == "$value")
                     {
                         ParseContainer(obj, out INode value, out string scope);
                         return value;
@@ -179,6 +182,17 @@ namespace Rusty.Serialization.JSON
                 node = new TypeNode(type, node);
             if (address != null)
                 node = new AddressNode(address, node);
+        }
+
+        private static RefNode ParseRef(JsonObject json)
+        {
+            if (json.Count != 1)
+                throw new FormatException("$ref objects should have only one element.");
+            if (json.keys[0] != "$ref")
+                throw new FormatException("Reference JSON objects must have a $ref key.");
+            if (!(json.values[0] is JsonString str))
+                throw new FormatException("$ref keys must be followed by a string value.");
+            return new RefNode(str.value);
         }
     }
 }
