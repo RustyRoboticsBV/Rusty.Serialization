@@ -28,28 +28,28 @@ namespace Rusty.Serialization.JSON
             if (node is AddressNode id)
             {
                 addressStr = id.Name;
-                node = id.Value;
+                node = id.Child;
             }
 
             string typeStr = null;
             if (node is TypeNode type)
             {
                 typeStr = type.Name;
-                node = type.Value;
+                node = type.Child;
             }
 
             string scopeStr = null;
             if (node is ScopeNode scope)
             {
                 scopeStr = scope.Name;
-                node = scope.Value;
+                node = scope.Child;
             }
 
             string offsetStr = null;
             if (node is OffsetNode offset)
             {
-                offsetStr = offset.Offset.ToString();
-                node = offset.Time;
+                offsetStr = offset.Value.ToString();
+                node = offset.Child;
             }
 
 

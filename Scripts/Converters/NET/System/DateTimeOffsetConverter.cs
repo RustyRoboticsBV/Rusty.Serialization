@@ -19,8 +19,8 @@ namespace Rusty.Serialization.DotNet
 
         protected override DateTimeOffset CreateObject(OffsetNode node, CreateObjectContext context)
         {
-            DateTime dateTime = context.CreateObject<DateTime>(node.Time);
-            TimeSpan timeSpan = new TimeSpan((int)node.Offset.hours, (int)node.Offset.minutes, 0);
+            DateTime dateTime = context.CreateObject<DateTime>(node.Child);
+            TimeSpan timeSpan = new TimeSpan((int)node.Value.hours, (int)node.Value.minutes, 0);
             return new DateTimeOffset(dateTime, timeSpan);
         }
     }

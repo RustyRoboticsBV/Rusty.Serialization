@@ -1,33 +1,50 @@
-﻿namespace Rusty.Serialization.Core.Nodes
+﻿using System;
+
+namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// An offset serializer node.
     /// </summary>
-    public class OffsetNode : INode
+    public class OffsetNode : ValueNode<OffsetValue>, IMetadataNode
     {
         /* Public properties. */
-        public ITreeElement Parent { get; set; }
-        public OffsetValue Offset { get; set; }
-        public TimestampNode Time { get; set; }
+        public TimestampNode Child { get; set; }
+        INode IMetadataNode.Child => Child;
 
         /* Constructors. */
         public OffsetNode(OffsetValue offset, TimestampNode time)
         {
-            Offset = offset;
-            Time = time;
+            Value = offset;
+            Child = time;
         }
 
         /* Public methods. */
         public override string ToString()
         {
-            return $"Offset: {Offset}\n{PrintUtility.PrintChild(Time)}";
+            return $"Offset: {Value}\n{PrintUtility.PrintChild(Child)}";
         }
 
-        public void Clear()
+        public override void Clear()
         {
-            Parent = null;
-            Offset = OffsetValue.UTC0;
-            Time = null;
+            base.Clear();
+            Value = OffsetValue.UTC0;
+            Child?.Clear();
+            Child = null;
+        }
+
+        void IContainerNode.ReplaceChild(INode oldChild, INode newChild)
+            => ReplaceChild(oldChild as TimestampNode, newChild as TimestampNode);
+        public void ReplaceChild(TimestampNode oldChild, TimestampNode newChild)
+        {
+            if (Child == oldChild)
+            {
+                if (oldChild.Parent == this)
+                    oldChild.Parent = null;
+                newChild.Parent = this;
+                Child = newChild;
+                return;
+            }
+            throw new ArgumentException($"'{oldChild}' was not a child of '{this}'.");
         }
     }
 }

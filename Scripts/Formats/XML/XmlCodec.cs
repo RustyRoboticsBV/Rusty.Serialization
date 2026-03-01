@@ -60,7 +60,7 @@ namespace Rusty.Serialization.XML
             if (node is AddressNode address)
             {
                 addressName = address.Name;
-                node = address.Value;
+                node = address.Child;
             }
 
             // Unwrap type node.
@@ -68,15 +68,15 @@ namespace Rusty.Serialization.XML
             if (node is TypeNode type)
             {
                 typeName = type.Name;
-                node = type.Value;
+                node = type.Child;
             }
 
             // Unwrap offset node.
             string offsetValue = null;
             if (node is OffsetNode offset)
             {
-                offsetValue = offset.Offset.ToString();
-                node = offset.Time;
+                offsetValue = offset.Value.ToString();
+                node = offset.Child;
             }
 
             // Write node.
@@ -273,7 +273,7 @@ namespace Rusty.Serialization.XML
                         if (member.Key is ScopeNode memberScope)
                         {
                             scopeName = memberScope.Name;
-                            memberName = memberScope.Value.Name;
+                            memberName = memberScope.Child.Name;
                         }
                         else if (member.Key is SymbolNode memberSymbol)
                             memberName = memberSymbol.Name;

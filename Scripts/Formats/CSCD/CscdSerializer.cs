@@ -64,11 +64,11 @@ namespace Rusty.Serialization.CSCD
         private string Serialize(INode node, bool prettyPrinting)
         {
             if (node is AddressNode address)
-                return $"`{FormatText(address.Name, addressEscapes)}`{Serialize(address.Value, prettyPrinting)}";
+                return $"`{FormatText(address.Name, addressEscapes)}`{Serialize(address.Child, prettyPrinting)}";
             if (node is TypeNode type)
-                return $"({FormatText(type.Name, typeEscapes)}){Serialize(type.Value, prettyPrinting)}";
+                return $"({FormatText(type.Name, typeEscapes)}){Serialize(type.Child, prettyPrinting)}";
             if (node is ScopeNode scope)
-                return $"^{FormatText(scope.Name, scopeEscapes)}^{Serialize(scope.Value, prettyPrinting)}";
+                return $"^{FormatText(scope.Name, scopeEscapes)}^{Serialize(scope.Child, prettyPrinting)}";
             if (node is OffsetNode offset)
                 return Serialize(offset, prettyPrinting);
             if (node is NullNode)
@@ -115,20 +115,20 @@ namespace Rusty.Serialization.CSCD
 
         private string Serialize(OffsetNode node, bool prettyPrinting)
         {
-            string sign = node.Offset.sign ? "+" : "-";
+            string sign = node.Value.sign ? "+" : "-";
             string space = prettyPrinting ? " " : "";
 
             // UTC-0.
-            if (node.Offset.hours == 0 && node.Offset.minutes == 0)
-                return "|Z|" + space + Serialize(node.Time);
+            if (node.Value.hours == 0 && node.Value.minutes == 0)
+                return "|Z|" + space + Serialize(node.Child);
 
             // Hours only.
-            if (node.Offset.minutes == 0)
-                return $"|{sign}{node.Offset.hours}|" + space + Serialize(node.Time);
+            if (node.Value.minutes == 0)
+                return $"|{sign}{node.Value.hours}|" + space + Serialize(node.Child);
 
             // Hours and minutes.
             else
-                return $"|{sign}{node.Offset.hours}:{node.Offset.minutes}|" + space + Serialize(node.Time);
+                return $"|{sign}{node.Value.hours}:{node.Value.minutes}|" + space + Serialize(node.Child);
         }
 
         private string Serialize(FloatNode node)

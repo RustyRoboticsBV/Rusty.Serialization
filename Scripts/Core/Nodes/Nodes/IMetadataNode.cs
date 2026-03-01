@@ -9,6 +9,6 @@
         /// <summary>
         /// The contained child node.
         /// </summary>
-        public INode Value { get; }
+        public INode Child { get; }
     }
 }

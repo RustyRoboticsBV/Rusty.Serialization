@@ -152,7 +152,7 @@ namespace Rusty.Serialization.Core.Conversion
         public object Deconvert(NodeTree tree)
         {
             // Address-type root.
-            if (tree.Root is AddressNode addressNode && addressNode.Value is TypeNode addressTypeNode)
+            if (tree.Root is AddressNode addressNode && addressNode.Child is TypeNode addressTypeNode)
             {
                 Type type = new TypeName(addressTypeNode.Name).ToType();
                 return Deconvert(type, tree);

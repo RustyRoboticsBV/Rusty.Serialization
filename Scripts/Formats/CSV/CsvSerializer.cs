@@ -26,28 +26,28 @@ namespace Rusty.Serialization.CSV
                 sb.Append("adr,");
                 sb.Append(Pack(address.Name));
                 sb.Append("\n");
-                Serialize(address.Value, sb);
+                Serialize(address.Child, sb);
             }
             else if (node is TypeNode type)
             {
                 sb.Append("type,");
                 sb.Append(Pack(type.Name));
                 sb.Append("\n");
-                Serialize(type.Value, sb);
+                Serialize(type.Child, sb);
             }
             else if (node is ScopeNode scope)
             {
                 sb.Append("scope,");
                 sb.Append(Pack(scope.Name));
                 sb.Append("\n");
-                Serialize(scope.Value, sb);
+                Serialize(scope.Child, sb);
             }
             else if (node is OffsetNode offset)
             {
                 sb.Append("offset,");
-                sb.Append(Pack(offset.Offset.ToString()));
+                sb.Append(Pack(offset.Value.ToString()));
                 sb.Append("\n");
-                Serialize(offset.Time, sb);
+                Serialize(offset.Child, sb);
             }
             else if (node is NullNode)
                 sb.Append("null");

@@ -52,12 +52,12 @@ namespace Rusty.Serialization.Core.Conversion
                     obj = ParsingTable.GetParsed(addressNode.Name);
                 else
                 {
-                    INode valueNode = addressNode.Value;
+                    INode valueNode = addressNode.Child;
 
                     IConverter converter;
                     if (valueNode is TypeNode valueTypeNode)
                     {
-                        valueNode = valueTypeNode.Value;
+                        valueNode = valueTypeNode.Child;
                         converter = Converters.Get(new TypeName(valueTypeNode.Name));
                     }
                     else
@@ -77,7 +77,7 @@ namespace Rusty.Serialization.Core.Conversion
             else if (node is TypeNode typeNode)
             {
                 Type underlyingType = new TypeName(typeNode.Name).ToType();
-                obj = CreateObject(underlyingType, typeNode.Value);
+                obj = CreateObject(underlyingType, typeNode.Child);
             }
 
             // Else, deconvert as-is.

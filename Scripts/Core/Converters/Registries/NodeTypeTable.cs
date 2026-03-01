@@ -71,7 +71,7 @@ namespace Rusty.Serialization.Core.Conversion
         public Type GetType(INode node)
         {
             if (node is IMetadataNode meta)
-                return NodeTypes[meta.Value];
+                return NodeTypes[meta.Child];
             return NodeTypes[node];
         }
 
@@ -124,7 +124,7 @@ namespace Rusty.Serialization.Core.Conversion
                 return false;
 
             if (node is IMetadataNode metadata)
-                return Validate(metadata.Value);
+                return Validate(metadata.Child);
 
             else if (node is ListNode list)
             {

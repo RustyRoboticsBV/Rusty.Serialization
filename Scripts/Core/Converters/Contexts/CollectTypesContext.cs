@@ -25,16 +25,16 @@ namespace Rusty.Serialization.Core.Conversion
             else if (node is TypeNode type)
             {
                 objType = new TypeName(type.Name);
-                CollectTypesAndReferences(type.Value, objType);
+                CollectTypesAndReferences(type.Child, objType);
                 if (!NodeTypeTable.Has(node))
-                    NodeTypeTable.Add(node, NodeTypeTable[type.Value]);
+                    NodeTypeTable.Add(node, NodeTypeTable[type.Child]);
             }
 
             else if (node is AddressNode address)
             {
-                CollectTypesAndReferences(address.Value, objType);
+                CollectTypesAndReferences(address.Child, objType);
                 if (!NodeTypeTable.Has(node))
-                    NodeTypeTable.Add(node, NodeTypeTable[address.Value]);
+                    NodeTypeTable.Add(node, NodeTypeTable[address.Child]);
             }
 
             // Collect child types.

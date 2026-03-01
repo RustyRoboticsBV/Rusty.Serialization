@@ -133,9 +133,9 @@ namespace Rusty.Serialization.CSCD
             // Ensure legal root value.
             INode check = root;
             if (check is AddressNode address)
-                check = address.Value;
+                check = address.Child;
             if (check is TypeNode type)
-                check = type.Value;
+                check = type.Child;
             if (check is RefNode)
                 throw new FormatException("Root values may not be references.");
             if (check == null)
@@ -196,7 +196,7 @@ namespace Rusty.Serialization.CSCD
                 if (!next.Text.EnclosedWith('@'))
                     TokenError(next, "Offsets must be followed by a timestamp.");
 
-                offset.Time = ParseTimestamp(next);
+                offset.Child = ParseTimestamp(next);
 
                 return offset;
             }

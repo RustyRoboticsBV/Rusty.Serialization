@@ -122,7 +122,7 @@ namespace Rusty.Serialization.Core.Conversion
                 if (memberScopeNameNode is ScopeNode scopeNode)
                 {
                     memberScope = scopeNode.Name;
-                    memberName = scopeNode.Value.Name;
+                    memberName = scopeNode.Child.Name;
                 }
                 else if (memberScopeNameNode is SymbolNode symbolNode)
                     memberName = symbolNode.Name;
