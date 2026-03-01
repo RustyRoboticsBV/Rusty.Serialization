@@ -1,10 +1,14 @@
 # Node Documentation
 
-UCS makes use of an abstract syntax tree (AST) as an intermedite step during serialization and deserialization. The AST represents a C# object graph, with all the information necessary for unambiguous parsing. Using this intermediate format allows UCS to support multiple serialized formats, and also allows the front-end to be extended to provide explicit support additional types.
+UCS makes use of an *abstract syntax tree (AST)* as an intermedite step during serialization and deserialization. The AST represents a C# object graph, with all the information necessary for unambiguous parsing.
 
-A node tree should never contain any cycles; shared and cyclic reference links are instead represented with address/reference nodes.
+Using this intermediate format allows UCS to:
+- Support multiple serialized formats.
+- Allow for the front-end to be extended to provide explicit support additional types.
 
-UCS recognizes the nodes listed below. Each node corresponds to a CSCD format literal, and vice-versa.
+A node tree should never contain any cycles. Shared and cyclic reference links are instead represented with address/reference nodes.
+
+UCS recognizes the nodes listed below. Each node corresponds to a [CSCD format literal](../README.md#compact-serialized-c-data), and vice-versa.
 
 ### Metadata
 
