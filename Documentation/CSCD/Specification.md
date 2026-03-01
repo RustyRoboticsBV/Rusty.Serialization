@@ -309,7 +309,7 @@ Four notations are supported:
 - `[-]${integer}`: Integral decimal with zero fractional digits.
 - `[-]$`: Integral decimal with zero fractional digits. The integer part MUST be interpreted as `0`.
 
-The integer and fractional parts MUST consist of zero or more decimal digits (`0`-`9`). Leading zeros MAY appear in the integer part, but MUST be discarded by a parser.
+The integer and fractional parts MUST consist of one or more decimal digits (`0`-`9`) when present. Leading zeros MAY appear in the integer part, but MUST be discarded by a parser.
 
 Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
 
@@ -324,7 +324,7 @@ Colors literals MUST start with a `#` number sign, followed by the hexadecimal r
 - `#`: MUST be interpreted as `#00000000`.
 
 #### UIDs
-UID literals represent a 128-bit unique identifier. They provide a canonical form of expressing UIDs.
+UID literals represent a 128-bit unique identifier. They provide a canonical form for expressing UIDs.
 
 They MUST start with the prefix `%`, followed by the format `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (8-4-4-4-12), where each `X` MUST be a hexadecimal digit (`0`-`9`, `A`-`F`, `a`-`f`). The `-` dashes MAY be omitted. Leading zeros MAY also be omitted (e.g. `%1-23456789abcd` is equivalent to `%00000000-0000-0000-0001-23456789abcd`) - parsers MUST interpret missing hexadecimal digits as `0`. The literal `%` MUST be interpreted as a UID with 32 zeros (i.e. `%00000000-0000-0000-0000-000000000000`).
 
@@ -335,14 +335,30 @@ Examples: `%69988773-1484-832f-9fe1-a711cf10115f`, `%6998bd06ed3083338d8f142c0f7
 #### Timestamps
 Timestamp literals represent absolute moments in time. They are intended to express date and/or time values. The timestamp literal exists primarily to provide a dedicated, canonical form for date/time types and discourage ad-hoc solutions using strings or object literals.
 
-Timestamp literals MUST start and end with an `@` at symbol, with the date/time in-between. Four notations are supported:
-- `@{year}/{month}/{day},{hour}:{minute}:{second}@`: full notation.
-- `@{year}/{month}/{day},{hour}:{minute}@`: omitted second, which MUST be interpretet as `0`.
-- `@{year}/{month}/{day},{hour}@`: omitted minute and second, which MUST be interpretet as `0:0`.
-- `@{year}/{month}/{day}@`: date-only notation. The time MUST be interpreted as `0:0:0` (i.e. `12 A.M.`), but MAY be discarded when deserializing to a date-only type.
-- `@{hour}:{minute}:{second}@`: time-only notation. The date MUST be interpreted as `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
-- `@{hour}:{minute}@`: time-only notation with omitted seconds, which MUST be interpreted as `0`. The date MUST be interpreted as `1/1/1` (i.e. `January 1st, 1 A.D.`), but MAY be discarded when deserializing to a time-only type.
-- `@@`: omitted date and time parts. It MUST be interpreted as the literal `@1/1/1,0:0:0@` (i.e. `January 1st, 1 A.D. at 12 A.M.`).
+Timestamp literals MUST start and end with an `@` at symbol, with the date and/or time in-between. Several notations are supported:
+- Date and time:
+  - Full date:
+    - `@{year}/{month}/{day},{hour}:{minute}:{second}@`: full notation.
+    - `@{year}/{month}/{day},{hour}:{minute}@`: omitted second.
+    - `@{year}/{month}/{day},{hour}@`: omitted minute and second.
+  - Omitted day:
+    - `@{year}/{month},{hour}:{minute}:{second}@`: omitted day.
+    - `@{year}/{month},{hour}:{minute}@`: omitted day and second.
+    - `@{year}/{month},{hour}@`: omitted day, minute and second.
+  - Omitted month and day:
+    - `@{year},{hour}:{minute}:{second}@`: omitted month and day.
+    - `@{year},{hour}:{minute}@`: omitted month, day and second.
+    - `@{year},{hour}@`: omitted month, day, minute and second.
+- Date only:
+  - `@{year}/{month}/{day}@`: date-only notation.
+  - `@{year}/{month}@`: date-only notation with omitted day.
+  - `@{year}@`: date-only notation with omitted month and day.
+- Time only:
+  - `@{hour}:{minute}:{second}@`: time-only notation.
+  - `@{hour}:{minute}@`: time-only notation with omitted seconds.
+- `@@`: omitted date and time.
+
+When interpreted as a full timestamp, the year, month and/or day MUST be interpreted as `1` when omitted. Likewise, the hour, minute and/or second MUST be interpreted as `0` when omitted.
 
 Each component has range and/or syntax rules that MUST be followed by a parser. Unless otherwise stated, they MUST be comprised of one of more decimal digits (`0`-`9`). Leading zeroes SHOULD be discarded by a parser.
 - Year components MAY be prefixed with a `-` minus sign for dates before `January 1st, 1 A.D.`. After that MUST follow zero or more decimal digits (`0`-`9`). There is no limit on the value range; a parser MUST correctly interpret any integer value. The year `0` MUST NOT be used.
@@ -357,7 +373,7 @@ A parser SHOULD validate calendar correctness (i.e. rejecting `@1994/2/31@`), bu
 Examples: `@2000/10/16,15:11:03.001@`, `@-500/2/7@`, `@07:30:00@`.
 
 #### Durations
-Duration literals represent relative time durations. They provide a canonical form of expressing a timespan.
+Duration literals represent relative time durations. They provide a canonical form for expressing a timespan.
 
 Duration literals MUST consist of 1-4 terms:
 - `{days}d`: the number of days, which MUST be a valid integer larger than or equal to `0`.
