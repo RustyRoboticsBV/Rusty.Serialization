@@ -14,19 +14,50 @@ namespace Rusty.Serialization.Core.Conversion
         public Type[] AllowedNodeTypes { get; protected set; } = new Type[1] { typeof(NodeT) };
 
         /* Public methods. */
-        public void CollectTypes(INode node, CollectTypesContext context)
+        /// <summary>
+        /// Convert a node to a type that this converter can use.
+        /// </summary>
+        public INode ConvertNode(INode node)
         {
-            node = ConvertNode(node);
-            CollectTypes((NodeT)node, context);
+            if (node == null)
+                return null;
+
+            Type from = node.GetType();
+
+            // If one of the allowed types, return as-is.
+            for (int i = 0; i < AllowedNodeTypes.Length; i++)
+            {
+                if (from == AllowedNodeTypes[i])
+                    return node;
+            }
+
+            // Else, check if there is a conversion.
+            for (int i = 0; i < AllowedNodeTypes.Length; i++)
+            {
+                Type to = AllowedNodeTypes[i];
+
+                // If no conversions needed, return the original node.
+                if (to.IsAssignableFrom(from))
+                    return (NodeT)node;
+
+                // Check if there is a conversion.
+                if (HasUserDefinedCast(from, to, out MethodInfo method))
+                {
+                    try
+                    {
+                        return (NodeT)method.Invoke(null, new object[] { node });
+                    }
+                    catch { }
+                }
+            }
+
+            // No conversion available.
+            throw new InvalidCastException($"The converter '{GetType().Name}' cannot handle node:\n{node}.");
         }
 
+        public void CollectTypes(INode node, CollectTypesContext context) => CollectTypes((NodeT)node, context);
         INode IConverter.CreateNode(object obj, CreateNodeContext context) => CreateNode((TargetT)obj, context);
-
-        object IConverter.CreateObject(INode node, CreateObjectContext context)
-        {
-            node = ConvertNode(node);
-            return CreateObject((NodeT)node, context);
-        }
+        object IConverter.CreateObject(INode node, CreateObjectContext context) => CreateObject((NodeT)node, context);
 
         /* Protected methods. */
         /// <summary>
@@ -43,36 +74,6 @@ namespace Rusty.Serialization.Core.Conversion
         protected abstract TargetT CreateObject(NodeT node, CreateObjectContext context);
 
         /* Private methods. */
-        private NodeT ConvertNode(INode node)
-        {
-            if (node == null)
-                return null;
-
-            Type from = node.GetType();
-
-            for (int i = 0; i < AllowedNodeTypes.Length; i++)
-            {
-                Type to = AllowedNodeTypes[i];
-
-                // If no conversions needed, return the original node.
-                if (to.IsAssignableFrom(from))
-                    return (NodeT)node;
-
-                // Else, check if there is a conversion.
-                if (HasUserDefinedCast(from, to, out MethodInfo method))
-                {
-                    try
-                    {
-                        return (NodeT)method.Invoke(null, new object[] { node });
-                    }
-                    catch { }
-                }
-            }
-
-            // No conversion available.
-            throw new InvalidCastException($"The converter '{GetType().Name}' cannot handle node:\n{node}.");
-        }
-
         private static bool HasUserDefinedCast(Type from, Type to, out MethodInfo method)
         {
             if (from == null)

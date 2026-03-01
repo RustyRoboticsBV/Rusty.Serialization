@@ -69,7 +69,9 @@ namespace Rusty.Serialization.Core.Conversion
 
             // Assign node if the object was a composite type.
             if (converter is ICompositeConverter referenceConverter)
+            {
                 referenceConverter.AssignNode(targetNode, obj, this);
+            }
 
             // Return finished node.
             return rootNode;

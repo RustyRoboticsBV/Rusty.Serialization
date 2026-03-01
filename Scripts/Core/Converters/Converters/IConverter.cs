@@ -9,6 +9,11 @@ namespace Rusty.Serialization.Core.Conversion
     {
         /* Public methods. */
         /// <summary>
+        /// Convert a node to a type that this converter can use.
+        /// </summary>
+        public INode ConvertNode(INode node);
+
+        /// <summary>
         /// Collect the type of a node, as well as the types of members.
         /// </summary>
         public void CollectTypes(INode node, CollectTypesContext context);

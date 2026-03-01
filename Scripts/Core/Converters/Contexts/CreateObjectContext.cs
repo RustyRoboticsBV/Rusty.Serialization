@@ -85,6 +85,8 @@ namespace Rusty.Serialization.Core.Conversion
             {
                 IConverter converter = Converters.Get(expectedType);
 
+                node = converter.ConvertNode(node);
+
                 obj = converter.CreateObject(node, this);
 
                 if (converter is ICompositeConverter composite)
