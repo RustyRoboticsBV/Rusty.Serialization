@@ -1,13 +1,13 @@
 # CSCD Format Specification
 
 ## Introduction
-This formal specification document describes the syntax of an object graph serialization format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary object graphs.
+This formal specification document describes the syntax of an object graph serialization format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary object graphs, with a focus on game development.
 
 The format is syntactically self-describing and does not require an external schema for structural parsing. While it is *syntactically* structured like a tree, it *semantically* represents a graph. Values may be annotated with optional type and reference metadata, enabling parsers to reconstruct objects with their original types and preserve reference/pointer links.
 
 CSCD literals are more general than C# types. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common composite data types, such as timestamps and colors, have dedicated compact literal forms in order to reduce verbosity.
 
-The main design goals are generality, compactness and unambiguous parsing. While usable in any programming language, it was designed with the .NET framework in mind, where object graphs may contain polymorphic types, shared or cyclic references, and shadowed members. CSCD is primarily intended to be machine-generated, but human-inspectable. Though it can be authored by hand, this requires intimate knowledge of the target runtime and is generally not recommended.
+The main design goals are generality, compactness and unambiguous parsing. While usable in any programming language, it was designed with the .NET framework in mind, where object graphs may contain polymorphic types, shared or cyclic references, and shadowed members. CSCD is primarily intended to be machine-generated, but human-inspectable. Though it can be written by hand, this requires knowledge of the target runtime and is generally not recommended.
 
 This document will first describe some format-wide syntax rules. After that, it will describe each literal type and their syntaxes, starting with metadata, followed by primitives and finally collections.
 
@@ -38,11 +38,12 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
     - [Booleans](#booleans)
     - [Integers](#integers)
     - [Floats](#floats)
+    - [Decimals](#decimals)
     - [Infinities](#infinities)
     - [Not-A-Number](#not-a-number)
     - [Characters](#characters)
     - [Strings](#strings)
-    - [Decimals](#decimals)
+    - [Bitmasks](#bitmasks)
     - [Colors](#colors)
     - [UIDs](#uids)
     - [Timestamps](#timestamps)
@@ -265,6 +266,21 @@ Examples:
 - `-0.0`, `-000.000`, `-0.`, `-.0`, `-.` and `-.e0` are all valid representations of the number `-0.0`.
 - `-0.5`, `-.5`, `-00.50` and `-5.0e-1` are all valid representations of the number `-0.5`.
 
+#### Decimals
+Decimal literals represent numeric values with significant fractional digits. They are intended for any use-case where preserving the exact decimal representation is important, such as when expressing monetary values. Parsers MUST preserve all fractional digits, including trailing zeros.
+
+Four notations are supported:
+- `[-]${integer}.{fractional}`: Full notation.
+- `[-]$.{fractional}`: Omitted integer part. The integer part MUST be interpreted as `0`.
+- `[-]${integer}`: Integral decimal with zero fractional digits.
+- `[-]$`: Integral decimal with zero fractional digits. The integer part MUST be interpreted as `0`.
+
+The integer and fractional parts MUST consist of one or more decimal digits (`0`-`9`) when present. Leading zeros MAY appear in the integer part, but MUST be discarded by a parser.
+
+Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
+
+Examples: `$123`, `$4.567`, `$.05`, `-$2`, `$`.
+
 #### Infinities
 Infinity values MUST be encoded using one of two literals: `inf` for positive infinity and `-inf` for negative infinity. Infinity literals MUST be lowercase.
 
@@ -300,20 +316,12 @@ All other characters from the character set MAY appear unescaped.
 
 Example: `"This is a \"string\"!"`, `"¡No habló español!"`, `"\21FF;\tarrow"`, `"C:\\path\\to\\file"`.
 
-#### Decimals
-Decimal literals represent numeric values with significant fractional digits. They are intended for any use-case where preserving the exact decimal representation is important, such as when expressing monetary values. Parsers MUST preserve all fractional digits, including trailing zeros.
+#### Bitmasks
+Bitmask literals represent a collection of bits or boolean values. They exist to provide a human-editable form for such collections.
 
-Four notations are supported:
-- `[-]${integer}.{fractional}`: Full notation.
-- `[-]$.{fractional}`: Omitted integer part. The integer part MUST be interpreted as `0`.
-- `[-]${integer}`: Integral decimal with zero fractional digits.
-- `[-]$`: Integral decimal with zero fractional digits. The integer part MUST be interpreted as `0`.
+They MUST start with a `/` forward slash, followed by zero or more binary digits (`0` or `1`). The empty bitmask MUST be represented using a single `/`. The leftmost bit MUST be interpreted as the most-significant bit.
 
-The integer and fractional parts MUST consist of one or more decimal digits (`0`-`9`) when present. Leading zeros MAY appear in the integer part, but MUST be discarded by a parser.
-
-Parsers SHOULD distinguish positive and negative zero if the runtime type permits the distinction.
-
-Examples: `$123`, `$4.567`, `$.05`, `-$2`, `$`.
+Examples: `/001010`, `/11111`, `/`.
 
 #### Colors
 Colors literals MUST start with a `#` number sign, followed by the hexadecimal representation of the color (`0`-`9`, `A`-`F`, `a`-`f`). Five notations are supported:
