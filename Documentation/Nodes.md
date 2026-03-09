@@ -12,7 +12,7 @@ A node tree should never contain any cycles. Shared and cyclic reference links a
 
 ## Node Types
 
-UCS recognizes 23 different node types, which are listed below. Each node corresponds to a [CSCD format literal](../README.md#compact-serialized-c-data), and vice-versa.
+UCS recognizes 24 different node types, which are listed below. Each node corresponds to a [CSCD format literal](../README.md#compact-serialized-c-data), and vice-versa.
 
 ### Metadata
 
@@ -33,12 +33,12 @@ Collection nodes act as groupings of child nodes. They exist to preserve object 
 
 ### Primitives
 
-Primitive nodes are leaf nodes. They contain a value and do not have any child nodes. There are sixteen types:
+Primitive nodes are leaf nodes. They contain a value and do not have any child nodes. There are seventeen types:
 
 - ⬜️ **Null**: encodes a null value.
 - ✅️ **Boolean**: encodes a boolean value. Can be either `true` or `false`.
 - 🔟 **Bitmask**: encodes a bitstring value.
-- 🔢  **Integer**: encodes an integer value of arbitrary precision. Can be used for both signed and unsigned integers.
+- 🔢 **Integer**: encodes an integer value of arbitrary precision. Can be used for both signed and unsigned integers.
 - ➗ **Float**: encodes a floating-point value of arbitrary precision, consisting of a sign, an integer part, a fractional part and an exponent part. The integer, fractional and exponent parts must all be positive values.
 - 💲 **Decimal**: encodes a decimal value of arbitrary precision, composed of a sign, mantissa and range. Unlike float nodes, it preserves trailing zeros after the decimal point.
 - ♾️ **Infinity**: encodes a positive or negative infinity value, such as `float.PositiveInfinity` and `double.NegativeInfinity`.

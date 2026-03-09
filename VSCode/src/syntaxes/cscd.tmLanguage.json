@@ -307,7 +307,11 @@
           "name": "cscd.primitives.timestamp",
           "match": "@@"
         },
-
+        
+        {
+          "name": "cscd.primitives.bitmask",
+          "match": "/[01]*"
+        },
         {
           "name": "cscd.primitives.bytes",
           "match": "![A-Za-z0-9+/=]*"

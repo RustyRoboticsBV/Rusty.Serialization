@@ -8,7 +8,8 @@ This document describes the CSCD syntax and its different literals in an informa
 An optional marker that can be used to mark a string as being CSCD. It must be the first token in the document.
 
 ```
-~CSCD~
+~CSCD~                                  Regular version.
+~CSCD?U~                                Unicode version.
 ```
 
 ### Footer
@@ -90,7 +91,7 @@ false
 </details>
 
 <details>
-  <summary><b>Bitmask</b></summary>
+  <summary><b>Bitmasks</b></summary>
 <br/>
 
 A bitmask. Contains a collection of true/false values. They start with a `/` slash character, followed by zero or more binary digits.
@@ -98,7 +99,6 @@ A bitmask. Contains a collection of true/false values. They start with a `/` sla
 ```
 /01010                                  False, true, false, true, false.
 /                                       Empty bitmask.
-false
 ```
 
 </details>

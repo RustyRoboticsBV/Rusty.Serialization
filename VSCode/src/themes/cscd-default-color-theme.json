@@ -105,6 +105,11 @@
     },
     
     {
+      "scope": "cscd.primitives.bitmask",
+      "settings": { "foreground": "#F0907A", "fontStyle": "bold" }
+    },
+    
+    {
       "scope": "cscd.primitives.integer",
       "settings": { "foreground": "#90CDFF", "fontStyle": "bold" }
     },
@@ -112,6 +117,11 @@
     {
       "scope": "cscd.primitives.float",
       "settings": { "foreground": "#FD5454", "fontStyle": "bold" }
+    },
+    
+    {
+      "scope": "cscd.primitives.decimal",
+      "settings": { "foreground": "#57DEA4", "fontStyle": "bold" }
     },
 
     {
@@ -132,11 +142,6 @@
     {
       "scope": "cscd.primitives.string",
       "settings": { "foreground": "#CE9178", "fontStyle": "bold" }
-    },
-    
-    {
-      "scope": "cscd.primitives.decimal",
-      "settings": { "foreground": "#57DEA4", "fontStyle": "bold" }
     },
     
     {
