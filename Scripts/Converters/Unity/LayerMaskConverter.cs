@@ -8,18 +8,18 @@ namespace Rusty.Serialization.Unity
     /// <summary>
     /// A Unity layer mask converter.
     /// </summary>
-    public class LayerMaskConverter : Converter<LayerMask, IntNode>
+    public class LayerMaskConverter : Converter<LayerMask, BitmaskNode>
     {
         /* Protected method. */
-        protected override IntNode CreateNode(LayerMask obj, CreateNodeContext context)
+        protected override BitmaskNode CreateNode(LayerMask obj, CreateNodeContext context)
         {
-            return new IntNode(obj.value);
+            return new BitmaskNode(obj.value);
         }
 
-        protected override LayerMask CreateObject(IntNode node, CreateObjectContext context)
+        protected override LayerMask CreateObject(BitmaskNode node, CreateObjectContext context)
         {
             LayerMask mask = new LayerMask();
-            mask.value = (int)node.Value;
+            mask.value = node.Value;
             return mask;
         }
     }

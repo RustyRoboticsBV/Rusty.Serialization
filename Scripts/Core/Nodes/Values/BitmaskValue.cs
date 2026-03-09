@@ -21,9 +21,29 @@ namespace Rusty.Serialization.Core.Nodes
             this.value = value;
         }
 
+        public BitmaskValue(int value)
+        {
+            this.value = new bool[32];
+            for (int i = 0; i < 32; i++)
+            {
+                this.value[i] = (value & (1 << i)) != 0;
+            }
+        }
+
         /* Conversion operators */
         public static implicit operator BitmaskValue(bool[] value) => new BitmaskValue(value);
         public static implicit operator bool[](BitmaskValue value) => value.value;
+        public static implicit operator BitmaskValue(int value) => new BitmaskValue(value);
+        public static implicit operator int(BitmaskValue value)
+        {
+            int result = 0;
+            for (int i = 0; i < value.value.Length && i < 32; i++)
+            {
+                if (value.value[i])
+                    result += 1 << i;
+            }
+            return result;
+        }
 
         /* Comparison operators */
         public static bool operator ==(BitmaskValue a, BitmaskValue b) => a.Equals(b);
@@ -39,7 +59,7 @@ namespace Rusty.Serialization.Core.Nodes
                 Span<char> span = stackalloc char[value.Length];
                 for (int i = 0; i < value.Length; i++)
                 {
-                    span[i] = value[i] ? '1' : '0';
+                    span[i] = value[value.Length - 1 - i] ? '1' : '0';
                 }
                 return new string(span);
             }
@@ -95,9 +115,9 @@ namespace Rusty.Serialization.Core.Nodes
                 for (int i = 0; i < span.Length; i++)
                 {
                     if (span[i] == '1')
-                        data[i] = true;
+                        data[span.Length - 1 - i] = true;
                     else if (span[i] == '0')
-                        data[i] = false;
+                        data[span.Length - 1 - i] = false;
                     else
                         throw new Exception();
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Numerics;
 using System.Text;
 
@@ -88,7 +89,7 @@ namespace Rusty.Serialization
             ConverterRegistry.Add<RectangleF, RectangleFConverter>();
 #endif
 
-            // System.Collections
+            // System.Collections.
             ConverterRegistry.Add<BitArray, BitArrayConverter>();
 
             // System.Collections.Generic.
@@ -106,6 +107,9 @@ namespace Rusty.Serialization
 #if NET6_0_OR_GREATER
             ConverterRegistry.Add(typeof(PriorityQueue<,>), typeof(PriorityQueueConverter<,>));
 #endif
+
+            // System.Collections.Specialized.
+            ConverterRegistry.Add<BitVector32, BitVector32Converter>();
         }
     }
 }

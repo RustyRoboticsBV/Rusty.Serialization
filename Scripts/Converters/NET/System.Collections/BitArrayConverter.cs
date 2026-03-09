@@ -7,19 +7,22 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET bit array converter.
     /// </summary>
-    public class BitArrayConverter : Converter<BitArray, BytesNode>
+    public class BitArrayConverter : Converter<BitArray, BitmaskNode>
     {
         /* Protected methods. */
-        protected override BytesNode CreateNode(BitArray obj, CreateNodeContext context)
+        protected override BitmaskNode CreateNode(BitArray obj, CreateNodeContext context)
         {
-            byte[] bytes = new byte[obj.Length];
-            obj.CopyTo(bytes, 0);
-            return new BytesNode(bytes);
+            bool[] bools = new bool[obj.Length];
+            for (int i = 0; i < obj.Length; i++)
+            {
+                bools[i] = obj[i];
+            }
+            return new BitmaskNode(bools);
         }
 
-        protected override BitArray CreateObject(BytesNode node, CreateObjectContext context)
+        protected override BitArray CreateObject(BitmaskNode node, CreateObjectContext context)
         {
-            return new BitArray(node.Value);
+            return new BitArray((bool[])node.Value);
         }
     }
 }
