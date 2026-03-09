@@ -74,6 +74,7 @@ null
 </details>
 
 
+# Logical
 
 <details>
   <summary><b>Booleans</b></summary>
@@ -83,6 +84,20 @@ A boolean. Must be either true or false.
 
 ```
 true
+false
+```
+
+</details>
+
+<details>
+  <summary><b>Bitmask</b></summary>
+<br/>
+
+A bitmask. Contains a collection of true/false values. They start with a `/` slash character, followed by zero or more binary digits.
+
+```
+/01010                                  False, true, false, true, false.
+/                                       Empty bitmask.
 false
 ```
 

@@ -46,6 +46,7 @@ namespace Rusty.Serialization.Core.Conversion
             ConverterRegistry.Add<decimal, DecimalConverter>();
             ConverterRegistry.Add<char, CharConverter>();
             ConverterRegistry.Add<string, StringConverter>();
+            ConverterRegistry.Add<bool[], BoolArrayConverter>();
             ConverterRegistry.Add<byte[], ByteArrayConverter>();
         }
 

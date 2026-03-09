@@ -3,7 +3,7 @@
 Below you can view the types that have built-in serialization/deserialization support, and what literal types they will serialize to.
 
 If an object of a type is serialized that is not in the table below, then the system will serialize using:
-- Fields that are public and non-static.
+- Fields that are public and non-static (including readonly fields).
 - Properties that are public, non-static and non-readonly.
 - Non-public fields and properties with the `[DataMember]` attribute.
 - *Unity only*: Non-public fields with the `[SerializeField]` or `[SerializeReference]` attribute.
@@ -28,9 +28,10 @@ If an object of a type is serialized that is not in the table below, then the sy
 |char|System.Char|char||
 |string|System.String|string/null||
 |T[]|System.Array|list/null||
+|bool[]|System.Boolean[]|bitmask/null||
 |byte[]|System.Byte[]|bytes/null||
 |(...)|System.ValueTuple<...>|list||
-|T?|System.Nullable&lt;T&gt;|*varies* or null|Depends on the underlying type|
+|T?|System.Nullable&lt;T&gt;|*varies* or null|Depends on the underlying type for non-null values|
 |enum|System.Enum|symbol|list if annotated with `[Flags]`|
 |struct|System.ValueType|object||
 |class|System.Object|object/null||
@@ -57,12 +58,14 @@ If an object of a type is serialized that is not in the table below, then the sy
 ### System.Collections
 |C#|Serialized|
 |-|-|
-|BitArray|bytes/null|
+|BitArray|bitmask/null|
 
 ### System.Collections.Generic
 |C#|Serialized|Notes|
 |-|-|-|
 |List&lt;T&gt;|list/null||
+|List&lt;bool&gt;|bitmask/null||
+|List&lt;byte&gt;|bytes/null||
 |Stack&lt;T&gt;|list/null||
 |Queue&lt;T&gt;|list/null||
 |LinkedList&lt;T&gt;|list/null||
@@ -73,6 +76,11 @@ If an object of a type is serialized that is not in the table below, then the sy
 |SortedList<T,U>|dictionary/null||
 |SortedDictionary<T,U>|dictionary/null||
 |PriorityQueue<T,U>|dictionary/null|.NET 6 or higher|
+
+### System.Collections.Specialized
+|C#|Serialized|
+|-|-|
+|BitVector32|bitmask|
 
 ### System.Numerics
 |C#|Serialized|
@@ -140,7 +148,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 
 |C#|Serialized|
 |-|-|
-|LayerMask|int|
+|LayerMask|bitmask|
 |RangeInt|list|
 |Vector2|list|
 |Vector2Int|list|

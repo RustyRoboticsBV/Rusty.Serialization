@@ -210,6 +210,10 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.Equals("false"))
                 return new BoolNode(false);
 
+            // Bitmask.
+            if (token.Text.StartsWith('/'))
+                return new BitmaskNode(BitmaskValue.Parse(token.Text.Slice(1)));
+
             // Numerics (int and float).
             NumericType numeric = GetNumericType(token.Text, NumericParseMode.AllowLonePoint);
             if (numeric == NumericType.Int)

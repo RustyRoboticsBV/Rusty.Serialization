@@ -38,12 +38,8 @@ namespace Rusty.Serialization.Testing
             int address = visited.Count + 1;
             visited[obj] = address;
 
-            // Strings.
-            if (obj is string)
-                return $"{indentStr}{name}: ({type.Name}) {obj} [Address #{address}]";
-
-            // Other structs.
-            if (obj is DateTime || obj is TimeSpan)
+            // Strings & other structs.
+            if (obj is string || obj is Type || obj is DateTime || obj is TimeSpan)
                 return $"{indentStr}{name}: ({type.Name}) {obj} [Address #{address}]";
 
             // Key-value pairs.
