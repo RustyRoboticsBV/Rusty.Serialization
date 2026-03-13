@@ -7,7 +7,7 @@ The format is syntactically self-describing and does not require an external sch
 
 CSCD literals are more general than C# types. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common composite data types, such as timestamps and colors, have dedicated compact literal forms in order to reduce verbosity.
 
-The main design goals are generality, compactness and unambiguous parsing. While usable in any programming language, it was designed with the .NET framework in mind, where object graphs may contain polymorphic types, shared or cyclic references, and shadowed members. CSCD is primarily intended to be machine-generated, but human-inspectable. Though it can be written by hand, this requires knowledge of the target runtime and is generally not recommended.
+The main design goals are generality, expressiveness, compactness and unambiguous parsing. While usable in any programming language, it was designed with the .NET framework in mind, where object graphs may contain polymorphic types, shared or cyclic references, and shadowed members. CSCD is primarily intended to be machine-generated, but human-inspectable. Though it can be written by hand, this requires knowledge of the target runtime and is generally not recommended.
 
 This document will first describe some format-wide syntax rules. After that, it will describe each literal type and their syntaxes, starting with metadata, followed by primitives and finally collections.
 
@@ -192,7 +192,7 @@ Serializers SHOULD only emit type labels when necessary to disambiguate the type
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(my_namespace.my_class<int>.my_struct<list<f64>>[])`.
 
 #### Scopes
-Scopes MAY be placed before any [object member name](#objects), and are written as a name between `^` Carets (e.g. `^my_scope^`). They act as hints within objects to determine which base class a member belongs to, resolving ambiguities caused by shadowed variables. The format does not interpret or validate scope names; it is up to the parser to map a scope name to the corresponding runtime base class.
+Scopes MAY be placed before any [object member name](#objects), and are written as a name between `^` carets (e.g. `^my_scope^`). They act as hints within objects to determine which base class a member belongs to, resolving ambiguities caused by shadowed variables. The format does not interpret or validate scope names; it is up to the parser to map a scope name to the corresponding runtime base class.
 
 The following characters MUST NOT appear in scope literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
@@ -451,7 +451,7 @@ It is up to parsers to decide whether a reference should be deserialized as a po
 ### 2.3. Collections
 
 #### Lists
-Lists represent collections of zero or more values. They MAY be used to represent ordered, unordered, resizable and fixed-size collections.
+Lists represent collections of zero or more values. They MAY be used to represent ordered, unordered, resizable and fixed-size collections of values. This includes array-like, list-like, set-like and tuple-like data structures.
 
 A list MUST be enclosed in `[]` square brackets. Element values MUST be separated by `,` commas. Whitespace MAY appear before or after any element value or comma; parsers MUST ignore this whitespace.
 

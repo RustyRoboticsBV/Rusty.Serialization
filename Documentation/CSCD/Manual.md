@@ -1,11 +1,16 @@
 # CSCD User Manual
 
-This document describes the CSCD syntax and its different literals in an informal way.
+This document describes the Compact Serialized C# Data (CSCD) format syntax and how to use it.
+
+CSCD is a human-readable serialization format designed to represent object graphs. It is especially suited for systems where object graphs can contain shared or cyclic references, polymorphic types or shadowed variables.
+
+## Structure
+CSCD documents primarily consist of values and metadata. Two categories of values exist: primitives and collections. Exactly one top-level value must exist. Values may be annotated with metadata. CSCD documents may also contain whitespace and [comments](#comments). Optionally they may start with a [format header marker](#header) and end with a [format footer marker](#footer).
 
 ## Format Markers
 
 ### Header
-An optional marker that can be used to mark a string as being CSCD. It must be the first token in the document.
+An optional marker that can be used to mark a string as being CSCD. It must be the first token in the document, before any values or comments.
 
 ```
 ~CSCD~                                  Regular version.
@@ -13,7 +18,7 @@ An optional marker that can be used to mark a string as being CSCD. It must be t
 ```
 
 ### Footer
-An optional marker that can be used to mark the end of a string of CSCD. It must be the last token in the document.
+An optional marker that can be used to mark the end of a string of CSCD. It must be the last token in the document, after all values and comments.
 
 ```
 ~/CSCD~
@@ -24,12 +29,18 @@ Comments may appear anywhere in the CSCD string (except before the header and af
 
 ```
 ;; Comment text. ;;
+;; Multi-line
+   comment.      ;;
 ```
 
 ## Whitespace
 Whitespace may appear between format markers, comments, interpunction and literals. ASCII spaces, horizontal tabs, line feeds and carriage returns may be used.
 
-## Identity
+## Literals
+
+This section describes the various primitive, collection and metadata literals.
+
+### Identity
 Two literals exist to model reference or pointer links in an object graph.
 
 #### Address
@@ -49,9 +60,7 @@ A reference that points to an object annotated with an address.
 &&
 ```
 
-## Types
-
-### Type
+#### Types
 Type hints may be attached to any value literal, which can help the runtime disambiguate polymorphic types.
 
 ```
@@ -60,7 +69,7 @@ Type hints may be attached to any value literal, which can help the runtime disa
 ()
 ```
 
-## Basic Values
+### Basic Values
 
 <details>
   <summary><b>Null</b></summary>
@@ -75,7 +84,7 @@ null
 </details>
 
 
-# Logical
+### Logical
 
 <details>
   <summary><b>Booleans</b></summary>
@@ -105,7 +114,7 @@ A bitmask. Contains a collection of true/false values. They start with a `/` sla
 
 
 
-## Numeric
+### Numeric
 
 <details>
   <summary><b>Integers</b></summary>
@@ -189,7 +198,7 @@ nan
 
 
 
-## Textual
+### Textual
 
 <details>
   <summary><b>Characters</b></summary>
@@ -225,7 +234,7 @@ A string value.
 
 
 
-## Temporal
+### Temporal
 Several literal exist to express various types of temporal data: timestamps, UTC offsets and durations.
 
 <details>
@@ -305,7 +314,7 @@ The entire duration may be negated with a leading `-`.
 
 
 
-## Other Composites
+### Other Composites
 These literals include canonical forms for miscellanious, but relatively common composite data types: colors, uids and arbitrary byte arrays.
 
 <details>
@@ -357,7 +366,7 @@ A bytestring in Base64, representing arbitrary byte arrays.
 
 
 
-## Symbolic
+### Symbolic
 
 <details>
   <summary><b>Symbols</b></summary>
@@ -374,9 +383,11 @@ mySymbol                                    Bare notation.
 
 
 
-## Collections
+### Collections
 
-### List
+<details>
+  <summary><b>Lists</b></summary>
+<br/>
 A collection of elements. Elements may be any type of literal.
 
 ```
@@ -384,8 +395,11 @@ A collection of elements. Elements may be any type of literal.
 [1, 2.0, 'C']                               List of mixed content.
 []                                          Empty list.
 ```
+</details>
 
-### Dictionary
+<details>
+  <summary><b>Dictionaries</b></summary>
+<br/>
 A collection of key-value pairs. Keys and values may by any type of literal, and duplicate keys are allowed.
 
 ```
@@ -393,8 +407,11 @@ A collection of key-value pairs. Keys and values may by any type of literal, and
 {false: 1, 2.0: nan, 'C': "abc"}            Dictionary with mixed keys and values.
 {}                                          Empty dictionary.
 ```
+</details>
 
-### Object
+<details>
+  <summary><b>Objects</b></summary>
+<br/>
 A collection of name-value pairs. Names must be symbol literals, and may be annotated with a scope. Values may be any type of literal. Duplicate names are allowed.
 
 ```
@@ -402,8 +419,11 @@ A collection of name-value pairs. Names must be symbol literals, and may be anno
 <^base^a:0, a:1>
 <>
 ```
+</details>
 
-### Scope
+<details>
+  <summary><b>Scopes</b></summary>
+<br/>
 Scopes hints may be attached to object member names, in order to disambiguate shadowed variables in objects with a complex inheritance chain.
 
 ```
@@ -411,3 +431,4 @@ Scopes hints may be attached to object member names, in order to disambiguate sh
 ^my_namespace.my_base^
 ^^
 ```
+</details>
