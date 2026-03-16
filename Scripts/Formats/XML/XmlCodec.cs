@@ -97,6 +97,14 @@ namespace Rusty.Serialization.XML
                     writer.WriteEndElement();
                     break;
 
+                case BitmaskNode bitmask:
+                    writer.WriteStartElement("bits");
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
+
+                    writer.WriteString(bitmask.Value.ToString());
+                    writer.WriteEndElement();
+                    break;
+
                 case IntNode @int:
                     writer.WriteStartElement("int");
                     WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
@@ -305,14 +313,18 @@ namespace Rusty.Serialization.XML
 
         // Parsing.
 
-        private static bool IsPrimitive(string tag) => tag == "null" || tag == "bool" || tag == "int" || tag == "float"
-            || tag == "inf" || tag == "nan" || tag == "char" || tag == "str" || tag == "dec" || tag == "col" || tag == "uid"
-            || tag == "bytes" || tag == "symbol" || tag == "ref";
+        private static bool IsPrimitive(string tag) => tag == "null" || tag == "bool" || tag == "bits"
+            || tag == "int" || tag == "float" || tag == "dec" || tag == "inf" || tag == "nan"
+            || tag == "char" || tag == "str"
+            || tag == "col" || tag == "uid"
+            || tag == "bytes"
+            || tag == "symbol" || tag == "ref";
 
         private static INode ParsePrimitive(string tag, string value) => tag switch
         {
             "null" => new NullNode(),
             "bool" => new BoolNode(BoolValue.Parse(value)),
+            "bits" => new BitmaskNode(BitmaskValue.Parse(value)),
             "int" => new IntNode(IntValue.Parse(value)),
             "float" => new FloatNode(FloatValue.Parse(value)),
             "inf" => value == "+" ? new InfinityNode(true) : new InfinityNode(false),

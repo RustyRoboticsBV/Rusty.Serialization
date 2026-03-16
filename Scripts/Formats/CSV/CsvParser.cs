@@ -56,6 +56,9 @@ namespace Rusty.Serialization.CSV
                 case "bool":
                     return new BoolNode(ReadCell(ref lexer) == "true");
 
+                case "bits":
+                    return new BitmaskNode(BitmaskValue.Parse(ReadCell(ref lexer)));
+
                 case "int":
                     return new IntNode(IntValue.Parse(ReadCell(ref lexer)));
 

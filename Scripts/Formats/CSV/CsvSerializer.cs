@@ -56,6 +56,11 @@ namespace Rusty.Serialization.CSV
                 sb.Append("bool,");
                 sb.Append(b.Value ? "true" : "false");
             }
+            else if (node is BitmaskNode bitmask)
+            {
+                sb.Append("bits,");
+                sb.Append(bitmask.Value.ToString());
+            }
             else if (node is IntNode @int)
             {
                 sb.Append("int,");
