@@ -94,9 +94,12 @@ namespace Rusty.Serialization.Core.Nodes
         private static byte ParseHex(ReadOnlySpan<char> str)
         {
             if (str.Length == 1)
-                return ParseDigit(str[0]);
+            {
+                byte b = ParseDigit(str[0]);
+                return (byte)((b << 4) | b);
+            }
             else if (str.Length == 2)
-                return (byte)(ParseDigit(str[0]) << 4 + ParseDigit(str[1]));
+                return (byte)((ParseDigit(str[0]) << 4) | ParseDigit(str[1]));
             else
                 throw new FormatException($"Wrong length: {new string(str)}.");
         }
@@ -107,7 +110,7 @@ namespace Rusty.Serialization.Core.Nodes
                 return (byte)(chr - '0');
             if (chr >= 'A' && chr <= 'F')
                 return (byte)(chr - 'A' + 10);
-            if (chr >= 'a' && chr <= 'a')
+            if (chr >= 'a' && chr <= 'f')
                 return (byte)(chr - 'a' + 10);
             throw new FormatException($"Bad character {chr}.");
         }

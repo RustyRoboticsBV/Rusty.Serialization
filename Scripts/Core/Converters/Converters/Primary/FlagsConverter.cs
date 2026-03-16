@@ -70,7 +70,7 @@ namespace Rusty.Serialization.Core.Conversion
 
             for (int i = 0; i < node.Count; i++)
             {
-                INode item = node.GetValueAt(i);
+                INode item = ConvertNode(node.GetValueAt(i), typeof(SymbolNode));
                 if (item is SymbolNode s)
                 {
                     try
@@ -86,7 +86,7 @@ namespace Rusty.Serialization.Core.Conversion
                 }
                 else
                 {
-                    throw new InvalidOperationException("All list entries must be SymbolNodes.");
+                    throw new InvalidOperationException($"Cannot handle list elements of type '{item.GetType()}'.");
                 }
             }
 

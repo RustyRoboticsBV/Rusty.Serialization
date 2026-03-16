@@ -55,20 +55,31 @@ namespace Rusty.Serialization.Core.Conversion
             throw new InvalidCastException($"The converter '{GetType().Name}' cannot handle node:\n{node}.");
         }
 
-        public void CollectTypes(INode node, CollectTypesContext context)
+        /// <summary>
+        /// Convert a node to a type that this converter can use.
+        /// </summary>
+        public static INode ConvertNode(INode node, Type toType)
         {
-            NodeT castedNode;
-            try
+            if (node == null)
+                return null;
+
+            Type from = node.GetType();
+
+            // If no conversions needed, return the original node.
+            if (toType.IsAssignableFrom(from))
+                return node;
+
+            // Check if there is a conversion.
+            if (HasUserDefinedCast(from, toType, out MethodInfo method))
             {
-                castedNode = (NodeT)node;
-            }
-            catch (InvalidCastException)
-            {
-                throw new InvalidCastException($"Cannot cast node of type '{node.GetType()}' to node of type '{typeof(NodeT)}'.");
+                return (INode)method.Invoke(null, new object[] { node });
             }
 
-            CollectTypes(castedNode, context);
+            // No conversion available.
+            throw new InvalidCastException($"Cannot convert node to '{toType.Name}':\n{node}.");
         }
+
+        public void CollectTypes(INode node, CollectTypesContext context) => CollectTypes((NodeT)node, context);
         INode IConverter.CreateNode(object obj, CreateNodeContext context) => CreateNode((TargetT)obj, context);
         object IConverter.CreateObject(INode node, CreateObjectContext context) => CreateObject((NodeT)node, context);
 

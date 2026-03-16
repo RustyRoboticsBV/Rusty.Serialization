@@ -67,7 +67,7 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case BitmaskNode bitmask:
-                    result = new JsonString(bitmask.ToString());
+                    result = new JsonString(bitmask.Value.ToString());
                     break;
 
                 case IntNode @int:
@@ -126,7 +126,9 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case RefNode @ref:
-                    result = new JsonString(@ref.Address);
+                    JsonObject refObj = new JsonObject();
+                    refObj.Add("$ref", new JsonString(@ref.Address));
+                    result = refObj;
                     break;
 
                 case ListNode list:
