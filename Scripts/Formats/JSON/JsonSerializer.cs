@@ -66,6 +66,10 @@ namespace Rusty.Serialization.JSON
                     result = new JsonBoolean(@bool.Value);
                     break;
 
+                case BitmaskNode bitmask:
+                    result = new JsonString(bitmask.ToString());
+                    break;
+
                 case IntNode @int:
                     result = new JsonNumber((double)(BigInteger)@int.Value);
                     break;

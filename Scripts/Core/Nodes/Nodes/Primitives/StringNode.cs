@@ -31,6 +31,11 @@ namespace Rusty.Serialization.Core.Nodes
             return new BoolNode(BoolValue.Parse(node.Value));
         }
 
+        public static implicit operator BitmaskNode(StringNode node)
+        {
+            return new BitmaskNode(BitmaskValue.Parse(node.Value));
+        }
+
         public static implicit operator IntNode(StringNode node)
         {
             return new IntNode(IntValue.Parse(node.Value));
