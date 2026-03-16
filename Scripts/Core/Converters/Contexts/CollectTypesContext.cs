@@ -41,7 +41,8 @@ namespace Rusty.Serialization.Core.Conversion
             else if (node is ICollectionNode)
             {
                 IConverter converter = Converters.Get(objType);
-                converter.CollectTypes(node, this);
+                INode convertedNode = converter.ConvertNode(node);
+                converter.CollectTypes(convertedNode, this);
                 if (!NodeTypeTable.Has(node))
                     NodeTypeTable.Add(node, objType);
             }
