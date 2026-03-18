@@ -1,13 +1,13 @@
 # CSCD Format Specification
 
 ## Introduction
-This formal specification document describes the syntax of an object graph serialization format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary object graphs, with a focus on game development.
+This formal specification document describes the syntax of an object graph serialization format called *Compact Serialized C# Data* (CSCD). CSCD is a human-readable, compact, and unambiguous format capable of fully expressing arbitrary object graphs, with a focus on .NET and game development.
 
-The format is syntactically self-describing and does not require an external schema for structural parsing. While it is *syntactically* structured like a tree, it *semantically* represents a graph. Values may be annotated with optional type and reference metadata, enabling parsers to reconstruct objects with their original types and preserve reference/pointer links.
+The format is syntactically self-describing and does not require an external schema for structural parsing. While it is *syntactically* structured like a tree, it *semantically* represents a graph. Values may be annotated with optional type and reference metadata, enabling parsers to reconstruct objects with their original types and preserve reference/pointer links. In essence, a string of CSCD can be thought of as a memory dump that can be deserialized back into memory.
 
-CSCD literals are more general than C# types. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common composite data types, such as timestamps and colors, have dedicated compact literal forms in order to reduce verbosity.
+CSCD literals are more general than C# types. For example, all signed and unsigned integer primitives, regardless of precision, are represented using a single integer literal. Some common composite data types, such as callables, timestamps and colors, have dedicated compact literal forms in order to reduce verbosity.
 
-The main design goals are generality, expressiveness, compactness and unambiguous parsing. While usable in any programming language, it was designed with the .NET framework in mind, where object graphs may contain polymorphic types, shared or cyclic references, and shadowed members. CSCD is primarily intended to be machine-generated, but human-inspectable. Though it can be written by hand, this requires knowledge of the target runtime and is generally not recommended.
+The main design goals are generality, expressiveness, compactness and unambiguous parsing. While usable in any programming language, it was designed with the .NET framework in mind, where object graphs may contain polymorphic types, shared or cyclic references and shadowed members. CSCD is primarily intended to be machine-generated, but human-inspectable. Though it can be written by hand, this requires knowledge of the target runtime and is generally not recommended.
 
 This document will first describe some format-wide syntax rules. After that, it will describe each literal type and their syntaxes, starting with metadata, followed by primitives and finally collections.
 
@@ -55,6 +55,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
     - [Lists](#lists)
     - [Dictionaries](#dictionaries)
     - [Objects](#objects)
+    - [Callables](#callables)
 </details>
 
 ## 1. General Formatting
@@ -155,6 +156,8 @@ A valid serialized CSCD string MUST contain exactly one top-level value. This to
 
 ### 2.1. Metadata
 
+Metadata literals represent information that is attached to a value literal, such as type or scope information. They MUST be attached to a value and cannot appear by themselves.
+
 #### Addresses
 Addresses MAY be placed before any concrete value, type or offset literal, and are written as a name between `` ` `` backticks. Values annotated with an address can be referenced elsewhere using a [reference literal](#references). Addresses MUST NOT be applied to reference literals. Addresses MUST be globally unique within the entire CSCD string, and are case-sensitive.
 
@@ -192,7 +195,7 @@ Serializers SHOULD only emit type labels when necessary to disambiguate the type
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(my_namespace.my_class<int>.my_struct<list<f64>>[])`.
 
 #### Scopes
-Scopes MAY be placed before any [object member name](#objects), and are written as a name between `^` carets (e.g. `^my_scope^`). They act as hints within objects to determine which base class a member belongs to, resolving ambiguities caused by shadowed variables. The format does not interpret or validate scope names; it is up to the parser to map a scope name to the corresponding runtime base class.
+Scopes MAY be placed before any [object member name](#objects) or [callable name](#callables), and are written as a name between `^` carets (e.g. `^my_scope^`). They act as hints within objects to determine which base class a member belongs to, resolving ambiguities caused by shadowed variables. In callables, they are also used to determine which type a static method belongs to. The format does not interpret or validate scope names; it is up to the parser to map a scope name to the corresponding runtime base class.
 
 The following characters MUST NOT appear in scope literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 
@@ -223,6 +226,8 @@ Parsers MUST preserve offset information if the runtime type allows for it.
 Examples: `|-2:30| @2000/5/1,13:00:00@`, `|+5| @1830/11/10@`, `|Z| @09:45:10@`.
 
 ### 2.2. Primitives
+
+Primitive literals represent atomic CSCD values.
 
 #### Null
 Null values MUST be encoded using the literal `null`. Null values MUST be lower-case. Null literals MAY be annotated with type labels like any other value.
@@ -450,6 +455,8 @@ It is up to parsers to decide whether a reference should be deserialized as a po
 
 ### 2.3. Collections
 
+Collection literals represent values that are composed of other literals.
+
 #### Lists
 Lists represent collections of zero or more values. They MAY be used to represent ordered, unordered, resizable and fixed-size collections of values. This includes array-like, list-like, set-like and tuple-like data structures.
 
@@ -486,3 +493,14 @@ Member values MAY be any literal type, including other collections. Member value
 Objects MAY be empty, which MUST be represented by the literal `<>`.
 
 Example: `<my_int:0,my_float:0.0,my_char:'A',^my_base_class^*my_stríng*:"abc">`.
+
+#### Callables
+Callable literals represent things like .NET delegates or C++ function pointers.
+
+Two forms are supported:
+- `?{target}:{name}?`: represents an instance method of some object. The target MAY be any value literal (including metadata-annotated values). 
+- `?{name}?`: represents a static method.
+
+In both cases, the name MUST be a symbol (either delimited or bare). Additionally, the name MAY be annotated with a scope, to disambiguate which type the method exists on (useful for shadowed or static methods). It MAY also be annotated with a type, to disambiguate overloaded variables. When both are present, the scope MUST come before the type.
+
+Examples: `?<a:0,b:'C'>:(Func<int,int>)Add?`, `?^MyClass^MyStaticMethod?`, ?5:^MyBase^*ToString*?, ?MyGlobalFunction?
