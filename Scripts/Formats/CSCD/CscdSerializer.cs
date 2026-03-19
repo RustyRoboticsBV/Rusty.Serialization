@@ -111,6 +111,8 @@ namespace Rusty.Serialization.CSCD
                 return Serialize(dic, prettyPrinting);
             if (node is ObjectNode obj)
                 return Serialize(obj, prettyPrinting);
+            if (node is CallableNode callable)
+                return Serialize(callable, prettyPrinting);
 
             throw new ArgumentException($"Unexpected node of type {node.GetType()}.");
         }
@@ -418,6 +420,20 @@ namespace Rusty.Serialization.CSCD
             if (prettyPrinting)
                 sb.Append('\n');
             sb.Append('>');
+            return sb.ToString();
+        }
+
+        private string Serialize(CallableNode node, bool prettyPrinting)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append('?');
+            if (node.Target != null)
+            {
+                sb.Append(Serialize(node.Target, prettyPrinting));
+                sb.Append(':');
+            }
+            sb.Append(Serialize(node.Name, prettyPrinting));
+            sb.Append('?');
             return sb.ToString();
         }
 

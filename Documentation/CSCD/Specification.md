@@ -78,7 +78,7 @@ Characters outside these ranges MUST not appear directly in serialized text. The
 
 Parsers MUST reject input strings containing code points outside of the allowed character set before processing escape sequences. After escape processing, parsers MUST accept any valid Unicode code point allowed by the target platform.
 
-CSCD enforces this restricted character set to ensure that serialized files remain editor-safe and diffable across all platforms and environments.
+CSCD enforces this restricted character set to ensure that serialized files remain editor-safe and diffable across all platforms and environments. In cases where this is not desirable, a [special header](#unicode-header) may be used to disable the restricted character set and allow for all valid Unicode code points instead.
 
 **Note**: The specification places no restrictions on how the text is stored or transmitted. Implementations may use any encoding (UTF-8, UTF-16, ISO-8859-1, etc.) as long as the serialized text, when interpreted as code points, obeys the rules above.
 
@@ -97,7 +97,7 @@ Parsers that handle multiple formats MUST use this marker to recognize an input 
 The sequence `~CSCD~` has special meaning only when it appears before the top-level value. If the same sequence appears elsewhere (including inside of delimited literals) it MUST be treated as ordinary literal content.
 
 #### Unicode Header
-Alternatively, the header `~CSCD?U~` may be used instead of `~CSCD~`. This header specifies that the [restricted character set](#11-character-set) MUST be ignored by a parser, and that all valid Unicode code points may be used in the string.
+Alternatively, the header `~CSCD,U~` may be used instead of `~CSCD~`. This header specifies that the [restricted character set](#11-character-set) MUST be ignored by a parser, and that all valid Unicode code points may be used in the string.
 
 #### Footer
 The OPTIONAL footer text `~/CSCD~` MAY be used to denote the end of a string of CSCD after the top-level value and any trailing comments.
@@ -109,7 +109,7 @@ Parsers MAY use it to detect the end of an embedded string of CSCD. Parsers that
 The sequence `~/CSCD~` has special meaning only when it appears after the top-level value. If the same sequence appears elsewhere (including inside of delimited literals) it MUST be treated as ordinary literal content.
 
 ### 1.4 Whitespace
-Whitespace MAY appear between literals and punctuation (`, : [ ] { } < >`) for formatting purposes. Whitespace MAY also appear before and after the top-level value, and even before the header format marker and after the footer format marker. Unless otherwise stated, whitespace MUST NOT break up literals that are multiple characters long.
+Whitespace MAY appear between literals and punctuation (`, : [ ] { } < > ?`) for formatting purposes. Whitespace MAY also appear before and after the top-level value, and even before the header format marker and after the footer format marker. Unless otherwise stated, whitespace MUST NOT break up literals that are multiple characters long.
 
 Serializers SHOULD NOT emit whitespace in situations where readability is not important.
 
@@ -498,9 +498,13 @@ Example: `<my_int:0,my_float:0.0,my_char:'A',^my_base_class^*my_stríng*:"abc">`
 Callable literals represent things like .NET delegates or C++ function pointers.
 
 Two forms are supported:
-- `?{target}:{name}?`: represents an instance method of some object. The target MAY be any value literal (including metadata-annotated values). 
-- `?{name}?`: represents a static method.
+- `?{target}:{name}?`: represents a handle to an instance method of some object. The target MAY be any value literal (including metadata-annotated values). 
+- `?{name}?`: represents a handle to a static method.
 
-In both cases, the name MUST be a symbol (either delimited or bare). Additionally, the name MAY be annotated with a scope, to disambiguate which type the method exists on (useful for shadowed or static methods). It MAY also be annotated with a type, to disambiguate overloaded variables. When both are present, the scope MUST come before the type.
+In both cases, the name MUST be a symbol (either delimited or bare) and MAY be annotated with a scope to disambiguate which type the method exists on (useful for shadowed/hidden or static methods).
 
-Examples: `?<a:0,b:'C'>:(Func<int,int>)Add?`, `?^MyClass^MyStaticMethod?`, ?5:^MyBase^*ToString*?, ?MyGlobalFunction?
+The literal `??` MUST be interpreted as a callable with no target and the empty symbol as its name (i.e. `?**?`).
+
+The format has no knowledge about the meaning of a callable's name or scope; it is up to the parser to properly resolve them into a runtime method.
+
+Examples: `(Func<int,int>)?(TargetType)<a:0,b:'C'>:Add?`, `?^MyClass^MyStaticMethod?`, `?5:^MyBase^ToString?`, `?MyGlobalFunction?`, `?&ref&:*Complex name alias*?`.

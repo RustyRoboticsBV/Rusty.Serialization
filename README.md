@@ -97,7 +97,7 @@ A simple [syntax highlighting plugin](./VSCode) for Visual Studio Code is also p
 ~CSCD~
 ;; Copyright <My Name>         ;;
 ;; Licensed under <My License> ;;
-(MyType)<
+`MyAddress`(MyType)<
     my_null: null,
     my_boolean: true,
     my_integer: 123,
@@ -114,13 +114,14 @@ A simple [syntax highlighting plugin](./VSCode) for Visual Studio Code is also p
     my_duration: 7d23h30m10s,
     my_bytes: !SGVsbG8sIHdvcmxkIQ,
     my_symbol: Wednesday,
+    my_reference: &MyAddress&,
     my_list: [1, 2.e-5, "def"],
     my_dictionary: {
         10: 1.,
         'A': "ABC",
         [1, 2, 3] : false
     },
-    my_object: `my_address` <
+    my_object: <
         a: 1.0e15,
         b: '\1F4A9;',
         c: @14:2:10.005@,
@@ -129,8 +130,9 @@ A simple [syntax highlighting plugin](./VSCode) for Visual Studio Code is also p
         ^MyBaseClass^ e: 0s,
         f: |-2:30| @1990/1/5@
     >,
-    my_reference: &my_address&
+    my_delegate: ?(MyObject)<a:1,b:2> : ToString?
 >
+~/CSCD~
 ```
 
 ## Future Work

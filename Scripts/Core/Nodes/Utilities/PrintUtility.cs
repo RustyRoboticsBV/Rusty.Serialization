@@ -64,5 +64,19 @@ namespace Rusty.Serialization.Core.Nodes
                 + "\n}";
             return PrintChild(pair, isLast);
         }
+
+        public static string PrintDelegate(INode target, INode name, bool isLast = true)
+        {
+            return PrintDelegate(PrintNode(target), PrintNode(name), isLast);
+        }
+
+        public static string PrintDelegate(string target, string name, bool isLast = true)
+        {
+            string pair = "{"
+                + "\n target: " + (target.Replace("\n", "\n ") ?? "(null)")
+                + "\n name: " + (name.Replace("\n", "\n ") ?? "(null)")
+                + "\n}";
+            return PrintChild(pair, isLast);
+        }
     }
 }

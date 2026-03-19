@@ -35,6 +35,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 |enum|System.Enum|symbol|list if annotated with `[Flags]`|
 |struct|System.ValueType|object||
 |class|System.Object|object/null||
+|delegate|System.Delegate|callable/null|list if multicast|
 
 ## Other .NET Types
 ### System

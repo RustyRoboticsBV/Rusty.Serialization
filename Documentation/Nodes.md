@@ -12,7 +12,7 @@ A node tree should never contain any cycles. Shared and cyclic reference links a
 
 ## Node Types
 
-UCS recognizes 24 different node types, which are listed below. Each node corresponds to a [CSCD format literal](../README.md#compact-serialized-c-data), and vice-versa.
+UCS recognizes 25 different node types, which are listed below. Each node corresponds to a [CSCD format literal](../README.md#compact-serialized-c-data), and vice-versa.
 
 ### Metadata
 
@@ -30,6 +30,7 @@ Collection nodes act as groupings of child nodes. They exist to preserve object 
 - 📜 **List**: a collection node that contains a list of element nodes. Used to encode array-like or set-like types. Elements may be nodes of any type (except for scopes).
 - 📖 **Dictionary**: a collection node that contains pairs of key/value nodes. Used to encode dictionary-like types. Both keys and values may be nodes of any type (except for scopes).
 - 📦 **Object**: a collection node that contains pairs of member name/value nodes. Used to encode arbitrary object instances. Member names must either be a symbol or scope node; member values may be nodes of any type.
+- 📞 **Callable**: a node that represents a delegate or function pointer. It contains one or two child nodes: an optional target and a name. The target may be any node, the name must be a symbol, type or scope node.
 
 ### Primitives
 

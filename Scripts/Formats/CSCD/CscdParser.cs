@@ -286,6 +286,10 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.Equals('<'))
                 return ParseObject(text, lexer, allowFullUnicodeRange);
 
+            // Callable.
+            if (token.Text.Equals('?'))
+                return ParseCallable(text, lexer, allowFullUnicodeRange);
+
             // Symbol (bare).
             return ParseBareSymbol(token);
         }
@@ -635,6 +639,34 @@ namespace Rusty.Serialization.CSCD
         }
 
         /// <summary>
+        /// Parse a sequence of tokens as an object node.
+        /// </summary>
+        private static SymbolNode ParseBareSymbol(Token token)
+        {
+            if (token.Length == 0)
+                TokenError(token, "Bare tokens may not be empty.");
+
+            if (token.Text.Equals("null") || token.Text.Equals("true") || token.Text.Equals("false")
+                || token.Text.Equals("nan") || token.Text.Equals("inf"))
+            {
+                TokenError(token, "Symbol may not be a reserved keyword.");
+            }
+
+            char c = token.Text[0];
+            if (!(c == '_' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'))
+                TokenError(token, "Bare tokens must starts with an ASCII letter or underscore.");
+
+            for (int i = 1; i < token.Length; i++)
+            {
+                c = token.Text[i];
+                if (!(c == '_' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9'))
+                    TokenError(token, "Bare tokens may only consist of ASCII letters, digits or underscores.");
+            }
+
+            return new SymbolNode(new string(token.Text));
+        }
+
+        /// <summary>
         /// Parse a sequence of tokens as a list node.
         /// </summary>
         private static ListNode ParseList(TextSpan text, CscdLexer lexer, bool allowFullUnicodeRange)
@@ -789,31 +821,55 @@ namespace Rusty.Serialization.CSCD
         }
 
         /// <summary>
-        /// Parse a sequence of tokens as an object node.
+        /// Parse a sequence of tokens as a callable node.
         /// </summary>
-        private static SymbolNode ParseBareSymbol(Token token)
+        private static CallableNode ParseCallable(TextSpan text, CscdLexer lexer, bool allowFullUnicodeRange)
         {
-            if (token.Length == 0)
-                TokenError(token, "Bare tokens may not be empty.");
+            CallableNode callable = new CallableNode();
 
-            if (token.Text.Equals("null") || token.Text.Equals("true") || token.Text.Equals("false")
-                || token.Text.Equals("nan") || token.Text.Equals("inf"))
+            while (true)
             {
-                TokenError(token, "Symbol may not be a reserved keyword.");
+                Token next = ExpectToken(text, lexer, "Unclosed callable.");
+
+                // Empty object check.
+                if (next.Text.Equals('?'))
+                    throw TokenError(next, "Empty callable.");
+
+                // Get first member.
+                INode first = ParseToken(text, next, lexer, allowFullUnicodeRange);
+
+                // Get next token.
+                next = ExpectToken(text, lexer, "Unclosed callable.");
+
+                // Early closed: return static.
+                if (next.Text.Equals('?'))
+                {
+                    if (first is not IMemberNameNode)
+                        TokenError(next, "Callable name must be a symbol or scope.");
+                    callable.Name = (IMemberNameNode)first;
+                    return callable;
+                }
+
+                // Colon: continue with name.
+                else if (next.Text.Equals(':'))
+                {
+                    callable.Target = first;
+
+                    next = ExpectToken(text, lexer, "Unclosed callable.");
+                    if (next.Text.Equals('?'))
+                        throw TokenError(next, "Missing callable name after colon.");
+                    INode second = ParseToken(text, next, lexer, allowFullUnicodeRange);
+                    if (second is not IMemberNameNode)
+                        TokenError(next, "Callable name must be a symbol or scope.");
+                    callable.Name = (IMemberNameNode)second;
+
+                    ExpectSymbol(text, lexer, '?', "Unclosed callable.");
+                    return callable;
+                }
+
+                else
+                    throw TokenError(next, "Expected question mark or colon.");
             }
-
-            char c = token.Text[0];
-            if (!(c == '_' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'))
-                TokenError(token, "Bare tokens must starts with an ASCII letter or underscore.");
-
-            for (int i = 1; i < token.Length; i++)
-            {
-                c = token.Text[i];
-                if (!(c == '_' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9'))
-                    TokenError(token, "Bare tokens may only consist of ASCII letters, digits or underscores.");
-            }
-
-            return new SymbolNode(new string(token.Text));
         }
 
         // Helper methods.

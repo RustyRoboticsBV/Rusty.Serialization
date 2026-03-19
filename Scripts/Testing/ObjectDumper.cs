@@ -42,6 +42,22 @@ namespace Rusty.Serialization.Testing
             if (obj is string || obj is Type || obj is DateTime || obj is TimeSpan)
                 return $"{indentStr}{name}: ({type.Name}) {obj} [Address #{address}]";
 
+            // Delegates.
+            if (obj is Delegate del)
+            {
+                string str = $"{indentStr}{name}: ({type.Name}) [Address #{address}]";
+
+                var invocationList = del.GetInvocationList();
+                for (int i = 0; i < invocationList.Length; i++)
+                {
+                    var d = invocationList[i];
+                    str += "\n" + $"{indentStr}  -> Method: {d.Method.Name}";
+                    str += "\n" + Dump(d.Target, "Target", indent + 2, visited);
+                }
+
+                return str;
+            }
+
             // Key-value pairs.
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
             {

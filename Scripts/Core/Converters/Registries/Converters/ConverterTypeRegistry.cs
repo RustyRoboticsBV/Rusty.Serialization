@@ -109,6 +109,10 @@ namespace Rusty.Serialization.Core.Conversion
             if (typeof(ITuple).IsAssignableFrom(targetType))
                 return typeof(TupleConverter<>).MakeGenericType(targetType);
 
+            // Resolve delegate types.
+            if (typeof(Delegate).IsAssignableFrom(targetType))
+                return typeof(DelegateConverter<>).MakeGenericType(targetType);
+
             // Resolve closed generic types.
             if (targetType.IsGenericType)
             {

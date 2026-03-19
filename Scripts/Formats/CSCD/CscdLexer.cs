@@ -34,7 +34,7 @@ namespace Rusty.Serialization.CSCD
                 token = MakeTokenAndAdvance(text, ReadComment(text));
 
             // Interpunction.
-            else if (c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>')
+            else if (c == ',' || c == ':' || c == '[' || c == ']' || c == '{' || c == '}' || c == '<' || c == '>' || c == '?')
                 token = MakeTokenAndAdvance(text, 1);
 
             // Shorthand quote character.
@@ -172,6 +172,7 @@ namespace Rusty.Serialization.CSCD
                     case '}':
                     case '<':
                     case '>':
+                    case '?':
                         return i - Cursor;
                     case ';':
                         if (i + 1 < text.Length && text[i + 1] == ';')
