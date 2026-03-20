@@ -108,5 +108,25 @@ namespace Rusty.Serialization.Core.Nodes
             }
             throw new ArgumentException($"'{oldChild}' was not a child of '{this}'.");
         }
+
+        /* Conversion operators. */
+        public static explicit operator CallableNode(ObjectNode node)
+        {
+            CallableNode callable = new CallableNode();
+            for (int i = 0; i < node.Count; i++)
+            {
+                IMemberNameNode nameNode = node.GetNameAt(i);
+                string name = "";
+                if (nameNode is SymbolNode symbol)
+                    name = symbol.Name;
+
+                INode value = node.GetValueAt(i);
+                if (name == "target")
+                    callable.Target = value;
+                else if (name == "name" && value is StringNode str)
+                    callable.Name = (SymbolNode)str;
+            }
+            return callable;
+        }
     }
 }
