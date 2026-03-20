@@ -3,7 +3,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A decimal number serializer node.
     /// </summary>
-    public class DecimalNode : ValueNode<DecimalValue>
+    public sealed class DecimalNode : ValueNode<DecimalValue>
     {
         /* Constructors. */
         public DecimalNode() : base() { }
@@ -14,12 +14,6 @@ namespace Rusty.Serialization.Core.Nodes
         public override string ToString()
         {
             return "decimal: " + Value;
-        }
-
-        public override void Clear()
-        {
-            Parent = null;
-            Value = 0m;
         }
     }
 }

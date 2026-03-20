@@ -5,10 +5,10 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A bytes serializer node.
     /// </summary>
-    public class BytesNode : ValueNode<BytesValue>
+    public sealed class BytesNode : ValueNode<BytesValue>
     {
         /* Constructors. */
-        public BytesNode() : base() { }
+        public BytesNode() : this(Array.Empty<byte>()) { }
 
         public BytesNode(BytesValue value) : base(value) { }
 

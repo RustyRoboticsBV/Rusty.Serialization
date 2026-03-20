@@ -3,7 +3,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A color serializer node.
     /// </summary>
-    public class ColorNode : ValueNode<ColorValue>
+    public sealed class ColorNode : ValueNode<ColorValue>
     {
         /* Constructors. */
         public ColorNode() : base() { }

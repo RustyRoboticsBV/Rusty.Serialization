@@ -1,20 +1,18 @@
 ﻿namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
-    /// A NaN serializer node.
+    /// A base class for serializer nodes without any child nodes.
     /// </summary>
-    public sealed class NanNode : INode
+    public abstract class LeafNode : INode
     {
         /* Public properties. */
         public ITreeElement Parent { get; set; }
 
-        /* Public methods. */
-        public override string ToString()
-        {
-            return "nan";
-        }
+        /* Constructors. */
+        public LeafNode() { }
 
-        public void Clear()
+        /* Public methods. */
+        public virtual void Clear()
         {
             Parent = null;
         }

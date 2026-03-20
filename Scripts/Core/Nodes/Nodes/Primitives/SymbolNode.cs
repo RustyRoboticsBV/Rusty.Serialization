@@ -3,14 +3,15 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A reference serializer node.
     /// </summary>
-    public class SymbolNode : IMemberNameNode
+    public sealed class SymbolNode : LeafNode, IMemberNameNode
     {
         /* Public properties. */
-        public ITreeElement Parent { get; set; }
         public string Name { get; set; }
 
         /* Constructors. */
-        public SymbolNode(string name)
+        public SymbolNode() : this("") { }
+
+        public SymbolNode(string name) : base()
         {
             Name = name.ToString() ?? "";
         }
@@ -21,9 +22,9 @@ namespace Rusty.Serialization.Core.Nodes
             return "symbol: " + Name;
         }
 
-        public void Clear()
+        public override void Clear()
         {
-            Parent = null;
+            base.Clear();
             Name = "";
         }
     }

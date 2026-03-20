@@ -3,10 +3,9 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A base class for serializer nodes with a value.
     /// </summary>
-    public abstract class ValueNode<T> : INode
+    public abstract class ValueNode<T> : LeafNode
     {
         /* Public properties. */
-        public ITreeElement Parent { get; set; }
         public T Value { get; set; }
 
         /* Constructors. */
@@ -18,9 +17,9 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         /* Public methods. */
-        public virtual void Clear()
+        public override void Clear()
         {
-            Parent = null;
+            base.Clear();
             Value = default;
         }
     }

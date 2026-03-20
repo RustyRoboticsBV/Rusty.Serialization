@@ -3,10 +3,10 @@
     /// <summary>
     /// A duration serializer node.
     /// </summary>
-    public class DurationNode : ValueNode<DurationValue>
+    public sealed class DurationNode : ValueNode<DurationValue>
     {
         /* Constructors. */
-        public DurationNode() { }
+        public DurationNode() : base() { }
 
         public DurationNode(DurationValue value) : base(value) { }
 

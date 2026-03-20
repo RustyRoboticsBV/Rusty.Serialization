@@ -3,14 +3,15 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A reference serializer node.
     /// </summary>
-    public class RefNode : INode
+    public sealed class RefNode : LeafNode
     {
         /* Public properties. */
-        public ITreeElement Parent { get; set; }
         public string Address { get; set; }
 
         /* Constructors. */
-        public RefNode(string address)
+        public RefNode() : this("") { }
+
+        public RefNode(string address) : base()
         {
             Address = address.ToString() ?? "";
         }
@@ -21,9 +22,9 @@ namespace Rusty.Serialization.Core.Nodes
             return "ref: " + Address;
         }
 
-        public void Clear()
+        public override void Clear()
         {
-            Parent = null;
+            base.Clear();
             Address = "";
         }
     }

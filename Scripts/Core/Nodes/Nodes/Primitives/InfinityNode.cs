@@ -3,7 +3,7 @@
     /// <summary>
     /// An infinity serializer node.
     /// </summary>
-    public class InfinityNode : ValueNode<InfinityValue>
+    public sealed class InfinityNode : ValueNode<InfinityValue>
     {
         /* Constructors. */
         public InfinityNode() : this(true) { }

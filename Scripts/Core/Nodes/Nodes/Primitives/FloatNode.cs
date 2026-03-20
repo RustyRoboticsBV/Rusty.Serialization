@@ -3,7 +3,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A floating-point number serializer node.
     /// </summary>
-    public class FloatNode : ValueNode<FloatValue>
+    public sealed class FloatNode : ValueNode<FloatValue>
     {
         /* Constructors. */
         public FloatNode() : base() { }

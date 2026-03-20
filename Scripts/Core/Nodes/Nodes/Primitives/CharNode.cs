@@ -3,7 +3,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A character serializer node.
     /// </summary>
-    public class CharNode : ValueNode<UnicodePair>
+    public sealed class CharNode : ValueNode<UnicodePair>
     {
         /* Constructors. */
         public CharNode() : base() { }

@@ -3,10 +3,10 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A timestamp serializer node.
     /// </summary>
-    public class TimestampNode : ValueNode<TimestampValue>
+    public sealed class TimestampNode : ValueNode<TimestampValue>
     {
         /* Constructors. */
-        public TimestampNode() { }
+        public TimestampNode() : base() { }
 
         public TimestampNode(TimestampValue value) : base(value) { }
 

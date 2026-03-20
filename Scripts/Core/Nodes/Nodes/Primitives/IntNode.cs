@@ -3,7 +3,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// An integer serializer node.
     /// </summary>
-    public class IntNode : ValueNode<IntValue>
+    public sealed class IntNode : ValueNode<IntValue>
     {
         /* Constructors. */
         public IntNode() : base() { }

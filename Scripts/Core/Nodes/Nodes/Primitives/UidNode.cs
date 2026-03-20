@@ -3,7 +3,7 @@
     /// <summary>
     /// A uid serializer node.
     /// </summary>
-    public class UidNode : ValueNode<UidValue>
+    public sealed class UidNode : ValueNode<UidValue>
     {
         /* Constructors. */
         public UidNode() : this(UidValue.Empty) { }

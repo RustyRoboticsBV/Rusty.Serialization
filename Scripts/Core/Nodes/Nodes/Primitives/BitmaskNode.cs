@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A bitmask serializer node.
     /// </summary>
-    public class BitmaskNode : ValueNode<BitmaskValue>
+    public sealed class BitmaskNode : ValueNode<BitmaskValue>
     {
         /* Constructors. */
         public BitmaskNode() : this(Array.Empty<bool>()) { }
