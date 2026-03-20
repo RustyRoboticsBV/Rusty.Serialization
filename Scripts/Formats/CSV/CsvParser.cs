@@ -144,6 +144,34 @@ namespace Rusty.Serialization.CSV
                     }
                     return obj;
 
+                case "func":
+                    CallableNode func = new CallableNode();
+                    INode first = null;
+                    INode second = null;
+                    while (true)
+                    {
+                        INode next = ParseNode(ref lexer);
+                        if (next == null)
+                            break;
+
+                        if (first == null)
+                            first = next;
+                        else if (second == null)
+                            second = next;
+                        else
+                            throw new FormatException();
+                    }
+
+                    if (first != null && second != null)
+                    {
+                        func.Target = first;
+                        func.Name = second as IMemberNameNode;
+                    }
+                    else if (first != null)
+                        func.Name = first as IMemberNameNode;
+
+                    return func;
+
                 default:
                     throw new FormatException($"Unknown token '{token}'.");
             }

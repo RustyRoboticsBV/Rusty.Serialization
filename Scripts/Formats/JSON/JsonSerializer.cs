@@ -175,6 +175,18 @@ namespace Rusty.Serialization.JSON
                     result = @object;
                     break;
 
+                case CallableNode callable:
+                    JsonObject callableObject = new JsonObject();
+
+                    if (callable.Target != null)
+                        callableObject.Add("target", ToJsonNodes(callable.Target));
+                    if (callable.Name != null)
+                        callableObject.Add("name", ToJsonNodes(callable.Name));
+
+                    result = callableObject;
+
+                    break;
+
                 default:
                     throw new ArgumentException($"Invalid node type '{node.GetType()}'.");
             }

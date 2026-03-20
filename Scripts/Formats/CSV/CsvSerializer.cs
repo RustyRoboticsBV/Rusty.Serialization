@@ -162,6 +162,18 @@ namespace Rusty.Serialization.CSV
                 }
                 sb.Append("end");
             }
+            else if (node is CallableNode func)
+            {
+                sb.Append("func\n");
+
+                Serialize(func.Target, sb);
+                sb.Append("\n");
+
+                Serialize(func.Name, sb);
+                sb.Append("\n");
+
+                sb.Append("end");
+            }
             else
                 throw new ArgumentException($"Unexpected node of type {node.GetType()}.");
         }
