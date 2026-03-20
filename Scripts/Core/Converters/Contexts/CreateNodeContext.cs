@@ -43,6 +43,7 @@ namespace Rusty.Serialization.Core.Conversion
                     targetNode = SymbolTable.GetNode(obj);
                     ITreeElement targetParent = targetNode.Parent;
                     AddressNode addressNode = new AddressNode(address, targetNode);
+                    // TODO: this fails if the target node was type-wrapped. The address gets inserted as a child of the type, which is illegal!
                     if (targetParent is IContainerNode container)
                         container.ReplaceChild(targetNode, addressNode);
                 }
