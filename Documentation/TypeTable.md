@@ -30,6 +30,7 @@ If an object of a type is serialized that is not in the table below, then the sy
 |T[]|System.Array|list/null||
 |bool[]|System.Boolean[]|bitmask/null||
 |byte[]|System.Byte[]|bytes/null||
+|char[]|System.Char[]|string/null||
 |(...)|System.ValueTuple<...>|list||
 |T?|System.Nullable&lt;T&gt;|*varies* or null|Depends on the underlying type for non-null values|
 |enum|System.Enum|symbol|list if annotated with `[Flags]`|

@@ -195,7 +195,7 @@ Serializers SHOULD only emit type labels when necessary to disambiguate the type
 Examples: `(i32)`, `(dict<str,str>)`, `(my_object)`, `(my_namespace.my_class<int>.my_struct<list<f64>>[])`.
 
 #### Scopes
-Scopes MAY be placed before any [object member name](#objects) or [callable name](#callables), and are written as a name between `^` carets (e.g. `^my_scope^`). They act as hints within objects to determine which base class a member belongs to, resolving ambiguities caused by shadowed variables. In callables, they are also used to determine which type a static method belongs to. The format does not interpret or validate scope names; it is up to the parser to map a scope name to the corresponding runtime base class.
+Scopes MAY be placed before any [object member name](#objects) or [callable name](#callables), and are written as a name between `^` carets (e.g. `^my_scope^`). They act as hints within objects to determine which base class a member belongs to, resolving ambiguities caused by shadowed variables. In callables, they are also used to denote which type a static method belongs to. The format does not interpret or validate scope names; it is up to the parser to map a scope name to the corresponding runtime (base) class.
 
 The following characters MUST NOT appear in scope literals and MUST instead be represented with [escape sequences](#16-escape-sequences):
 

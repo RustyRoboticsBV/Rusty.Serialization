@@ -145,7 +145,8 @@ namespace Rusty.Serialization.CSCD
         }
 
         /* Protected methods. */
-        protected static INode ParseToken(TextSpan text, Token token, CscdLexer lexer, bool allowFullUnicodeRange)
+        protected static INode ParseToken(TextSpan text, Token token, CscdLexer lexer, bool allowFullUnicodeRange,
+            bool allowScope = false)
         {
             // Format markers.
             if (token.Text.Equals("~CSCD~") || token.Text.Equals("~CSCD?U~"))
@@ -183,7 +184,19 @@ namespace Rusty.Serialization.CSCD
 
             // Scope.
             if (token.Text.EnclosedWith('^'))
-                TokenError(token, "Scopes may only appear before object member names.");
+            {
+                if (allowScope)
+                {
+                    Token next = ExpectToken(text, lexer, "A scope must be followed by another token.");
+                    INode value = ParseToken(text, next, lexer, allowFullUnicodeRange, false);
+                    if (value is SymbolNode scopeSymbol)
+                        return new ScopeNode(token.Text.Slice(1, token.Length - 2), scopeSymbol);
+                    else
+                        TokenError(next, "Scopes must be followed by a symbol.");
+                }
+                else
+                    TokenError(token, "Scopes may not appear here.");
+            }
 
             // Offset.
             if (token.Text.EnclosedWith('|'))
@@ -221,6 +234,10 @@ namespace Rusty.Serialization.CSCD
             if (numeric == NumericType.Real)
                 return new FloatNode(FloatValue.Parse(ProcessReal(token.Text)));
 
+            // Decimal.
+            if (token.Text.StartsWith('$') || token.Text.StartsWith("-$"))
+                return ParseDecimal(token);
+
             // NaN.
             if (token.Text.Equals("nan"))
                 return new NanNode();
@@ -239,15 +256,11 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.EnclosedWith('"'))
                 return new StringNode(ParseText(token, strEscapes, "\"", "\"", allowFullUnicodeRange));
 
-            // Decimal.
-            if (token.Text.StartsWith('$') || token.Text.StartsWith("-$"))
-                return ParseDecimal(token);
-
             // Color.
             if (token.Text.StartsWith('#'))
                 return ParseColor(token);
 
-            // Uid.
+            // UID.
             if (token.Text.StartsWith('%'))
                 return ParseUid(token);
 
@@ -270,7 +283,7 @@ namespace Rusty.Serialization.CSCD
             if (token.Text.EnclosedWith('*'))
                 return new SymbolNode(ParseText(token, symbolEscapes, "*", "*", allowFullUnicodeRange));
 
-            // Ref.
+            // Reference.
             if (token.Text.EnclosedWith('&'))
                 return new RefNode(ParseText(token, refEscapes, "&", "&", allowFullUnicodeRange));
 
@@ -782,24 +795,9 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Parse member name & value.
-                string scopeName = null;
-                if (next.Text.StartsWith('^') && next.Text.EndsWith('^'))
-                {
-                    scopeName = ParseText(next, scopeEscapes, "^", "^", allowFullUnicodeRange);
-                    next = ExpectToken(text, lexer, "Scope should be followed by another token.");
-                }
-
-                SymbolNode symbol;
-                if (next.Text.StartsWith('*') && next.Text.EndsWith('*'))
-                    symbol = new SymbolNode(ParseText(next, symbolEscapes, "*", "*", allowFullUnicodeRange));
-                else
-                    symbol = ParseBareSymbol(next);
-
-                ScopeNode scope = null;
-                if (scopeName != null)
-                    scope = new ScopeNode(scopeName, symbol);
-
-                IMemberNameNode name = scope != null ? scope : symbol;
+                INode scopeOrSymbol = ParseToken(text, next, lexer, allowFullUnicodeRange, true);
+                if (scopeOrSymbol is not IMemberNameNode name)
+                    throw TokenError(next, "Object member name must be a symbol or scope.");
 
                 ExpectSymbol(text, lexer, ':', "Object member names must be followed by a colon.");
 
@@ -844,9 +842,9 @@ namespace Rusty.Serialization.CSCD
                 // Early closed: return static.
                 if (next.Text.Equals('?'))
                 {
-                    if (first is not IMemberNameNode)
-                        TokenError(next, "Callable name must be a symbol or scope.");
-                    callable.Name = (IMemberNameNode)first;
+                    if (first is not IMemberNameNode name)
+                        throw TokenError(next, "Callable name must be a symbol or scope.");
+                    callable.Name = name;
                     return callable;
                 }
 
@@ -858,10 +856,10 @@ namespace Rusty.Serialization.CSCD
                     next = ExpectToken(text, lexer, "Unclosed callable.");
                     if (next.Text.Equals('?'))
                         throw TokenError(next, "Missing callable name after colon.");
-                    INode second = ParseToken(text, next, lexer, allowFullUnicodeRange);
-                    if (second is not IMemberNameNode)
-                        TokenError(next, "Callable name must be a symbol or scope.");
-                    callable.Name = (IMemberNameNode)second;
+                    INode second = ParseToken(text, next, lexer, allowFullUnicodeRange, true);
+                    if (second is not IMemberNameNode name)
+                        throw TokenError(next, "Callable name must be a symbol or scope.");
+                    callable.Name = name;
 
                     ExpectSymbol(text, lexer, '?', "Unclosed callable.");
                     return callable;

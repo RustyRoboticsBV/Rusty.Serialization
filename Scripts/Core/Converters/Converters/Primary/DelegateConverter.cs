@@ -52,13 +52,17 @@ namespace Rusty.Serialization.Core.Conversion
 
             // Get method.
             IMemberNameNode nameNode = node.Name;
-            string methodName = nameNode.Name;
+            string methodName = "";
+            if (nameNode is ScopeNode nameScope)
+                methodName = nameScope.Child.Name;
+            else if (nameNode is SymbolNode nameSymbol)
+                methodName = nameSymbol.Name;
 
             MethodInfo method = null;
 
+            // Instance method.
             if (target != null)
             {
-                // Instance method
                 Type targetType = target.GetType();
                 MethodInfo[] methods = targetType.GetMethods(
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
@@ -73,9 +77,10 @@ namespace Rusty.Serialization.Core.Conversion
                     }
                 }
             }
+
+            // Static method.
             else
             {
-                // Static method, look on delegate's declaring type
                 Type declaringType = delegateType.DeclaringType;
 
                 if (declaringType != null)
@@ -97,7 +102,8 @@ namespace Rusty.Serialization.Core.Conversion
 
             if (method == null)
             {
-                throw new InvalidOperationException("Could not resolve method for delegate.");
+                throw new InvalidOperationException($"Could not resolve method for delegate '{typeof(ValueT).Name}' from "
+                    + $"callable node: {node}.");
             }
 
             Delegate del = Delegate.CreateDelegate(delegateType, target, method);
