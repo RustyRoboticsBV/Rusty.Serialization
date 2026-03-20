@@ -29,13 +29,16 @@ namespace Rusty.Serialization.Core.Nodes
             int high = bits[2];
             int signScale = bits[3];
 
-            mantissa = new BigInteger(low)
-             | (new BigInteger(mid) << 32)
-             | (new BigInteger(high) << 64);
+            mantissa = new BigInteger((uint)low)
+             | (new BigInteger((uint)mid) << 32)
+             | (new BigInteger((uint)high) << 64);
 
             negative = (signScale & 0x80000000) != 0;
 
             scale = (signScale >> 16) & 0xFF;
+
+            if (mantissa < 0)
+                throw new Exception();
         }
 
         public DecimalValue(bool negative, BigInteger mantissa, int scale)

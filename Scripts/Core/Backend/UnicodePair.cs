@@ -29,7 +29,7 @@ namespace Rusty.Serialization.Core.Nodes
 
         public UnicodePair(int codePoint)
         {
-            if ((uint)codePoint > 0x10FFFF || (uint)(codePoint - 0xD800) < 0x800)
+            if ((uint)codePoint > 0x10FFFF /*|| (uint)(codePoint - 0xD800) < 0x800*/) // TODO: determine what to do with lone surrogate pairs.
                 throw new ArgumentOutOfRangeException(nameof(codePoint));
 
             if (codePoint <= 0xFFFF)

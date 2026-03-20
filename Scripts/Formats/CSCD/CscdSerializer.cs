@@ -135,6 +135,11 @@ namespace Rusty.Serialization.CSCD
                 return $"|{sign}{node.Value.hours}:{node.Value.minutes}|" + space + Serialize(node.Child);
         }
 
+        private string Serialize(DecimalNode node)
+        {
+            return node.Value.negative ? $"-${node.Value.ToString().Substring(1)}" : $"${node.Value}";
+        }
+
         private string Serialize(FloatNode node)
         {
             return FormatFloat(node.Value);
@@ -145,11 +150,6 @@ namespace Rusty.Serialization.CSCD
             if (node.Value == '\0')
                 return "''";
             return $"'{FormatText(node.Value.ToString(), charEscapes)}'";
-        }
-
-        private string Serialize(DecimalNode node)
-        {
-            return node.Value.negative ? $"-${node.Value.ToString().Substring(1)}" : $"${node.Value}";
         }
 
         private string Serialize(ColorNode node)
