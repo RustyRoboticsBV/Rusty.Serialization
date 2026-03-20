@@ -291,6 +291,20 @@ namespace Rusty.Serialization.XML
                     writer.WriteEndElement();
                     break;
 
+                case CallableNode callable:
+                    writer.WriteStartElement("func");
+                    WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
+
+                    WriteNode(writer, callable.Target);
+
+                    if (callable.Name is ScopeNode functionScope)
+                        WriteNode(writer, functionScope.Child, "", functionScope.Name);
+                    else if (callable.Name is SymbolNode memberSymbol)
+                        WriteNode(writer, memberSymbol);
+
+                    writer.WriteEndElement();
+                    break;
+
                 default:
                     throw new NotSupportedException($"Unsupported node type {node.GetType().Name}");
             }
@@ -362,6 +376,7 @@ namespace Rusty.Serialization.XML
                     "list" => ReadList(element),
                     "dict" => ReadDict(element),
                     "obj" => ReadObject(element),
+                    "func" => ReadCallable(element),
                     _ => throw new ArgumentException($"Illegal XML tag <{tag}>.")
                 };
             }
@@ -370,24 +385,6 @@ namespace Rusty.Serialization.XML
             if (!string.IsNullOrEmpty(addressName)) node = new AddressNode(addressName, node);
 
             return node;
-        }
-
-        private static ObjectNode ReadObject(XElement element)
-        {
-            ObjectNode obj = new ObjectNode();
-            foreach (XElement member in element.Elements())
-            {
-                string fieldName = (string)member.Attribute("name");
-                string scopeName = (string)member.Attribute("scope");
-                IMemberNameNode memberName = null;
-                if (!string.IsNullOrEmpty(scopeName))
-                    memberName = new ScopeNode(scopeName, new SymbolNode(fieldName));
-                else
-                    memberName = new SymbolNode(fieldName);
-
-                obj.AddMember(memberName, ReadNode(member));
-            }
-            return obj;
         }
 
         private static ListNode ReadList(XElement element)
@@ -412,6 +409,50 @@ namespace Rusty.Serialization.XML
                 dict.AddPair(ReadNode(keyNode), ReadNode(valueNode));
             }
             return dict;
+        }
+
+        private static ObjectNode ReadObject(XElement element)
+        {
+            ObjectNode obj = new ObjectNode();
+            foreach (XElement member in element.Elements())
+            {
+                string fieldName = (string)member.Attribute("name");
+                string scopeName = (string)member.Attribute("scope");
+                IMemberNameNode memberName = null;
+                if (!string.IsNullOrEmpty(scopeName))
+                    memberName = new ScopeNode(scopeName, new SymbolNode(fieldName));
+                else
+                    memberName = new SymbolNode(fieldName);
+
+                obj.AddMember(memberName, ReadNode(member));
+            }
+            return obj;
+        }
+
+        private static CallableNode ReadCallable(XElement element)
+        {
+            CallableNode func = new CallableNode();
+            XElement first = null;
+            XElement second = null;
+            foreach (XElement child in element.Elements())
+            {
+                if (first == null)
+                    first = child;
+                else if (second == null)
+                    second = child;
+                else
+                    throw new FormatException("Callables may not have more than 2 entries.");
+            }
+
+            if (first != null && second != null)
+            {
+                func.Target = ReadNode(first);
+                func.Name = ReadNode(second) as IMemberNameNode;
+            }
+            else if (first != null)
+                func.Name = ReadNode(first) as IMemberNameNode;
+
+            return func;
         }
 
         private static INode ReadTime(XElement element)
