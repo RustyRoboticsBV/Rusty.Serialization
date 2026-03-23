@@ -54,7 +54,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Convert an object into a node tree.
         /// </summary>
-        public NodeTree Convert(object obj)
+        public SyntaxTree Convert(object obj)
         {
             return Convert(obj, obj.GetType());
         }
@@ -62,7 +62,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Convert an object into a node tree.
         /// </summary>
-        public NodeTree Convert<T>(T obj)
+        public SyntaxTree Convert<T>(T obj)
         {
             // Clear previous resources.
             SymbolTable.Clear();
@@ -83,13 +83,13 @@ namespace Rusty.Serialization.Core.Conversion
             }
 
             // Create node tree.
-            return new NodeTree(root);
+            return new SyntaxTree(root);
         }
 
         /// <summary>
         /// Convert an object into a node tree.
         /// </summary>
-        public NodeTree Convert(object obj, Type type)
+        public SyntaxTree Convert(object obj, Type type)
         {
             // Clear previous resources.
             SymbolTable.Clear();
@@ -110,13 +110,13 @@ namespace Rusty.Serialization.Core.Conversion
             }
 
             // Create node tree.
-            return new NodeTree(root);
+            return new SyntaxTree(root);
         }
 
         /// <summary>
         /// Deconvert a node tree into an object.
         /// </summary>
-        public T Deconvert<T>(NodeTree tree)
+        public T Deconvert<T>(SyntaxTree tree)
         {
             // Clear previous resources.
             NodeTypeTable.Clear();
@@ -133,7 +133,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Deconvert a node tree into an object.
         /// </summary>
-        public object Deconvert(Type type, NodeTree tree)
+        public object Deconvert(Type type, SyntaxTree tree)
         {
             // Clear previous resources.
             NodeTypeTable.Clear();
@@ -150,7 +150,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Deconvert a node tree into an object.
         /// </summary>
-        public object Deconvert(NodeTree tree)
+        public object Deconvert(SyntaxTree tree)
         {
             // Address-type root.
             if (tree.Root is AddressNode addressNode && addressNode.Child is TypeNode addressTypeNode)

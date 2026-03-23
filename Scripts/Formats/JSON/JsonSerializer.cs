@@ -12,7 +12,7 @@ namespace Rusty.Serialization.JSON
     public class JsonSerializer : Serializer
     {
         /* Public methods. */
-        public override string Serialize(NodeTree node, Settings settings)
+        public override string Serialize(SyntaxTree node, Settings settings)
         {
             JsonNode root = ToJsonNodes(node.Root);
             StringBuilder sb = new StringBuilder(); // TODO: use rented bag sb instead.

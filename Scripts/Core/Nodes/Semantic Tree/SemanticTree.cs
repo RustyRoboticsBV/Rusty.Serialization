@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Core.Nodes
     public class SemanticTree
     {
         /* Private properties. */
-        private NodeTree SyntaxTree { get; set; }
+        private SyntaxTree SyntaxTree { get; set; }
         private Dictionary<string, AddressNode> AddressTable { get; set; }
         private Dictionary<INode, string> TypeTable { get; set; }
         private List<RefNode> References { get; set; }
@@ -21,7 +21,7 @@ namespace Rusty.Serialization.Core.Nodes
         public INode Root => SyntaxTree.Root;
 
         /* Constructors. */
-        public SemanticTree(NodeTree syntaxTree)
+        public SemanticTree(SyntaxTree syntaxTree)
         {
             SyntaxTree = syntaxTree;
             AddressTable = new Dictionary<string, AddressNode>();

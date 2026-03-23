@@ -11,7 +11,7 @@ namespace Rusty.Serialization.CSV
     public class CsvSerializer : Serializer
     {
         /* Public methods. */
-        public override string Serialize(NodeTree tree, Settings settings)
+        public override string Serialize(SyntaxTree tree, Settings settings)
         {
             StringBuilder sb = new StringBuilder();
             Serialize(tree.Root, sb);

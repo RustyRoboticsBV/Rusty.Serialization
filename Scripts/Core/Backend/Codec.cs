@@ -11,12 +11,12 @@ namespace Rusty.Serialization.Core.Codecs
         /// <summary>
         /// Serialize a node tree into a string.
         /// </summary>
-        public abstract string Serialize(NodeTree tree, Settings prettyPrint);
+        public abstract string Serialize(SyntaxTree tree, Settings prettyPrint);
 
         /// <summary>
         /// Deserialize a string into a node tree.
         /// </summary>
-        public abstract NodeTree Parse(string serialized);
+        public abstract SyntaxTree Parse(string serialized);
 
         /// <summary>
         /// Free owned heap memory. Warning: this may trigger a garbage collection spike!

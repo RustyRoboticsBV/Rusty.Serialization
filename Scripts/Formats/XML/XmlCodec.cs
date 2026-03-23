@@ -16,7 +16,7 @@ namespace Rusty.Serialization.XML
     public class XmlCodec : Codec
     {
         /* Public methods. */
-        public override string Serialize(NodeTree node, Settings settings)
+        public override string Serialize(SyntaxTree node, Settings settings)
         {
             XmlWriterSettings xmlSettings = new XmlWriterSettings
             {
@@ -35,14 +35,14 @@ namespace Rusty.Serialization.XML
             return sw.ToString();
         }
 
-        public override NodeTree Parse(string serialized)
+        public override SyntaxTree Parse(string serialized)
         {
             XDocument doc = XDocument.Parse(serialized, LoadOptions.PreserveWhitespace);
             XElement rootElement = doc.Root;
             if (rootElement == null)
                 throw new ArgumentException("XML does not contain a root element.");
             INode rootNode = ReadNode(rootElement);
-            NodeTree tree = new NodeTree(rootNode);
+            SyntaxTree tree = new SyntaxTree(rootNode);
 #if UNITY_5_3_OR_NEWER
             UnityEngine.Debug.Log(tree);
 #endif

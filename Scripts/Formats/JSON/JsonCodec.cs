@@ -16,12 +16,12 @@ namespace Rusty.Serialization.JSON
         private JsonLexer lexer { get; } = new JsonLexer();
 
         /* Public methods. */
-        public override string Serialize(NodeTree tree, Settings settings)
+        public override string Serialize(SyntaxTree tree, Settings settings)
         {
             return serializer.Serialize(tree, settings);
         }
 
-        public override NodeTree Parse(string serialized)
+        public override SyntaxTree Parse(string serialized)
         {
             TextSpan span = serialized;
             lexer.ResetCursor();

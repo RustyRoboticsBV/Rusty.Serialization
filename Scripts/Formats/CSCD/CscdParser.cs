@@ -46,7 +46,7 @@ namespace Rusty.Serialization.CSCD
         };
 
         /* Public methods. */
-        public override NodeTree Parse(TextSpan text, CscdLexer lexer)
+        public override SyntaxTree Parse(TextSpan text, CscdLexer lexer)
         {
             INode root = null;
 
@@ -141,7 +141,7 @@ namespace Rusty.Serialization.CSCD
                 throw new FormatException("No root value.");
 
             // Create tree.
-            return new NodeTree(root);
+            return new SyntaxTree(root);
         }
 
         /* Protected methods. */

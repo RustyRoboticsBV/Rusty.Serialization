@@ -11,6 +11,6 @@ namespace Rusty.Serialization.Core.Codecs
         protected static StringBuilderBag StringBuilders { get; } = new StringBuilderBag();
 
         /* Public methods. */
-        public abstract string Serialize(NodeTree node, Settings settings);
+        public abstract string Serialize(SyntaxTree node, Settings settings);
     }
 }

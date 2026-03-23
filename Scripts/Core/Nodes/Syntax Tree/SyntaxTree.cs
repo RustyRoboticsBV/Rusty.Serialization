@@ -1,19 +1,17 @@
-using System.Collections.Generic;
-
 namespace Rusty.Serialization.Core.Nodes
 {
     /// <summary>
     /// A node tree that represents an object hierarchy.
     /// </summary>
-    public sealed class NodeTree : ITreeElement
+    public sealed class SyntaxTree : ITreeElement
     {
         /* Public properties. */
         public INode Root { get; private set; }
 
         /* Constructors. */
-        public NodeTree() { }
+        public SyntaxTree() { }
 
-        public NodeTree(INode root)
+        public SyntaxTree(INode root)
         {
             SetRoot(root);
         }

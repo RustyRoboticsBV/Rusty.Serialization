@@ -6,11 +6,11 @@ namespace Rusty.Serialization.CSV
     public static class CsvParser
     {
         /* Public methods. */
-        public static NodeTree Parse(string serialized)
+        public static SyntaxTree Parse(string serialized)
         {
             CsvLexer lexer = new CsvLexer(serialized);
             INode root = ParseNode(ref lexer);
-            NodeTree tree = new NodeTree(root);
+            SyntaxTree tree = new SyntaxTree(root);
 #if UNITY_5_3_OR_NEWER
             UnityEngine.Debug.Log(tree);
 #endif

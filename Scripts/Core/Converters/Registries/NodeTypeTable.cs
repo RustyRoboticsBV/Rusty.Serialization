@@ -100,7 +100,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Validate that all nodes in a tree have been collected.
         /// </summary>
-        public bool Validate(NodeTree tree)
+        public bool Validate(SyntaxTree tree)
         {
             if (tree.Root == null)
                 return true;

@@ -7,7 +7,7 @@ namespace Rusty.Serialization.JSON
     public sealed class JsonParser : Parser<JsonLexer>
     {
         /* Public methods. */
-        public override NodeTree Parse(TextSpan text, JsonLexer lexer)
+        public override SyntaxTree Parse(TextSpan text, JsonLexer lexer)
         {
             JsonNode root = ParseAsJsonNode(text, lexer);
 
@@ -17,7 +17,7 @@ namespace Rusty.Serialization.JSON
             if (root == null)
                 TokenError(Token.EOF, "No root value.");
 
-            NodeTree tree = new NodeTree(ParseAsNode(root));
+            SyntaxTree tree = new SyntaxTree(ParseAsNode(root));
             return tree;
         }
 

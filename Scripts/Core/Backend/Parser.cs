@@ -13,7 +13,7 @@ namespace Rusty.Serialization.Core.Codecs
         /// <summary>
         /// Parse a text as a node tree.
         /// </summary>
-        public abstract NodeTree Parse(TextSpan span, LexerT lexer);
+        public abstract SyntaxTree Parse(TextSpan span, LexerT lexer);
 
         /* Protected types. */
         protected enum NumericType { NaN, Int, Real };

@@ -72,7 +72,7 @@ namespace Rusty.Serialization
             if (Codec == null)
                 throw new InvalidOperationException("No codec format specified.");
 
-            NodeTree tree = Converters.Convert(obj);
+            SyntaxTree tree = Converters.Convert(obj);
             return Codec.Serialize(tree, settings);
         }
 
@@ -91,7 +91,7 @@ namespace Rusty.Serialization
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
-            NodeTree tree = Converters.Convert(obj, obj.GetType());
+            SyntaxTree tree = Converters.Convert(obj, obj.GetType());
             return Codec.Serialize(tree, settings);
         }
 
@@ -104,7 +104,7 @@ namespace Rusty.Serialization
             if (Codec == null)
                 throw new InvalidOperationException("No codec format specified.");
 
-            NodeTree tree = Codec.Parse(serialized);
+            SyntaxTree tree = Codec.Parse(serialized);
             return Converters.Deconvert<T>(tree);
         }
 
@@ -116,7 +116,7 @@ namespace Rusty.Serialization
             if (Codec == null)
                 throw new InvalidOperationException("No codec format specified.");
 
-            NodeTree tree = Codec.Parse(serialized);
+            SyntaxTree tree = Codec.Parse(serialized);
             return Converters.Deconvert(tree);
         }
 
@@ -151,7 +151,7 @@ namespace Rusty.Serialization
             if (targetFormat == null)
                 throw new ArgumentNullException(nameof(targetFormat));
 
-            NodeTree tree = Codec.Parse(serialized);
+            SyntaxTree tree = Codec.Parse(serialized);
             return targetFormat.Serialize(tree, settings);
         }
 

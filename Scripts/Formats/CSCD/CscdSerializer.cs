@@ -46,7 +46,7 @@ namespace Rusty.Serialization.CSCD
         private static string tab = "  ";
 
         /* Public methods. */
-        public override string Serialize(NodeTree tree, Settings settings)
+        public override string Serialize(SyntaxTree tree, Settings settings)
         {
             string str = Serialize(tree.Root, settings.PrettyPrint);
 
