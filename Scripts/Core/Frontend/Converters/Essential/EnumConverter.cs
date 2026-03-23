@@ -3,10 +3,9 @@
 namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
-    /// An object to/from AST node converter.
+    /// An enum converter.
     /// </summary>
-    public class Converter
-    {
-
-    }
+    public class EnumConverter<T> : Converter
+        where T : Enum
+    { }
 }

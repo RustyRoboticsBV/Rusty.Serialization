@@ -3,10 +3,8 @@
 namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
-    /// An object to/from AST node converter.
+    /// A nullable converter.
     /// </summary>
-    public class Converter
-    {
-
-    }
+    public class NullableConverter<T>
+    { }
 }

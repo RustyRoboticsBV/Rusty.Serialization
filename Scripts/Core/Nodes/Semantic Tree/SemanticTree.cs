@@ -50,6 +50,27 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         /* Public methods. */
+        public override string ToString()
+        {
+            string str = SyntaxTree.ToString();
+
+            str += "\nADDRESSES:";
+            foreach (var address in AddressTable)
+            {
+                str += "\n- " + address.Key;
+            }
+            str += "\nTYPES:";
+            foreach (var type in TypeTable)
+            {
+                string key = type.Key.ToString();
+                if (key.IndexOf('\n') != -1)
+                    key = key.Substring(0, key.IndexOf('\n'));
+                str += "\n- " + type.Value + ": " + key;
+            }
+
+            return str;
+        }
+
         /// <summary>
         /// Get the address node corresponding to a reference.
         /// </summary>
