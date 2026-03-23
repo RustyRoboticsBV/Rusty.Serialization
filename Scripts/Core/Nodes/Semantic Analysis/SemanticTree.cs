@@ -35,11 +35,17 @@ namespace Rusty.Serialization.Core.Nodes
                 SemanticError("The root node may not be null.");
             Analyze(Root, false);
 
-            // Check references.
+            // Check references and optionally assign them types.
             foreach (RefNode @ref in References)
             {
+                // Validate the stated address exists.
                 if (!AddressTable.ContainsKey(@ref.Address))
                     SemanticError(@ref, $"Target address '{@ref.Address}' does not exist.");
+
+                // Propagate address' type to reference (unless the reference was already in the type table).
+                AddressNode address = AddressTable[@ref.Address];
+                if (TypeTable.TryGetValue(address, out string type))
+                    TypeTable.TryAdd(@ref, type);
             }
         }
 

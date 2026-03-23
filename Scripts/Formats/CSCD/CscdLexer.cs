@@ -76,7 +76,7 @@ namespace Rusty.Serialization.CSCD
         /// </summary>
         private Token MakeTokenAndAdvance(TextSpan text, int length)
         {
-            if (length < 0)
+            if (length <= 0)
                 throw new FormatException($"Zero-length token at {Cursor}: {new string(text.Slice(Cursor))}.");
 
             Lexeme lexeme = MakeLexeme(length);
