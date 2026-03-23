@@ -6,7 +6,7 @@ namespace Rusty.Serialization.CSCD
     /// <summary>
     /// A CSCD serializer/deserializer back-end.
     /// </summary>
-    public class CscdCodec : Codec
+    public class CscdCodec : FormatCodec
     {
         /* Fields. */
         private CscdSerializer serializer = new CscdSerializer();

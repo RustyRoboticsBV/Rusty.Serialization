@@ -6,14 +6,14 @@
     public abstract class SubContext
     {
         /* Protected properties. */
-        protected Converters Context { get; private set; }
+        protected ObjectCodec Context { get; private set; }
         protected ConverterRegistry Converters => Context.ConverterRegistry;
         protected SymbolTable SymbolTable => Context.SymbolTable;
         protected NodeTypeTable NodeTypeTable => Context.NodeTypeTable;
         protected ParsingTable ParsingTable => Context.ParsingTable;
 
         /* Constructors. */
-        protected SubContext(Converters context)
+        protected SubContext(ObjectCodec context)
         {
             Context = context;
         }

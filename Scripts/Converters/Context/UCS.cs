@@ -27,13 +27,13 @@ namespace Rusty.Serialization
         public static CsvCodec Csv = new CsvCodec();
 
         /* Public properties. */
-        public Converters Converters { get; set; }
-        public Codec Codec { get; set; }
+        public ObjectCodec Converters { get; set; }
+        public FormatCodec Codec { get; set; }
 
         /* Constructors. */
         public UCS(Format format = Format.Cscd) : this(DefaultConverters, format) { }
 
-        public UCS(Converters converters, Format format = Format.Cscd)
+        public UCS(ObjectCodec converters, Format format = Format.Cscd)
         {
             Converters = converters;
             switch (format)
@@ -53,7 +53,7 @@ namespace Rusty.Serialization
             }
         }
 
-        public UCS(Converters converters, Codec format)
+        public UCS(ObjectCodec converters, FormatCodec format)
         {
             Converters = converters;
             Codec = format;
@@ -139,11 +139,11 @@ namespace Rusty.Serialization
         /// <summary>
         /// Reformat a string from this format to another.
         /// </summary>
-        public string Reformat(string serialized, Codec targetFormat) => Reformat(serialized, targetFormat, Settings.All);
+        public string Reformat(string serialized, FormatCodec targetFormat) => Reformat(serialized, targetFormat, Settings.All);
         /// <summary>
         /// Reformat a string from this format to another.
         /// </summary>
-        public string Reformat(string serialized, Codec targetFormat, Settings settings)
+        public string Reformat(string serialized, FormatCodec targetFormat, Settings settings)
         {
             if (Codec == null)
                 throw new InvalidOperationException("No source codec format specified.");

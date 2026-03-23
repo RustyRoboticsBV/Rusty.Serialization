@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Conversion
     /// <summary>
     /// A context for object-node conversions.
     /// </summary>
-    public class Converters
+    public class ObjectCodec
     {
         /* Public properties. */
         public ConverterRegistry ConverterRegistry { get; private set; } = new ConverterRegistry();
@@ -22,7 +22,7 @@ namespace Rusty.Serialization.Core.Conversion
         public AssignObjectContext AssignObjectContext { get; private set; }
 
         /* Constructors. */
-        public Converters()
+        public ObjectCodec()
         {
             // Create sub-contexts.
             CreateNodeContext = new CreateNodeContext(this);

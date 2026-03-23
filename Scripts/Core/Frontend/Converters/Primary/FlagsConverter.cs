@@ -6,11 +6,11 @@ namespace Rusty.Serialization.Core.Conversion
     /// <summary>
     /// An enum converter.
     /// </summary>
-    public sealed class FlagsConverter<T> : Converter<T, ListNode>
+    public sealed class FlagsConverter<T> : TypedConverter<T, ListNode>
         where T : struct, Enum
     {
         /* Protected methods. */
-        protected override ListNode CreateNode(T obj, CreateNodeContext context)
+        protected override ListNode CreateNode2(T obj, CreateNodeContext context)
         {
             ListNode list = new ListNode();
 
@@ -64,7 +64,7 @@ namespace Rusty.Serialization.Core.Conversion
         }
 
 
-        protected override T CreateObject(ListNode node, CreateObjectContext context)
+        protected override T CreateObject2(ListNode node, CreateObjectContext context)
         {
             ulong combinedValue = 0;
 

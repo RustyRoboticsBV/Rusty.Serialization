@@ -5,7 +5,7 @@ namespace Rusty.Serialization
     /// <summary>
     /// The set of default converters, containing converters for common .NET, Unity and Godot types.
     /// </summary>
-    public partial class DefaultConverters : Converters
+    public partial class DefaultConverters : ObjectCodec
     {
         public DefaultConverters() : base()
         {

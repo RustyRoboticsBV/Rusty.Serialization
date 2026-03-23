@@ -8,7 +8,7 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET priority queue converter.
     /// </summary>
-    public sealed class PriorityQueueConverter<ElementT, PriorityT> : Converter<PriorityQueue<ElementT, PriorityT>, DictNode>, ICompositeConverter
+    public sealed class PriorityQueueConverter<ElementT, PriorityT> : Converter
     {
         /* Public methods. */
         void ICompositeConverter.AssignNode(INode node, object obj, AssignNodeContext context)
@@ -17,12 +17,15 @@ namespace Rusty.Serialization.DotNet
             => AssignObject((DictNode)node, (PriorityQueue<ElementT, PriorityT>)obj, context);
 
         /* Protected methods. */
-        protected override void CollectTypes(DictNode node, CollectTypesContext context)
+        public override void CollectTypes(INode node, CollectTypesContext context)
         {
-            for (int i = 0; i < node.Count; i++)
+            if (node is DictNode dict)
             {
-                CollectTypes(node.GetKeyAt(i), context);
-                CollectTypes(node.GetValueAt(i), context);
+                for (int i = 0; i < dict.Count; i++)
+                {
+                    context.CollectTypesAndReferences(dict.GetKeyAt(i), typeof(ElementT));
+                    context.CollectTypesAndReferences(dict.GetValueAt(i), typeof(PriorityT));
+                }
             }
         }
 

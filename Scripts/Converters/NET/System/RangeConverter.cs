@@ -8,10 +8,10 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET range converter.
     /// </summary>
-    public class RangeConverter : Core.Conversion.Converter<Range, ListNode>
+    public class RangeConverter : Core.Conversion.TypedConverter<Range, ListNode>
     {
         /* Protected method. */
-        protected override ListNode CreateNode(Range obj, CreateNodeContext context)
+        protected override ListNode CreateNode2(Range obj, CreateNodeContext context)
         {
             ListNode node = new ListNode(2);
             node.Elements[0] = new IntNode(obj.Start.Value);
@@ -19,7 +19,7 @@ namespace Rusty.Serialization.DotNet
             return node;
         }
 
-        protected override Range CreateObject(ListNode node, CreateObjectContext context)
+        protected override Range CreateObject2(ListNode node, CreateObjectContext context)
         {
             Index start = (Index)context.CreateObject(typeof(Index), node.Elements[0]);
             Index end = (Index)context.CreateObject(typeof(Index), node.Elements[1]);

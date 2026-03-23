@@ -7,11 +7,11 @@ namespace Rusty.Serialization.Core.Conversion
     /// <summary>
     /// A delegate converter.
     /// </summary>
-    public sealed class DelegateConverter<ValueT> : Converter<ValueT, CallableNode>
+    public sealed class DelegateConverter<ValueT> : TypedConverter<ValueT, CallableNode>
         where ValueT : Delegate
     {
         /* Protected methods. */
-        protected override CallableNode CreateNode(ValueT obj, CreateNodeContext context)
+        protected override CallableNode CreateNode2(ValueT obj, CreateNodeContext context)
         {
             IMemberNameNode name;
             if (obj.Method.IsHideBySig)
@@ -32,7 +32,7 @@ namespace Rusty.Serialization.Core.Conversion
                 return new CallableNode(name);
         }
 
-        protected override ValueT CreateObject(CallableNode node, CreateObjectContext context)
+        protected override ValueT CreateObject2(CallableNode node, CreateObjectContext context)
         {
             // Get type of delegate.
             Type delegateType = typeof(ValueT);

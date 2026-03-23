@@ -7,10 +7,10 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET timespan converter.
     /// </summary>
-    public class TimeSpanConverter : Core.Conversion.Converter<TimeSpan, DurationNode>
+    public class TimeSpanConverter : Core.Conversion.TypedConverter<TimeSpan, DurationNode>
     {
         /* Protected method. */
-        protected override DurationNode CreateNode(TimeSpan obj, CreateNodeContext context)
+        protected override DurationNode CreateNode2(TimeSpan obj, CreateNodeContext context)
         {
             bool negative = obj.Ticks < 0;
             if (negative)
@@ -23,7 +23,7 @@ namespace Rusty.Serialization.DotNet
             return new DurationNode(negative, days, hours, minutes, seconds);
         }
 
-        protected override TimeSpan CreateObject(DurationNode node, CreateObjectContext context)
+        protected override TimeSpan CreateObject2(DurationNode node, CreateObjectContext context)
         {
             double totalSeconds = (double)node.Value.seconds
                                 + (long)node.Value.minutes * 60

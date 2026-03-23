@@ -12,7 +12,7 @@ namespace Rusty.Serialization.Core.Conversion
         private CreateNodeContext CreateNodeContext => Context.CreateNodeContext;
 
         /* Constructors. */
-        public AssignNodeContext(Converters context) : base(context) { }
+        public AssignNodeContext(ObjectCodec context) : base(context) { }
 
         /* Public methods. */
         /// <summary>
@@ -53,7 +53,7 @@ namespace Rusty.Serialization.Core.Conversion
             }
 
             // Convert.
-            IConverter converter = Converters.Get(actualType);
+            Converter converter = Converters.Get(actualType);
             targetNode = converter.CreateNode(obj, CreateNodeContext);
             INode rootNode = targetNode;
 

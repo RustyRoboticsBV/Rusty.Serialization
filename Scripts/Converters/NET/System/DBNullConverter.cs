@@ -8,15 +8,15 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET database null converter.
     /// </summary>
-    public class DBNullConverter : Core.Conversion.Converter<DBNull, NullNode>
+    public class DBNullConverter : Core.Conversion.TypedConverter<DBNull, NullNode>
     {
         /* Protected method. */
-        protected override NullNode CreateNode(DBNull obj, CreateNodeContext context)
+        protected override NullNode CreateNode2(DBNull obj, CreateNodeContext context)
         {
             return new NullNode();
         }
 
-        protected override DBNull CreateObject(NullNode node, CreateObjectContext context)
+        protected override DBNull CreateObject2(NullNode node, CreateObjectContext context)
         {
             return DBNull.Value;
         }

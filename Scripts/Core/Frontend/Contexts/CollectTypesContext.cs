@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Conversion
     public class CollectTypesContext : SubContext
     {
         /* Constructors. */
-        public CollectTypesContext(Converters context) : base(context) { }
+        public CollectTypesContext(ObjectCodec context) : base(context) { }
 
         /* Public methods. */
         /// <summary>
@@ -40,7 +40,7 @@ namespace Rusty.Serialization.Core.Conversion
             // Collect child types.
             else if (node is ICollectionNode)
             {
-                IConverter converter = Converters.Get(objType);
+                Converter converter = Converters.Get(objType);
                 INode convertedNode = converter.ConvertNode(node);
                 converter.CollectTypes(convertedNode, this);
                 if (!NodeTypeTable.Has(node))

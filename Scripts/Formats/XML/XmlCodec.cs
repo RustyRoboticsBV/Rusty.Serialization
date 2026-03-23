@@ -13,7 +13,7 @@ namespace Rusty.Serialization.XML
     /// <summary>
     /// A XML serializer/deserializer back-end.
     /// </summary>
-    public class XmlCodec : Codec
+    public class XmlCodec : FormatCodec
     {
         /* Public methods. */
         public override string Serialize(SyntaxTree node, Settings settings)

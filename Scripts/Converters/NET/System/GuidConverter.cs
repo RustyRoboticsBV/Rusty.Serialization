@@ -7,17 +7,10 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET guid converter.
     /// </summary>
-    public class GuidConverter : Core.Conversion.Converter<Guid, UidNode>
+    public class GuidConverter : TypedUidConverter<Guid>
     {
         /* Protected method. */
-        protected override UidNode CreateNode(Guid obj, CreateNodeContext context)
-        {
-            return new UidNode(obj);
-        }
-
-        protected override Guid CreateObject(UidNode node, CreateObjectContext context)
-        {
-            return node.Value;
-        }
+        protected override UidValue ToUid(Guid obj) => obj;
+        protected override Guid FromUid(UidValue value) => value;
     }
 }

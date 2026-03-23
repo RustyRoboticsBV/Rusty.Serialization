@@ -6,13 +6,13 @@ namespace Rusty.Serialization.Core.Conversion
     /// <summary>
     /// An enum converter.
     /// </summary>
-    public sealed class EnumConverter<T> : Converter<T, SymbolNode>
+    public sealed class EnumConverter<T> : TypedConverter<T, SymbolNode>
         where T : struct, Enum
     {
         /* Protected methods. */
-        protected override SymbolNode CreateNode(T obj, CreateNodeContext context) => new SymbolNode(obj.ToString());
+        protected override SymbolNode CreateNode2(T obj, CreateNodeContext context) => new SymbolNode(obj.ToString());
 
-        protected override T CreateObject(SymbolNode node, CreateObjectContext context)
+        protected override T CreateObject2(SymbolNode node, CreateObjectContext context)
         {
             try
             {

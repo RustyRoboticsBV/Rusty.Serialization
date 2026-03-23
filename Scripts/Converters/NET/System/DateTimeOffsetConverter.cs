@@ -7,7 +7,7 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET date/time + offset converter.
     /// </summary>
-    public class DateTimeOffsetConverter : Core.Conversion.Converter<DateTimeOffset, INode>
+    public class DateTimeOffsetConverter : Core.Conversion.TypedConverter<DateTimeOffset, INode>
     {
         /* Constructors. */
         public DateTimeOffsetConverter()
@@ -16,14 +16,14 @@ namespace Rusty.Serialization.DotNet
         }
 
         /* Protected method. */
-        protected override INode CreateNode(DateTimeOffset obj, CreateNodeContext context)
+        protected override INode CreateNode2(DateTimeOffset obj, CreateNodeContext context)
         {
             TimestampNode timestamp = (TimestampNode)context.CreateNode(obj.DateTime);
             OffsetValue offset = new OffsetValue(obj.Offset.Ticks < 0, obj.Offset.Hours, obj.Offset.Minutes);
             return new OffsetNode(offset, timestamp);
         }
 
-        protected override DateTimeOffset CreateObject(INode node, CreateObjectContext context)
+        protected override DateTimeOffset CreateObject2(INode node, CreateObjectContext context)
         {
             if (node is OffsetNode offset)
             {

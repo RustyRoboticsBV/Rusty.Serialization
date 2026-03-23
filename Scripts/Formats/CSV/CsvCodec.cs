@@ -6,7 +6,7 @@ namespace Rusty.Serialization.CSV
     /// <summary>
     /// A CSV serializer/deserializer back-end.
     /// </summary>
-    public class CsvCodec : Codec
+    public class CsvCodec : FormatCodec
     {
         /* Private properties. */
         private CsvSerializer Serializer { get; } = new CsvSerializer();

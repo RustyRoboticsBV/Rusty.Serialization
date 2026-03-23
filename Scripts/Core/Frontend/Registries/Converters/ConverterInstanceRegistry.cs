@@ -9,13 +9,13 @@ namespace Rusty.Serialization.Core.Conversion
     public class ConverterInstanceRegistry
     {
         /* Private properties. */
-        private Dictionary<Type, IConverter> targetToConverter = new Dictionary<Type, IConverter>();
+        private Dictionary<Type, Converter> targetToConverter = new Dictionary<Type, Converter>();
 
         /* Public methods. */
         /// <summary>
         /// Register a converter type for some target type.
         /// </summary>
-        public void Add(Type targetType, IConverter converter)
+        public void Add(Type targetType, Converter converter)
         {
             if (targetType == null)
                 targetType = typeof(object);
@@ -25,9 +25,9 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Get a converter for some type if it exists. Returns null if it doesn't.
         /// </summary>
-        public IConverter Get(Type targetType)
+        public Converter Get(Type targetType)
         {
-            if (targetToConverter.TryGetValue(targetType, out IConverter converter))
+            if (targetToConverter.TryGetValue(targetType, out Converter converter))
                 return converter;
             return null;
         }

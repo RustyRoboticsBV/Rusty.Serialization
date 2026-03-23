@@ -8,12 +8,12 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET index converter.
     /// </summary>
-    public class IndexConverter : Core.Conversion.Converter<Index, IntNode>
+    public class IndexConverter : Core.Conversion.TypedConverter<Index, IntNode>
     {
         /* Protected method. */
-        protected override IntNode CreateNode(Index obj, CreateNodeContext context) => new IntNode(obj.Value);
+        protected override IntNode CreateNode2(Index obj, CreateNodeContext context) => new IntNode(obj.Value);
 
-        protected override Index CreateObject(IntNode node, CreateObjectContext context) => new Index((int)node.Value);
+        protected override Index CreateObject2(IntNode node, CreateObjectContext context) => new Index((int)node.Value);
     }
 }
 #endif

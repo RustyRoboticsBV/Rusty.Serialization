@@ -19,7 +19,7 @@ using Rusty.Serialization.DotNet;
 
 namespace Rusty.Serialization
 {
-    public partial class DefaultConverters : Converters
+    public partial class DefaultConverters : ObjectCodec
     {
         /// <summary>
         /// Add the .NET type converters.

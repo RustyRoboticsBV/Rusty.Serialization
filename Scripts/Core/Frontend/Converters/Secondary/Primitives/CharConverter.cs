@@ -3,12 +3,12 @@ using Rusty.Serialization.Core.Nodes;
 namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
-    /// A character converter.
+    /// A char converter.
     /// </summary>
-    public sealed class CharConverter : Converter<char, CharNode>
+    public sealed class CharConverter : TypedCharConverter<char>
     {
         /* Protected methods. */
-        protected override CharNode CreateNode(char obj, CreateNodeContext context) => new CharNode(obj.ToString());
-        protected override char CreateObject(CharNode node, CreateObjectContext context) => (char)node.Value;
+        protected override UnicodePair ToChar(char obj) => obj;
+        protected override char FromChar(UnicodePair value) => (char)value;
     }
 }

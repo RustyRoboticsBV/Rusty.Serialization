@@ -16,7 +16,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// Register a converter type for some target type.
         /// </summary>
         public void Add<TargetT, ConverterT>()
-            where ConverterT : IConverter
+            where ConverterT : Converter
         {
             Add(typeof(TargetT), typeof(ConverterT));
         }
@@ -32,10 +32,10 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Get an instance of a converter for some type.
         /// </summary>
-        public IConverter Get(Type targetType)
+        public Converter Get(Type targetType)
         {
             // Try to get the instance.
-            IConverter converterInstance = Instances.Get(targetType);
+            Converter converterInstance = Instances.Get(targetType);
             if (converterInstance != null)
                 return converterInstance;
 

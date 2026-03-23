@@ -7,15 +7,15 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET type converter.
     /// </summary>
-    public class TypeConverter : Core.Conversion.Converter<Type, StringNode>
+    public class TypeConverter : Core.Conversion.TypedConverter<Type, StringNode>
     {
         /* Protected method. */
-        protected override StringNode CreateNode(Type obj, CreateNodeContext context)
+        protected override StringNode CreateNode2(Type obj, CreateNodeContext context)
         {
             return new StringNode(new TypeName(obj));
         }
 
-        protected override Type CreateObject(StringNode node, CreateObjectContext context)
+        protected override Type CreateObject2(StringNode node, CreateObjectContext context)
         {
             return new TypeName(node.Value);
         }

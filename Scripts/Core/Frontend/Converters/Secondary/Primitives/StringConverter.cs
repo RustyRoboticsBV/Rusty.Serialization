@@ -1,14 +1,12 @@
-using Rusty.Serialization.Core.Nodes;
-
 namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
     /// A string converter.
     /// </summary>
-    public sealed class StringConverter : Converter<string, StringNode>
+    public sealed class StringConverter : TypedStringConverter<string>
     {
         /* Protected methods. */
-        protected override StringNode CreateNode(string obj, CreateNodeContext context) => new StringNode(obj);
-        protected override string CreateObject(StringNode node, CreateObjectContext context) => node.Value;
+        protected override string ToString(string obj) => obj;
+        protected override string FromString(string str) => str;
     }
 }

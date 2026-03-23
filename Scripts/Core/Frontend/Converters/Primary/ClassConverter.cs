@@ -21,7 +21,7 @@ namespace Rusty.Serialization.Core.Conversion
     /// <summary>
     /// A struct/class converter.
     /// </summary>
-    public class ClassConverter<T> : CompositeConverter<T, ObjectNode>
+    public class ClassConverter<T> : TypedConverter<T, ObjectNode>
     {
         /* Protected properties. */
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rusty.Serialization.Core.Conversion
         private Lookup MemberLookup { get; set; } = new Lookup();
 
         /* Protected methods. */
-        protected override ObjectNode CreateNode(T obj, CreateNodeContext context)
+        protected override ObjectNode CreateNode2(T obj, CreateNodeContext context)
         {
             // Collect members.
             CollectMembers();
@@ -43,7 +43,7 @@ namespace Rusty.Serialization.Core.Conversion
             return new ObjectNode(Members.Length);
         }
 
-        protected override void AssignNode(ObjectNode node, T obj, AssignNodeContext context)
+        protected override void PopulateNode(ObjectNode node, T obj, AssignNodeContext context)
         {
             // Collect members.
             CollectMembers();

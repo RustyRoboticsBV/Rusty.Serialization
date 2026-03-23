@@ -7,16 +7,16 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET key-value pair converter.
     /// </summary>
-    public class KeyValuePairConverter<KeyT, ValueT> : Converter<KeyValuePair<KeyT, ValueT>, DictNode>
+    public class KeyValuePairConverter<KeyT, ValueT> : TypedConverter<KeyValuePair<KeyT, ValueT>, DictNode>
     {
         /* Protected methods. */
-        protected override void CollectTypes(DictNode node, CollectTypesContext context)
+        protected override void CollectTypes2(DictNode node, CollectTypesContext context)
         {
             context.CollectTypesAndReferences(node.GetKeyAt(0), typeof(KeyT));
             context.CollectTypesAndReferences(node.GetValueAt(0), typeof(ValueT));
         }
 
-        protected override DictNode CreateNode(KeyValuePair<KeyT, ValueT> obj, CreateNodeContext context)
+        protected override DictNode CreateNode2(KeyValuePair<KeyT, ValueT> obj, CreateNodeContext context)
         {
             INode key = context.CreateNode(obj.Key);
             INode value = context.CreateNode(obj.Value);
@@ -26,7 +26,7 @@ namespace Rusty.Serialization.DotNet
             return node;
         }
 
-        protected override KeyValuePair<KeyT, ValueT> CreateObject(DictNode node, CreateObjectContext context)
+        protected override KeyValuePair<KeyT, ValueT> CreateObject2(DictNode node, CreateObjectContext context)
         {
             return new KeyValuePair<KeyT, ValueT>(
                 context.CreateObject<KeyT>(node.GetKeyAt(0)),

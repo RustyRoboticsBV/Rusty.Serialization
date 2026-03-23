@@ -8,7 +8,7 @@ namespace Rusty.Serialization.JSON
     /// <summary>
     /// A JSON serializer/deserializer back-end.
     /// </summary>
-    public class JsonCodec : Codec
+    public class JsonCodec : FormatCodec
     {
         /* Private properties. */
         private JsonSerializer serializer { get; } = new JsonSerializer();

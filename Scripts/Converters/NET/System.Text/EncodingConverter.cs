@@ -1,23 +1,15 @@
 using System.Text;
 using Rusty.Serialization.Core.Conversion;
-using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
 {
     /// <summary>
     /// A .NET encoding converter.
     /// </summary>
-    public class EncodingConverter : Converter<Encoding, StringNode>
+    public sealed class EncodingConverter : TypedStringConverter<Encoding>
     {
         /* Protected method. */
-        protected override StringNode CreateNode(Encoding obj, CreateNodeContext context)
-        {
-            return new StringNode(obj.WebName);
-        }
-
-        protected override Encoding CreateObject(StringNode node, CreateObjectContext context)
-        {
-            return Encoding.GetEncoding(node.Value);
-        }
+        protected override string ToString(Encoding obj) => obj.WebName;
+        protected override Encoding FromString(string str) => Encoding.GetEncoding(str);
     }
 }

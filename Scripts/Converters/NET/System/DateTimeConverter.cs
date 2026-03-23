@@ -7,10 +7,10 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET date/time converter.
     /// </summary>
-    public class DateTimeConverter : Core.Conversion.Converter<DateTime, TimestampNode>
+    public class DateTimeConverter : Core.Conversion.TypedConverter<DateTime, TimestampNode>
     {
         /* Protected method. */
-        protected override TimestampNode CreateNode(DateTime obj, CreateNodeContext context)
+        protected override TimestampNode CreateNode2(DateTime obj, CreateNodeContext context)
         {
             double seconds = obj.Second + (obj.Millisecond / 1000.0) + (obj.Ticks % TimeSpan.TicksPerMillisecond * 1e-7);
 
@@ -20,7 +20,7 @@ namespace Rusty.Serialization.DotNet
             ));
         }
 
-        protected override DateTime CreateObject(TimestampNode node, CreateObjectContext context)
+        protected override DateTime CreateObject2(TimestampNode node, CreateObjectContext context)
         {
             // Convert fractional seconds into ticks.
             double totalSeconds = (double)node.Value.second;

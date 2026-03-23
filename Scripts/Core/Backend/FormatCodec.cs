@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Codecs
     /// <summary>
     /// A base class for format codec classes.
     /// </summary>
-    public abstract class Codec
+    public abstract class FormatCodec
     {
         /* Public methods. */
         /// <summary>

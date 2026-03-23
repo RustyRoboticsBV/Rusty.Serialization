@@ -6,7 +6,7 @@ namespace Rusty.Serialization.Core.Conversion
     public class AssignObjectContext : SubContext
     {
         /* Constructors. */
-        public AssignObjectContext(Converters context) : base(context) { }
+        public AssignObjectContext(ObjectCodec context) : base(context) { }
 
         /* Public methods. */
         /// <summary>

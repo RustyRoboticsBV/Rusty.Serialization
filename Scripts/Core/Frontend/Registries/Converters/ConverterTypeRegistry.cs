@@ -18,7 +18,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// Register a converter type for some target type.
         /// </summary>
         public void Add<TargetT, ConverterT>()
-            where ConverterT : IConverter
+            where ConverterT : Converter
         {
             Add(typeof(TargetT), typeof(ConverterT));
         }
@@ -29,8 +29,8 @@ namespace Rusty.Serialization.Core.Conversion
         public void Add(Type target, Type converter)
         {
             // Only allow converter types that implement IConverter.
-            if (!converter.GetInterfaces().Any(i => i == typeof(IConverter)))
-                throw new Exception($"Type '{converter}' does not implement interface {nameof(IConverter)}!");
+            if (!converter.GetInterfaces().Any(i => i == typeof(Converter)))
+                throw new Exception($"Type '{converter}' does not implement interface {nameof(Converter)}!");
 
             // Only allow target and converter types with the same number of generic arguments.
             // Exception: allow (T, Converter<T>) pairs.
@@ -50,7 +50,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Instantiate a registered converter and return it.
         /// </summary>
-        public IConverter Instantiate(Type targetType)
+        public Converter Instantiate(Type targetType)
         {
             Type converterType = ResolveConverter(targetType);
 
@@ -59,13 +59,13 @@ namespace Rusty.Serialization.Core.Conversion
                 converterType = converterType.MakeGenericType(targetType);
 
             // Construct a converter.
-            return Activator.CreateInstance(converterType, true) as IConverter;
+            return Activator.CreateInstance(converterType, true) as Converter;
         }
 
         /// <summary>
         /// Instantiate a registered converter and return it.
         /// </summary>
-        public IConverter Instantiate<TargetT>() => Instantiate(typeof(TargetT));
+        public Converter Instantiate<TargetT>() => Instantiate(typeof(TargetT));
 
         /* Private methods. */
         /// <summary>

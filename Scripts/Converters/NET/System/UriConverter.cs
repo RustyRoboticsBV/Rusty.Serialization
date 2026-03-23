@@ -1,23 +1,14 @@
 using System;
 using Rusty.Serialization.Core.Conversion;
-using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.DotNet
 {
     /// <summary>
     /// A .NET URI converter.
     /// </summary>
-    public class UriConverter : Core.Conversion.Converter<Uri, StringNode>
+    public class UriConverter : TypedStringConverter<Uri>
     {
         /* Protected method. */
-        protected override StringNode CreateNode(Uri obj, CreateNodeContext context)
-        {
-            return new StringNode(obj.ToString());
-        }
-
-        protected override Uri CreateObject(StringNode node, CreateObjectContext context)
-        {
-            return new Uri(node.Value);
-        }
+        protected override Uri FromString(string str) => new Uri(str);
     }
 }

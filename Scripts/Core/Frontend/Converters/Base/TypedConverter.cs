@@ -7,17 +7,23 @@ namespace Rusty.Serialization.Core.Conversion
     /// <summary>
     /// A base class for all converter.
     /// </summary>
-    public abstract class Converter<TargetT, NodeT> : IConverter
+    public abstract class TypedConverter<TargetT, NodeT> : Converter
         where NodeT : class, INode
     {
-        /* Public properties. */
-        public Type[] AllowedNodeTypes { get; protected set; } = new Type[1] { typeof(NodeT) };
+        /* Fields. */
+        private static Type[] allowedNodeTypes = new Type[1] { typeof(NodeT) };
+
+        /* Protected properties. */
+        /// <summary>
+        /// The node types allowed by this converter.
+        /// </summary>
+        protected virtual Type[] AllowedNodeTypes => allowedNodeTypes;
 
         /* Public methods. */
         /// <summary>
         /// Convert a node to a type that this converter can use.
         /// </summary>
-        public INode ConvertNode(INode node)
+        public sealed override INode ConvertNode(INode node)
         {
             if (node == null)
                 return null;
@@ -55,10 +61,28 @@ namespace Rusty.Serialization.Core.Conversion
             throw new InvalidCastException($"The converter '{GetType().Name}' cannot handle node:\n{node}.");
         }
 
+        public sealed override void CollectTypes(INode node, CollectTypesContext context) => CollectTypes2((NodeT)node, context);
+        public sealed override INode CreateNode(object obj, CreateNodeContext context) => CreateNode2((TargetT)obj, context);
+        public sealed override object CreateObject(INode node, CreateObjectContext context) => CreateObject2((NodeT)node, context);
+
+        /* Protected methods. */
         /// <summary>
-        /// Convert a node to a type that this converter can use.
+        /// Collect the type of a node, as well as the types of members.
         /// </summary>
-        public static INode ConvertNode(INode node, Type toType)
+        protected virtual void CollectTypes2(NodeT node, CollectTypesContext context) { }
+        /// <summary>
+        /// Create a node from an object.
+        /// </summary>
+        protected abstract NodeT CreateNode2(TargetT obj, CreateNodeContext context);
+        /// <summary>
+        /// Create an object from a node.
+        /// </summary>
+        protected abstract TargetT CreateObject2(NodeT node, CreateObjectContext context);
+
+        /// <summary>
+        /// Convert a node to another type.
+        /// </summary>
+        protected static INode ConvertNode(INode node, Type toType)
         {
             if (node == null)
                 return null;
@@ -71,31 +95,11 @@ namespace Rusty.Serialization.Core.Conversion
 
             // Check if there is a conversion.
             if (HasUserDefinedCast(from, toType, out MethodInfo method))
-            {
                 return (INode)method.Invoke(null, new object[] { node });
-            }
 
             // No conversion available.
             throw new InvalidCastException($"Cannot convert node to '{toType.Name}':\n{node}.");
         }
-
-        public void CollectTypes(INode node, CollectTypesContext context) => CollectTypes((NodeT)node, context);
-        INode IConverter.CreateNode(object obj, CreateNodeContext context) => CreateNode((TargetT)obj, context);
-        object IConverter.CreateObject(INode node, CreateObjectContext context) => CreateObject((NodeT)node, context);
-
-        /* Protected methods. */
-        /// <summary>
-        /// Collect the type of a node, as well as the types of members.
-        /// </summary>
-        protected virtual void CollectTypes(NodeT node, CollectTypesContext context) { }
-        /// <summary>
-        /// Create a node from an object.
-        /// </summary>
-        protected abstract NodeT CreateNode(TargetT obj, CreateNodeContext context);
-        /// <summary>
-        /// Create an object from a node.
-        /// </summary>
-        protected abstract TargetT CreateObject(NodeT node, CreateObjectContext context);
 
         /* Private methods. */
         private static bool HasUserDefinedCast(Type from, Type to, out MethodInfo method)
@@ -115,7 +119,8 @@ namespace Rusty.Serialization.Core.Conversion
         private static MethodInfo FindCast(Type typeToSearch, Type from, Type to)
         {
             MethodInfo[] methods = typeToSearch.GetMethods(
-                BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy
+            );
 
             for (int i = 0; i < methods.Length; i++)
             {

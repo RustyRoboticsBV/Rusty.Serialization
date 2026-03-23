@@ -18,8 +18,8 @@ namespace Rusty.Serialization.DotNet
         protected override Half E => (Half)Math.E;
 
         /* Protected methods. */
-        protected override FloatNode CreateNode(Half obj) => new FloatNode((float)obj);
-        protected override Half CreateObject(FloatNode node) => (Half)(float)node.Value;
+        protected override FloatValue ToFloat(Half obj) => (float)obj;
+        protected override Half FromFloat(FloatValue value) => (Half)(float)value;
 
         protected override bool IsNaN(ref Half value) => Half.IsNaN(value);
         protected override bool IsPositiveInfinity(ref Half value) => Half.IsPositiveInfinity(value);

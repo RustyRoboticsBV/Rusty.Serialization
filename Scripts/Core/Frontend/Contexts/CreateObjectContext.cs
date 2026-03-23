@@ -8,7 +8,7 @@ namespace Rusty.Serialization.Core.Conversion
     public class CreateObjectContext : SubContext
     {
         /* Constructors. */
-        public CreateObjectContext(Converters context) : base(context) { }
+        public CreateObjectContext(ObjectCodec context) : base(context) { }
 
         /* Public methods. */
         /// <summary>
@@ -54,7 +54,7 @@ namespace Rusty.Serialization.Core.Conversion
                 {
                     INode valueNode = addressNode.Child;
 
-                    IConverter converter;
+                    Converter converter;
                     if (valueNode is TypeNode valueTypeNode)
                     {
                         valueNode = valueTypeNode.Child;
@@ -83,7 +83,7 @@ namespace Rusty.Serialization.Core.Conversion
             // Else, deconvert as-is.
             else
             {
-                IConverter converter = Converters.Get(expectedType);
+                Converter converter = Converters.Get(expectedType);
 
                 node = converter.ConvertNode(node);
 

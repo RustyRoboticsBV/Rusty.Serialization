@@ -7,10 +7,10 @@ namespace Rusty.Serialization.DotNet
     /// <summary>
     /// A .NET BitVector32 converter.
     /// </summary>
-    public class BitVector32Converter : Converter<BitVector32, BitmaskNode>
+    public class BitVector32Converter : TypedConverter<BitVector32, BitmaskNode>
     {
         /* Protected methods. */
-        protected override BitmaskNode CreateNode(BitVector32 obj, CreateNodeContext context)
+        protected override BitmaskNode CreateNode2(BitVector32 obj, CreateNodeContext context)
         {
             bool[] bools = new bool[32];
             for (int i = 0; i < 32; i++)
@@ -20,7 +20,7 @@ namespace Rusty.Serialization.DotNet
             return new BitmaskNode(bools);
         }
 
-        protected override BitVector32 CreateObject(BitmaskNode node, CreateObjectContext context)
+        protected override BitVector32 CreateObject2(BitmaskNode node, CreateObjectContext context)
         {
             BitVector32 vector = new BitVector32();
             for (int i = 0; i < 32 && i < node.Value.value.Length; i++)
