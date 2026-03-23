@@ -3,7 +3,7 @@
 namespace Rusty.Serialization.Core.Codecs
 {
     /// <summary>
-    /// A base class for serializer/deserializer classes.
+    /// A base class for format codec classes.
     /// </summary>
     public abstract class Codec
     {

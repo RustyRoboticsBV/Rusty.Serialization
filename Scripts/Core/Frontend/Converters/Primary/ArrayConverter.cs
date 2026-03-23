@@ -1,8 +1,5 @@
-﻿using Rusty.Serialization.Core.Nodes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
+﻿using System;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {

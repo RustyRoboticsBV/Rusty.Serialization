@@ -9,7 +9,7 @@ namespace Rusty.Serialization.Core.Nodes
     /// 
     /// The input tree is assumed to be free of cycles, and each node in the tree is assumed to appear only once.
     /// </summary>
-    public class SemanticTree
+    public sealed class SemanticTree
     {
         /* Private properties. */
         private SyntaxTree SyntaxTree { get; set; }
