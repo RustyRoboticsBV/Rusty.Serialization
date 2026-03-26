@@ -5,8 +5,8 @@
 UCS makes use of an [*abstract syntax tree (AST)*](https://en.wikipedia.org/wiki/Abstract_syntax_tree) during serialization and deserialization, as an intermediate step between the runtime C# object graph and the target data format (e.g. JSON, XML, CSV or CSCD). The AST represents the original C# object graph, with all the information necessary for unambiguous parsing.
 
 Using this intermediate step decouples runtime type handling from data format handling. This means that:
-- Support for additional formats can be added without touching type converters. Format codecs only need to understand the AST.
-- Support for additional types can be added without having to write conversions to every supported format. Type converters only need to handle specific AST nodes.
+- Support for additional types can be added without having to write conversions to every supported format. Object converters only need to convert to and specific AST nodes.
+- Support for additional formats can be added without touching object converters. Format codecs only need to understand the AST.
 
 A node tree should never contain any cycles. Shared and cyclic reference links are instead represented with address/reference nodes.
 
@@ -18,9 +18,9 @@ UCS recognizes 25 different node types, which are listed below. Each node corres
 
 Metadata nodes contain a value and a single child node. They are meant for annotating other nodes with additional data. There are four types:
 
-- 📌 **Address**: a reference address, used to mark shared or cyclic reference objects. It contains an address name and a child node, which may be of any type except for reference nodes.
-- 🏷 **Type**: a type label, used to disambiguify polymorphic types. It contains a type name and a child node.
-- 🎯 **Scope**: a class/struct member scope, used to disambiguify shadowed fields and properties. It contains a scope name and a child symbol node. They may only be used inside object nodes as member names.
+- 📌 **Address**: a reference address, used to mark shared or cyclic reference objects. It contains an address name and a child node, which may be of any type except for reference and scope nodes.
+- 🏷 **Type**: a type label, used to disambiguify polymorphic types. It contains a type name and a child node, which may be any node except for addresses and scopes.
+- 🎯 **Scope**: a class/struct member scope, used to disambiguify shadowed fields and properties. It contains a scope name and a child symbol node. They may only be used inside object nodes as member names and callables as function names.
 - 🌐 **Offset**: a UTC time offset, used to add timezone information to a timestamp node. It contains an offset value and a child timestamp node.
 
 ### Collections
@@ -29,8 +29,8 @@ Collection nodes act as groupings of child nodes. They exist to preserve object 
 
 - 📜 **List**: a collection node that contains a list of element nodes. Used to encode array-like or set-like types. Elements may be nodes of any type (except for scopes).
 - 📖 **Dictionary**: a collection node that contains pairs of key/value nodes. Used to encode dictionary-like types. Both keys and values may be nodes of any type (except for scopes).
-- 📦 **Object**: a collection node that contains pairs of member name/value nodes. Used to encode arbitrary object instances. Member names must either be a symbol or scope node; member values may be nodes of any type.
-- 📞 **Callable**: a node that represents a delegate or function pointer. It contains one or two child nodes: an optional target and a name. The target may be any node, the name must be a symbol, type or scope node.
+- 📦 **Object**: a collection node that contains pairs of member name/value nodes. Used to encode arbitrary object instances. Member names must either be a symbol or scope node; member values may be nodes of any type (except for scopes).
+- 📞 **Callable**: a node that represents a delegate or function pointer. It contains one or two child nodes: an optional target and a name. The target may be any node except a scope, the name must be a symbol or scope node.
 
 ### Primitives
 

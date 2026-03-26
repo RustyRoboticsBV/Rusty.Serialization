@@ -1,4 +1,5 @@
 ﻿using System;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -7,5 +8,9 @@ namespace Rusty.Serialization.Core.Conversion
     /// </summary>
     public class FlagsConverter<T> : Converter
         where T : Enum
-    { }
+    {
+        /* Public methods. */
+        // TODO
+        public override INode CreateNode(object obj, CreateNodeContext context) => new ListNode();
+    }
 }

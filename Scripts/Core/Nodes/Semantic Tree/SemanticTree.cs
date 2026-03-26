@@ -155,9 +155,14 @@ namespace Rusty.Serialization.Core.Nodes
             // Analyze child.
             if (node.Child == null)
                 SemanticError(node, "Child node was null.");
-            if (node.Child is RefNode)
-                SemanticError(node, $"Child may not be a reference node:\n{node.Child}");
-            Analyze(node.Child, false);
+
+            INode child = node.Child;
+            while (child is IMetadataNode metadata)
+            {
+                child = metadata.Child;
+            }
+            if (child is RefNode @ref)
+                SemanticError(node, $"Address nodes may not be used to annotate reference nodes: {@ref}.");
 
             // If child is type, register type.
             if (node.Child is TypeNode type)

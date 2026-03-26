@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
-    /// An target type to IConverter instance registry.
+    /// An object target type to converter instance cache.
     /// </summary>
-    public class ConverterInstanceRegistry
+    internal class ConverterInstanceCache
     {
         /* Private properties. */
         private Dictionary<Type, Converter> targetToConverter = new Dictionary<Type, Converter>();

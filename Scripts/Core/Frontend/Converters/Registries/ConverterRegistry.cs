@@ -9,7 +9,7 @@ namespace Rusty.Serialization.Core.Conversion
     {
         /* Private properties. */
         private ConverterTypeRegistry Types { get; } = new ConverterTypeRegistry();
-        private ConverterInstanceRegistry Instances { get; } = new ConverterInstanceRegistry();
+        private ConverterInstanceCache Instances { get; } = new ConverterInstanceCache();
 
         /* Public methods. */
         /// <summary>
