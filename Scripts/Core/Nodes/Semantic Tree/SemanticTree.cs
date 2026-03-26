@@ -33,7 +33,9 @@ namespace Rusty.Serialization.Core.Nodes
                 SemanticError("The syntax tree was null.");
             if (Root == null)
                 SemanticError("The root node may not be null.");
-            Analyze(Root, false);
+            if (Root is ScopeNode)
+                SemanticError(Root, "Root node may not be a scope node.");
+            Analyze(Root);
 
             // Check references and optionally assign them types.
             foreach (RefNode @ref in References)
@@ -87,7 +89,7 @@ namespace Rusty.Serialization.Core.Nodes
         }
 
         /* Private methods. */
-        private void Analyze(INode node, bool allowScopes)
+        private void Analyze(INode node)
         {
             // Metadata.
             if (node is AddressNode address)
@@ -97,12 +99,7 @@ namespace Rusty.Serialization.Core.Nodes
                 Analyze(type);
 
             else if (node is ScopeNode scope)
-            {
-                if (!allowScopes)
-                    SemanticError(node, "Scope nodes may only be used as object member names or callable names.");
-                else
-                    Analyze(scope);
-            }
+                Analyze(scope);
 
             else if (node is OffsetNode offset)
                 Analyze(offset);
@@ -155,6 +152,10 @@ namespace Rusty.Serialization.Core.Nodes
             // Analyze child.
             if (node.Child == null)
                 SemanticError(node, "Child node was null.");
+            if (node.Child is AddressNode)
+                SemanticError(node, $"Child node may not be another address node:\n{node.Child}.");
+            if (node.Child is ScopeNode)
+                SemanticError(node, $"Child node may not be a scope node:\n{node.Child}.");
 
             INode child = node.Child;
             while (child is IMetadataNode metadata)
@@ -163,6 +164,8 @@ namespace Rusty.Serialization.Core.Nodes
             }
             if (child is RefNode @ref)
                 SemanticError(node, $"Address nodes may not be used to annotate reference nodes: {@ref}.");
+
+            Analyze(node.Child);
 
             // If child is type, register type.
             if (node.Child is TypeNode type)
@@ -178,8 +181,10 @@ namespace Rusty.Serialization.Core.Nodes
                 SemanticError(node, $"Child node may not be an address node:\n{node.Child}.");
             if (node.Child is TypeNode)
                 SemanticError(node, $"Child node may not be another type node:\n{node.Child}.");
+            if (node.Child is ScopeNode)
+                SemanticError(node, $"Child node may not be a scope node:\n{node.Child}.");
 
-            Analyze(node.Child, false);
+            Analyze(node.Child);
 
             // Register type for type node and all child nodes until the first non-metadata node.
             INode current = node;
@@ -198,7 +203,7 @@ namespace Rusty.Serialization.Core.Nodes
             if (node.Child is not SymbolNode)
                 SemanticError(node, $"Child node must be a symbol node:\n{node.Child}.");
 
-            Analyze(node.Child, false);
+            Analyze(node.Child);
         }
 
         private void Analyze(OffsetNode node)
@@ -208,7 +213,7 @@ namespace Rusty.Serialization.Core.Nodes
             if (node.Child is not TimestampNode)
                 SemanticError(node, $"Child node must be a timestamp node:\n{node.Child}.");
 
-            Analyze(node.Child, false);
+            Analyze(node.Child);
         }
 
         private void Analyze(ListNode node)
@@ -218,7 +223,9 @@ namespace Rusty.Serialization.Core.Nodes
                 INode value = node.GetValueAt(i);
                 if (value == null)
                     SemanticError(node, $"Value at index {i} was null.");
-                Analyze(value, false);
+                if (value is ScopeNode)
+                    SemanticError(node, $"Value at index {i} was a scope node:\n{value}.");
+                Analyze(value);
             }
         }
 
@@ -229,12 +236,16 @@ namespace Rusty.Serialization.Core.Nodes
                 INode key = node.GetKeyAt(i);
                 if (key == null)
                     SemanticError(node, $"Key at index {i} was null.");
-                Analyze(key, false);
+                if (key is ScopeNode)
+                    SemanticError(node, $"Key at index {i} was a scope node:\n{key}.");
+                Analyze(key);
 
                 INode value = node.GetValueAt(i);
                 if (value == null)
                     SemanticError(node, $"Value at index {i} was null.");
-                Analyze(value, false);
+                if (value is ScopeNode)
+                    SemanticError(node, $"Value at index {i} was a scope node:\n{value}.");
+                Analyze(value);
             }
         }
 
@@ -247,25 +258,29 @@ namespace Rusty.Serialization.Core.Nodes
                     SemanticError(node, $"Key at index {i} was null.");
                 if (key is not ScopeNode && key is not SymbolNode)
                     SemanticError(node, $"Key must be a scope node or symbol node:\n{key}.");
-                Analyze(key, true);
+                Analyze(key);
 
                 INode value = node.GetValueAt(i);
                 if (value == null)
                     SemanticError(node, $"Value at index {i} was null.");
-                Analyze(value, false);
+                if (value is ScopeNode)
+                    SemanticError(node, $"Value at index {i} was a scope node:\n{value}.");
+                Analyze(value);
             }
         }
 
         private void Analyze(CallableNode node)
         {
+            if (node.Target is ScopeNode)
+                SemanticError(node, $"Target was a scope node:\n{node.Target}.");
             if (node.Target != null)
-                Analyze(node.Target, false);
+                Analyze(node.Target);
 
             if (node.Name == null)
                 SemanticError(node, $"Name was null.");
             if (node.Name is not ScopeNode && node.Name is not SymbolNode)
                 SemanticError(node, $"Callable name must be a scope or symbol node:\n{node.Name}.");
-            Analyze(node.Name, true);
+            Analyze(node.Name);
         }
 
         private static void SemanticError(string message)
