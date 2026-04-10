@@ -11,14 +11,11 @@ namespace Rusty.Serialization.Core.Nodes
     /// </summary>
     public sealed class SemanticTree
     {
-        /* Private properties. */
-        private SyntaxTree SyntaxTree { get; set; }
-        private Dictionary<string, AddressNode> AddressTable { get; set; }
-        private Dictionary<INode, string> TypeTable { get; set; }
-        private List<RefNode> References { get; set; }
-
         /* Public properties. */
-        public INode Root => SyntaxTree.Root;
+        public SyntaxTree SyntaxTree { get; private set; }
+        public Dictionary<string, AddressNode> AddressTable { get; private set; }
+        public Dictionary<INode, string> TypeTable { get; private set; }
+        public List<RefNode> References { get; private set; }
 
         /* Constructors. */
         public SemanticTree(SyntaxTree syntaxTree)
@@ -31,11 +28,11 @@ namespace Rusty.Serialization.Core.Nodes
             // Analyze root.
             if (SyntaxTree == null)
                 SemanticError("The syntax tree was null.");
-            if (Root == null)
+            if (SyntaxTree.Root == null)
                 SemanticError("The root node may not be null.");
-            if (Root is ScopeNode)
-                SemanticError(Root, "Root node may not be a scope node.");
-            Analyze(Root);
+            if (SyntaxTree.Root is ScopeNode)
+                SemanticError(SyntaxTree.Root, "Root node may not be a scope node.");
+            Analyze(SyntaxTree.Root);
 
             // Check references and optionally assign them types.
             foreach (RefNode @ref in References)

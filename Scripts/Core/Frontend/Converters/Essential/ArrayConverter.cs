@@ -1,4 +1,5 @@
-﻿using Rusty.Serialization.Core.Nodes;
+﻿using System;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -7,19 +8,18 @@ namespace Rusty.Serialization.Core.Conversion
     /// </summary>
     public sealed class ArrayConverter<T> : Converter
     {
-        public override void CollectTypes(object obj, CollectTypesContext context)
+        protected override void CollectChildNodeTypes(ListNode node, CollectTypesContext context)
         {
-            T[] array = TryCast<T[]>(obj);
-            for (int i = 0; i < array.Length; i++)
+            Type elementType = typeof(T);
+            for (int i = 0; i < node.Count; i++)
             {
-                context.Collect(typeof(T), array[i]);
+                context.Collect(node.GetValueAt(i), elementType);
             }
         }
 
         public override INode CreateNode(object obj, CreateNodeContext context)
         {
-            ListNode node = new ListNode();
-            return node;
+            return new ListNode();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Rusty.Serialization.Core.Conversion
@@ -29,8 +28,8 @@ namespace Rusty.Serialization.Core.Conversion
         public void Add(Type target, Type converter)
         {
             // Only allow converter types that implement IConverter.
-            if (!converter.GetInterfaces().Any(i => i == typeof(Converter)))
-                throw new Exception($"Type '{converter}' does not implement interface {nameof(Converter)}!");
+            if (!typeof(Converter).IsAssignableFrom(converter))
+                throw new Exception($"Type '{converter}' does not inherit {nameof(Converter)}!");
 
             // Only allow target and converter types with the same number of generic arguments.
             // Exception: allow (T, Converter<T>) pairs.

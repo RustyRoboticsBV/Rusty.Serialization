@@ -3,28 +3,58 @@ using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
-    public sealed class CollectTypesContext
-    {
-        public void Collect(Type declaredType, object obj) { }
-    }
-    public sealed class CreateNodeContext { }
-    public sealed class PopulateNodeContext { }
-    public sealed class CreateObjectContext { }
-    public sealed class PopulateObjectContext { }
-
     /// <summary>
     /// An object to/from AST node converter.
     /// </summary>
     public abstract class Converter
     {
         /* Public methods. */
-        public virtual void CollectTypes(object obj, CollectTypesContext context) { }
+
+        // Conversion.
 
         public abstract INode CreateNode(object obj, CreateNodeContext context);
 
         public virtual void PopulateNode(object obj, INode node, PopulateNodeContext context) { }
 
-        public virtual object CreateObject(INode node, CreateObjectContext context)
+        // Deconversion.
+
+        public void CollectChildNodeTypes(INode node, CollectTypesContext context)
+        {
+            switch (node)
+            {
+                case AddressNode ad: CollectChildNodeTypes(ad, context); break;
+                case TypeNode ty: CollectChildNodeTypes(ty, context); break;
+                case ScopeNode sc: CollectChildNodeTypes(sc, context); break;
+                case OffsetNode of: CollectChildNodeTypes(of, context); break;
+
+                case ListNode li: CollectChildNodeTypes(li, context); break;
+                case DictNode di: CollectChildNodeTypes(di, context); break;
+                case ObjectNode ob: CollectChildNodeTypes(ob, context); break;
+                case CallableNode ca: CollectChildNodeTypes(ca, context); break;
+
+                case NullNode nu: CollectChildNodeTypes(nu, context); break;
+                case BoolNode bo: CollectChildNodeTypes(bo, context); break;
+                case BitmaskNode bi: CollectChildNodeTypes(bi, context); break;
+                case IntNode @int: CollectChildNodeTypes(@int, context); break;
+                case FloatNode fl: CollectChildNodeTypes(fl, context); break;
+                case DecimalNode de: CollectChildNodeTypes(de, context); break;
+                case InfinityNode inf: CollectChildNodeTypes(inf, context); break;
+                case NanNode na: CollectChildNodeTypes(na, context); break;
+                case CharNode ch: CollectChildNodeTypes(ch, context); break;
+                case StringNode st: CollectChildNodeTypes(st, context); break;
+                case ColorNode co: CollectChildNodeTypes(co, context); break;
+                case UidNode ui: CollectChildNodeTypes(ui, context); break;
+                case TimestampNode ti: CollectChildNodeTypes(ti, context); break;
+                case DurationNode du: CollectChildNodeTypes(du, context); break;
+                case BytesNode by: CollectChildNodeTypes(by, context); break;
+                case SymbolNode sy: CollectChildNodeTypes(sy, context); break;
+                case RefNode re: CollectChildNodeTypes(re, context); break;
+
+                default: throw InvalidNodeException(node);
+            }
+        }
+
+        public object CreateObject(INode node, CreateObjectContext context)
         {
             switch (node)
             {
@@ -60,7 +90,7 @@ namespace Rusty.Serialization.Core.Conversion
             }
         }
 
-        public virtual object PopulateObject(INode node, object obj, PopulateObjectContext context)
+        public object PopulateObject(INode node, object obj, PopulateObjectContext context)
         {
             switch (node)
             {
@@ -98,7 +128,37 @@ namespace Rusty.Serialization.Core.Conversion
 
         /* Protected methods. */
 
-        // Create objeCt.
+        // Collect types.
+
+        protected virtual void CollectChildNodeTypes(AddressNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(TypeNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(ScopeNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(OffsetNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+
+        protected virtual void CollectChildNodeTypes(ListNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(DictNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(ObjectNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(CallableNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+
+        protected virtual void CollectChildNodeTypes(NullNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(BoolNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(BitmaskNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(IntNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(FloatNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(DecimalNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(InfinityNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(NanNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(CharNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(StringNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(ColorNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(UidNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(TimestampNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(DurationNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(BytesNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(SymbolNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+        protected virtual void CollectChildNodeTypes(RefNode node, CollectTypesContext context) => throw InvalidNodeException(node);
+
+        // Create object.
 
         protected virtual object CreateObject(AddressNode node, CreateObjectContext context) => throw InvalidNodeException(node);
         protected virtual object CreateObject(TypeNode node, CreateObjectContext context) => throw InvalidNodeException(node);
@@ -130,33 +190,33 @@ namespace Rusty.Serialization.Core.Conversion
 
         // Populate object.
 
-        protected virtual object PopulateObject(AddressNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(TypeNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(ScopeNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(OffsetNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(AddressNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(TypeNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(ScopeNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(OffsetNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
 
-        protected virtual object PopulateObject(ListNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(DictNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(ObjectNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(CallableNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(ListNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(DictNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(ObjectNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(CallableNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
 
-        protected virtual object PopulateObject(NullNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(BoolNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(BitmaskNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(IntNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(FloatNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(DecimalNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(InfinityNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(NanNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(CharNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(StringNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(ColorNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(UidNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(TimestampNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(DurationNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(BytesNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(SymbolNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(RefNode node, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(NullNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(BoolNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(BitmaskNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(IntNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(FloatNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(DecimalNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(InfinityNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(NanNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(CharNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(StringNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(ColorNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(UidNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(TimestampNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(DurationNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(BytesNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(SymbolNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
+        protected virtual object PopulateObject(RefNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
 
         // Misc.
         protected static T TryCast<T>(object obj)
@@ -174,7 +234,7 @@ namespace Rusty.Serialization.Core.Conversion
         /* Private methods. */
         private NotImplementedException InvalidNodeException(INode node)
         {
-            throw new NotImplementedException($"{GetType().Name} cannot handle {node.GetType()}s.");
+            return new NotImplementedException($"{GetType().Name} cannot handle {node.GetType()}s.");
         }
     }
 
