@@ -33,7 +33,7 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Convert an object to a node tree.
         /// </summary>
-        public SemanticTree Convert<T>(T obj)
+        public SyntaxTree Convert<T>(T obj)
         {
             throw new NotImplementedException();
         }

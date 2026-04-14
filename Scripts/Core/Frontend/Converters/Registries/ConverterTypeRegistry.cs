@@ -120,13 +120,17 @@ namespace Rusty.Serialization.Core.Conversion
                     throw new NotImplementedException("TODO: implement multi-dimensional array handling.");
             }
 
+            // Resolve tuple types.
+            if (typeof(ITuple).IsAssignableFrom(targetType))
+                return typeof(TupleConverter<>).MakeGenericType(targetType);
+
             // Resolve list types.
             if (HasInterface(targetType, typeof(IList<>)) && targetType.GetGenericArguments().Length == 1)
                 return typeof(ListConverter<,>).MakeGenericType(targetType, targetType.GetGenericArguments()[0]);
 
-            // Resolve tuple types.
-            if (typeof(ITuple).IsAssignableFrom(targetType))
-                return typeof(TupleConverter<>).MakeGenericType(targetType);
+            // Resolve dictionary types.
+            if (HasInterface(targetType, typeof(IDictionary<,>)) && targetType.GetGenericArguments().Length == 2)
+                return typeof(DictionaryConverter<,,>).MakeGenericType(targetType, targetType.GetGenericArguments()[0], targetType.GetGenericArguments()[1]);
 
             // Resolve delegate types.
             if (typeof(Delegate).IsAssignableFrom(targetType))
