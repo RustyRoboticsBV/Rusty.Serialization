@@ -12,24 +12,24 @@ namespace Rusty.Serialization.CSCD
     public class CscdParser : Parser<CscdLexer>
     {
         /* Fields. */
-        private readonly static HashSet<UnicodePair> addressEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
-        private readonly static HashSet<UnicodePair> typeEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
-        private readonly static HashSet<UnicodePair> scopeEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '^', '\\' };
-        private readonly static HashSet<UnicodePair> charEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r' };
-        private readonly static HashSet<UnicodePair> strEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '"', '\\' };
-        private readonly static HashSet<UnicodePair> symbolEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '*', '\\' };
-        private readonly static HashSet<UnicodePair> refEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '&', '\\' };
+        private readonly static HashSet<CharValue> addressEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '`', '\\' };
+        private readonly static HashSet<CharValue> typeEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', ')', '\\' };
+        private readonly static HashSet<CharValue> scopeEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '^', '\\' };
+        private readonly static HashSet<CharValue> charEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r' };
+        private readonly static HashSet<CharValue> strEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '"', '\\' };
+        private readonly static HashSet<CharValue> symbolEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '*', '\\' };
+        private readonly static HashSet<CharValue> refEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '&', '\\' };
 
         private static StringBuilderBag bag = new StringBuilderBag();
 
-        private static readonly Dictionary<char, UnicodePair> simpleEscapes = new Dictionary<char, UnicodePair>
+        private static readonly Dictionary<char, CharValue> simpleEscapes = new Dictionary<char, CharValue>
         {
             { 't', '\t' },
             { 'n', '\n' },
@@ -875,7 +875,7 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse a textual literal (without the delimiters).
         /// </summary>
-        private static string ParseText(Token token, HashSet<UnicodePair> requiredEscapes, string startDelimiter,
+        private static string ParseText(Token token, HashSet<CharValue> requiredEscapes, string startDelimiter,
             string endDelimiter, bool allowFullUnicodeRange)
         {
             // Remove enclosing delimiters.
@@ -884,7 +884,7 @@ namespace Rusty.Serialization.CSCD
             StringBuilder sb = bag.Rent();
             for (int i = 0; i < contents.Length; i++)
             {
-                UnicodePair c = contents[i];
+                CharValue c = contents[i];
 
                 // Illegal characters.
                 if (!(allowFullUnicodeRange
@@ -900,7 +900,7 @@ namespace Rusty.Serialization.CSCD
                 }
 
                 // Escaped.
-                else if (ExtractEscape(contents, i, out UnicodePair escaped, out int length))
+                else if (ExtractEscape(contents, i, out CharValue escaped, out int length))
                 {
                     sb.Append(escaped);
                     i += length - 1;
@@ -922,7 +922,7 @@ namespace Rusty.Serialization.CSCD
         /// <summary>
         /// Parse an escape sequence (and get the original sequence's length).
         /// </summary>
-        private static bool ExtractEscape(TextSpan span, int index, out UnicodePair chr, out int sequenceLength)
+        private static bool ExtractEscape(TextSpan span, int index, out CharValue chr, out int sequenceLength)
         {
             // Must start with a backslash.
             char current = span[index];

@@ -12,22 +12,22 @@ namespace Rusty.Serialization.CSCD
     public class CscdSerializer : Serializer
     {
         /* Private constants. */
-        private readonly static HashSet<UnicodePair> addressEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '`', '\\' };
-        private readonly static HashSet<UnicodePair> typeEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', ')', '\\' };
-        private readonly static HashSet<UnicodePair> scopeEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '^', '\\' };
-        private readonly static HashSet<UnicodePair> charEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r' };
-        private readonly static HashSet<UnicodePair> strEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '"', '\\' };
-        private readonly static HashSet<UnicodePair> symbolEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '*', '\\' };
-        private readonly static HashSet<UnicodePair> refEscapes =
-            new HashSet<UnicodePair> { '\t', '\n', '\r', '&', '\\' };
+        private readonly static HashSet<CharValue> addressEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '`', '\\' };
+        private readonly static HashSet<CharValue> typeEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', ')', '\\' };
+        private readonly static HashSet<CharValue> scopeEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '^', '\\' };
+        private readonly static HashSet<CharValue> charEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r' };
+        private readonly static HashSet<CharValue> strEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '"', '\\' };
+        private readonly static HashSet<CharValue> symbolEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '*', '\\' };
+        private readonly static HashSet<CharValue> refEscapes =
+            new HashSet<CharValue> { '\t', '\n', '\r', '&', '\\' };
 
-        private static readonly Dictionary<UnicodePair, char> simpleEscapes = new Dictionary<UnicodePair, char>()
+        private static readonly Dictionary<CharValue, char> simpleEscapes = new Dictionary<CharValue, char>()
         {
             { '\t', 't' },
             { '\n', 'n' },
@@ -90,7 +90,7 @@ namespace Rusty.Serialization.CSCD
             if (node is CharNode chr)
                 return Serialize(chr);
             if (node is StringNode str)
-                return $"\"{FormatText(str.Value, strEscapes)}\"";
+                return $"\"{FormatText(str.Value.ToString(), strEscapes)}\"";
             if (node is ColorNode col)
                 return Serialize(col);
             if (node is UidNode uid)
@@ -439,7 +439,7 @@ namespace Rusty.Serialization.CSCD
 
         // Helper methods.
 
-        private static string FormatText(string text, HashSet<UnicodePair> escapeSequences)
+        private static string FormatText(string text, HashSet<CharValue> escapeSequences)
         {
             StringBuilder sb = StringBuilders.Rent(text.Length);
             for (int i = 0; i < text.Length; i++)
@@ -462,7 +462,7 @@ namespace Rusty.Serialization.CSCD
             return sb.ToString();
         }
 
-        private static void FormatEscaped(UnicodePair chr, StringBuilder sb)
+        private static void FormatEscaped(CharValue chr, StringBuilder sb)
         {
             sb.Append('\\');
             if (simpleEscapes.TryGetValue(chr, out char escaped))

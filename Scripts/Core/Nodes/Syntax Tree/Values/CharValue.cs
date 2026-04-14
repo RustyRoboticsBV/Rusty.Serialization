@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Rusty.Serialization.Core.Nodes
 {
-    public readonly struct UnicodePair : IEquatable<char>, IEquatable<int>, IEquatable<UnicodePair>
+    public readonly struct CharValue : IEquatable<char>, IEquatable<int>, IEquatable<CharValue>
     {
         /* Fields. */
         public readonly char High;
@@ -15,19 +15,19 @@ namespace Rusty.Serialization.Core.Nodes
         public string Hex => CodePoint.ToString("X", CultureInfo.InvariantCulture);
 
         /* Constructors. */
-        public UnicodePair(char chr)
+        public CharValue(char chr)
         {
             High = chr;
             Low = '\0';
         }
 
-        public UnicodePair(char high, char low)
+        public CharValue(char high, char low)
         {
             High = high;
             Low = low;
         }
 
-        public UnicodePair(int codePoint)
+        public CharValue(int codePoint)
         {
             if ((uint)codePoint > 0x10FFFF /*|| (uint)(codePoint - 0xD800) < 0x800*/) // TODO: determine what to do with lone surrogate pairs.
                 throw new ArgumentOutOfRangeException(nameof(codePoint));
@@ -45,7 +45,7 @@ namespace Rusty.Serialization.Core.Nodes
             }
         }
 
-        public UnicodePair(string str, int index)
+        public CharValue(string str, int index)
         {
             if (str is null)
                 throw new ArgumentNullException(nameof(str));
@@ -65,21 +65,21 @@ namespace Rusty.Serialization.Core.Nodes
             }
         }
 
-        public UnicodePair(string str) : this(str, 0) { }
+        public CharValue(string str) : this(str, 0) { }
 
         /* Conversion operators. */
-        public static implicit operator UnicodePair(string str) => new UnicodePair(str);
-        public static implicit operator UnicodePair(char chr) => new UnicodePair(chr);
-        public static implicit operator UnicodePair(int codePoint) => new UnicodePair(codePoint);
-        public static explicit operator char(UnicodePair pair) => pair.High;
+        public static implicit operator CharValue(string str) => new CharValue(str);
+        public static implicit operator CharValue(char chr) => new CharValue(chr);
+        public static implicit operator CharValue(int codePoint) => new CharValue(codePoint);
+        public static explicit operator char(CharValue pair) => pair.High;
 
         /* Comparison operators. */
-        public static bool operator ==(UnicodePair a, UnicodePair b) => a.Equals(b);
-        public static bool operator !=(UnicodePair a, UnicodePair b) => !a.Equals(b);
-        public static bool operator >(UnicodePair a, UnicodePair b) => a.CodePoint > b.CodePoint;
-        public static bool operator <(UnicodePair a, UnicodePair b) => a.CodePoint < b.CodePoint;
-        public static bool operator >=(UnicodePair a, UnicodePair b) => a.CodePoint >= b.CodePoint;
-        public static bool operator <=(UnicodePair a, UnicodePair b) => a.CodePoint <= b.CodePoint;
+        public static bool operator ==(CharValue a, CharValue b) => a.Equals(b);
+        public static bool operator !=(CharValue a, CharValue b) => !a.Equals(b);
+        public static bool operator >(CharValue a, CharValue b) => a.CodePoint > b.CodePoint;
+        public static bool operator <(CharValue a, CharValue b) => a.CodePoint < b.CodePoint;
+        public static bool operator >=(CharValue a, CharValue b) => a.CodePoint >= b.CodePoint;
+        public static bool operator <=(CharValue a, CharValue b) => a.CodePoint <= b.CodePoint;
 
         /* Public methods. */
         public override string ToString()
@@ -95,13 +95,13 @@ namespace Rusty.Serialization.Core.Nodes
             {
                 case char c: return Equals(c);
                 case int i: return Equals(i);
-                case UnicodePair pair: return Equals(pair);
+                case CharValue pair: return Equals(pair);
                 default: return base.Equals(obj);
             }
         }
         public bool Equals(char c) => High == c && Low == '\0';
         public bool Equals(int codePoint) => CodePoint == codePoint;
-        public bool Equals(UnicodePair other) => High == other.High && Low == other.Low;
+        public bool Equals(CharValue other) => High == other.High && Low == other.Low;
         public override int GetHashCode() => HashCode.Combine(High, Low);
 
         public void CopyTo(Span<char> destination)

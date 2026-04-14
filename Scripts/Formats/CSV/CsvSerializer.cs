@@ -86,7 +86,7 @@ namespace Rusty.Serialization.CSV
             else if (node is StringNode str)
             {
                 sb.Append("str,");
-                sb.Append(Pack(str.Value));
+                sb.Append(Pack(str.Value.ToString()));
             }
             else if (node is DecimalNode dec)
             {

@@ -5,7 +5,7 @@ namespace Rusty.Serialization.Core.Conversion
     /// <summary>
     /// A generic character converter.
     /// </summary>
-    public class CharConverter<T> : TypedConverter<UnicodePair, T>
+    public class CharConverter<T> : TypedConverter<CharValue, T>
     {
         /* Public methods. */
         public override INode CreateNode(object obj, CreateNodeContext context) => new CharNode(ToChar((T)obj));
@@ -20,11 +20,11 @@ namespace Rusty.Serialization.Core.Conversion
         /// <summary>
         /// Convert an character object to the internal value representation.
         /// </summary>
-        protected virtual UnicodePair ToChar(T obj) => ToValue(obj);
+        protected virtual CharValue ToChar(T obj) => ToValue(obj);
 
         /// <summary>
         /// Deconvert a value to an character object of the desired type.
         /// </summary>
-        protected virtual T FromChar(UnicodePair obj) => FromValue(obj);
+        protected virtual T FromChar(CharValue obj) => FromValue(obj);
     }
 }

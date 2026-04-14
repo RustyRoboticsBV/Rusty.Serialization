@@ -151,7 +151,7 @@ namespace Rusty.Serialization.XML
                     writer.WriteStartElement("str");
                     WriteMetadata(writer, addressName, typeName, offsetValue, name, scope);
 
-                    writer.WriteString(str.Value);
+                    writer.WriteString(str.Value.ToString());
                     writer.WriteEndElement();
                     break;
 
@@ -343,7 +343,7 @@ namespace Rusty.Serialization.XML
             "float" => new FloatNode(FloatValue.Parse(value)),
             "inf" => value == "+" ? new InfinityNode(true) : new InfinityNode(false),
             "nan" => new NanNode(),
-            "char" => new CharNode(new UnicodePair(value)),
+            "char" => new CharNode(new CharValue(value)),
             "str" => new StringNode(value),
             "dec" => new DecimalNode(DecimalValue.Parse(value)),
             "uid" => new UidNode(UidValue.Parse(value)),

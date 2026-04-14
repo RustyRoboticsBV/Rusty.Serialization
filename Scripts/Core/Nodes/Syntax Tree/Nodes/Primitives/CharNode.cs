@@ -3,12 +3,12 @@ namespace Rusty.Serialization.Core.Nodes
     /// <summary>
     /// A character serializer node.
     /// </summary>
-    public sealed class CharNode : ValueNode<UnicodePair>
+    public sealed class CharNode : ValueNode<CharValue>
     {
         /* Constructors. */
         public CharNode() : base() { }
 
-        public CharNode(UnicodePair value) : base(value) { }
+        public CharNode(CharValue value) : base(value) { }
 
         /* Public methods. */
         public override string ToString()

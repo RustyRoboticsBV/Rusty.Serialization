@@ -146,7 +146,7 @@ namespace Rusty.Serialization.Core.Conversion
                 return typeof(FloatConverter<>).MakeGenericType(targetType);
             if (CastUtility.IsBilaterallyConvertable(targetType, typeof(DecimalValue)))
                 return typeof(DecimalConverter<>).MakeGenericType(targetType);
-            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(UnicodePair)))
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(CharValue)))
                 return typeof(CharConverter<>).MakeGenericType(targetType);
 
             // Resolve inherited types.

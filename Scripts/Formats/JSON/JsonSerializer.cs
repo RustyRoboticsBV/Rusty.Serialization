@@ -94,7 +94,7 @@ namespace Rusty.Serialization.JSON
                     break;
 
                 case StringNode @string:
-                    result = new JsonString(@string.Value);
+                    result = new JsonString(@string.Value.ToString());
                     break;
 
                 case DecimalNode @decimal:
