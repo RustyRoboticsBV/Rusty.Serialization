@@ -1,13 +1,13 @@
-﻿using Rusty.Serialization.Core.Nodes;
-using System;
+﻿using System;
 using System.Reflection;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
     /// A base class for integer converter.
     /// </summary>
-    public class IntBaseConverter<T> : Converter
+    public class IntConverter<T> : Converter
     {
         /* Private properties. */
         private MethodInfo ToConversionOperator { get; set; }

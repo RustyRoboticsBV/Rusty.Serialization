@@ -1,11 +1,12 @@
 ﻿using Rusty.Serialization.Core.Nodes;
+using Rusty.Serialization.Core.Conversion;
 
-namespace Rusty.Serialization.Core.Conversion
+namespace Rusty.Serialization.Conversion.System
 {
     /// <summary>
     /// An int converter.
     /// </summary>
-    public sealed class IntConverter : IntBaseConverter<int>
+    public sealed class IntConverter : IntConverter<int>
     {
         /* Protected methods. */
         protected override IntValue ToInt(int obj) => obj;

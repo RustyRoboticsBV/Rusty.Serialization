@@ -127,7 +127,7 @@ namespace Rusty.Serialization.Core.Conversion
 
             // Resolve convertable types.
             if (CastUtility.IsBilaterallyConvertable(targetType, typeof(IntValue)))
-                return typeof(IntBaseConverter<>).MakeGenericType(targetType);
+                return typeof(IntConverter<>).MakeGenericType(targetType);
 
             // Resolve inherited types.
             Type parentType = targetType.BaseType;

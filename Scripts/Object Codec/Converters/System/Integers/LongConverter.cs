@@ -1,11 +1,12 @@
 ﻿using Rusty.Serialization.Core.Nodes;
+using Rusty.Serialization.Core.Conversion;
 
-namespace Rusty.Serialization.Core.Conversion
+namespace Rusty.Serialization.Conversion.System
 {
     /// <summary>
-    /// An long converter.
+    /// A long converter.
     /// </summary>
-    public sealed class LongConverter : IntBaseConverter<long>
+    public sealed class LongConverter : IntConverter<long>
     {
         /* Protected methods. */
         protected override IntValue ToInt(long obj) => obj;

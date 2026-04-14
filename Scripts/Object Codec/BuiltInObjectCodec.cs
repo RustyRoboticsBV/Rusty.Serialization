@@ -1,24 +1,16 @@
-﻿using System;
-using Rusty.Serialization.Core.Conversion;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Conversion;
 
-namespace Rusty.Serialization.Converters
+namespace Rusty.Serialization.Conversion
 {
     /// <summary>
     /// The built-in object conversion codec.
     /// </summary>
-    public class BuiltInObjectCodec : ObjectCodec
+    public partial class BuiltInObjectCodec : ObjectCodec
     {
         /* Constructors. */
         public BuiltInObjectCodec() : base()
         {
-            AddCoreTypes();
-        }
-
-        /* Private methods. */
-        private void AddCoreTypes()
-        {
-            Converters.Add<int, IntConverter>();
+            AddSystemTypes();
         }
     }
 }
