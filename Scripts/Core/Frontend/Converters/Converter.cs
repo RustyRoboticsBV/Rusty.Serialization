@@ -14,7 +14,16 @@ namespace Rusty.Serialization.Core.Conversion
 
         public abstract INode CreateNode(object obj, CreateNodeContext context);
 
-        public virtual void PopulateNode(object obj, INode node, PopulateNodeContext context) { }
+        public virtual void PopulateNode(object obj, INode node, PopulateNodeContext context)
+        {
+            switch (node)
+            {
+                case ListNode li: PopulateNode(obj, li, context); break;
+                case DictNode di: PopulateNode(obj, di, context); break;
+                case ObjectNode ob: PopulateNode(obj, ob, context); break;
+                case CallableNode ca: PopulateNode(obj, ca, context); break;
+            }
+        }
 
         // Deconversion.
 
@@ -90,6 +99,13 @@ namespace Rusty.Serialization.Core.Conversion
         }
 
         /* Protected methods. */
+
+        // Populate node.
+
+        protected virtual void PopulateNode(object obj, ListNode node, PopulateNodeContext context) => throw InvalidNodeException(node);
+        protected virtual void PopulateNode(object obj, DictNode node, PopulateNodeContext context) => throw InvalidNodeException(node);
+        protected virtual void PopulateNode(object obj, ObjectNode node, PopulateNodeContext context) => throw InvalidNodeException(node);
+        protected virtual void PopulateNode(object obj, CallableNode node, PopulateNodeContext context) => throw InvalidNodeException(node);
 
         // Collect types.
 
