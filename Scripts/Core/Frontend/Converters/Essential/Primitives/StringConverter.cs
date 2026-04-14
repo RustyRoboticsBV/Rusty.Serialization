@@ -11,8 +11,6 @@ namespace Rusty.Serialization.Core.Conversion
         public override INode CreateNode(object obj, CreateNodeContext context) => new StringNode(ToString((T)obj));
 
         /* Protected methods. */
-        protected sealed override void CollectChildNodeTypes(StringNode node, CollectTypesContext context) { }
-
         protected sealed override object CreateObject(StringNode node, CreateObjectContext context) => FromString(node.Value);
 
         protected sealed override object PopulateObject(StringNode node, object obj, PopulateObjectContext context) => obj;

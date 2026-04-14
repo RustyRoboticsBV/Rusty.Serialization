@@ -11,8 +11,6 @@ namespace Rusty.Serialization.Core.Conversion
         public override INode CreateNode(object obj, CreateNodeContext context) => new DecimalNode(ToDecimal((T)obj));
 
         /* Protected methods. */
-        protected sealed override void CollectChildNodeTypes(DecimalNode node, CollectTypesContext context) { }
-
         protected sealed override object CreateObject(DecimalNode node, CreateObjectContext context) => FromDecimal(node.Value);
 
         protected sealed override object PopulateObject(DecimalNode node, object obj, PopulateObjectContext context) => obj;

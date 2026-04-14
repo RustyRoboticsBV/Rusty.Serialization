@@ -22,8 +22,6 @@ namespace Rusty.Serialization.Core.Conversion
         }
 
         /* Protected methods. */
-        protected sealed override void CollectChildNodeTypes(FloatNode node, CollectTypesContext context) { }
-
         protected sealed override object CreateObject(FloatNode node, CreateObjectContext context) => FromFloat(node.Value);
 
         protected sealed override object PopulateObject(FloatNode node, object obj, PopulateObjectContext context) => obj;

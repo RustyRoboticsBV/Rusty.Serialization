@@ -11,8 +11,6 @@ namespace Rusty.Serialization.Core.Conversion
         public override INode CreateNode(object obj, CreateNodeContext context) => new BoolNode(ToBool((T)obj));
 
         /* Protected methods. */
-        protected sealed override void CollectChildNodeTypes(BoolNode node, CollectTypesContext context) { }
-
         protected sealed override object CreateObject(BoolNode node, CreateObjectContext context) => FromBool(node.Value);
 
         protected sealed override object PopulateObject(BoolNode node, object obj, PopulateObjectContext context) => obj;

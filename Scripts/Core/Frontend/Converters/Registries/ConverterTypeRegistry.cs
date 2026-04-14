@@ -113,13 +113,16 @@ namespace Rusty.Serialization.Core.Conversion
             // Resolve array types.
             if (targetType.IsArray)
             {
-                System.Console.WriteLine("RANK for " + targetType.Name + " is " + targetType.GetArrayRank());
                 Type elementType = targetType.GetElementType();
                 if (targetType.GetArrayRank() == 1)
                     return typeof(ArrayConverter<>).MakeGenericType(elementType);
                 else
                     throw new NotImplementedException("TODO: implement multi-dimensional array handling.");
             }
+
+            // Resolve list types.
+            if (HasInterface(targetType, typeof(IList<>)) && targetType.GetGenericArguments().Length == 1)
+                return typeof(ListConverter<,>).MakeGenericType(targetType, targetType.GetGenericArguments()[0]);
 
             // Resolve tuple types.
             if (typeof(ITuple).IsAssignableFrom(targetType))
@@ -186,6 +189,23 @@ namespace Rusty.Serialization.Core.Conversion
             {
                 if (attributes[i] is FlagsAttribute)
                     return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check if a type implements an interface.
+        /// </summary>
+        private static bool HasInterface(Type type, Type @interface)
+        {
+            Type[] interfaces = type.GetInterfaces();
+            for (int i = 0; i < interfaces.Length; i++)
+            {
+                if (interfaces[i] == @interface
+                    || (interfaces[i].IsGenericType && interfaces[i].GetGenericTypeDefinition() == @interface))
+                {
+                    return true;
+                }
             }
             return false;
         }
