@@ -7,8 +7,8 @@ namespace Rusty.Serialization.Core.Conversion
     /// </summary>
     public sealed class IntConverter : IntBaseConverter<int>
     {
+        /* Protected methods. */
         protected override IntValue ToInt(int obj) => obj;
-
         protected override int FromInt(IntValue obj) => (int)obj;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rusty.Serialization.Core.Nodes;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -123,6 +124,10 @@ namespace Rusty.Serialization.Core.Conversion
                     return genericConverterType.MakeGenericType(typeArguments);
                 }
             }
+
+            // Resolve convertable types.
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(IntValue)))
+                return typeof(IntBaseConverter<>).MakeGenericType(targetType);
 
             // Resolve inherited types.
             Type parentType = targetType.BaseType;

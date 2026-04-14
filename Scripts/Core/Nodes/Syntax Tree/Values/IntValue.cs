@@ -32,7 +32,6 @@ namespace Rusty.Serialization.Core.Nodes
         public static implicit operator IntValue(uint value) => new IntValue(value);
         public static implicit operator IntValue(ulong value) => new IntValue(value);
         public static implicit operator IntValue(BigInteger value) => new IntValue(value);
-        public static explicit operator BigInteger(IntValue value) => value.value;
         public static explicit operator byte(IntValue value) => (byte)value.value;
         public static explicit operator sbyte(IntValue value) => (sbyte)value.value;
         public static explicit operator short(IntValue value) => (short)value.value;
@@ -41,6 +40,7 @@ namespace Rusty.Serialization.Core.Nodes
         public static explicit operator uint(IntValue value) => (uint)value.value;
         public static explicit operator long(IntValue value) => (long)value.value;
         public static explicit operator ulong(IntValue value) => (ulong)value.value;
+        public static explicit operator BigInteger(IntValue value) => value.value;
 
         /* Arithmetic operators. */
         public static IntValue operator -(IntValue v) => new IntValue(-v.value);
