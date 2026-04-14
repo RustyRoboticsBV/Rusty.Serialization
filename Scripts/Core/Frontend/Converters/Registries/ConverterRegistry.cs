@@ -45,17 +45,11 @@ namespace Rusty.Serialization.Core.Conversion
                 return converterInstance;
 
             // Else, try to instantiate.
-            try
+            else
             {
                 converterInstance = Types.Instantiate(targetType);
                 Instances.Add(targetType, converterInstance);
                 return converterInstance;
-            }
-
-            // Else, throw exception.
-            catch
-            {
-                throw new ArgumentException($"No converter type was registered for target type '{targetType}'.");
             }
         }
     }

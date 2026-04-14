@@ -113,8 +113,12 @@ namespace Rusty.Serialization.Core.Conversion
             // Resolve array types.
             if (targetType.IsArray)
             {
+                System.Console.WriteLine("RANK for " + targetType.Name + " is " + targetType.GetArrayRank());
                 Type elementType = targetType.GetElementType();
-                return typeof(ArrayConverter<>).MakeGenericType(elementType);
+                if (targetType.GetArrayRank() == 1)
+                    return typeof(ArrayConverter<>).MakeGenericType(elementType);
+                else
+                    throw new NotImplementedException("TODO: implement multi-dimensional array handling.");
             }
 
             // Resolve tuple types.
