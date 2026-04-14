@@ -126,8 +126,16 @@ namespace Rusty.Serialization.Core.Conversion
             }
 
             // Resolve convertable types.
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(BoolValue)))
+                return typeof(BoolConverter<>).MakeGenericType(targetType);
             if (CastUtility.IsBilaterallyConvertable(targetType, typeof(IntValue)))
                 return typeof(IntConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(FloatValue)))
+                return typeof(FloatConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(DecimalValue)))
+                return typeof(DecimalConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(UnicodePair)))
+                return typeof(CharConverter<>).MakeGenericType(targetType);
 
             // Resolve inherited types.
             Type parentType = targetType.BaseType;

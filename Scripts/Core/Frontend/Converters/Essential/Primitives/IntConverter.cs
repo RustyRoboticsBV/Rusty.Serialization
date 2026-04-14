@@ -1,23 +1,14 @@
-﻿using System;
-using System.Reflection;
-using Rusty.Serialization.Core.Nodes;
+﻿using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
     /// <summary>
-    /// A base class for integer converter.
+    /// A generic integer converter.
     /// </summary>
-    public class IntConverter<T> : Converter
+    public class IntConverter<T> : TypedConverter<IntValue, T>
     {
-        /* Private properties. */
-        private MethodInfo ToConversionOperator { get; set; }
-        private MethodInfo FromConversionOperator { get; set; }
-
         /* Public methods. */
-        public override INode CreateNode(object obj, CreateNodeContext context)
-        {
-            return new IntNode(ToInt((T)obj));
-        }
+        public override INode CreateNode(object obj, CreateNodeContext context) => new IntNode(ToInt((T)obj));
 
         /* Protected methods. */
         protected sealed override void CollectChildNodeTypes(IntNode node, CollectTypesContext context) { }
@@ -27,47 +18,13 @@ namespace Rusty.Serialization.Core.Conversion
         protected sealed override object PopulateObject(IntNode node, object obj, PopulateObjectContext context) => obj;
 
         /// <summary>
-        /// Convert an integer object to the internal IntValue representation.
+        /// Convert an integer object to the internal value representation.
         /// </summary>
-        protected virtual IntValue ToInt(T obj)
-        {
-            // If needed, find the conversion operator.
-            if (ToConversionOperator == null)
-            {
-                if (CastUtility.TryFindCast(typeof(T), typeof(IntValue), out MethodInfo method))
-                    ToConversionOperator = method;
-            }
-
-            if (ToConversionOperator == null)
-            {
-                throw new InvalidCastException($"Objects of type '{typeof(T).Name}' cannot be converted to "
-                    + $"'{typeof(IntValue).Name}'.");
-            }
-
-            // If we found the conversion operator, invoke it.
-            return (IntValue)ToConversionOperator.Invoke(null, new object[1] { obj });
-        }
+        protected virtual IntValue ToInt(T obj) => ToValue(obj);
 
         /// <summary>
-        /// Deconvert a IntValue to an integer object of the desired type.
+        /// Deconvert a value to an integer object of the desired type.
         /// </summary>
-        protected virtual T FromInt(IntValue obj)
-        {
-            // If needed, find the conversion operator.
-            if (FromConversionOperator == null)
-            {
-                if (CastUtility.TryFindCast(typeof(IntValue), typeof(T), out MethodInfo method))
-                    FromConversionOperator = method;
-            }
-
-            if (FromConversionOperator == null)
-            {
-                throw new InvalidCastException($"Objects of type '{typeof(IntValue).Name}' cannot be converted to "
-                    + $"'{typeof(T).Name}'.");
-            }
-
-            // If we found the conversion operator, invoke it.
-            return (T)FromConversionOperator.Invoke(null, new object[1] { obj });
-        }
+        protected virtual T FromInt(IntValue obj) => FromValue(obj);
     }
 }
