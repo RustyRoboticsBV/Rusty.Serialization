@@ -12,6 +12,18 @@ namespace Rusty.Serialization.Core.Conversion
         private Dictionary<Type, Converter> targetToConverter = new Dictionary<Type, Converter>();
 
         /* Public methods. */
+        public override string ToString()
+        {
+            string str = "";
+            foreach (var pair in targetToConverter)
+            {
+                if (str != "")
+                    str += "\n";
+                str += pair.Key.Name.ToString() + " = " + pair.Value.GetType().Name.ToString();
+            }
+            return str;
+        }
+
         /// <summary>
         /// Register a converter type for some target type.
         /// </summary>

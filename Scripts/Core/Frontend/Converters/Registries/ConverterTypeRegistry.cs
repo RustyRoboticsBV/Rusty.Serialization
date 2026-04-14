@@ -1,7 +1,7 @@
-﻿using Rusty.Serialization.Core.Nodes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Rusty.Serialization.Core.Nodes;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -14,6 +14,18 @@ namespace Rusty.Serialization.Core.Conversion
         private Dictionary<Type, Type> targetToConverter = new Dictionary<Type, Type>();
 
         /* Public methods. */
+        public override string ToString()
+        {
+            string str = "";
+            foreach (var pair in targetToConverter)
+            {
+                if (str != "")
+                    str += "\n";
+                str += pair.Key.Name.ToString() + " = " + pair.Value.Name.ToString();
+            }
+            return str;
+        }
+
         /// <summary>
         /// Register a converter type for some target type.
         /// </summary>

@@ -12,6 +12,11 @@ namespace Rusty.Serialization.Core.Conversion
         private ConverterInstanceCache Instances { get; } = new ConverterInstanceCache();
 
         /* Public methods. */
+        public override string ToString()
+        {
+            return "[Types]\n" + Types + "\n\n[Instances]\n" + Instances;
+        }
+
         /// <summary>
         /// Register a converter type for some target type.
         /// </summary>
