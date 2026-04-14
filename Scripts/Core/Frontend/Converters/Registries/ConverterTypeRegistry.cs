@@ -148,6 +148,8 @@ namespace Rusty.Serialization.Core.Conversion
                 return typeof(DecimalConverter<>).MakeGenericType(targetType);
             if (CastUtility.IsBilaterallyConvertable(targetType, typeof(CharValue)))
                 return typeof(CharConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(StringValue)))
+                return typeof(StringConverter<>).MakeGenericType(targetType);
 
             // Resolve inherited types.
             Type parentType = targetType.BaseType;
