@@ -2,6 +2,7 @@
 using Rusty.Serialization.Conversion;
 using Rusty.Serialization.Core.Codecs;
 using Rusty.Serialization.Core.Conversion;
+using Rusty.Serialization.Core.Nodes;
 using Rusty.Serialization.CSCD;
 using Rusty.Serialization.CSV;
 using Rusty.Serialization.JSON;
@@ -29,7 +30,35 @@ namespace Rusty.Serialization
         public UCS(Format format) : this(new BuiltInObjectCodec(), format) { }
 
         /* Public methods. */
+        /// <summary>
+        /// Serialize an object.
+        /// </summary>
         public string Serialize(object obj) => FormatCodec.Serialize(ObjectCodec.Convert(obj));
+
+        /// <summary>
+        /// Serialize an object.
+        /// </summary>
+        public string Serialize<T>(T obj) => FormatCodec.Serialize(ObjectCodec.Convert(obj));
+
+        /// <summary>
+        /// Parse a serialized string.
+        /// </summary>
+        public object Parse(string serialized, Type type)
+        {
+            SyntaxTree syntax = FormatCodec.Parse(serialized);
+            SemanticTree semantic = new SemanticTree(syntax);
+            return ObjectCodec.Deconvert(type, semantic);
+        }
+
+        /// <summary>
+        /// Parse a serialized string.
+        /// </summary>
+        public T Parse<T>(string serialized)
+        {
+            SyntaxTree syntax = FormatCodec.Parse(serialized);
+            SemanticTree semantic = new SemanticTree(syntax);
+            return ObjectCodec.Deconvert<T>(semantic);
+        }
 
         /* Private methods. */
         private static FormatCodec CreateFormatCodec(Format format)

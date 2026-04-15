@@ -44,14 +44,6 @@ string serialized = cscd.Serialize(obj);            // Serializes MyClass object
 obj = cscd.Parse<MyClass>(serialized);              // Deserializes back to MyClass.
 ```
 
-#### Conversion Between Formats
-```
-string xmlStr = "<doc>...</doc>";
-UCS xml = new(Format.Xml);                          // Creates an XML serializer context.
-UCS json = new(Format.Json);                        // Creates a JSON serializer context.
-string jsonStr = UCS.Reformat(xmlStr, xml, json);   // Converts XML to JSON.
-```
-
 #### GDScript
 A GDscript wrapper is included with the module, see the [GDScript manual](Documentation/GDScript.md) for more information.
 
