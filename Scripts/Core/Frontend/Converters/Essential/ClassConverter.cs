@@ -122,9 +122,7 @@ namespace Rusty.Serialization.Core.Conversion
                 // Find member.
                 MemberName memberName = GetMemberName(node.GetNameAt(i));
                 if (!MemberLookup.TryGetValue(memberName, out MemberInfo member))
-                {
                     throw new MemberAccessException($"The type '{typeof(T)}' has no member named '{memberName}'.\n");
-                }
 
                 // Collect member type.
                 if (member is FieldInfo field)
@@ -231,30 +229,34 @@ namespace Rusty.Serialization.Core.Conversion
             // Only keep the ones that match the serializable requirements.
             for (int i = 0; i < fields.Length; i++)
             {
-                // Skip ignored or [NonSerialized].
-                if (fields[i].GetCustomAttribute<NonSerializedAttribute>() != null || ignoredMembers.Contains(fields[i]))
+                // Skip explicitly-excluded fields.
+                if (fields[i].GetCustomAttribute<NonSerializedAttribute>() != null
+#if NETFRAMEWORK || NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
+                    || fields[i].GetCustomAttribute<IgnoreDataMemberAttribute>() != null
+#endif
+                    || ignoredMembers.Contains(fields[i]))
+                {
                     continue;
+                }
 
                 // Check if this property is serializable.
-                if (fields[i].IsPublic)
-                    members.Add(fields[i]);
-
+                if (fields[i].IsPublic
 #if NETFRAMEWORK || NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
-                else if (fields[i].GetCustomAttribute<DataMemberAttribute>() != null)
-                    members.Add(fields[i]);
+                    || fields[i].GetCustomAttribute<DataMemberAttribute>() != null
 #endif
 #if UNITY_5_3_OR_NEWER
-                else if (fields[i].GetCustomAttribute<SerializeField>() != null)
-                    members.Add(fields[i]);
+                    || fields[i].GetCustomAttribute<SerializeField>() != null
 #endif
 #if UNITY_2019_3_OR_NEWER
-                else if (fields[i].GetCustomAttribute<SerializeReference>() != null)
-                    members.Add(fields[i]);
+                    || fields[i].GetCustomAttribute<SerializeReference>() != null
 #endif
 #if GODOT
-                else if (fields[i].GetCustomAttribute<ExportAttribute>() != null)
-                    members.Add(fields[i]);
+                    || fields[i].GetCustomAttribute<ExportAttribute>() != null
 #endif
+                )
+                {
+                    members.Add(fields[i]);
+                }
             }
 
             // Examine base type.
@@ -291,9 +293,15 @@ namespace Rusty.Serialization.Core.Conversion
                 if (property.GetIndexParameters().Length != 0)
                     continue;
 
-                // Skip ignored or [NonSerialized].
-                if (ignoredMembers.Contains(property) || property.GetCustomAttribute<NonSerializedAttribute>() != null)
+                // Skip explicitly-excluded properties.
+                if (property.GetCustomAttribute<NonSerializedAttribute>() != null
+#if NETFRAMEWORK || NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
+                    || property.GetCustomAttribute<IgnoreDataMemberAttribute>() != null
+#endif
+                    || ignoredMembers.Contains(property))
+                {
                     continue;
+                }
 
                 // Skip static properties.
                 if ((getter != null && getter.IsStatic) || (setter != null && setter.IsStatic))

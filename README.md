@@ -35,31 +35,22 @@ Simply add the project folder to your C# project and add `using Rusty.Serializat
 using Rusty.Serialization;
 
 MyClass obj = new();
-UCS cscd = new(Format.Cscd);                  // Creates a CSCD serializer context.
-string serialized = cscd.Serialize(obj);      // Serializes MyClass object graph.
+UCS cscd = new(Format.Cscd);                        // Creates a CSCD serializer context.
+string serialized = cscd.Serialize(obj);            // Serializes MyClass object graph.
 ```
 
 #### Deserializing
 ```
-obj = cscd.Parse<MyClass>(serialized);        // Deserializes back to MyClass.
+obj = cscd.Parse<MyClass>(serialized);              // Deserializes back to MyClass.
 ```
 
 #### Conversion Between Formats
 ```
-UCS xml = new(Format.Xml);
-UCS json = new(Format.Json);
-string xmlStr = "...";
-string jsonStr = xml.Reformat(xmlStr, json);  // Converts XML to JSON.
+string xmlStr = "<doc>...</doc>";
+UCS xml = new(Format.Xml);                          // Creates an XML serializer context.
+UCS json = new(Format.Json);                        // Creates a JSON serializer context.
+string jsonStr = UCS.Reformat(xmlStr, xml, json);   // Converts XML to JSON.
 ```
-
-#### Notes
-Classes and structs without explicit support will automatically serialize using:
-- Fields that are public and non-static.
-- Properties that are public, non-static and non-readonly.
-- Non-public fields and properties with the `[DataMember]` attribute.
-- *Unity only*: Non-public fields with the `[SerializeField]` or `[SerializeReference]` attribute.
-- *Godot only*: Non-public fields and properties with the `[Export]` attribute.
-- **Note**: members with the `[NonSerialized]` attribute are never serialized.
 
 #### GDScript
 A GDscript wrapper is included with the module, see the [GDScript manual](Documentation/GDScript.md) for more information.
@@ -77,9 +68,25 @@ The module separates the serialization process into two steps.
 
 Both the converter and serializer layers can be freely swapped out. This allows the system to be easily extended with additional C# object converters and support for additional formats.
 
-The default converter layer has explicit support for various .NET, Godot and Unity data types (see the [type table](Documentation/TypeTable.md) for a comprehensive list).
-
 The node layer is fixed cannot be swapped. See the [node documentation document](Documentation/Nodes.md) a list of nodes and their purpose.
+
+## Type Support
+The default object codec has explicit support for various .NET, Godot and Unity data types. See the [type table](Documentation/TypeTable.md) for a comprehensive list.
+
+If an object of a type is serialized that is not in the type table, then the system will serialize it using all members for which the following holds:
+- The member is one of the following:
+  - A field.
+  - A property with both a getter and a setter.
+- The member is NOT marked with the `[NonSerialized]` or `[IgnoreDataMember]` attributes.
+- One of the following is true:
+  - The member is public.
+  - The member is marked with the `[DataMember]` attribute.
+  - *Unity only*: The member is marked with the `[SerializeField]` or `[SerializeReference]` attributes.
+  - *Godot only*: The member is marked with the `[Export]` attribute.
+
+Auto-implemented properties are ignored if their generated backing field is already serialized, such as by marking the property with `[field: DataMember]`.
+
+Note that classes and structs that implement `IList<T>`, `ITuple` or `IDictionary<T, U>` are handled using the generic list, tuple or dictionary converters instead.
 
 ## Format Support
 The default serializer layer uses [CSCD](#compact-serialized-c-data), a custom serialization format that can natively express the node tree layer.

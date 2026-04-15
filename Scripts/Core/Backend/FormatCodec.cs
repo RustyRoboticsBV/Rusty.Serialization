@@ -14,11 +14,14 @@ namespace Rusty.Serialization.Core.Codecs
     /// </summary>
     public abstract class FormatCodec
     {
+        /* Public properties. */
+        public Settings Settings { get; set; }
+
         /* Public methods. */
         /// <summary>
         /// Serialize a node tree into a string.
         /// </summary>
-        public abstract string Serialize(SyntaxTree tree, Settings settings);
+        public abstract string Serialize(SyntaxTree tree);
 
         /// <summary>
         /// Deserialize a string into a node tree.

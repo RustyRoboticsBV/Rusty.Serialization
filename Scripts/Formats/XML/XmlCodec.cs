@@ -16,12 +16,12 @@ namespace Rusty.Serialization.XML
     public class XmlCodec : FormatCodec
     {
         /* Public methods. */
-        public override string Serialize(SyntaxTree node, Settings settings)
+        public override string Serialize(SyntaxTree node)
         {
             XmlWriterSettings xmlSettings = new XmlWriterSettings
             {
-                OmitXmlDeclaration = !settings.IncludeFormatHeader,
-                Indent = settings.PrettyPrint,
+                OmitXmlDeclaration = !Settings.IncludeFormatHeader,
+                Indent = Settings.PrettyPrint,
                 IndentChars = "  ",
                 NewLineHandling = NewLineHandling.Replace
             };

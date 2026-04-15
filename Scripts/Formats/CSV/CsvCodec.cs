@@ -12,9 +12,9 @@ namespace Rusty.Serialization.CSV
         private CsvSerializer Serializer { get; } = new CsvSerializer();
 
         /* Public methods. */
-        public override string Serialize(SyntaxTree node, Settings settings)
+        public override string Serialize(SyntaxTree node)
         {
-            return Serializer.Serialize(node, settings);
+            return Serializer.Serialize(node, Settings);
         }
 
         public override SyntaxTree Parse(string serialized)

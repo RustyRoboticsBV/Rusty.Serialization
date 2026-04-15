@@ -2,14 +2,6 @@
 
 Below you can view the types that have built-in serialization/deserialization support, and what literal types they will serialize to.
 
-If an object of a type is serialized that is not in the table below, then the system will serialize using:
-- Fields that are public and non-static (including readonly fields).
-- Properties that are public, non-static and non-readonly.
-- Non-public fields and properties with the `[DataMember]` attribute.
-- *Unity only*: Non-public fields with the `[SerializeField]` or `[SerializeReference]` attribute.
-- *Godot only*: Non-public fields and properties with the `[Export]` attribute.
-- **Note**: members with the `[NonSerialized]` attribute are never serialized.
-
 ## Built-In C# Types
 |C#|.NET|Serialized|Notes|
 |-|-|-|-|
