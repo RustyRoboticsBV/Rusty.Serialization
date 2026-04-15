@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Rusty.Serialization.Core.Nodes;
+
 #if NETFRAMEWORK || NETCOREAPP3_0_OR_GREATER || NET5_0_OR_GREATER
 using System.Runtime.Serialization;
 #endif
-using Rusty.Serialization.Core.Nodes;
-
-
 #if UNITY_5_3_OR_NEWER
 using UnityEngine;
 #endif
 #if GODOT
 using Godot;
 #endif
-
-using Lookup = System.Collections.Generic.Dictionary<(string, string), System.Reflection.MemberInfo>;
 
 namespace Rusty.Serialization.Core.Conversion
 {
@@ -23,6 +20,32 @@ namespace Rusty.Serialization.Core.Conversion
     /// </summary>
     public class ClassConverter<T> : Converter
     {
+        /* Public types. */
+        public struct MemberName
+        {
+            /* Public properties. */
+            public string Scope { get; private set; }
+            public string Name { get; private set; }
+
+            /* Constructors. */
+            public MemberName(string scope, string name)
+            {
+                Scope = scope;
+                Name = name;
+            }
+
+            public MemberName(string name) : this(null, name) { }
+
+            /* Public methods. */
+            public override string ToString()
+            {
+                if (Scope == null)
+                    return Name;
+                else
+                    return Scope + '.' + Name;
+            }
+        }
+
         /* Protected properties. */
         /// <summary>
         /// A set of members that should not be serialized.
@@ -31,7 +54,7 @@ namespace Rusty.Serialization.Core.Conversion
 
         /* Private properties. */
         private MemberInfo[] Members { get; set; }
-        private Lookup MemberLookup { get; set; } = new Lookup();
+        private Dictionary<MemberName, MemberInfo> MemberLookup { get; set; } = new Dictionary<MemberName, MemberInfo>();
 
         /* Public methods. */
         public override ObjectNode CreateNode(object obj, CreateNodeContext context)
@@ -94,10 +117,16 @@ namespace Rusty.Serialization.Core.Conversion
             CollectMembers();
 
             // Collect member types.
-            // TODO: this will break on missing members (or wrongly ordered members).
-            for (int i = 0; i < Members.Length; i++)
+            for (int i = 0; i < node.Count; i++)
             {
-                MemberInfo member = Members[i];
+                // Find member.
+                MemberName memberName = GetMemberName(node.GetNameAt(i));
+                if (!MemberLookup.TryGetValue(memberName, out MemberInfo member))
+                {
+                    throw new MemberAccessException($"The type '{typeof(T)}' has no member named '{memberName}'.\n");
+                }
+
+                // Collect member type.
                 if (member is FieldInfo field)
                     context.Collect(node.Members[i].Value, field.FieldType);
                 else if (member is PropertyInfo property)
@@ -114,41 +143,23 @@ namespace Rusty.Serialization.Core.Conversion
             CollectMembers();
 
             // Assign non-ref.
-            for (int i = 0; i < Members.Length; i++)
+            for (int i = 0; i < node.Count; i++)
             {
-                // Find member name and scope.
-                IMemberNameNode memberScopeNameNode = node.Members[i].Key;
-                string memberScope = "";
-                string memberName = "";
-                if (memberScopeNameNode is ScopeNode scopeNode)
-                {
-                    memberScope = scopeNode.Name;
-                    memberName = scopeNode.Child.Name;
-                }
-                else if (memberScopeNameNode is SymbolNode symbolNode)
-                    memberName = symbolNode.Name;
-
-                // Find member info.
-                if (!MemberLookup.TryGetValue((memberScope, memberName), out MemberInfo member))
-                {
-                    string memberFullName = memberName;
-                    if (memberScope != "")
-                        memberFullName = memberScope + "." + memberFullName;
-                    throw new MemberAccessException($"The type {typeof(T)} has no member named '{memberFullName}'.");
-                }
-
-                // Get member node.
-                INode memberNode = node.Members[i].Value;
+                // Find member.
+                MemberName memberName = GetMemberName(node.GetNameAt(i));
+                if (!MemberLookup.TryGetValue(memberName, out MemberInfo member))
+                    throw new MemberAccessException($"The type '{typeof(T)}' has no member named '{memberName}'.");
 
                 // Deconvert field/property.
+                INode valueNode = node.GetValueAt(i);
                 if (member is FieldInfo field)
                 {
-                    object memberObj = context.CreateChildObject(memberNode, field.FieldType);
+                    object memberObj = context.CreateChildObject(valueNode, field.FieldType);
                     field.SetValue(obj, memberObj);
                 }
                 else if (member is PropertyInfo property)
                 {
-                    object memberObj = context.CreateChildObject(memberNode, property.PropertyType);
+                    object memberObj = context.CreateChildObject(valueNode, property.PropertyType);
                     property.SetValue(obj, memberObj);
                 }
             }
@@ -195,9 +206,9 @@ namespace Rusty.Serialization.Core.Conversion
             MemberLookup.Clear();
             for (int i = 0; i < members.Count; i++)
             {
-                string scope = members[i].DeclaringType != type ? members[i].DeclaringType.FullName : "";
+                string scope = members[i].DeclaringType != type ? members[i].DeclaringType.FullName : null;
                 string name = members[i].Name;
-                MemberLookup.Add((scope, name), members[i]);
+                MemberLookup.Add(new MemberName(scope, name), members[i]);
             }
         }
 
@@ -275,7 +286,7 @@ namespace Rusty.Serialization.Core.Conversion
 
                 MethodInfo getter = property.GetGetMethod(true);
                 MethodInfo setter = property.GetSetMethod(true);
-
+                
                 // Skip indexers.
                 if (property.GetIndexParameters().Length != 0)
                     continue;
@@ -285,11 +296,8 @@ namespace Rusty.Serialization.Core.Conversion
                     continue;
 
                 // Skip static properties.
-                if ((getter != null && getter.IsStatic) ||
-                    (setter != null && setter.IsStatic))
-                {
+                if ((getter != null && getter.IsStatic) || (setter != null && setter.IsStatic))
                     continue;
-                }
 
                 // Check if this property is serializable.
                 bool isSerializable = false;
@@ -323,6 +331,19 @@ namespace Rusty.Serialization.Core.Conversion
 
             // Examine base type
             CollectProperties(type.BaseType, members, collectedFields, ignoredMembers);
+        }
+
+        /// <summary>
+        /// Read a member name node.
+        /// </summary>
+        private static MemberName GetMemberName(INode node)
+        {
+            if (node is ScopeNode scope)
+                return new MemberName(scope.Name, scope.Child.Name);
+            else if (node is SymbolNode symbol)
+                return new MemberName(symbol.Name);
+            else
+                throw new ArgumentException("Invalid member name node: " + node);
         }
     }
 }
