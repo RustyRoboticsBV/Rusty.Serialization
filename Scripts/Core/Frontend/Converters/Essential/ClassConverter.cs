@@ -325,7 +325,7 @@ namespace Rusty.Serialization.Core.Conversion
                 if (!isSerializable)
                     continue;
 
-                // Avoid duplicates if a backing field is already serialized.
+                // Avoid duplicates if a backing field is already collected.
                 for (int j = 0; j < collectedFields.Count; j++)
                 {
                     if (collectedFields[j].Name == $"<{property.Name}>k__BackingField")
@@ -346,8 +346,8 @@ namespace Rusty.Serialization.Core.Conversion
         /// </summary>
         private static MemberName GetMemberName(INode node)
         {
-            if (node is ScopeNode scope)
-                return new MemberName(scope.Name, scope.Child.Name);
+            if (node is ScopeNode scope && scope.Child is SymbolNode scopeSymbol)
+                return new MemberName(scope.Name, scopeSymbol.Name);
             else if (node is SymbolNode symbol)
                 return new MemberName(symbol.Name);
             else

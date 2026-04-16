@@ -151,6 +151,8 @@ namespace Rusty.Serialization.Core.Conversion
             // Resolve convertable types.
             if (CastUtility.IsBilaterallyConvertable(targetType, typeof(BoolValue)))
                 return typeof(BoolConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(BitmaskValue)))
+                return typeof(BitmaskConverter<>).MakeGenericType(targetType);
             if (CastUtility.IsBilaterallyConvertable(targetType, typeof(IntValue)))
                 return typeof(IntConverter<>).MakeGenericType(targetType);
             if (CastUtility.IsBilaterallyConvertable(targetType, typeof(FloatValue)))
@@ -161,6 +163,16 @@ namespace Rusty.Serialization.Core.Conversion
                 return typeof(CharConverter<>).MakeGenericType(targetType);
             if (CastUtility.IsBilaterallyConvertable(targetType, typeof(StringValue)))
                 return typeof(StringConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(TimestampValue)))
+                return typeof(TimestampConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(DurationValue)))
+                return typeof(DurationConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(ColorValue)))
+                return typeof(ColorConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(UidValue)))
+                return typeof(UidConverter<>).MakeGenericType(targetType);
+            if (CastUtility.IsBilaterallyConvertable(targetType, typeof(BytesValue)))
+                return typeof(BytesConverter<>).MakeGenericType(targetType);
 
             // Resolve inherited types.
             Type parentType = targetType.BaseType;
