@@ -63,9 +63,14 @@ Both the converter and serializer layers can be freely swapped out. This allows 
 The node layer is fixed cannot be swapped. See the [node documentation document](Documentation/Nodes.md) a list of nodes and their purpose.
 
 ## Type Support
-The default object codec has explicit support for various .NET, Godot and Unity data types. See the [type table](Documentation/TypeTable.md) for a comprehensive list.
+The default object codec has built-in support for various .NET, Godot and Unity data types. See the [type table](Documentation/TypeTable.md) for a comprehensive list.
 
-If an object of a type is serialized that is not in the type table, then the system will serialize it using all members for which the following holds:
+When the serializer encounters a type, it will first check three things:
+- Does the type have built-in support? If so, use the type's converter.
+- Does the type inherit a type with built-in support? If so, use the base type's converter. 
+- Does the type implement an interface with built-in support? If so, use the interface's converter.
+
+If a type fails all three checks, then the system will serialize it using all members for which the following holds:
 - The member is one of the following:
   - A field.
   - A property with both a getter and a setter.
@@ -75,10 +80,9 @@ If an object of a type is serialized that is not in the type table, then the sys
   - The member is marked with the `[DataMember]` attribute.
   - *Unity only*: The member is marked with the `[SerializeField]` or `[SerializeReference]` attributes.
   - *Godot only*: The member is marked with the `[Export]` attribute.
+- It is NOT an auto-implemented property whose generated backing field is already serialized (such as by marking the property with `[field: DataMember]`).
 
-Auto-implemented properties are ignored if their generated backing field is already serialized, such as by marking the property with `[field: DataMember]`.
-
-Note that classes and structs that implement `IList<T>`, `ITuple` or `IDictionary<T, U>` are handled using the generic list, tuple or dictionary converters instead.
+Whenever the above behavior is not desirable, then [a dedicated converter must be written and added to the object codec](Documentation/AddingConverters.md).
 
 ## Format Support
 The default serializer layer uses [CSCD](#compact-serialized-c-data), a custom serialization format that can natively express the node tree layer.
