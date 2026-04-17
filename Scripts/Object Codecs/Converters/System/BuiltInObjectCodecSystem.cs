@@ -1,4 +1,5 @@
-﻿using Rusty.Serialization.Conversion.System;
+﻿using System;
+using Rusty.Serialization.Conversion.System;
 
 namespace Rusty.Serialization.Conversion
 {
@@ -7,6 +8,8 @@ namespace Rusty.Serialization.Conversion
         /* Private methods. */
         private void AddSystemTypes()
         {
+            Converters.Add<bool, BoolConverter>();
+
             Converters.Add<sbyte, SbyteConverter>();
             Converters.Add<short, ShortConverter>();
             Converters.Add<int, IntConverter>();
@@ -15,6 +18,21 @@ namespace Rusty.Serialization.Conversion
             Converters.Add<ushort, UshortConverter>();
             Converters.Add<uint, UintConverter>();
             Converters.Add<ulong, UlongConverter>();
+
+            Converters.Add<float, FloatConverter>();
+            Converters.Add<double, DoubleConverter>();
+
+            Converters.Add<decimal, DecimalConverter>();
+
+            Converters.Add<char, CharConverter>();
+
+            Converters.Add<string, StringConverter>();
+
+            Converters.Add<Guid, GuidConverter>();
+
+            Converters.Add<DateTime, DateTimeConverter>();
+
+            Converters.Add<TimeSpan, TimeSpanConverter>();
         }
     }
 }

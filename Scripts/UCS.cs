@@ -10,6 +10,9 @@ using Rusty.Serialization.XML;
 
 namespace Rusty.Serialization
 {
+    /// <summary>
+    /// The UCS serialization context. Contains an object codec and a format codec.
+    /// </summary>
     public class UCS
     {
         /* Public properties. */

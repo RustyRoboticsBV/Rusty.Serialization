@@ -47,7 +47,7 @@ obj = cscd.Parse<MyClass>(serialized);              // Deserializes back to MyCl
 #### GDScript
 A GDscript wrapper is included with the module, see the [GDScript manual](Documentation/GDScript.md) for more information.
 
-**Note**: Using GDScript still requires a .NET build of Godot, and only supports object roots with a type that can be stored in a `Variant`.
+Using GDScript still requires a .NET build of Godot, and only supports object roots with a type that can be stored in a `Variant`.
 
 ## Architecture
 The module separates the serialization process into two steps.
@@ -70,7 +70,7 @@ If an object of a type is serialized that is not in the type table, then the sys
   - A field.
   - A property with both a getter and a setter.
 - The member is NOT marked with the `[NonSerialized]` or `[IgnoreDataMember]` attributes.
-- One of the following is true:
+- One or more of the following is true:
   - The member is public.
   - The member is marked with the `[DataMember]` attribute.
   - *Unity only*: The member is marked with the `[SerializeField]` or `[SerializeReference]` attributes.
@@ -86,7 +86,7 @@ The default serializer layer uses [CSCD](#compact-serialized-c-data), a custom s
 Other supported formats include [CSV](Documentation/Formats/CSV.md), [JSON](Documentation/Formats/JSON.md) and [XML](Documentation/Formats/XML.md). Each format requires specific non-standard formatting in order to be parsed, as node tree metadata is needed to reconstruct the original object graph. This leads to some verbosity, particularly with JSON.
 
 ## Compact Serialized C# Data
-The module uses a custom, human-readable serialization format called Compact Serialized C# Data (CSCD). It is designed to represent complex object graphs with minimal structural overhead, preserving types, references, shadowed variables and supporting a variety of literal types. These literals allow common .NET and game engine types (such as timestamps, colors and collections) to be encoded concisely while keeping the data readable and easy to maintain.
+The module supports a custom, human-readable serialization format called Compact Serialized C# Data (CSCD). It is designed to represent complex object graphs with minimal structural overhead, preserving types, references, shadowed variables and supporting a variety of literal types. These literals allow common .NET and game engine types (such as timestamps, colors and collections) to be encoded concisely while keeping the data readable and easy to maintain.
 
 Below is an example of a custom serialized object with pretty printing. See the [CSCD user manual](Documentation/CSCD/Manual.md) for more information, and the [specification document](Documentation/CSCD/Specification.md) for a formal syntax description.
 
