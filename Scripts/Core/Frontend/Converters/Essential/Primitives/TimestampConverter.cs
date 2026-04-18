@@ -13,8 +13,6 @@ namespace Rusty.Serialization.Core.Conversion
         /* Protected methods. */
         protected sealed override object CreateObject(TimestampNode node, CreateObjectContext context) => FromTimestamp(node.Value);
 
-        protected sealed override object PopulateObject(TimestampNode node, object obj, PopulateObjectContext context) => obj;
-
         /// <summary>
         /// Convert an timestamp object to the internal value representation.
         /// </summary>

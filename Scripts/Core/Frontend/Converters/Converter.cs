@@ -14,7 +14,7 @@ namespace Rusty.Serialization.Core.Conversion
 
         public abstract INode CreateNode(object obj, CreateNodeContext context);
 
-        public virtual void PopulateNode(object obj, INode node, PopulateNodeContext context)
+        public void PopulateNode(object obj, INode node, PopulateNodeContext context)
         {
             switch (node)
             {
@@ -42,6 +42,8 @@ namespace Rusty.Serialization.Core.Conversion
         {
             switch (node)
             {
+                case OffsetNode of: return CreateObject(of, context);
+
                 case ListNode l: return CreateObject(l, context);
                 case DictNode d: return CreateObject(d, context);
                 case ObjectNode o2: return CreateObject(o2, context);
@@ -76,25 +78,7 @@ namespace Rusty.Serialization.Core.Conversion
                 case DictNode d: return PopulateObject(d, obj, context);
                 case ObjectNode o2: return PopulateObject(o2, obj, context);
                 case CallableNode c: return PopulateObject(c, obj, context);
-
-                case NullNode n: return PopulateObject(n, obj, context);
-                case BoolNode b: return PopulateObject(b, obj, context);
-                case BitmaskNode b2: return PopulateObject(b2, obj, context);
-                case IntNode i: return PopulateObject(i, obj, context);
-                case FloatNode f: return PopulateObject(f, obj, context);
-                case DecimalNode d2: return PopulateObject(d2, obj, context);
-                case InfinityNode i2: return PopulateObject(i2, obj, context);
-                case NanNode n2: return PopulateObject(n2, obj, context);
-                case CharNode c2: return PopulateObject(c2, obj, context);
-                case StringNode s2: return PopulateObject(s2, obj, context);
-                case ColorNode c3: return PopulateObject(c3, obj, context);
-                case UidNode u: return PopulateObject(u, obj, context);
-                case TimestampNode t: return PopulateObject(t, obj, context);
-                case DurationNode d2: return PopulateObject(d2, obj, context);
-                case BytesNode b3: return PopulateObject(b3, obj, context);
-                case SymbolNode s2: return PopulateObject(s2, obj, context);
-
-                default: throw InvalidNodeException(node);
+                default: return obj;
             }
         }
 
@@ -115,6 +99,8 @@ namespace Rusty.Serialization.Core.Conversion
         protected virtual void CollectChildNodeTypes(CallableNode node, CollectTypesContext context) => throw InvalidNodeException(node);
 
         // Create object.
+
+        protected virtual object CreateObject(OffsetNode node, CreateObjectContext context) => throw InvalidNodeException(node);
 
         protected virtual object CreateObject(ListNode node, CreateObjectContext context) => throw InvalidNodeException(node);
         protected virtual object CreateObject(DictNode node, CreateObjectContext context) => throw InvalidNodeException(node);
@@ -144,23 +130,6 @@ namespace Rusty.Serialization.Core.Conversion
         protected virtual object PopulateObject(DictNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
         protected virtual object PopulateObject(ObjectNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
         protected virtual object PopulateObject(CallableNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-
-        protected virtual object PopulateObject(NullNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(BoolNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(BitmaskNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(IntNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(FloatNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(DecimalNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(InfinityNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(NanNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(CharNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(StringNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(ColorNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(UidNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(TimestampNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(DurationNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(BytesNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
-        protected virtual object PopulateObject(SymbolNode node, object obj, PopulateObjectContext context) => throw InvalidNodeException(node);
 
         // Misc.
         protected static T TryCast<T>(object obj)

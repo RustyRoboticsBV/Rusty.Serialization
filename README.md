@@ -82,7 +82,7 @@ If a type fails all three checks, then the system will serialize it using all me
   - *Godot only*: The member is marked with the `[Export]` attribute.
 - It is NOT an auto-implemented property whose generated backing field is already serialized (such as by marking the property with `[field: DataMember]`).
 
-Whenever the above behavior is not desirable, then [a dedicated converter must be written and added to the object codec](Documentation/AddingConverters.md).
+Whenever the above behavior is not desirable, then [a custom converter must be written and added to the object codec](Documentation/AddingConverters.md).
 
 ## Format Support
 The default serializer layer uses [CSCD](#compact-serialized-c-data), a custom serialization format that can natively express the node tree layer.
